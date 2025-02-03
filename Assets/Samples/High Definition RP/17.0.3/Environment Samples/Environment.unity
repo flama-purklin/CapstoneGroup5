@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f009c49e8252d45b8e8b5fc9176292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeOfDay: 8.153837
+  timeOfDay: 6.114877
   timeSpeed: 0.25
   sliderStyle:
     m_Name: 
@@ -452,7 +452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87711811}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.15288678, y: 0.7784484, z: -0.20800582, w: 0.572169}
+  m_LocalRotation: {x: 0.065141924, y: 0.6627955, z: -0.058055438, w: 0.743699}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -674,7 +674,7 @@ MonoBehaviour:
   enableSelectButton: 1
   currentIndex: 0
   currentPrefab: {fileID: 491924231}
-  requiredSettingsSO: {fileID: 11400000, guid: ca037d78bd48fdf488c1d10e5946022d, type: 2}
+  requiredSettingsSO: {fileID: 0}
   gameobjectSamplesName: {fileID: 0}
   gameobjectSamplesDescription: {fileID: 0}
   gameViewCamera: {fileID: 1894943371}
@@ -1293,7 +1293,7 @@ GameObject:
   m_IsActive: 1
 --- !u!114 &835913246
 MonoBehaviour:
-  m_ObjectHideFlags: 19
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -1666,7 +1666,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: model
-      value: Llama-3.2-1B-Instruct-Q4_0.gguf
+      value: llama-3.2-1b-instruct-q4_k_m.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: batchSize
@@ -1703,6 +1703,10 @@ PrefabInstance:
     - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: maxContextLength
       value: 131072
+      objectReference: {fileID: 0}
+    - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
+      propertyPath: dontDestroyOnLoad
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3941089577232786294, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: m_AnchoredPosition.y
