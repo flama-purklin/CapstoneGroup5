@@ -10,7 +10,7 @@ public class CarDetection : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar);
+        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar, true);
     }
 
     // Update is called once per frame
@@ -25,7 +25,7 @@ public class CarDetection : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position + Vector3.up * .1f, -Vector3.up,  out hit, 2f, trainLayer))
         {
-            Debug.Log(hit.transform.root.gameObject);
+            //Debug.Log(hit.transform.root.gameObject);
             if (currentCar != hit.transform.root.gameObject)
             {
                 NewCar(hit.transform.root.gameObject);
@@ -45,6 +45,6 @@ public class CarDetection : MonoBehaviour
         currentCar.GetComponent<CarVisibility>().CarSelected();
 
         //update the camera controls
-        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar);
+        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar, false);
     }
 }

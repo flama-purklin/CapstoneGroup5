@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
@@ -13,6 +15,9 @@ public class CameraControl : MonoBehaviour
     float carBoundMax;
 
     public float carBufferAmt;
+    public float transitionTime;
+
+    bool transition = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,12 +42,16 @@ public class CameraControl : MonoBehaviour
 
 
         //apply to the cam
-        transform.position = new Vector3(camX, startingY, startingZ);
+        if (!transition)
+            transform.position = new Vector3(camX, startingY, startingZ);
     }
 
     //called whenever a new car is entered
-    public void CarUpdate(GameObject newCar)
+    public void CarUpdate(GameObject newCar, bool initial)
     {
+
+        float prevCarEdge = transform.position.x;
+
         //retrieve the new bounds from the new car object
         carCenter = newCar.transform.position.x;
 
@@ -56,6 +65,32 @@ public class CameraControl : MonoBehaviour
         carBoundMin += carBufferAmt;
         carBoundMax -= carBufferAmt;
 
-        //TODO smooth transition from one clamp to the other on car enter
+        //calculate whether new car is left or right of the old
+        float newCarEdge;
+        if (prevCarEdge < carBoundMin)
+            newCarEdge = carBoundMin;
+        else
+            newCarEdge = carBoundMax;
+
+        //smooth transition from one clamp to the other on car enter
+        if (!initial)
+            StartCoroutine(CarTransition(prevCarEdge, newCarEdge));
+    }
+
+    IEnumerator CarTransition(float prevEdge, float newEdge)
+    {
+        transition = true;
+
+        float currentTime = 0f;
+        while (currentTime < transitionTime)
+        {
+            float camX = Mathf.Lerp(prevEdge, newEdge, currentTime / transitionTime);
+            transform.position = new Vector3(camX, startingY, startingZ);
+            currentTime += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        transform.position = new Vector3(newEdge, startingY, startingZ);
+        transition = false;
     }
 }

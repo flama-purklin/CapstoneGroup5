@@ -24,7 +24,8 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        InputCheck();
+        if (GameControl.GameController.currentState == GameState.DEFAULT)
+            InputCheck();
     }
 
     private void InputCheck()

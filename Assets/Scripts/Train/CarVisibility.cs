@@ -28,6 +28,7 @@ public class CarVisibility : MonoBehaviour
         selected = true;
         carFront.enabled = false;
         carTop.SetActive(false);
+        GetComponent<CarCharacters>().InitializeCharacters();
     }
 
     //enable the front mesh so you can't see in
