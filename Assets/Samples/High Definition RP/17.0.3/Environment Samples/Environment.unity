@@ -119,21 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!115 &56900744
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 2
-  m_ExecutionOrder: 0
-  m_ClassName: SceneObjectIDMapSceneAsset
-  m_Namespace: UnityEngine.Experimental.Rendering.HDPipeline
-  m_AssemblyName: 
 --- !u!1 &87711811
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05f009c49e8252d45b8e8b5fc9176292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeOfDay: 6.114877
+  timeOfDay: 11.98001
   timeSpeed: 0.25
   sliderStyle:
     m_Name: 
@@ -452,7 +437,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87711811}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.065141924, y: 0.6627955, z: -0.058055438, w: 0.743699}
+  m_LocalRotation: {x: 0.0018979892, y: 0.89490104, z: -0.4462444, w: 0.0038062383}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -1166,21 +1151,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ed3cbb58bf190444981f2540feb4056d, type: 3}
   m_PrefabInstance: {fileID: 325810462}
   m_PrefabAsset: {fileID: 0}
---- !u!115 &394898109
-MonoScript:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  serializedVersion: 7
-  m_DefaultReferences: {}
-  m_Icon: {fileID: 0}
-  m_Type: 2
-  m_ExecutionOrder: 0
-  m_ClassName: SceneObjectIDMapSceneAsset
-  m_Namespace: UnityEngine.Rendering.HighDefinition
-  m_AssemblyName: 
 --- !u!1 &491924231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,7 +1209,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 728537255}
-  - component: {fileID: 728537254}
   m_Layer: 0
   m_Name: SceneIDMap
   m_TagString: Untagged
@@ -1247,18 +1216,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &728537254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 728537253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 56900744}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &728537255
 Transform:
   m_ObjectHideFlags: 19
@@ -1283,7 +1240,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 835913247}
-  - component: {fileID: 835913246}
   m_Layer: 0
   m_Name: SceneIDMap
   m_TagString: Untagged
@@ -1291,18 +1247,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &835913246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 835913245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 394898109}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &835913247
 Transform:
   m_ObjectHideFlags: 19
@@ -1686,7 +1630,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: numGPULayers
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2813347772102503384, guid: cfa9364b0d529fc488bebd444f40c423, type: 3}
       propertyPath: flashAttention
