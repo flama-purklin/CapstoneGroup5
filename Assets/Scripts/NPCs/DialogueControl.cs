@@ -3,16 +3,31 @@ using UnityEngine;
 
 public class DialogueControl : MonoBehaviour
 {
-    //character present in dialogue
+    //character present in dialogue - REPLACE WITH CHARACTER OBJECT
     GameObject currentChar;
 
     //UI Elements
     [SerializeField] GameObject dialogueCanvas;
-    [SerializeField] RectTransform inputBox;
+    
+    //from top
     [SerializeField] RectTransform dialogueHolder;
+    [SerializeField] RectTransform playerDialogue;
+
+    //from bottom
+    [SerializeField] RectTransform inputBox;
     [SerializeField] RectTransform characterImage;
-    [SerializeField] RectTransform playerImage;
-    [SerializeField] RectTransform exitButton;
+    [SerializeField] RectTransform submitButton;
+
+    //from right
+    [SerializeField] RectTransform rightButtons;
+
+    //from left
+    [SerializeField] RectTransform leftButtons;
+
+    [SerializeField] float lerpTime;
+
+    //animation
+    [SerializeField] Animator lerpingAnim;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,11 +59,55 @@ public class DialogueControl : MonoBehaviour
 
     IEnumerator DialogueEntryLerp()
     {
+        float currentTime = 0f;
+
+        lerpingAnim.speed = 1f;
+        lerpingAnim.Play("DialogueActivation");
+
+        while (currentTime < lerpTime)
+        {
+            //lerp in all objects
+
+            //from top
+
+            //from left
+
+            //from right
+
+            //from bottom
+
+            currentTime += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        //lerpingAnim.Stop();
         yield return null;
     }
 
     IEnumerator DialogueExitLerp()
     {
+        float currentTime = 0f;
+
+        //lerpingAnim.speed = -1f;
+        lerpingAnim.Play("DialogueDeactivation");
+
+        while (currentTime < lerpTime)
+        {
+            //lerp out all objects
+
+            //from top
+
+            //from left
+
+            //from right
+
+            //from bottom
+            Debug.Log(currentTime);
+            currentTime += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+
+        Debug.Log("End Reached");
         dialogueCanvas.SetActive(false);
         GameControl.GameController.currentState = GameState.DEFAULT;
         yield return null;
