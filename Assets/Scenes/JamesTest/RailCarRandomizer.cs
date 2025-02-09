@@ -11,6 +11,7 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public float floorThickness = 0.5f;
     [SerializeField] public Material floorMaterial = null;
     [SerializeField] public Material wallMaterial = null;
+    public GameObject trainCar;
     public GameObject floor;
     public GameObject wall;
 
@@ -42,13 +43,17 @@ public class RailCarRandomizer : MonoBehaviour
 
     public void GenerateTrainShell()
     {
+        trainCar = new GameObject("Train Car");
+
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.transform.localScale = new Vector3(railCarLength, floorThickness, railCarDepth); // x, y, z
-        floor.name = "Floor";
+        floor.name = "RailCarFloor";
+        floor.transform.SetParent(trainCar.transform);
 
         wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
-        wall.name = "Wall";
+        wall.name = "RailCarWall";
+        wall.transform.SetParent(trainCar.transform);
 
         floor.transform.position = new Vector3(railCarLength/2, floorThickness/2, railCarDepth/2); // Centered at origin.
         if (floorMaterial != null)

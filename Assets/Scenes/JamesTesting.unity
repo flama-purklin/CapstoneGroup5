@@ -359,6 +359,63 @@ MonoBehaviour:
   m_ObsoleteUseShadowQualitySettings: 0
   m_ObsoleteCustomShadowResolution: 512
   m_ObsoleteContactShadows: 0
+--- !u!1001 &420361958
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 17.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5874540985207635157, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
+      propertyPath: m_Name
+      value: Train Car (diningCarData1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,65 +457,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 432432459}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1122066211
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1122066213}
-  - component: {fileID: 1122066212}
-  m_Layer: 0
-  m_Name: TrainObjectParser
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1122066212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122066211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jsonFile: {fileID: 4900000, guid: ffdfc448af8b2164aa03bf35fde0b675, type: 3}
-  railCarRandomizer: {fileID: 1969864413}
-  trainCarLayout:
-    train_car: []
-  objectPrefabsList:
-  - key: seat
-    prefab: {fileID: 3877189797188535287, guid: e058cac87bc97254195da76be77d83e6, type: 3}
-  - key: entrance
-    prefab: {fileID: 3379271612542612805, guid: f65ca8bd4b9d5a94b96e6671dbdc91db, type: 3}
-  - key: walkway
-    prefab: {fileID: 139727030224991998, guid: 4756e6a770c104c4a8bd1ab1f09a8e71, type: 3}
-  - key: table
-    prefab: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
-  - key: chair
-    prefab: {fileID: 3353554131586986753, guid: a842783c726810144a7403a0b72e9723, type: 3}
---- !u!4 &1122066213
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122066211}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -709,6 +707,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1969864414}
   - component: {fileID: 1969864413}
+  - component: {fileID: 1969864415}
   m_Layer: 0
   m_Name: TrainManager
   m_TagString: Untagged
@@ -735,6 +734,7 @@ MonoBehaviour:
   floorThickness: 0.2
   floorMaterial: {fileID: 2100000, guid: 4f9c339cbf38b684f93dcc8f21e52e57, type: 2}
   wallMaterial: {fileID: 2100000, guid: eb2b6aa69dc3840438f697a5d3bcbfe2, type: 2}
+  trainCar: {fileID: 0}
   floor: {fileID: 0}
   wall: {fileID: 0}
   gridRows: 5
@@ -771,6 +771,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1969864415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1969864412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonFile: {fileID: 4900000, guid: ffdfc448af8b2164aa03bf35fde0b675, type: 3}
+  railCarRandomizer: {fileID: 1969864413}
+  trainCarLayout:
+    train_car: []
+  objectPrefabsList:
+  - key: seat
+    prefab: {fileID: 3877189797188535287, guid: e058cac87bc97254195da76be77d83e6, type: 3}
+  - key: entrance
+    prefab: {fileID: 3379271612542612805, guid: f65ca8bd4b9d5a94b96e6671dbdc91db, type: 3}
+  - key: walkway
+    prefab: {fileID: 139727030224991998, guid: 4756e6a770c104c4a8bd1ab1f09a8e71, type: 3}
+  - key: table
+    prefab: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+  - key: chair
+    prefab: {fileID: 3353554131586986753, guid: a842783c726810144a7403a0b72e9723, type: 3}
+  prefabSavePath: Assets/Scenes/JamesTest/Prefabs/
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
@@ -829,4 +857,4 @@ SceneRoots:
   - {fileID: 432432461}
   - {fileID: 2013410475}
   - {fileID: 1969864414}
-  - {fileID: 1122066213}
+  - {fileID: 420361958}
