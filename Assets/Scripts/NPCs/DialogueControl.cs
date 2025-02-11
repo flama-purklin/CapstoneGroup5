@@ -8,7 +8,9 @@ public class DialogueControl : MonoBehaviour
 
     //UI Elements
     [SerializeField] GameObject dialogueCanvas;
+    [SerializeField] GameObject defaultHud;
     
+    /* Animator dealt with all this shit lmao
     //from top
     [SerializeField] RectTransform dialogueHolder;
     [SerializeField] RectTransform playerDialogue;
@@ -23,11 +25,14 @@ public class DialogueControl : MonoBehaviour
 
     //from left
     [SerializeField] RectTransform leftButtons;
+    */
 
     [SerializeField] float lerpTime;
 
     //animation
     [SerializeField] Animator lerpingAnim;
+
+    bool shutdown = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,8 +43,12 @@ public class DialogueControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if ((Input.GetKeyDown(KeyCode.E) && GameControl.GameController.currentState == GameState.DIALOGUE) || (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
         {
+            if (GameControl.GameController.currentState == GameState.FINAL)
+            {
+                shutdown = true;
+            }
             Deactivate();
         }
     }
@@ -48,13 +57,17 @@ public class DialogueControl : MonoBehaviour
     public void Activate(GameObject character)
     {
         currentChar = character;
+        defaultHud.SetActive(false);
         dialogueCanvas.SetActive(true);
         StartCoroutine(DialogueEntryLerp());
     }
 
     public void Deactivate()
     {
-        StartCoroutine(DialogueExitLerp());
+        if (dialogueCanvas.activeInHierarchy)
+        {
+            StartCoroutine(DialogueExitLerp());
+        }
     }
 
     IEnumerator DialogueEntryLerp()
@@ -62,7 +75,7 @@ public class DialogueControl : MonoBehaviour
         float currentTime = 0f;
 
         lerpingAnim.speed = 1f;
-        lerpingAnim.Play("DialogueActivation");
+        lerpingAnim.Play("DialogueActivate");
 
         while (currentTime < lerpTime)
         {
@@ -89,7 +102,7 @@ public class DialogueControl : MonoBehaviour
         float currentTime = 0f;
 
         //lerpingAnim.speed = -1f;
-        lerpingAnim.Play("DialogueDeactivation");
+        lerpingAnim.Play("DialogueDeactivate");
 
         while (currentTime < lerpTime)
         {
@@ -109,7 +122,11 @@ public class DialogueControl : MonoBehaviour
 
         Debug.Log("End Reached");
         dialogueCanvas.SetActive(false);
-        GameControl.GameController.currentState = GameState.DEFAULT;
+        if (GameControl.GameController.currentState == GameState.DIALOGUE)
+        {
+            defaultHud.SetActive(true);
+            GameControl.GameController.currentState = GameState.DEFAULT;
+        }
         yield return null;
     }
 }
