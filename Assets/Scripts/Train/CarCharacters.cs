@@ -4,11 +4,11 @@ using UnityEngine;
 public class CarCharacters: MonoBehaviour
 {
     bool visited = false;
-    [SerializeField] GameObject npcPrefab;
+    [SerializeField] public GameObject npcPrefab;
 
     List<GameObject> carCharacters;
 
-    [SerializeField] MeshRenderer carFloor;
+    [SerializeField] public MeshRenderer carFloor;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

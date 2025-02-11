@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,9 +13,13 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public float floorThickness = 0.5f;
     [SerializeField] public Material floorMaterial = null;
     [SerializeField] public Material wallMaterial = null;
+    [SerializeField] public Material roofMaterial = null;
+    [SerializeField] public Material exteriorMaterial = null; // spelled wrong I think
     public GameObject trainCar;
-    public GameObject floor;
-    public GameObject wall;
+    public GameObject floor, roof;
+    public GameObject wall, exteriorWall;
+    public CarVisibility carVisibilityComp;
+    public CarCharacters carCharacterComp;
 
     [SerializeField] public int gridRows = 5;
     [SerializeField] public int gridColumns = 10;
@@ -23,6 +29,8 @@ public class RailCarRandomizer : MonoBehaviour
 
     [SerializeField] public int numbToSpawn = 10; // How many objects are spawned
     [SerializeField] public List<GameObject> objectsToSpawn; // List to randomize
+    [SerializeField] public GameObject testNpcPrefab = null;
+    public bool spawnSuccessful = false; //Flag to signal shell creation
 
     public List<GameObject> anchorPoints = new List<GameObject>(); // Stores all anchor points
 
@@ -31,6 +39,7 @@ public class RailCarRandomizer : MonoBehaviour
     void Start()
     {
         GenerateTrainShell();
+        AttachTrainScripts();
         GenerateAnchorGrid();
         //SpawnObjects();
     }
@@ -38,11 +47,20 @@ public class RailCarRandomizer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+/*        // Adds runtime functionality to selected bool (should not be here, no work)
+        if (carVisibilityComp.selected == true && !roof.activeSelf)
+        {
+            carVisibilityComp.CarSelected();
+        }
+        else if (carVisibilityComp.selected == false && roof.activeSelf)
+        {
+            carVisibilityComp.CarDeselected();
+        }*/
     }
 
     public void GenerateTrainShell()
     {
+        spawnSuccessful = false;
         trainCar = new GameObject("Train Car");
 
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -50,10 +68,21 @@ public class RailCarRandomizer : MonoBehaviour
         floor.name = "RailCarFloor";
         floor.transform.SetParent(trainCar.transform);
 
+        roof = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        roof.transform.localScale = new Vector3(railCarLength, floorThickness, (railCarDepth  + (wallThickness * 2))); // x, y, z
+        roof.name = "RailCarRoof";
+        roof.transform.SetParent(trainCar.transform);
+
+        // will need to replace with smarter code to include window segmented prefabs.
         wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
         wall.name = "RailCarWall";
         wall.transform.SetParent(trainCar.transform);
+
+        exteriorWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        exteriorWall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
+        exteriorWall.name = "RailCarExterior";
+        exteriorWall.transform.SetParent(trainCar.transform);
 
         floor.transform.position = new Vector3(railCarLength/2, floorThickness/2, railCarDepth/2); // Centered at origin.
         if (floorMaterial != null)
@@ -61,18 +90,49 @@ public class RailCarRandomizer : MonoBehaviour
             floor.GetComponent<Renderer>().material = floorMaterial;
         }
 
-        wall.transform.position = new Vector3(railCarLength/2, railCarHeight/2, 0); // Centered at back edge of floor.
+        roof.transform.position = new Vector3(railCarLength / 2, (railCarHeight + (floorThickness / 2)), railCarDepth / 2); // Centered at top of train
+        if (roofMaterial != null) 
+        { 
+            roof.GetComponent<Renderer>().material = roofMaterial; 
+        }
+
+        wall.transform.position = new Vector3(railCarLength/2, railCarHeight/2, (0 - (wallThickness/2))); // Centered at back edge of floor.
         if (wallMaterial != null)
         {
             wall.GetComponent<Renderer>().material = wallMaterial;
         }
+
+        exteriorWall.transform.position = new Vector3(railCarLength / 2, railCarHeight / 2, (railCarDepth + (wallThickness/2))); // Centered at front of train
+        if (exteriorMaterial != null)
+        { 
+            exteriorWall.GetComponent<Renderer>().material = exteriorMaterial;
+        }
+    }
+
+    // Add componenets used in train car managment such as CarVisibility and CarCharacters
+    public void AttachTrainScripts()
+    {
+        // Do first since setting car to visible initializes npcs.
+        trainCar.AddComponent<CarCharacters>();
+        carCharacterComp = trainCar.GetComponent<CarCharacters>();
+        carCharacterComp.carFloor = floor.GetComponent<MeshRenderer>();
+        carCharacterComp.npcPrefab = testNpcPrefab;
+
+        trainCar.AddComponent<CarVisibility>();
+        carVisibilityComp = trainCar.GetComponent<CarVisibility>();
+        carVisibilityComp.carFront = exteriorWall.GetComponent<MeshRenderer>();
+        carVisibilityComp.carTop = roof;
+        carVisibilityComp.selected = true;
+        carVisibilityComp.CarSelected();
+
+        
     }
 
     public void GenerateAnchorGrid()
     {
-        // Grid origin (should)= floor center. Right now equals top right...
+        // Grid origin = floor top left (pos x, neg z)
         Vector3 floorPosition = floor.transform.position;
-        float startX = floorPosition.x - (railCarLength/2) + (cellSize/2);
+        float startX = floorPosition.x + (railCarLength/2) - (cellSize/2);
         float startZ = floorPosition.z - (railCarDepth/2) + (cellSize/2);
         float y = floorPosition.y + (floorThickness/2); // Anchors (should be)above floor, rn halfway in floor...
 
@@ -81,7 +141,7 @@ public class RailCarRandomizer : MonoBehaviour
             for (int col = 0; col < gridColumns; col++)
             {
                 // Spawn, name, and parent anchors.
-                float x = startX + col * cellSize;
+                float x = startX - col * cellSize;
                 float z = startZ + row * cellSize;
                 Vector3 anchorPosition = new Vector3(x, y, z);
 
@@ -90,6 +150,7 @@ public class RailCarRandomizer : MonoBehaviour
                 anchor.transform.parent = floor.transform;
 
                 // Add visual to the empty anchors. TODO: Make toggle work in update.
+                // Also need toggle to spawn if not existant...
                 if (anchorPrefab != null && anchorsVissible == true)
                 {
                     Instantiate(anchorPrefab, anchorPosition, Quaternion.identity, anchor.transform);
@@ -98,6 +159,7 @@ public class RailCarRandomizer : MonoBehaviour
                 anchorPoints.Add(anchor); // Add to list for use in object placement.
             }
         }
+        spawnSuccessful = true;
     }
 
     public void SpawnObjects() 

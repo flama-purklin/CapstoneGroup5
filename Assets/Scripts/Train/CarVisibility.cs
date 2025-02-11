@@ -3,8 +3,8 @@ using UnityEngine;
 public class CarVisibility : MonoBehaviour
 {
     public bool selected = false;
-    [SerializeField] MeshRenderer carFront;
-    [SerializeField] GameObject carTop;
+    [SerializeField] public MeshRenderer carFront; //Had to make these public for assignment within RailCarRandomizer.cs
+    [SerializeField] public GameObject carTop;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
