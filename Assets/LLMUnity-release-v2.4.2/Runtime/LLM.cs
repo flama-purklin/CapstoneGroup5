@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace LLMUnity
 {
@@ -29,10 +30,28 @@ namespace LLMUnity
         /// <summary> number of threads to use (-1 = all) </summary>
         [Tooltip("number of threads to use (-1 = all)")]
         [LLM] public int numThreads = -1;
-        /// <summary> number of model layers to offload to the GPU (0 = GPU not used).
-        /// If the user's GPU is not supported, the LLM will fall back to the CPU </summary>
-        [Tooltip("number of model layers to offload to the GPU (0 = GPU not used). If the user's GPU is not supported, the LLM will fall back to the CPU")]
-        [LLM] public int numGPULayers = 0;
+        /// <summary> GPU acceleration mode </summary>
+        [Tooltip("GPU acceleration mode")]
+        [LLM] public GPUAccelerationMode gpuAcceleration = GPUAccelerationMode.Off;
+
+        /// <summary> number of model layers to offload to the GPU (1-30 in Manual mode).
+        /// Only editable when GPU Acceleration is set to Manual. </summary>
+        [Tooltip("number of model layers to offload to the GPU (1-30 in Manual mode). Only editable when GPU Acceleration is set to Manual.")]
+        [LLM]
+        [Range(1, 30)]
+        [SerializeField]
+        private int _numGPULayers = 1;
+        public int numGPULayers
+        {
+            get => gpuAcceleration == GPUAccelerationMode.Off ? 0 : _numGPULayers;
+            set
+            {
+                if (gpuAcceleration == GPUAccelerationMode.Manual)
+                {
+                    _numGPULayers = Mathf.Clamp(value, 1, 30);
+                }
+            }
+        }
         /// <summary> log the output of the LLM in the Unity Editor. </summary>
         [Tooltip("log the output of the LLM in the Unity Editor.")]
         [LLM] public bool debug = false;
@@ -104,6 +123,44 @@ namespace LLMUnity
         public bool embeddingsOnly = false;
         public int embeddingLength = 0;
 
+        // GPU Acceleration Options
+        public enum GPUAccelerationMode
+        {
+            Off,
+            Automatic,
+            Manual
+        }
+
+#if UNITY_EDITOR
+        [CustomPropertyDrawer(typeof(LLMAttribute))]
+        private class LLMDrawer : PropertyDrawer
+        {
+            public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+            {
+                SerializedObject serializedObject = property.serializedObject;
+                SerializedProperty gpuAccelProp = serializedObject.FindProperty("gpuAcceleration");
+
+                if (property.name == "_numGPULayers")
+                {
+                    EditorGUI.BeginProperty(position, label, property);
+
+                    using (new EditorGUI.DisabledGroupScope(gpuAccelProp.enumValueIndex != (int)GPUAccelerationMode.Manual))
+                    {
+                        position.x += 15;
+                        position.width -= 15;
+                        EditorGUI.PropertyField(position, property, label);
+                    }
+
+                    EditorGUI.EndProperty();
+                }
+                else
+                {
+                    EditorGUI.PropertyField(position, property, label);
+                }
+            }
+        }
+#endif
+
         /// \endcond
 
         public LLM()
@@ -118,7 +175,25 @@ namespace LLMUnity
                 loraManager.FromStrings(lora, loraWeights);
                 (loraPre, loraWeightsPre) = (lora, loraWeights);
             }
+
+            // just to make sure
+            switch (gpuAcceleration)
+            {
+                case GPUAccelerationMode.Off:
+                    _numGPULayers = 0;
+                    break;
+                case GPUAccelerationMode.Automatic:
+                    SetGPULayersBasedOnVRAM();
+                    break;
+            }
         }
+
+        // ADDED FOR GPU OPTIMIZATION
+        public void SetGPULayersBasedOnVRAM()
+        {
+            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(1.25f * SystemInfo.graphicsMemorySize / 1024f), 1, 30);
+        }
+
 
         /// <summary>
         /// The Unity Awake function that starts the LLM server.
@@ -126,10 +201,27 @@ namespace LLMUnity
         public async void Awake()
         {
             if (!enabled) return;
+
+            switch (gpuAcceleration)
+            {
+                case GPUAccelerationMode.Off:
+                    _numGPULayers = 0;
+                    break;
+
+                case GPUAccelerationMode.Automatic:
+                    SetGPULayersBasedOnVRAM();
+                    break;
+
+                case GPUAccelerationMode.Manual:
+                    // already set by the user
+                    break;
+            }
+
 #if !UNITY_EDITOR
             modelSetupFailed = !await LLMManager.Setup();
 #endif
             modelSetupComplete = true;
+
             if (modelSetupFailed)
             {
                 failed = true;
@@ -144,6 +236,7 @@ namespace LLMUnity
             await Task.Run(() => StartLLMServer(arguments));
             if (!started) return;
             if (dontDestroyOnLoad) DontDestroyOnLoad(transform.root.gameObject);
+            LLMUnitySetup.Log($"GPU Memory: {(SystemInfo.graphicsMemorySize / 1024f):F2}GB, Setting GPU Layers to: {_numGPULayers}");
         }
 
         /// <summary>
@@ -443,7 +536,7 @@ namespace LLMUnity
             if (embeddingsOnly) arguments += " --embedding";
             if (numThreadsToUse > 0) arguments += $" -t {numThreadsToUse}";
             arguments += loraArgument;
-            arguments += $" -ngl {numGPULayers}";
+            arguments += gpuAcceleration == GPUAccelerationMode.Off ? " -ngl 0" : $" -ngl {_numGPULayers}";
             if (LLMUnitySetup.FullLlamaLib && flashAttention) arguments += $" --flash-attn";
             if (remote)
             {

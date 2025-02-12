@@ -147,16 +147,6 @@ public class UIController : MonoBehaviour
         UpdateStatus("Ready to chat!");
     }
 
-    private void EnableInteraction()
-    {
-        if (isLLMReady && !isCleanedUp)
-        {
-            submitButton.interactable = true;
-            inputField.interactable = true;
-            UpdateStatus("Ready to chat!");
-        }
-    }
-
     private void CleanupComponents()
     {
         if (!isCleanedUp)
