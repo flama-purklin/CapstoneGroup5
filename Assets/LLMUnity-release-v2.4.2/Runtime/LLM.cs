@@ -160,7 +160,7 @@ namespace LLMUnity
         // ADDED FOR GPU OPTIMIZATION
         public void SetGPULayersBasedOnVRAM()
         {
-            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(1.25f * SystemInfo.graphicsMemorySize / 1024f), 1, 30);
+            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(1.5f * SystemInfo.graphicsMemorySize / 1024f), 1, 30);
         }
 
 
