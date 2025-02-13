@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace LLMUnity
 {
@@ -131,36 +130,6 @@ namespace LLMUnity
             Manual
         }
 
-#if UNITY_EDITOR
-        [CustomPropertyDrawer(typeof(LLMAttribute))]
-        private class LLMDrawer : PropertyDrawer
-        {
-            public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-            {
-                SerializedObject serializedObject = property.serializedObject;
-                SerializedProperty gpuAccelProp = serializedObject.FindProperty("gpuAcceleration");
-
-                if (property.name == "_numGPULayers")
-                {
-                    EditorGUI.BeginProperty(position, label, property);
-
-                    using (new EditorGUI.DisabledGroupScope(gpuAccelProp.enumValueIndex != (int)GPUAccelerationMode.Manual))
-                    {
-                        position.x += 15;
-                        position.width -= 15;
-                        EditorGUI.PropertyField(position, property, label);
-                    }
-
-                    EditorGUI.EndProperty();
-                }
-                else
-                {
-                    EditorGUI.PropertyField(position, property, label);
-                }
-            }
-        }
-#endif
-
         /// \endcond
 
         public LLM()
@@ -236,7 +205,7 @@ namespace LLMUnity
             await Task.Run(() => StartLLMServer(arguments));
             if (!started) return;
             if (dontDestroyOnLoad) DontDestroyOnLoad(transform.root.gameObject);
-            LLMUnitySetup.Log($"GPU Memory: {(SystemInfo.graphicsMemorySize / 1024f):F2}GB, Setting GPU Layers to: {_numGPULayers}");
+            LLMUnitySetup.Log($"{SystemInfo.graphicsDeviceName} GPU Memory: {(SystemInfo.graphicsMemorySize / 1024f):F2}GB, Offloading {_numGPULayers} GPU Layers for LM: ");
         }
 
         /// <summary>

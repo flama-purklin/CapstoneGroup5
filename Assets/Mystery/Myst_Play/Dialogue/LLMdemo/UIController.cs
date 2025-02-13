@@ -1,12 +1,13 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using LLMUnity;
 using System.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System.Threading.Tasks;
+using LLMUnity;
 
 public class UIController : MonoBehaviour
 {
@@ -17,12 +18,10 @@ public class UIController : MonoBehaviour
     public Button submitButton;
 
     [Header("Chat Settings")]
-    [SerializeField] private int maxMessages = 4;
+    [SerializeField] private int maxMessages = 3;
 
     [Header("LLM References")]
     public LLMCharacter llmCharacter;
-
-    [Header("Performance")]
 
     private List<ChatMessage> messageHistory;
     private StringBuilder currentResponse;
@@ -39,16 +38,14 @@ public class UIController : MonoBehaviour
 
     void Start()
     {
-        Application.targetFrameRate = 60; // Limit frame rate
-        QualitySettings.vSyncCount = 0;   // Disable VSync for better control
+        Application.targetFrameRate = 30;
+        QualitySettings.vSyncCount = 0;
         InitializeComponents();
     }
 
     void Update()
     {
-
         UpdateDisplay();
-  
     }
 
     void OnEnable()
@@ -77,7 +74,7 @@ public class UIController : MonoBehaviour
         isCleanedUp = false;
         isLLMReady = false;
 
-        // Disable interaction until LLM is ready
+        // Disable typing until LLM is ready
         if (inputField)
         {
             inputField.interactable = false;
@@ -95,7 +92,7 @@ public class UIController : MonoBehaviour
         if (llmCharacter != null)
         {
             llmCharacter.stream = true;
-            StartCoroutine(InitializeLLMCoroutine());  // Changed this line
+            StartCoroutine(InitializeLLMCoroutine());
         }
         else
         {
@@ -104,42 +101,46 @@ public class UIController : MonoBehaviour
         }
     }
 
-    // Add these new methods
     private IEnumerator InitializeLLMCoroutine()
     {
         UpdateStatus("Loading LLM...");
 
-        bool initializationComplete = false;
-        bool hasError = false;
-
+        // Fire off the async warmup.
+        Task warmupTask = null;
         try
         {
-            llmCharacter.Warmup(() =>
-            {
-                initializationComplete = true;
-                OnWarmupComplete();
-            });
+            warmupTask = llmCharacter.Warmup();
         }
         catch (Exception e)
         {
-            Debug.LogError($"Error during LLM initialization: {e}");
-            UpdateStatus("Error: LLM initialization failed!");
-            hasError = true;
+            Debug.LogError($"Error scheduling LLM warmup: {e}");
+            UpdateStatus("Error: Unable to start LLM warmup!");
+            yield break;
         }
 
-        if (!hasError)
+        // Wait until it's done (yield each frame).
+        while (!warmupTask.IsCompleted)
         {
-            // Wait for initialization to complete
-            while (!initializationComplete)
-            {
-                yield return new WaitForEndOfFrame();
-            }
+            yield return null;
         }
+
+        // Check if an exception occurred in the async method:
+        if (warmupTask.Exception != null)
+        {
+            // Flatten to see the underlying errors
+            Debug.LogError($"Error during LLM warmup: {warmupTask.Exception.Flatten()}");
+            UpdateStatus("Error: LLM initialization failed!");
+            yield break;
+        }
+
+        // If no exception, warmup succeeded:
+        OnWarmupComplete();
+        UpdateStatus("LLM initialized!");
     }
 
     private void OnWarmupComplete()
     {
-        if (!this.enabled) return;  // Safety check
+        if (!this.enabled) return; // safety check
 
         isLLMReady = true;
         submitButton.interactable = true;
@@ -185,7 +186,9 @@ public class UIController : MonoBehaviour
         {
             StringBuilder display = new StringBuilder();
 
-            var recentMessages = messageHistory.Skip(Math.Max(0, messageHistory.Count - maxMessages)).ToList();
+            var recentMessages = messageHistory
+                .Skip(Math.Max(0, messageHistory.Count - maxMessages))
+                .ToList();
 
             foreach (var message in recentMessages)
             {
@@ -253,14 +256,10 @@ public class UIController : MonoBehaviour
 
                 currentResponse.Clear();
                 lastReply = "";
-           
-
                 isProcessing = false;
                 submitButton.interactable = true;
                 inputField.interactable = true;
                 UpdateStatus("Ready to chat!");
-
-   
             }
             catch (System.Exception e)
             {
@@ -283,6 +282,7 @@ public class UIController : MonoBehaviour
 
     public void OnSubmit(string text)
     {
+        // For inputField.onSubmit (Enter key)
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             OnSubmitClicked();
@@ -291,16 +291,14 @@ public class UIController : MonoBehaviour
 
     public void OnSubmitClicked()
     {
-        if (!isLLMReady || isProcessing || isCleanedUp || string.IsNullOrEmpty(inputField.text) || llmCharacter == null)
+        if (!isLLMReady || isProcessing || isCleanedUp
+            || string.IsNullOrEmpty(inputField.text) || llmCharacter == null)
         {
             return;
         }
 
         try
         {
-            
-
-
             isProcessing = true;
             submitButton.interactable = false;
             inputField.interactable = false;
@@ -315,7 +313,6 @@ public class UIController : MonoBehaviour
             });
 
             inputField.text = "";
-         
 
             currentResponse.Clear();
             lastReply = "";
@@ -342,9 +339,9 @@ public class UIController : MonoBehaviour
             inputField.interactable = true;
             UpdateStatus("Ready to chat!");
         }
+
         currentResponse.Clear();
         lastReply = "";
-        
     }
 
     public void ResetChat()
@@ -357,7 +354,7 @@ public class UIController : MonoBehaviour
         messageHistory.Clear();
         currentResponse.Clear();
         lastReply = "";
-       
+
         UpdateStatus(isLLMReady ? "Chat reset - Ready to chat!" : "Loading LLM...");
     }
 }
