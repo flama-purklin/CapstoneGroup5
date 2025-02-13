@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Collections;
-using static UnityEngine.Rendering.DebugUI.Table;
-using UnityEditor.Overlays;
 using UnityEditor;
 
 [System.Serializable]
