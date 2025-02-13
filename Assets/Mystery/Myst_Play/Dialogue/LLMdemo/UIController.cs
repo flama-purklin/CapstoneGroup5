@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using System.Threading.Tasks;
+using System.IO;
 using LLMUnity;
 
 public class UIController : MonoBehaviour
@@ -14,7 +15,8 @@ public class UIController : MonoBehaviour
     [Header("UI References")]
     public TMP_InputField inputField;
     public TMP_Text outputText;
-    public TMP_Text statusText;
+    public TMP_Text llmStatusText;     
+    public TMP_Text characterStatusText;
     public Button submitButton;
 
     [Header("Chat Settings")]
@@ -29,6 +31,50 @@ public class UIController : MonoBehaviour
     private bool isProcessing = false;
     private bool isCleanedUp = false;
     private bool isLLMReady = false;
+    private string currentCharacterName = "Character";
+
+    /// <summary>
+    /// Switches the LLM to roleplay as a new character based on the provided JSON file
+    /// </summary>
+    /// <param name="characterJsonPath">Path to the character's JSON file</param>
+    /// <returns>True if character switch was successful, false otherwise</returns>
+    public async Task<bool> SwitchCharacter(string characterJsonPath)
+    {
+        if (!isLLMReady)
+        {
+            Debug.LogError("Cannot switch character - LLM not ready");
+            return false;
+        }
+
+        try
+        {
+            string jsonContent = await File.ReadAllTextAsync(characterJsonPath);
+            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent);
+
+            if (string.IsNullOrEmpty(systemPrompt))
+            {
+                Debug.LogError($"Failed to generate prompt from character file: {characterJsonPath}");
+                return false;
+            }
+
+            ResetChat();
+            llmCharacter.SetPrompt(systemPrompt);
+
+            Debug.Log($"Successfully switched to character from: {characterJsonPath}");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error switching character: {e.Message}");
+            return false;
+        }
+    }
+
+    public void SetCurrentCharacter(string characterName)
+    {
+        currentCharacterName = characterName;
+    }
+
 
     private class ChatMessage
     {
@@ -74,7 +120,10 @@ public class UIController : MonoBehaviour
         isCleanedUp = false;
         isLLMReady = false;
 
-        // Disable typing until LLM is ready
+        UpdateLLMStatus("Initializing...");
+        UpdateCharacterStatus("No character loaded");
+
+        // Disable until LLM is ready
         if (inputField)
         {
             inputField.interactable = false;
@@ -99,11 +148,12 @@ public class UIController : MonoBehaviour
             Debug.LogError("LLMCharacter reference missing!");
             UpdateStatus("Error: LLM not found!");
         }
+
     }
 
     private IEnumerator InitializeLLMCoroutine()
     {
-        UpdateStatus("Loading LLM...");
+        UpdateLLMStatus("Loading LLM...");
 
         // Fire off the async warmup.
         Task warmupTask = null;
@@ -135,37 +185,26 @@ public class UIController : MonoBehaviour
 
         // If no exception, warmup succeeded:
         OnWarmupComplete();
-        UpdateStatus("LLM initialized!");
+        UpdateLLMStatus("LLM Ready");
     }
 
     private void OnWarmupComplete()
     {
-        if (!this.enabled) return; // safety check
+        if (!this.enabled) return;
 
         isLLMReady = true;
         submitButton.interactable = true;
         inputField.interactable = true;
-        UpdateStatus("Ready to chat!");
+        UpdateLLMStatus("Model ready");
     }
 
     private void CleanupComponents()
     {
         if (!isCleanedUp)
         {
-            if (isProcessing)
-            {
-                CancelRequest();
-            }
-
-            if (inputField)
-            {
-                inputField.onSubmit.RemoveAllListeners();
-            }
-
-            if (submitButton)
-            {
-                submitButton.onClick.RemoveAllListeners();
-            }
+            if (isProcessing){CancelRequest();}
+            if (inputField){inputField.onSubmit.RemoveAllListeners();}
+            if (submitButton){submitButton.onClick.RemoveAllListeners();}
 
             messageHistory?.Clear();
             currentResponse?.Clear();
@@ -173,10 +212,27 @@ public class UIController : MonoBehaviour
 
             if (outputText) outputText.text = "";
             if (inputField) inputField.text = "";
-            if (statusText) statusText.text = "";
+            if (llmStatusText) llmStatusText.text = "";
+            if (characterStatusText) characterStatusText.text = "";
 
             isCleanedUp = true;
             isLLMReady = false;
+        }
+    }
+
+    public void UpdateLLMStatus(string status)
+    {
+        if (llmStatusText && !isCleanedUp)
+        {
+            llmStatusText.text = status;
+        }
+    }
+
+    public void UpdateCharacterStatus(string status)
+    {
+        if (characterStatusText && !isCleanedUp)
+        {
+            characterStatusText.text = status;
         }
     }
 
@@ -197,7 +253,7 @@ public class UIController : MonoBehaviour
 
             if (currentResponse.Length > 0)
             {
-                display.Append($"Ms.Winchester: {currentResponse}");
+                display.Append($"{currentCharacterName}: {currentResponse}");
             }
 
             outputText.text = display.ToString();
@@ -206,10 +262,7 @@ public class UIController : MonoBehaviour
 
     void UpdateStatus(string status)
     {
-        if (statusText && !isCleanedUp)
-        {
-            statusText.text = status;
-        }
+        UpdateLLMStatus(status);
     }
 
     void HandleReply(string reply)
@@ -250,7 +303,7 @@ public class UIController : MonoBehaviour
             {
                 messageHistory.Add(new ChatMessage
                 {
-                    Role = "Ms.Winchester",
+                    Role = currentCharacterName,
                     Content = currentResponse.ToString()
                 });
 
@@ -259,7 +312,7 @@ public class UIController : MonoBehaviour
                 isProcessing = false;
                 submitButton.interactable = true;
                 inputField.interactable = true;
-                UpdateStatus("Ready to chat!");
+                UpdateLLMStatus("Ready for input");
             }
             catch (System.Exception e)
             {
@@ -276,7 +329,7 @@ public class UIController : MonoBehaviour
         {
             submitButton.interactable = true;
             inputField.interactable = true;
-            UpdateStatus("Error occurred - Please try again");
+            UpdateLLMStatus("Response error - try again");
         }
     }
 
@@ -351,10 +404,15 @@ public class UIController : MonoBehaviour
             CancelRequest();
         }
 
+        // Clear local message history
         messageHistory.Clear();
         currentResponse.Clear();
         lastReply = "";
+        if (outputText != null){outputText.text = "";}
 
-        UpdateStatus(isLLMReady ? "Chat reset - Ready to chat!" : "Loading LLM...");
+        // Clear LLM's memory
+        if (llmCharacter != null){llmCharacter.ClearChat();}
+
+        UpdateLLMStatus(isLLMReady ? "Ready for input" : "Loading model...");
     }
 }
