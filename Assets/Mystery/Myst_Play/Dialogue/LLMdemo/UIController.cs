@@ -23,7 +23,8 @@ public class UIController : MonoBehaviour
     [SerializeField] private int maxMessages = 3;
 
     [Header("LLM References")]
-    public LLMCharacter llmCharacter;
+    public CharacterManager characterManager; 
+    public LLMCharacter llmCharacter { get; set; }
 
     private List<ChatMessage> messageHistory;
     private StringBuilder currentResponse;
@@ -32,43 +33,6 @@ public class UIController : MonoBehaviour
     private bool isCleanedUp = false;
     private bool isLLMReady = false;
     private string currentCharacterName = "Character";
-
-    /// <summary>
-    /// Switches the LLM to roleplay as a new character based on the provided JSON file
-    /// </summary>
-    /// <param name="characterJsonPath">Path to the character's JSON file</param>
-    /// <returns>True if character switch was successful, false otherwise</returns>
-    public async Task<bool> SwitchCharacter(string characterJsonPath)
-    {
-        if (!isLLMReady)
-        {
-            Debug.LogError("Cannot switch character - LLM not ready");
-            return false;
-        }
-
-        try
-        {
-            string jsonContent = await File.ReadAllTextAsync(characterJsonPath);
-            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent);
-
-            if (string.IsNullOrEmpty(systemPrompt))
-            {
-                Debug.LogError($"Failed to generate prompt from character file: {characterJsonPath}");
-                return false;
-            }
-
-            ResetChat();
-            llmCharacter.SetPrompt(systemPrompt);
-
-            Debug.Log($"Successfully switched to character from: {characterJsonPath}");
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error switching character: {e.Message}");
-            return false;
-        }
-    }
 
     public void SetCurrentCharacter(string characterName)
     {
@@ -138,57 +102,25 @@ public class UIController : MonoBehaviour
             submitButton.onClick.AddListener(OnSubmitClicked);
         }
 
-        if (llmCharacter != null)
+        // Remove direct LLMCharacter initialization since CharacterManager handles it
+        if (characterManager == null)
         {
-            llmCharacter.stream = true;
-            StartCoroutine(InitializeLLMCoroutine());
-        }
-        else
-        {
-            Debug.LogError("LLMCharacter reference missing!");
-            UpdateStatus("Error: LLM not found!");
+            Debug.LogError("CharacterManager reference missing!");
+            UpdateStatus("Error: CharacterManager not found!");
+            return;
         }
 
-    }
-
-    private IEnumerator InitializeLLMCoroutine()
-    {
-        UpdateLLMStatus("Loading LLM...");
-
-        // Fire off the async warmup.
-        Task warmupTask = null;
-        try
+        // Wait for CharacterManager to initialize
+        if (!characterManager.IsInitialized)
         {
-            warmupTask = llmCharacter.Warmup();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error scheduling LLM warmup: {e}");
-            UpdateStatus("Error: Unable to start LLM warmup!");
-            yield break;
+            UpdateLLMStatus("Waiting for character initialization...");
+            return;
         }
 
-        // Wait until it's done (yield each frame).
-        while (!warmupTask.IsCompleted)
-        {
-            yield return null;
-        }
-
-        // Check if an exception occurred in the async method:
-        if (warmupTask.Exception != null)
-        {
-            // Flatten to see the underlying errors
-            Debug.LogError($"Error during LLM warmup: {warmupTask.Exception.Flatten()}");
-            UpdateStatus("Error: LLM initialization failed!");
-            yield break;
-        }
-
-        // If no exception, warmup succeeded:
         OnWarmupComplete();
-        UpdateLLMStatus("LLM Ready");
     }
 
-    private void OnWarmupComplete()
+    public void OnWarmupComplete()
     {
         if (!this.enabled) return;
 
@@ -335,7 +267,6 @@ public class UIController : MonoBehaviour
 
     public void OnSubmit(string text)
     {
-        // For inputField.onSubmit (Enter key)
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             OnSubmitClicked();
@@ -408,10 +339,10 @@ public class UIController : MonoBehaviour
         messageHistory.Clear();
         currentResponse.Clear();
         lastReply = "";
-        if (outputText != null){outputText.text = "";}
+        if (outputText != null) { outputText.text = ""; }
 
-        // Clear LLM's memory
-        if (llmCharacter != null){llmCharacter.ClearChat();}
+        // Clear LLM's memory if we have an active character
+        if (llmCharacter != null) { llmCharacter.ClearChat(); }
 
         UpdateLLMStatus(isLLMReady ? "Ready for input" : "Loading model...");
     }

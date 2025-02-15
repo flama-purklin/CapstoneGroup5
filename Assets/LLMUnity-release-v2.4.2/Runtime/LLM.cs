@@ -33,11 +33,11 @@ namespace LLMUnity
         [Tooltip("GPU acceleration mode")]
         [LLM] public GPUAccelerationMode gpuAcceleration = GPUAccelerationMode.Off;
 
-        /// <summary> number of model layers to offload to the GPU (1-30 in Manual mode).
+        /// <summary> number of model layers to offload to the GPU (1-40 in Manual mode).
         /// Only editable when GPU Acceleration is set to Manual. </summary>
-        [Tooltip("number of model layers to offload to the GPU (1-30 in Manual mode). Only editable when GPU Acceleration is set to Manual.")]
+        [Tooltip("number of model layers to offload to the GPU (1-40 in Manual mode). Only editable when GPU Acceleration is set to Manual.")]
         [LLM]
-        [Range(1, 30)]
+        [Range(1, 40)]
         [SerializeField]
         private int _numGPULayers = 1;
         public int numGPULayers
@@ -47,7 +47,7 @@ namespace LLMUnity
             {
                 if (gpuAcceleration == GPUAccelerationMode.Manual)
                 {
-                    _numGPULayers = Mathf.Clamp(value, 1, 30);
+                    _numGPULayers = Mathf.Clamp(value, 1, 40);
                 }
             }
         }
@@ -160,7 +160,8 @@ namespace LLMUnity
         // ADDED FOR GPU OPTIMIZATION
         public void SetGPULayersBasedOnVRAM()
         {
-            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(1.5f * SystemInfo.graphicsMemorySize / 1024f), 1, 30);
+            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(Mathf.Round((2.0f * SystemInfo.graphicsMemorySize / 1024f) / 4) * 4), 0, 40);
+
         }
 
 

@@ -38,6 +38,7 @@ namespace LLMUnity
                 new GemmaTemplate(),
                 new MistralChatTemplate(),
                 new MistralInstructTemplate(),
+                new NemoTemplate(),
                 new LLama3ChatTemplate(),
                 new LLama2ChatTemplate(),
                 new LLama2Template(),
@@ -333,6 +334,25 @@ namespace LLMUnity
         public override string[] GetStop(string playerName, string AIName)
         {
             return AddStopNewlines(new string[] { "</s>", "[INST]", "[/INST]", "###" });
+        }
+    }
+
+    public class NemoTemplate : ChatTemplate
+    {
+        public override string GetName() { return "nemo"; }
+        public override string GetDescription() { return "Mistral Nemo"; }
+        public override string[] GetNameMatches() { return new string[] { "nemo", "minitron" }; }
+
+        protected override string SystemPrefix() { return "<extra_id_0>System\n"; }
+        protected override string SystemSuffix() { return "\n"; }
+        protected override string PlayerPrefix(string playerName) { return "<extra_id_1>User\n"; }
+        protected override string AIPrefix(string AIName) { return "<extra_id_1>Assistant\n"; }
+        protected override string RequestSuffix() { return "\n"; }
+        protected override string PairSuffix() { return "\n"; }
+
+        public override string[] GetStop(string playerName, string AIName)
+        {
+            return AddStopNewlines(new string[] { "<extra_id_0>", "<extra_id_1>" });
         }
     }
 
