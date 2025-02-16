@@ -232,6 +232,8 @@ GameObject:
   - component: {fileID: 884967809646904070}
   - component: {fileID: 7575712940201557524}
   - component: {fileID: 5989971033946942912}
+  - component: {fileID: 4891715852386027650}
+  - component: {fileID: 2902362383620856609}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Player
@@ -324,6 +326,30 @@ MonoBehaviour:
   dialogueDist: 2
   maxMovementDist: 10
   inDialogueRange: 0
+--- !u!114 &4891715852386027650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7441357142540035523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1789545cad2166846af334c331481eaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2902362383620856609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7441357142540035523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4d5d9381a476d1468dab0c6fcb79f47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7569976503464529842
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,31 @@
+.loading-progress-bar {
+    width: 80%;
+    height: 30px;
+    margin: 20px;
+    padding: 3px;
+}
+
+.loading-progress-bar .unity-progress-bar__container {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.loading-progress-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.loading-progress-bar .unity-progress-bar__progress {
+    background-color: rgb(50, 120, 255);
+    border-radius: 5px;
+    transition-duration: 0.2s;
+    transition-property: width;
+    transition-timing-function: ease-out;
+}
+
+.loading-progress-bar .unity-progress-bar__title {
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    font-size: 14px;
+}
