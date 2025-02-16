@@ -1223,15 +1223,15 @@ MonoBehaviour:
   remote: 0
   port: 13333
   numThreads: -1
-  gpuAcceleration: 0
-  _numGPULayers: 0
+  gpuAcceleration: 1
+  _numGPULayers: 16
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
   contextSize: 8192
   batchSize: 512
-  model: Mistral-NeMo-Minitron-8B-Instruct-Q4_K_M.gguf
-  chatTemplate: nemo
+  model: mistral-7b-instruct-v0.3-q4_k_m-imat.gguf
+  chatTemplate: mistral chat
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1241,7 +1241,7 @@ MonoBehaviour:
   SSLKey: 
   SSLKeyPath: 
   minContextLength: 0
-  maxContextLength: 8192
+  maxContextLength: 32768
   embeddingsOnly: 0
   embeddingLength: 4096
 --- !u!4 &1424623595
@@ -1502,7 +1502,8 @@ MonoBehaviour:
   statusText: {fileID: 910220400}
   spinnerImage: {fileID: 323735066}
   smoothSpeed: 3
-  asymptoteSpeed: 0.5
+  initialAsymptoteSpeed: 0.1
+  characterAsymptoteSpeed: 0.01
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
