@@ -6,23 +6,36 @@ public class NPCMovement : MonoBehaviour
 {
     GameObject player;
     [SerializeField] NavMeshAgent agent;
-    [SerializeField] Animator anim;
+
     [SerializeField] GameObject speechBubble;
 
     public float dialogueDist = 1f;
     public float maxMovementDist = 10f;
+    public Vector3 movementVector;
     public bool inDialogueRange = false;
 
     private DialogueControl dialogueControl;
     private bool isInitialized = false;
 
-    private void Awake()
+
+    //animation related variables
+    [SerializeField] Animator animator;
+    [SerializeField] NPCAnimManager animManager;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
     {
+        player = GameObject.FindWithTag("Player");
+        dialogueCanvas = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
+
         enabled = true;
         if (TryGetComponent<NavMeshAgent>(out var agent))
         {
             agent.enabled = true;
         }
+        //set the default value for movement vector
+        movementVector = Random.insideUnitSphere;
+        StartCoroutine(IdleState());
     }
 
     private void OnEnable()
@@ -80,7 +93,8 @@ public class NPCMovement : MonoBehaviour
         agent.isStopped = true;
 
         //update animation state
-        anim.SetBool("moving", false);
+        animator.SetBool("moving", false);
+        animManager.ApplyAnim();
 
         while (currentTime < idleTime)
         {
@@ -106,19 +120,20 @@ public class NPCMovement : MonoBehaviour
     {
         //Debug.Log("Now Moving");
         //calculate a random point in a 20 meter radius
-        Vector3 movementVector = Random.insideUnitSphere * maxMovementDist;
+        movementVector = Random.insideUnitSphere * maxMovementDist;
 
         //find a place in the actual navmesh that works and set destination
-        movementVector += transform.position;
+        Vector3 finalMovement = movementVector + transform.position;
         NavMeshHit hit;
-        NavMesh.SamplePosition(movementVector, out hit, maxMovementDist, 1);
+        NavMesh.SamplePosition(finalMovement, out hit, maxMovementDist, 1);
 
         //begin navigation
         agent.isStopped = false;
         agent.SetDestination(hit.position);
 
         //update anim
-        anim.SetBool("moving", true);
+        animator.SetBool("moving", true);
+        animManager.ApplyAnim();
 
 
         while (agent.remainingDistance > agent.stoppingDistance)
@@ -145,6 +160,5 @@ public class NPCMovement : MonoBehaviour
         dialogueControl.Activate(gameObject);
         yield return null;
     }
-
 
 }
