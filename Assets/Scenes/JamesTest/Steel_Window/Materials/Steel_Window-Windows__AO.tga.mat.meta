@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b1a39616feb69a74fb400c63cfbe97f1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 650
+  packageName: Steel Window
+  packageVersion: 3.0
+  assetPath: Assets/Steel_Window/Materials/Steel_Window-Windows__AO.tga.mat
+  uploadId: 25852
