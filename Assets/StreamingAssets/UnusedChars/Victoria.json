@@ -1,0 +1,219 @@
+{
+    "core": {
+      "archetype": {
+        "type": "ruthless media tycoon",
+        "role": "murder victim",
+        "mystery_attributes": [
+          "targeted for her secrets",
+          "her death raises suspicions about hidden deals"
+        ]
+      },
+      "demographics": {
+        "name": "Victoria Blackwood",
+        "age": "mid-forties",
+        "education": "Media & Communications graduate",
+        "occupation": "Owner and editor-in-chief of a rival fashion magazine"
+      },
+      "personality": {
+        "primary_characteristic": "bold and unyielding",
+        "traits": [
+          "fearless in confrontation",
+          "strategic in forging alliances"
+        ],
+        "quirks": [
+          "always carried a monogrammed notebook to jot ‘ammunition’ on people",
+          "collected vintage typewriters"
+        ]
+      },
+      "backstory": {
+        "recent_events": "Facing financial troubles, seeking a sensational story to boost her magazine’s sales",
+        "train_trip_info": "Boarded after Paris Fashion Week to chase leads on potential industry scandals",
+        "aspirations": "Wanted a blockbuster exposé that would save her publication"
+      },
+      "social_tendencies": {
+        "honesty": "low—twisted facts for dramatic headlines",
+        "directness": "confrontational",
+        "cooperation": "only if it benefits her narrative",
+        "bribery_acceptance": "open to hush-money or exclusives",
+        "blackmail_vulnerability": "medium—she had skeletons in her closet",
+        "secret_keeping": "low—gossip was her currency",
+        "anger_threshold": "high—she thrived on conflict, rarely flustered",
+        "intimidation_vulnerability": "low—she believed herself untouchable",
+        "authority_respect": "selective—respected power but despised limitations"
+      },
+      "speech_patterns": {
+        "vocabulary_level": "sharp, sensationalist",
+        "sentence_style": [
+          "inflammatory, hooking the listener into an argument"
+        ],
+        "speech_quirks": [
+          "used tabloid-style language even in casual talk",
+          "pointed out weaknesses in people to see their reactions",
+          "short, direct rhetorical questions to corner someone",
+          "clicked her pen repeatedly when irritated"
+        ],
+        "common_phrases": [
+          "Care to make this front-page worthy?",
+          "I decide who makes headlines."
+        ]
+      }
+    },
+    "mind_engine": {
+      "drive": {
+        "primary_goal": "Uncover damaging secrets to salvage her failing magazine",
+        "secondary_goal": "Use those secrets to blackmail or coerce deals",
+        "secondary_goal_justification": "Her empire needed a big break to stay afloat",
+        "reasoning_style": "ruthlessly opportunistic"
+      },
+      "current_state": {
+        "worries": "Mounting debts, uncertain about which scandal to leverage first",
+        "feelings": "emboldened but anxious behind the façade"
+      },
+      "special_social_mechanics": {
+        "surefire_information_extraction_method": "Exploiting her target’s insecurities or financial vulnerabilities",
+        "vulnerabilities": [
+          "her precarious finances could be used against her",
+          "threat of public humiliation if her business dealings fail"
+        ]
+      }
+    },
+    "case_info": {
+      "memory": [
+        {
+          "key": "state1",
+          "value": {
+            "time_window": "9:00am-9:45am",
+            "location": "boarding platform and first class corridor",
+            "action": "eyeing potential sources for her next exposé",
+            "events": [
+              "Spotted Gregory Crowe, recognized rumors about forged artwork",
+              "Kept watch on Timmy scuttling back and forth with Penelope"
+            ]
+          }
+        },
+        {
+          "key": "state2",
+          "value": {
+            "time_window": "9:46am-10:20am",
+            "location": "lounge car",
+            "action": "holding hushed conversations about upcoming article",
+            "events": [
+              "Argued with Penelope over editorial sabotage accusations",
+              "Saw Gideon lurking in the background"
+            ]
+          }
+        },
+        {
+          "key": "state3",
+          "value": {
+            "time_window": "10:21am-10:40am",
+            "location": "private booth near the dining car",
+            "action": "making calls to her magazine offices",
+            "events": [
+              "Hinted that she had a ‘big scoop’ involving forged items or shady dealings",
+              "Snapped at Timmy who awkwardly tried to greet her"
+            ]
+          }
+        },
+        {
+          "key": "state4",
+          "value": {
+            "time_window": "10:41am-11:00am",
+            "location": "lounging area close to restrooms",
+            "action": "confronting multiple persons about rumored stories",
+            "events": [
+              "Heated exchange with Gregory: threatened to publish his dealings",
+              "Brief conversation with Gideon about ‘our past arrangement’"
+            ]
+          }
+        },
+        {
+          "key": "state5",
+          "value": {
+            "time_window": "11:01am-~11:03am",
+            "location": "near or inside the bathroom area",
+            "action": "final confrontation—exact details unknown",
+            "justification": "likely meeting someone to discuss hush terms or blackmail",
+            "events": [
+              "Evidence suggests she was attacked or cornered here",
+              "Found by Nova (and possibly Timmy) with fatal injuries"
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "key": "Penelope Valor",
+          "value": {
+            "attitude": "rivalry tinged with mutual respect",
+            "history": [
+              "Clashed repeatedly over magazine market share",
+              "Penelope suspected Victoria wanted to steal designers for her publication"
+            ],
+            "known_secrets": [
+              "Victoria suspected Penelope’s finances were ironically more stable—fueling envy"
+            ]
+          }
+        },
+        {
+          "key": "Nova Winchester",
+          "value": {
+            "attitude": "Hateful respect",
+            "history": [
+              "Once tried to poach Nova from Penelope’s magazine",
+              "Nova refused, fueling tension"
+            ],
+            "known_secrets": [
+              "Victoria found Nova’s scathing reviews ironically entertaining"
+            ]
+          }
+        },
+        {
+          "key": "Timmy Seol",
+          "value": {
+            "attitude": "dismissive",
+            "history": [
+              "Victoria saw him as Penelope’s errand boy",
+              "Once asked him to leak info, but he panicked and ran"
+            ],
+            "known_secrets": []
+          }
+        },
+        {
+          "key": "Gregory Crowe",
+          "value": {
+            "attitude": "antagonistic standoff",
+            "history": [
+              "Victoria had evidence of Gregory’s shady art transactions",
+              "Threatened to publish it unless he paid or gave her exclusives"
+            ],
+            "known_secrets": []
+          }
+        },
+        {
+          "key": "Gideon Marsh",
+          "value": {
+            "attitude": "businesslike tension",
+            "history": [
+              "He once covered up a scandal for her in the past",
+              "He likely had new intel that she tried to coerce from him"
+            ],
+            "known_secrets": [
+              "Victoria might have known Gideon’s real client"
+            ]
+          }
+        }
+      ],
+      "leads": [
+        "Victoria was blackmailing or threatening multiple passengers",
+        "She was last seen alive around 11:01am near the lounge restrooms",
+        "She had a monogrammed notebook possibly containing damaging info on others"
+      ],
+      "uncertainties": [
+        "Which threat or blackmail attempt triggered the murder",
+        "Whether her notebook was stolen or destroyed",
+        "Who met her in the final minutes"
+      ]
+    }
+  }
+  

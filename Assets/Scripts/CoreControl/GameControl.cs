@@ -42,7 +42,7 @@ public class GameControl : MonoBehaviour
     //PLACEHOLDER - replace this basic logic with Jorge's timer function when that is finished
     IEnumerator TimerUpdate()
     {
-        yield return new WaitForSeconds(15);
+        yield return new WaitForSeconds(300);
         Debug.Log("Final State Activated");
         currentState = GameState.FINAL;
     }

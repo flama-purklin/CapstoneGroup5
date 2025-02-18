@@ -314,4 +314,5 @@ MonoBehaviour:
   trainLayer:
     serializedVersion: 2
     m_Bits: 64
-  currentCar: {fileID: 0}
+  raycastDistance: 2
+  raycastOffset: {x: 0, y: 0.1, z: 0}

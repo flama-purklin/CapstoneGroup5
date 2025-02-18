@@ -12,10 +12,11 @@ public class NPCMovement : MonoBehaviour
     public float dialogueDist = 1f;
     public float maxMovementDist = 10f;
     public Vector3 movementVector;
-
     public bool inDialogueRange = false;
 
-    DialogueControl dialogueCanvas;
+    private DialogueControl dialogueControl;
+    private bool isInitialized = false;
+
 
     //animation related variables
     [SerializeField] Animator animator;
@@ -27,23 +28,45 @@ public class NPCMovement : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         dialogueCanvas = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
 
+        enabled = true;
+        if (TryGetComponent<NavMeshAgent>(out var agent))
+        {
+            agent.enabled = true;
+        }
         //set the default value for movement vector
         movementVector = Random.insideUnitSphere;
         StartCoroutine(IdleState());
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void OnEnable()
     {
-        if (inDialogueRange)
-            speechBubble.SetActive(true);
-        else
-            speechBubble.SetActive(false);
+        StartCoroutine(InitializeWhenReady());
     }
 
-    private void Update()
+    private IEnumerator InitializeWhenReady()
     {
-        if (inDialogueRange && Input.GetKeyDown(KeyCode.E))
+        // Wait for all required components
+        while (player == null || dialogueControl == null)
+        {
+            if (!player) player = GameObject.FindWithTag("Player");
+            if (!dialogueControl) dialogueControl = FindFirstObjectByType<DialogueControl>();
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        if (agent) agent.enabled = true;
+        isInitialized = true;
+        StartCoroutine(IdleState());
+    }
+
+    void Update()
+    {
+        if (!isInitialized) return;
+
+
+        inDialogueRange = Vector3.Distance(player.transform.position, transform.position) < dialogueDist;
+        speechBubble.SetActive(inDialogueRange);
+
+        if (inDialogueRange && Input.GetKeyDown(KeyCode.E) && GameControl.GameController.currentState != GameState.DIALOGUE)
         {
             StartCoroutine(DialogueActivate());
         }
@@ -63,7 +86,7 @@ public class NPCMovement : MonoBehaviour
     IEnumerator IdleState()
     {
 
-        Debug.Log("Now Idling");
+        //Debug.Log("Now Idling");
         //reset time variables, remove goal for navmesh agent
         float idleTime = Random.Range(2, 6);
         float currentTime = 0f;
@@ -95,7 +118,7 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator MovementState()
     {
-        Debug.Log("Now Moving");
+        //Debug.Log("Now Moving");
         //calculate a random point in a 20 meter radius
         movementVector = Random.insideUnitSphere * maxMovementDist;
 
@@ -127,13 +150,15 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator DialogueActivate()
     {
+        if (dialogueControl == null)
+        {
+            Debug.LogError("Cannot activate dialogue: DialogueControl is null!");
+            yield break;
+        }
+
         GameControl.GameController.currentState = GameState.DIALOGUE;
-        //TODO - pass on the character data container here instead
-        dialogueCanvas.GetComponent<DialogueControl>().Activate(gameObject);
+        dialogueControl.Activate(gameObject);
         yield return null;
     }
 
-    
-
-    
 }

@@ -357,7 +357,7 @@ MonoBehaviour:
   inDialogueRange: 0
   animator: {fileID: 8662918361551714388}
   animManager: {fileID: 7058856217967753854}
---- !u!114 &860258609010813683
+
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

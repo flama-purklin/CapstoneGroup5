@@ -1,132 +1,145 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class DialogueControl : MonoBehaviour
 {
-    //character present in dialogue - REPLACE WITH CHARACTER OBJECT
-    GameObject currentChar;
+    [Header("Core References")]
+    [SerializeField] private LLMDialogueManager llmDialogueManager;
+    [SerializeField] private GameObject dialogueCanvas;
+    [SerializeField] private GameObject defaultHud;
+    [SerializeField] private RectTransform dialoguePanel;
 
-    //UI Elements
-    [SerializeField] GameObject dialogueCanvas;
-    [SerializeField] GameObject defaultHud;
-    
-    /* Animator dealt with all this shit lmao
-    //from top
-    [SerializeField] RectTransform dialogueHolder;
-    [SerializeField] RectTransform playerDialogue;
+    [SerializeField] private Animator anim;
 
-    //from bottom
-    [SerializeField] RectTransform inputBox;
-    [SerializeField] RectTransform characterImage;
-    [SerializeField] RectTransform submitButton;
+    private bool isTransitioning = false;
+    private bool shutdown = false;
 
-    //from right
-    [SerializeField] RectTransform rightButtons;
-
-    //from left
-    [SerializeField] RectTransform leftButtons;
-    */
-
-    [SerializeField] float lerpTime;
-
-    //animation
-    [SerializeField] Animator lerpingAnim;
-
-    bool shutdown = false;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if ((Input.GetKeyDown(KeyCode.E) && GameControl.GameController.currentState == GameState.DIALOGUE) || (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
+        if (!llmDialogueManager)
         {
-            if (GameControl.GameController.currentState == GameState.FINAL)
-            {
-                shutdown = true;
-            }
-            Deactivate();
-        }
-    }
-
-    //called whenever dialogue system is activated - TODO replace GameObject here with Character data container
-    public void Activate(GameObject character)
-    {
-        currentChar = character;
-        defaultHud.SetActive(false);
-        dialogueCanvas.SetActive(true);
-        StartCoroutine(DialogueEntryLerp());
-    }
-
-    public void Deactivate()
-    {
-        if (dialogueCanvas.activeInHierarchy)
-        {
-            StartCoroutine(DialogueExitLerp());
-        }
-    }
-
-    IEnumerator DialogueEntryLerp()
-    {
-        float currentTime = 0f;
-
-        lerpingAnim.speed = 1f;
-        lerpingAnim.Play("DialogueActivate");
-
-        while (currentTime < lerpTime)
-        {
-            //lerp in all objects
-
-            //from top
-
-            //from left
-
-            //from right
-
-            //from bottom
-
-            currentTime += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
+            Debug.LogError("LLMDialogueManager reference not set in DialogueControl!!");
+            enabled = false;
+            return;
         }
 
-        //lerpingAnim.Stop();
-        yield return null;
-    }
-
-    IEnumerator DialogueExitLerp()
-    {
-        float currentTime = 0f;
-
-        //lerpingAnim.speed = -1f;
-        lerpingAnim.Play("DialogueDeactivate");
-
-        while (currentTime < lerpTime)
+        if (!dialogueCanvas)
         {
-            //lerp out all objects
-
-            //from top
-
-            //from left
-
-            //from right
-
-            //from bottom
-            Debug.Log(currentTime);
-            currentTime += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
+            Debug.LogError("DialogueCanvas reference not set!");
+            enabled = false;
+            return;
         }
 
-        Debug.Log("End Reached");
+        if (!anim)
+        {
+            Debug.LogError("Animator reference not set!");
+            enabled = false;
+            return;
+        }
+
         dialogueCanvas.SetActive(false);
+    }
+
+    public async void Activate(GameObject npcObject)
+    {
+        if (isTransitioning) return;
+
+        Debug.Log($"Attempting to activate dialogue with {npcObject.name}");
+
+        Character character = npcObject.GetComponent<Character>();
+        if (character == null)
+        {
+            Debug.LogError($"No Character component found on NPC: {npcObject.name}");
+            return;
+        }
+
+        var llmCharacter = await character.GetLLMCharacter();
+        if (llmCharacter == null)
+        {
+            Debug.LogError($"Failed to get LLMCharacter for {character.GetCharacterName()}");
+            return;
+        }
+
+        llmDialogueManager.SetCharacter(llmCharacter);
+        GameControl.GameController.currentState = GameState.DIALOGUE;
+
+        if (defaultHud)
+        {
+            defaultHud.SetActive(false);
+        }
+
+        StartCoroutine(ActivateDialogue());
+    }
+
+    private IEnumerator ActivateDialogue()
+    {
+        isTransitioning = true;
+        dialogueCanvas.SetActive(true);
+        anim.Play("DialogueActivate");
+
+        // wait for animation to start
+        yield return null;
+
+        // wait for animation to complete
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        {
+            yield return null;
+        }
+
+        llmDialogueManager.InitializeDialogue();
+        isTransitioning = false;
+
+        //return null; // for now...
+    }
+
+    private IEnumerator DeactivateDialogue()
+    {
+        isTransitioning = true;
+
+        // Start the reset process
+        var resetTask = llmDialogueManager.ResetDialogue();
+        while (!resetTask.IsCompleted)
+        {
+            yield return null;
+        }
+
+        anim.Play("DialogueDeactivate");
+
+        // Wait for animation to complete
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        {
+            yield return null;
+        }
+
+        dialogueCanvas.SetActive(false);
+
         if (GameControl.GameController.currentState == GameState.DIALOGUE)
         {
             defaultHud.SetActive(true);
             GameControl.GameController.currentState = GameState.DEFAULT;
         }
-        yield return null;
+
+        isTransitioning = false;
+    }
+
+    private void Update()
+    {
+        if (isTransitioning) return;
+
+        if ((Input.GetKeyDown(KeyCode.Escape) && GameControl.GameController.currentState == GameState.DIALOGUE) ||
+            (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
+        {
+            if (GameControl.GameController.currentState == GameState.FINAL)
+            {
+                shutdown = true;
+            }
+            StartCoroutine(DeactivateDialogue());
+        }
+    }
+
+    public void Deactivate()
+    {
+        if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
+        StartCoroutine(DeactivateDialogue());
     }
 }
