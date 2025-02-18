@@ -6,6 +6,7 @@ namespace LLMUnity
 {
     public static class CharacterPromptGenerator
     {
+
         [Serializable]
         private class CharacterData
         {
@@ -155,7 +156,8 @@ namespace LLMUnity
             public string[] known_secrets;
         }
 
-        public static string GenerateSystemPrompt(string jsonContent)
+        //Added LLMCharacter pass in so that we can store the created CharacterData to the associated character for easy access of specific attributes
+        public static string GenerateSystemPrompt(string jsonContent, LLMCharacter characterObj)
         {
             try
             {
@@ -165,6 +167,9 @@ namespace LLMUnity
                     Debug.LogError("Failed to parse character data from JSON");
                     return null;
                 }
+
+                // 0. Store the created characterData to the characterObj for later ref - can be expanded later, just the name for now
+                characterObj.SetCharacterName(characterData.core.demographics.name);
 
                 var prompt = new StringBuilder();
 

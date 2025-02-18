@@ -30,7 +30,7 @@ public class GameControl : MonoBehaviour
             Destroy(gameObject);
         }
 
-        //StartCoroutine(TimerUpdate());
+        StartCoroutine(TimerUpdate());
     }
 
     // Update is called once per frame
@@ -42,7 +42,7 @@ public class GameControl : MonoBehaviour
     //PLACEHOLDER - replace this basic logic with Jorge's timer function when that is finished
     IEnumerator TimerUpdate()
     {
-        yield return new WaitForSeconds(300);
+        yield return new WaitForSeconds(30);
         Debug.Log("Final State Activated");
         currentState = GameState.FINAL;
     }
