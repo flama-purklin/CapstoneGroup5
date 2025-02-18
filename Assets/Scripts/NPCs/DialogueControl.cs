@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
+using LLMUnity;
 
 public class DialogueControl : MonoBehaviour
 {
@@ -73,6 +74,9 @@ public class DialogueControl : MonoBehaviour
         {
             defaultHud.SetActive(false);
         }
+        
+        //set the character name
+        characterName.text = npcObject.GetComponentInChildren<LLMCharacter>().GetCharacterName();
 
         StartCoroutine(ActivateDialogue());
     }
@@ -150,7 +154,7 @@ public class DialogueControl : MonoBehaviour
 
     public void Deactivate()
     {
-        //if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
+        if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
         StartCoroutine(DeactivateDialogue());
     }
 }

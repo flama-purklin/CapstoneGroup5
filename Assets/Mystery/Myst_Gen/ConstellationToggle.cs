@@ -17,7 +17,7 @@ public class ConstellationToggle : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M) && GameControl.GameController.currentState == GameState.DEFAULT)
         {
             if (canvas != null)
             {

@@ -181,7 +181,7 @@ public class CharacterManager : MonoBehaviour
 
             // Load and set the prompt
             string jsonContent = File.ReadAllText(jsonPath);
-            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent);
+            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent, character);
             if (string.IsNullOrEmpty(systemPrompt))
             {
                 Debug.LogError($"Failed to generate prompt for character: {characterName}");
