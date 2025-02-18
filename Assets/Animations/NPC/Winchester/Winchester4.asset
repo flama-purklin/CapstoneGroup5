@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
   m_Name: Winchester4
   m_EditorClassIdentifier: 
-  walkFront: []
-  walkBack: []
+  walkFront:
+  - {fileID: 1844716176, guid: d1b32d6ac2c81a245806277983eee7a7, type: 3}
+  - {fileID: 1440022793, guid: d1b32d6ac2c81a245806277983eee7a7, type: 3}
+  - {fileID: 1416236056, guid: d1b32d6ac2c81a245806277983eee7a7, type: 3}
+  - {fileID: -965894026, guid: d1b32d6ac2c81a245806277983eee7a7, type: 3}
+  walkBack:
+  - {fileID: 1853543569, guid: fd77b88788f141549805bfa382e31e8d, type: 3}
+  - {fileID: -2044354491, guid: fd77b88788f141549805bfa382e31e8d, type: 3}
+  - {fileID: 1143116952, guid: fd77b88788f141549805bfa382e31e8d, type: 3}
+  - {fileID: 1100916881, guid: fd77b88788f141549805bfa382e31e8d, type: 3}
   idleFront:
   - {fileID: -1824339073, guid: 5603a91787e0eea4f86177f30a5814dd, type: 3}
   - {fileID: -969260836, guid: 5603a91787e0eea4f86177f30a5814dd, type: 3}
-  idleBack: []
+  idleBack:
+  - {fileID: -74210093, guid: 597e2ceef70a02c4d990351d059e3785, type: 3}
+  - {fileID: 1681152863, guid: 597e2ceef70a02c4d990351d059e3785, type: 3}

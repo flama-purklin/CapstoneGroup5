@@ -2404,7 +2404,7 @@ Transform:
   m_GameObject: {fileID: 708103176}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
-  m_LocalPosition: {x: 0.22, y: 4.71, z: -7.54}
+  m_LocalPosition: {x: 0.22, y: 6.79, z: -8.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3313,7 +3313,7 @@ Transform:
   m_GameObject: {fileID: 861345378}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 17.5, z: 45}
+  m_LocalPosition: {x: 0, y: 11, z: 35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6525,9 +6525,17 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1622672638612615865, guid: 637ec377d592ce14ba958060c441e2ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4393611478912887688, guid: 637ec377d592ce14ba958060c441e2ea, type: 3}
       propertyPath: m_Name
       value: TrainCar
+      objectReference: {fileID: 0}
+    - target: {fileID: 4393611478912887688, guid: 637ec377d592ce14ba958060c441e2ea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4644357010868289531, guid: 637ec377d592ce14ba958060c441e2ea, type: 3}
       propertyPath: m_NavMeshData

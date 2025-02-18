@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba07593818f3b814a87a6a661c73957a
+guid: f4aff4f49b4136e44b6d9db39da975bd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Winchester1BackWalk_0
+      name: Winchester2BackWalk_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 410c8b64cd6408c46a2de2de50158e9e
-      internalID: -1361178685
+      spriteID: 72322a56f777e934e9e98af4bf71e66a
+      internalID: 2084404313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester1BackWalk_1
+      name: Winchester2BackWalk_1
       rect:
         serializedVersion: 2
         x: 320
@@ -147,14 +147,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 489c09095b7ab454c8e1db483237219c
-      internalID: -1024209490
+      spriteID: 17e878ed3ecb4fb4694d42a41f7a272c
+      internalID: 1841369185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester1BackWalk_2
+      name: Winchester2BackWalk_2
       rect:
         serializedVersion: 2
         x: 640
@@ -169,14 +169,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 704ae39f158226e48809880d3d67d972
-      internalID: 416169169
+      spriteID: eeec32edf0479ba49b64df21900c8d24
+      internalID: 1732255557
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester1BackWalk_3
+      name: Winchester2BackWalk_3
       rect:
         serializedVersion: 2
         x: 960
@@ -191,8 +191,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1255c3c2df3af04bb0b484dcf8d0a8e
-      internalID: -414492010
+      spriteID: dfa3b770fcfb9494f9a0924f3c0d96ce
+      internalID: -365930418
       vertices: []
       indices: 
       edges: []
@@ -201,7 +201,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7e9baa6d33e783448a1346926a7b54c7
+    spriteID: deb57a4ea9709ab4c819e72f2719658e
     internalID: 0
     vertices: []
     indices: 
@@ -211,10 +211,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Winchester1BackWalk_0: -1361178685
-      Winchester1BackWalk_1: -1024209490
-      Winchester1BackWalk_2: 416169169
-      Winchester1BackWalk_3: -414492010
+      Winchester2BackWalk_0: 2084404313
+      Winchester2BackWalk_1: 1841369185
+      Winchester2BackWalk_2: 1732255557
+      Winchester2BackWalk_3: -365930418
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

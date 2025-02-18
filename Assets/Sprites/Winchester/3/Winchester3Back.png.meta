@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2f9aff5523346bf4fbc3bd1a036f3f1a
+guid: 384feaf4e9671c843ad0cec96ae9f254
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Winchester3walk_0
+      name: Winchester3Back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c67605d410adaf4db3109f3688e6dc4
-      internalID: -2013612805
+      spriteID: 454f1f1c825ea91429f31a7ef34b67eb
+      internalID: -1423631831
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester3walk_1
+      name: Winchester3Back_1
       rect:
         serializedVersion: 2
         x: 320
@@ -147,52 +147,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e52d460dbc3b86d44a5a9e8d7537a434
-      internalID: -479089410
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Winchester3walk_2
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 320
-        height: 320
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2805fba4167c0484d9436b3962caf3d6
-      internalID: 1027342876
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Winchester3walk_3
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 0
-        width: 320
-        height: 320
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 219addca6cc5d85499517279b29de853
-      internalID: -1746433590
+      spriteID: 42784b8b0c4ab464eb2530ce7238dd4d
+      internalID: -1152556971
       vertices: []
       indices: 
       edges: []
@@ -201,7 +157,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a2ac06ecaa0cd4d419963a415b06a00b
+    spriteID: ecbc99b7dd7ccb4469a1976a43f06578
     internalID: 0
     vertices: []
     indices: 
@@ -211,10 +167,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Winchester3walk_0: -2013612805
-      Winchester3walk_1: -479089410
-      Winchester3walk_2: 1027342876
-      Winchester3walk_3: -1746433590
+      Winchester3Back_0: -1423631831
+      Winchester3Back_1: -1152556971
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 584107a301633504f914af67604c3383
+guid: 90e1065552e3435498ee3e101b24ce10
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Winchester1Walk_0
+      name: Winchester1Back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4fbb127e9cbd97d449d25ea30530a9f9
-      internalID: -351189271
+      spriteID: ce6778b37f776d043a6e65f270f510a8
+      internalID: -1146997061
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester1Walk_1
+      name: Winchester1Back_1
       rect:
         serializedVersion: 2
         x: 320
@@ -147,52 +147,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a421c86e6b4107b43abe58af9ba4cc54
-      internalID: -146402142
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Winchester1Walk_2
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 0
-        width: 320
-        height: 320
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ce3b6841059896c4699953b36d9f6db7
-      internalID: -1261593868
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Winchester1Walk_3
-      rect:
-        serializedVersion: 2
-        x: 960
-        y: 0
-        width: 320
-        height: 320
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b971577510e749d46b9102720634cfc0
-      internalID: -211443760
+      spriteID: 7c7a8e9731c64e342b2e6dab2e5fe801
+      internalID: 662003568
       vertices: []
       indices: 
       edges: []
@@ -201,7 +157,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 27d86ae9850691545977b27679c1ffd1
+    spriteID: 4ac0c5063af6aac4086e42672b806c94
     internalID: 0
     vertices: []
     indices: 
@@ -211,10 +167,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Winchester1Walk_0: -351189271
-      Winchester1Walk_1: -146402142
-      Winchester1Walk_2: -1261593868
-      Winchester1Walk_3: -211443760
+      Winchester1Back_0: -1146997061
+      Winchester1Back_1: 662003568
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

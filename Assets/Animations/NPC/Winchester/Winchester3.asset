@@ -17,8 +17,14 @@ MonoBehaviour:
   - {fileID: -479089410, guid: 2f9aff5523346bf4fbc3bd1a036f3f1a, type: 3}
   - {fileID: 1027342876, guid: 2f9aff5523346bf4fbc3bd1a036f3f1a, type: 3}
   - {fileID: -1746433590, guid: 2f9aff5523346bf4fbc3bd1a036f3f1a, type: 3}
-  walkBack: []
+  walkBack:
+  - {fileID: -1737156553, guid: 969d6ebb8b015ca43974fd8e5b527b9b, type: 3}
+  - {fileID: 1219702704, guid: 969d6ebb8b015ca43974fd8e5b527b9b, type: 3}
+  - {fileID: 1950259973, guid: 969d6ebb8b015ca43974fd8e5b527b9b, type: 3}
+  - {fileID: 993771019, guid: 969d6ebb8b015ca43974fd8e5b527b9b, type: 3}
   idleFront:
   - {fileID: -1967428538, guid: 0b0c32256b0f78641b87b32330c529c6, type: 3}
   - {fileID: -1464774620, guid: 0b0c32256b0f78641b87b32330c529c6, type: 3}
-  idleBack: []
+  idleBack:
+  - {fileID: -1423631831, guid: 384feaf4e9671c843ad0cec96ae9f254, type: 3}
+  - {fileID: -1152556971, guid: 384feaf4e9671c843ad0cec96ae9f254, type: 3}

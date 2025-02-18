@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fec3a61dc3a42374fa73d08c149d5c9a
+guid: 0b0c32256b0f78641b87b32330c529c6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -69,10 +69,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Winchester2_0
+      name: Winchester3_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 438db75bd08012a46b4437e21cd49c2d
-      internalID: 744577798
+      spriteID: 71a8be0289a706a4d8bfafcb49f9bf45
+      internalID: -1967428538
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester2_1
+      name: Winchester3_1
       rect:
         serializedVersion: 2
         x: 320
@@ -147,8 +147,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 46cc95e254d47f840ba8f293b1939859
-      internalID: 827383762
+      spriteID: 13c9dddd647bfc64aa7c60bc5f1e6e94
+      internalID: -1464774620
       vertices: []
       indices: 
       edges: []
@@ -157,7 +157,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 687fd9c16bbbd8c4fb5caabaa3e05512
+    spriteID: 732be31c219708c42bf348522cf01810
     internalID: 0
     vertices: []
     indices: 
@@ -167,8 +167,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Winchester2_0: 744577798
-      Winchester2_1: 827383762
+      Winchester3_0: -1967428538
+      Winchester3_1: -1464774620
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

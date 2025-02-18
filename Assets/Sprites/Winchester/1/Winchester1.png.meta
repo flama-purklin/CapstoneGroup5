@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5603a91787e0eea4f86177f30a5814dd
+guid: a7a1131a17d4f744d8f680a2fd72f71f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Winchester4_0
+      name: Winchester1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a057d68d9c325bc43b43513f3b20f9df
-      internalID: -1824339073
+      spriteID: 699ff5be93c149a489c8da28b5484c90
+      internalID: 486233308
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Winchester4_1
+      name: Winchester1_1
       rect:
         serializedVersion: 2
         x: 320
@@ -147,8 +147,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bd1a0d2bcbb9ea44a9a701ad569ba719
-      internalID: -969260836
+      spriteID: 70241c67a4a9b6d41acac2db69d015df
+      internalID: 1848258522
       vertices: []
       indices: 
       edges: []
@@ -157,7 +157,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0627f8662ae5c964aac63413aeb12954
+    spriteID: 77066bd8080fc3943bd6b87935bd4f4b
     internalID: 0
     vertices: []
     indices: 
@@ -167,8 +167,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Winchester4_0: -1824339073
-      Winchester4_1: -969260836
+      Winchester1_0: 486233308
+      Winchester1_1: 1848258522
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

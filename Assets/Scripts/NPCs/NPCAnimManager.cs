@@ -9,6 +9,9 @@ public class NPCAnimManager : MonoBehaviour
     [SerializeField] NPCAnimContainer anims;
     GameObject player;
 
+    //all possible npc anim storage (will need expanded systems for archetypes, etc);
+    [SerializeField] NPCAnimContainer[] allAnims;
+
     //other important vars
     Sprite[] currentAnim;
 
@@ -20,10 +23,20 @@ public class NPCAnimManager : MonoBehaviour
     void Awake()
     {
         player = GameObject.FindWithTag("Player");
+
+        //assign an animContainer based on number of npcs in the world
+        AnimContainerAssign();
+
         currentAnim = anims.idleFront;
         originalScale = Vector3.one;
         transform.root.localScale = originalScale;
         //Debug.Log(originalScale);
+    }
+
+    private void AnimContainerAssign()
+    {
+        GameObject[] allNPCs = GameObject.FindGameObjectsWithTag("Character");
+        anims = allAnims[allNPCs.Length - 1];
     }
 
     // Update is called once per frame

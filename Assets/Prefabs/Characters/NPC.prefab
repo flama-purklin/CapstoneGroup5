@@ -216,6 +216,11 @@ MonoBehaviour:
   animator: {fileID: 8662918361551714388}
   movementControl: {fileID: 5989971033946942912}
   anims: {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
+  allAnims:
+  - {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
+  - {fileID: 11400000, guid: 6a14f850ff6d00647a2a8cbbab1a1026, type: 2}
+  - {fileID: 11400000, guid: 529680c6e047083479f730f8333a80b8, type: 2}
+  - {fileID: 11400000, guid: 63029a5ab55b1a5428d5ebaf7fa9e1cd, type: 2}
 --- !u!95 &8662918361551714388
 Animator:
   serializedVersion: 7
