@@ -100,6 +100,7 @@ public class DialogueControl : MonoBehaviour
 
     private IEnumerator DeactivateDialogue()
     {
+        Debug.Log("deactivating dialogue");
         isTransitioning = true;
 
         // Start the reset process
@@ -109,7 +110,11 @@ public class DialogueControl : MonoBehaviour
             yield return null;
         }
 
+        anim.Rebind();
+        anim.Update(0f);
         anim.Play("DialogueDeactivate");
+        
+        Debug.Log(anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
 
         // Wait for animation to complete
         while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
@@ -145,7 +150,7 @@ public class DialogueControl : MonoBehaviour
 
     public void Deactivate()
     {
-        if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
+        //if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
         StartCoroutine(DeactivateDialogue());
     }
 }
