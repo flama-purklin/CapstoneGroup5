@@ -1337,6 +1337,10 @@ PrefabInstance:
       propertyPath: m_NavMeshData
       value: 
       objectReference: {fileID: 23800000, guid: 6c98066474e05f24ba41c2982cc64a11, type: 2}
+    - target: {fileID: 5057738371448170342, guid: 9e4e9d6d01cd3e647b87eb336187d973, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6376111512056109650, guid: 9e4e9d6d01cd3e647b87eb336187d973, type: 3}
       propertyPath: m_LocalPosition.x
       value: -18.25
@@ -1500,6 +1504,10 @@ PrefabInstance:
       propertyPath: m_NavMeshData
       value: 
       objectReference: {fileID: 23800000, guid: 11f33c05ba3a5a74b952593335645a94, type: 2}
+    - target: {fileID: 6964489032407818474, guid: 2ba352dee0941db49aea6e3d85aba618, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8518365691776673545, guid: 2ba352dee0941db49aea6e3d85aba618, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.5
@@ -4328,6 +4336,10 @@ PrefabInstance:
       propertyPath: m_NavMeshData
       value: 
       objectReference: {fileID: 23800000, guid: 5a77f0383bee88345917f2bb6203ca89, type: 2}
+    - target: {fileID: 5057738371448170342, guid: 9e4e9d6d01cd3e647b87eb336187d973, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6376111512056109650, guid: 9e4e9d6d01cd3e647b87eb336187d973, type: 3}
       propertyPath: m_LocalPosition.x
       value: 41.5
