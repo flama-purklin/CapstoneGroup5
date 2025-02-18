@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 884967809646904070}
   - component: {fileID: 7575712940201557524}
   - component: {fileID: 5989971033946942912}
-  - component: {fileID: 860258609010813683}
+  - component: {fileID: 2343209185002496409}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Player
@@ -357,7 +357,7 @@ MonoBehaviour:
   inDialogueRange: 0
   animator: {fileID: 8662918361551714388}
   animManager: {fileID: 7058856217967753854}
-
+--- !u!114 &2343209185002496409
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

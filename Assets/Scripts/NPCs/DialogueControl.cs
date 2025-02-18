@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 public class DialogueControl : MonoBehaviour
 {
@@ -8,6 +10,10 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private GameObject dialogueCanvas;
     [SerializeField] private GameObject defaultHud;
     [SerializeField] private RectTransform dialoguePanel;
+
+    [Header("Canvas Components")]
+    [SerializeField] Image characterProf;
+    [SerializeField] TMP_Text characterName;
 
     [SerializeField] private Animator anim;
 

@@ -26,7 +26,7 @@ public class NPCMovement : MonoBehaviour
     void Awake()
     {
         player = GameObject.FindWithTag("Player");
-        dialogueCanvas = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
+        dialogueControl = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
 
         enabled = true;
         if (TryGetComponent<NavMeshAgent>(out var agent))
