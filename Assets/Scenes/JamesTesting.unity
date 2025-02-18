@@ -420,63 +420,6 @@ MonoBehaviour:
   m_ObsoleteUseShadowQualitySettings: 0
   m_ObsoleteCustomShadowResolution: 512
   m_ObsoleteContactShadows: 0
---- !u!1001 &420361958
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 17.86
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.44
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4812997723560643404, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5874540985207635157, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
-      propertyPath: m_Name
-      value: Train Car (diningCarData1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5d0b062e64749f74f9e01f2995dca05e, type: 3}
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1264,9 +1207,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64c9e4e32fd4b9446850b7061a5f9339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  railCarLength: 12
-  railCarDepth: 5
-  railCarHeight: 5
+  railCarLength: 24
+  railCarDepth: 10
+  railCarHeight: 10
   wallThickness: 0.2
   floorThickness: 0.2
   floorMaterial: {fileID: 2100000, guid: 4f9c339cbf38b684f93dcc8f21e52e57, type: 2}
@@ -1280,8 +1223,8 @@ MonoBehaviour:
   exteriorWall: {fileID: 0}
   carVisibilityComp: {fileID: 0}
   carCharacterComp: {fileID: 0}
-  gridRows: 5
-  gridColumns: 12
+  gridRows: 10
+  gridColumns: 24
   cellSize: 1
   anchorPrefab: {fileID: 7907908990791901465, guid: 08c7a0182998b7f4dbdef22f35d86ff0, type: 3}
   anchorsVissible: 0
@@ -1328,7 +1271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jsonFile: {fileID: 4900000, guid: af8e65883e64d544496596d132a63e20, type: 3}
+  jsonFile: {fileID: 4900000, guid: 6346fc71189645a4ab50f1674accc79c, type: 3}
   railCarRandomizer: {fileID: 1969864413}
   trainCarLayout:
     train_car: []
@@ -1402,7 +1345,6 @@ SceneRoots:
   - {fileID: 432432461}
   - {fileID: 2013410475}
   - {fileID: 1969864414}
-  - {fileID: 420361958}
   - {fileID: 967031264}
   - {fileID: 1127855295}
   - {fileID: 968453114}
