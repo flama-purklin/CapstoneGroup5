@@ -23,7 +23,7 @@ public class LLMDialogueManager : MonoBehaviour
     {
         currentResponse = new StringBuilder();
         SetupInputHandlers();
-        DisableInput();
+        //DisableInput();
     }
 
     private void SetupInputHandlers()
@@ -140,12 +140,16 @@ public class LLMDialogueManager : MonoBehaviour
         {
             inputField.interactable = true;
             inputField.ActivateInputField();
+            Debug.Log("Input Field activated");
         }
+        else
+            Debug.Log("Input Field Fucking Broke");
         if (submitButton) submitButton.interactable = true;
     }
 
     private void DisableInput()
     {
+        Debug.Log("Disabling Input");
         if (inputField) inputField.interactable = false;
         if (submitButton) submitButton.interactable = false;
     }
