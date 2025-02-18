@@ -172,7 +172,7 @@ public class CharacterManager : MonoBehaviour
             character.save = characterName; 
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
-            character.temperature =  0.3f;
+            character.temperature =  0.8f;
             character.topK = 55;
             character.topP = 0.9f;
             character.repeatPenalty = 1.0f;

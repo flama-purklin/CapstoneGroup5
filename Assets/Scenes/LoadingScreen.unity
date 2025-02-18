@@ -1228,10 +1228,10 @@ MonoBehaviour:
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
-  contextSize: 8192
-  batchSize: 512
-  model: qwen2-0_5b-instruct-q4_k_m.gguf
-  chatTemplate: chatml
+  contextSize: 16386
+  batchSize: 2048
+  model: mistral-7b-instruct-v0.3-iq4_xs-imat.gguf
+  chatTemplate: mistral chat
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1243,7 +1243,7 @@ MonoBehaviour:
   minContextLength: 0
   maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 896
+  embeddingLength: 4096
 --- !u!4 &1424623595
 Transform:
   m_ObjectHideFlags: 0
