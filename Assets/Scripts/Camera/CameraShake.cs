@@ -22,7 +22,7 @@ public class CameraShake : MonoBehaviour
 
         //create vector to apply
         Vector3 shakeOffset = new Vector3(xMove, yMove, 0) * shakeAmt;
-        Debug.Log(shakeOffset);
+        //Debug.Log(shakeOffset);
         transform.localPosition = startPos + shakeOffset;
     }
 }

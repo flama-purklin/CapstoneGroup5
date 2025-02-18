@@ -30,7 +30,7 @@ public class GameControl : MonoBehaviour
             Destroy(gameObject);
         }
 
-        StartCoroutine(TimerUpdate());
+        //StartCoroutine(TimerUpdate());
     }
 
     // Update is called once per frame

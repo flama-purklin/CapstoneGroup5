@@ -31,10 +31,13 @@ public class ParallaxControl : MonoBehaviour
 
         //Debug.Log(dist + " " + (startPos + length));
 
+        //resets the location once it gets too far from its origin
         if (dist > startPos + length)
         {
             //Debug.Log("moving forward");
             //startPos -= length;
+
+            //this offset should make the teleportation more seamless - might need to be messed with more
             dist -= (startPos + length);
             timer = dist / (parallaxEffect * speedMod);
         }

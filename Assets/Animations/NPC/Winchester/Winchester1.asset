@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: Winchester1
+  m_EditorClassIdentifier: 
+  walkFront:
+  - {fileID: -351189271, guid: 584107a301633504f914af67604c3383, type: 3}
+  - {fileID: -146402142, guid: 584107a301633504f914af67604c3383, type: 3}
+  - {fileID: -1261593868, guid: 584107a301633504f914af67604c3383, type: 3}
+  - {fileID: -211443760, guid: 584107a301633504f914af67604c3383, type: 3}
+  walkBack:
+  - {fileID: -1361178685, guid: ba07593818f3b814a87a6a661c73957a, type: 3}
+  - {fileID: -1024209490, guid: ba07593818f3b814a87a6a661c73957a, type: 3}
+  - {fileID: 416169169, guid: ba07593818f3b814a87a6a661c73957a, type: 3}
+  - {fileID: -414492010, guid: ba07593818f3b814a87a6a661c73957a, type: 3}
+  idleFront:
+  - {fileID: 486233308, guid: a7a1131a17d4f744d8f680a2fd72f71f, type: 3}
+  - {fileID: 1848258522, guid: a7a1131a17d4f744d8f680a2fd72f71f, type: 3}
+  idleBack:
+  - {fileID: -1146997061, guid: 90e1065552e3435498ee3e101b24ce10, type: 3}
+  - {fileID: 662003568, guid: 90e1065552e3435498ee3e101b24ce10, type: 3}
