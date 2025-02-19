@@ -1223,15 +1223,15 @@ MonoBehaviour:
   remote: 0
   port: 13333
   numThreads: -1
-  gpuAcceleration: 1
-  _numGPULayers: 16
+  gpuAcceleration: 0
+  _numGPULayers: 0
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
   contextSize: 16386
   batchSize: 2048
-  model: mistral-7b-instruct-v0.3-iq4_xs-imat.gguf
-  chatTemplate: mistral chat
+  model: qwen2-0_5b-instruct-q4_k_m.gguf
+  chatTemplate: chatml
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1243,7 +1243,7 @@ MonoBehaviour:
   minContextLength: 0
   maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 4096
+  embeddingLength: 896
 --- !u!4 &1424623595
 Transform:
   m_ObjectHideFlags: 0
