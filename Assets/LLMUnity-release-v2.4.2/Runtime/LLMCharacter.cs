@@ -259,14 +259,13 @@ namespace LLMUnity
             if (setNKeepToPrompt && nKeep == -1)
             {
                 if (!CheckTemplate()) return false;
-                string systemPrompt = template.ComputePrompt(new List<ChatMessage>() { chat[0] }, playerName, "", false);
+                string systemPrompt = template.ComputePrompt(new List<ChatMessage>(){chat[0]}, playerName, "", false);
                 List<int> tokens = await Tokenize(systemPrompt);
                 if (tokens == null) return false;
                 SetNKeep(tokens);
             }
             return true;
         }
-
 
         protected virtual void InitGrammar()
         {
