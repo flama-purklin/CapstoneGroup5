@@ -367,6 +367,7 @@ namespace LLMUnity
         static bool has_avx = false;
         static bool has_avx2 = false;
         static bool has_avx512 = false;
+        List<IntPtr> dependencyHandles = new List<IntPtr>();
 
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
 
@@ -496,6 +497,12 @@ namespace LLMUnity
         /// <exception cref="Exception"></exception>
         public LLMLib(string arch)
         {
+            foreach (string dependency in GetArchitectureDependencies(arch))
+            {
+                LLMUnitySetup.Log($"Loading {dependency}");
+                dependencyHandles.Add(LibraryLoader.LoadLibrary(dependency));
+            }
+
             libraryHandle = LibraryLoader.LoadLibrary(GetArchitecturePath(arch));
             if (libraryHandle == IntPtr.Zero)
             {
@@ -548,6 +555,35 @@ namespace LLMUnity
                 return null;
             }
             return Path.Combine(LLMUnitySetup.libraryPath, filename);
+        }
+
+        /// <summary>
+        /// Gets additional dependencies for the specified architecture.
+        /// </summary>
+        /// <param name="arch">architecture</param>
+        /// <returns>paths of dependency dlls</returns>
+        public static List<string> GetArchitectureDependencies(string arch)
+        {
+            List<string> dependencies = new List<string>();
+            if (arch == "cuda-cu12.2.0-full")
+            {
+                if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsServer)
+                {
+                    dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/cudart64_12.dll"));
+                    dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/cublasLt64_12.dll"));
+                    dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/cublas64_12.dll"));
+                }
+            } else if (arch == "vulkan") {
+                if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsServer)
+                {
+                    dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/vulkan-1.dll"));
+                }
+                else if (Application.platform == RuntimePlatform.LinuxEditor || Application.platform == RuntimePlatform.LinuxPlayer || Application.platform == RuntimePlatform.LinuxServer)
+                {
+                    dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"linux-{arch}/libvulkan.so.1"));
+                }
+            }
+            return dependencies;
         }
 
         /// <summary>
@@ -648,12 +684,10 @@ namespace LLMUnity
                     if (LLMUnitySetup.FullLlamaLib)
                     {
                         architectures.Add("cuda-cu12.2.0-full");
-                        architectures.Add("cuda-cu11.7.1-full");
                     }
                     else
                     {
                         architectures.Add("cuda-cu12.2.0");
-                        architectures.Add("cuda-cu11.7.1");
                     }
                     architectures.Add("hip");
                     architectures.Add("vulkan");
@@ -726,6 +760,7 @@ namespace LLMUnity
         public void Destroy()
         {
             if (libraryHandle != IntPtr.Zero) LibraryLoader.FreeLibrary(libraryHandle);
+            foreach (IntPtr dependencyHandle in dependencyHandles) LibraryLoader.FreeLibrary(dependencyHandle);
         }
     }
 }
