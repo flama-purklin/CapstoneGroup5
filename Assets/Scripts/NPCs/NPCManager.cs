@@ -18,7 +18,6 @@ public class NPCManager : MonoBehaviour
     private Dictionary<string, GameObject> activeNPCs = new Dictionary<string, GameObject>();
     private bool isInitialized = false;
     public bool IsInitializationComplete => isInitialized;
-    [SerializeField] private float initialPlacementDelay = 1f;
     private Transform characterContainer;
     private Dictionary<string, LLMCharacter> characterCache = new Dictionary<string, LLMCharacter>();
 

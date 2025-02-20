@@ -47,7 +47,7 @@ public class DialogueControl : MonoBehaviour
         dialogueCanvas.SetActive(false);
     }
 
-    public async void Activate(GameObject npcObject)
+    public void Activate(GameObject npcObject)
     {
         if (isTransitioning) return;
 
@@ -60,7 +60,7 @@ public class DialogueControl : MonoBehaviour
             return;
         }
 
-        var llmCharacter = await character.GetLLMCharacter();
+        var llmCharacter = character.GetLLMCharacter();
         if (llmCharacter == null)
         {
             Debug.LogError($"Failed to get LLMCharacter for {character.GetCharacterName()}");
@@ -74,9 +74,9 @@ public class DialogueControl : MonoBehaviour
         {
             defaultHud.SetActive(false);
         }
-        
+
         //set the character name
-        characterName.text = npcObject.GetComponentInChildren<LLMCharacter>().GetCharacterName();
+        characterName.text = npcObject.GetComponentInChildren<LLMCharacter>().AIName;
 
         StartCoroutine(ActivateDialogue());
     }

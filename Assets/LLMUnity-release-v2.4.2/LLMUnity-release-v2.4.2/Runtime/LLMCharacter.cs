@@ -132,11 +132,6 @@ namespace LLMUnity
         protected string chatTemplate;
         protected ChatTemplate template = null;
         /// \endcond
-        ///
-
-        //Core Character Vars
-        [SerializeField] private string fullName;
-
 
         /// <summary>
         /// The Unity Awake function that initializes the state before the application starts.
@@ -264,14 +259,13 @@ namespace LLMUnity
             if (setNKeepToPrompt && nKeep == -1)
             {
                 if (!CheckTemplate()) return false;
-                string systemPrompt = template.ComputePrompt(new List<ChatMessage>() { chat[0] }, playerName, "", false);
+                string systemPrompt = template.ComputePrompt(new List<ChatMessage>(){chat[0]}, playerName, "", false);
                 List<int> tokens = await Tokenize(systemPrompt);
                 if (tokens == null) return false;
                 SetNKeep(tokens);
             }
             return true;
         }
-
 
         protected virtual void InitGrammar()
         {
@@ -666,19 +660,6 @@ namespace LLMUnity
             if (!callbackCalled) callback?.Invoke(result);
             return result;
         }
-
-        //called in characterpromptgen so that attributes can be referenced in from parsed json at runtime (to retrieve names and such)
-        public void SetCharacterName(string charName)
-        {
-            fullName = charName;
-            Debug.Log("Character Name is: " + fullName);
-
-        }
-
-        public string GetCharacterName()
-        {
-            return fullName;
-        }
     }
 
     /// \cond HIDE
@@ -688,6 +669,4 @@ namespace LLMUnity
         public List<ChatMessage> chat;
     }
     /// \endcond
-    ///
-
 }

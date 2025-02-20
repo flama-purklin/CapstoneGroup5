@@ -24,7 +24,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public async Task<LLMCharacter> GetLLMCharacter()
+    public  LLMCharacter GetLLMCharacter()
     {
         if (!llmCharacter)
         {

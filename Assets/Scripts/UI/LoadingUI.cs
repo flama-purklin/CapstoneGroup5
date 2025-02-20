@@ -27,8 +27,7 @@ public class LoadingUI : MonoBehaviour
     // Phase weights
     private const float INITIAL_PHASE_WEIGHT = 0.10f;    
     private const float LLM_WARMUP_WEIGHT = 0.10f;        
-    private const float CHARACTER_START_WEIGHT = 0.20f;   
-    private float characterProgressWeight;                 
+    private const float CHARACTER_START_WEIGHT = 0.20f;                   
 
     private int totalCharacters;
     private bool llmWarmupStarted = false;
@@ -47,7 +46,6 @@ public class LoadingUI : MonoBehaviour
 
         string[] characters = npcManager.GetAvailableCharacters();
         totalCharacters = characters?.Length ?? 0;
-        characterProgressWeight = (1f - (INITIAL_PHASE_WEIGHT + LLM_WARMUP_WEIGHT + CHARACTER_START_WEIGHT));
 
         llmPhaseStartTime = Time.time;
     }

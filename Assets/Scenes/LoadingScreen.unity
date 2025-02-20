@@ -1223,15 +1223,15 @@ MonoBehaviour:
   remote: 0
   port: 13333
   numThreads: -1
-  gpuAcceleration: 0
-  _numGPULayers: 0
+  gpuAcceleration: 1
+  _numGPULayers: 32
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
   contextSize: 16386
   batchSize: 2048
-  model: qwen2-0_5b-instruct-q4_k_m.gguf
-  chatTemplate: chatml
+  model: mistral-7b-instruct-v0.3-iq4_xs-imat.gguf
+  chatTemplate: mistral chat
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1243,7 +1243,7 @@ MonoBehaviour:
   minContextLength: 0
   maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 896
+  embeddingLength: 4096
 --- !u!4 &1424623595
 Transform:
   m_ObjectHideFlags: 0
@@ -1401,7 +1401,6 @@ MonoBehaviour:
   npcPrefab: {fileID: 7441357142540035523, guid: 247f87585d4ef344b97284d8b035006b, type: 3}
   spawnPoints: []
   characterManager: {fileID: 1545545253}
-  initialPlacementDelay: 1
 --- !u!1 &1606349417
 GameObject:
   m_ObjectHideFlags: 0

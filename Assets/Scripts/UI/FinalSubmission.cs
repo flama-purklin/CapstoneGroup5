@@ -55,7 +55,7 @@ public class FinalSubmission : MonoBehaviour
             newButton.transform.SetParent(buttonHolder.transform, false);
 
             //set char text to be the name of the character
-            newButton.GetComponentInChildren<TMP_Text>().text = llmChar.GetCharacterName();
+            newButton.GetComponentInChildren<TMP_Text>().text = llmChar.AIName;
 
             //attach a listener to each button
             newButton.GetComponent<Button>().onClick.AddListener(FinishGame);
