@@ -31,6 +31,22 @@ public class CharacterManager : MonoBehaviour
     public int maxWarmupAttempts = 3;
     public float baseBackoffDelay = 1f;
 
+    [Header("Default Language Model Charater Settings")]
+    public float temperature =  0.8f;
+    public int topK = 55;
+    public float topP = 0.9f;
+    public float repeatPenalty = 1.0f;
+    public float presencePenalty = 0.0f;
+    public float frequencyPenalty = 1.0f;
+
+    public enum CharacterState
+    {
+        Uninitialized,
+        LoadingTemplate,
+        WarmingUp,
+        Ready,
+        Failed
+    }
 
     private class CharacterStateTransition
     {
@@ -172,12 +188,12 @@ public class CharacterManager : MonoBehaviour
             character.save = characterName; 
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
-            character.temperature =  0.8f;
-            character.topK = 55;
-            character.topP = 0.9f;
-            character.repeatPenalty = 1.0f;
-            character.presencePenalty = 0.0f;
-            character.frequencyPenalty = 1.0f;
+            character.temperature = temperature;
+            character.topK = topK;
+            character.topP = topP;
+            character.repeatPenalty = repeatPenalty;
+            character.presencePenalty = presencePenalty;
+            character.frequencyPenalty = frequencyPenalty;
 
             // Load and set the prompt
             string jsonContent = File.ReadAllText(jsonPath);

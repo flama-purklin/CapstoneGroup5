@@ -7,7 +7,7 @@ public class CharacterSelector : MonoBehaviour
 {
     [Header("UI References")]
     public Button characterButton;
-    public UIController uiController;
+    public DemoDialogueManager dialogueManager;
 
     [Header("Configuration")]
     public Color buttonColor = new Color(0.2f, 0.2f, 0.2f);
@@ -23,7 +23,6 @@ public class CharacterSelector : MonoBehaviour
     void Start()
     {
         InitializeButton();
-
         characterManager.OnInitializationComplete += OnCharacterManagerInitialized;
     }
 
@@ -40,7 +39,7 @@ public class CharacterSelector : MonoBehaviour
         characterNames = characterManager.GetAvailableCharacters();
         isReady = true;
         SetButtonState(true);
-        UpdateUIController();
+        UpdateDialogueManager();
     }
 
     private void InitializeButton()
@@ -88,31 +87,35 @@ public class CharacterSelector : MonoBehaviour
         var character = await characterManager.SwitchToCharacter(characterName);
         if (character != null)
         {
-            uiController.llmCharacter = character;
-            uiController.SetCurrentCharacter(characterName);
-            uiController.ResetChat();
-            uiController.UpdateCharacterStatus($"Talking to {characterName}");
+            dialogueManager.SetCharacter(character);
+            dialogueManager.SetCurrentCharacter(characterName);
+            await dialogueManager.ResetDialogue();
+            dialogueManager.UpdateCharacterStatus($"Talking to {characterName}");
             Debug.Log($"Successfully switched to character: {characterName}");
+
+            // Re-initialize dialogue and enable input
+            dialogueManager.InitializeDialogue();
+            dialogueManager.OnWarmupComplete(); // This will re-enable input
         }
         else
         {
-            uiController.UpdateCharacterStatus("Failed to switch character");
+            dialogueManager.UpdateCharacterStatus("Failed to switch character");
             Debug.LogError($"Failed to switch to character: {characterName}");
         }
 
         SetButtonState(true);
     }
 
-    private void UpdateUIController()
+    private void UpdateDialogueManager()
     {
         if (currentCharacterIndex >= 0 && currentCharacterIndex < characterNames.Length)
         {
-            uiController.UpdateCharacterStatus($"Ready to talk with any character");
+            dialogueManager.UpdateCharacterStatus($"Ready to talk with any character");
             characterButton.image.color = buttonColor;
         }
         else
         {
-            uiController.UpdateCharacterStatus("No character selected");
+            dialogueManager.UpdateCharacterStatus("No character selected");
             characterButton.image.color = buttonColor;
         }
     }
