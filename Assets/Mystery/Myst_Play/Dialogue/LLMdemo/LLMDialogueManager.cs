@@ -1,11 +1,10 @@
 using UnityEngine;
 using TMPro;
-using System.Text;
 using UnityEngine.UI;
 using System.Threading.Tasks;
-using LLMUnity;
 
-public class LLMDialogueManager : MonoBehaviour
+
+public class LLMDialogueManager : BaseDialogueManager
 {
     [Header("UI References")]
     [SerializeField] private TMP_Text playerDialogueText;
@@ -14,19 +13,7 @@ public class LLMDialogueManager : MonoBehaviour
     [SerializeField] private GameObject inputBox;
     [SerializeField] private Button submitButton;
 
-    private LLMCharacter llmCharacter;
-    private bool isProcessingResponse = false;
-    private StringBuilder currentResponse;
-    private string lastReply = "";
-
-    private void Start()
-    {
-        currentResponse = new StringBuilder();
-        SetupInputHandlers();
-        //DisableInput();
-    }
-
-    private void SetupInputHandlers()
+    protected override void SetupInputHandlers()
     {
         if (submitButton)
         {
@@ -46,30 +33,6 @@ public class LLMDialogueManager : MonoBehaviour
         }
     }
 
-    public void SetCharacter(LLMCharacter character)
-    {
-        llmCharacter = character;
-        Debug.Log($"Set LLMCharacter: {character.gameObject.name}");
-    }
-
-    public void InitializeDialogue()
-    {
-        if (isProcessingResponse)
-        {
-            llmCharacter?.CancelRequests();
-            isProcessingResponse = false;
-        }
-
-        if (playerDialogueText) playerDialogueText.text = "";
-        if (npcDialogueText) npcDialogueText.text = "";
-        if (inputField) inputField.text = "";
-
-        currentResponse.Clear();
-        lastReply = "";
-
-        EnableInput();
-    }
-
     private void OnSubmitClicked()
     {
         if (isProcessingResponse || string.IsNullOrEmpty(inputField.text) || llmCharacter == null)
@@ -77,7 +40,10 @@ public class LLMDialogueManager : MonoBehaviour
 
         string userInput = inputField.text;
 
-        if (playerDialogueText){playerDialogueText.text = userInput;}
+        if (playerDialogueText)
+        {
+            playerDialogueText.text = userInput;
+        }
 
         inputField.text = "";
         isProcessingResponse = true;
@@ -85,105 +51,40 @@ public class LLMDialogueManager : MonoBehaviour
         currentResponse.Clear();
         lastReply = "";
 
-
         _ = llmCharacter.Chat(userInput, HandleReply, OnReplyComplete);
     }
 
-    private void HandleReply(string reply)
+    protected override void UpdateDialogueDisplay(string text)
     {
-        if (string.IsNullOrEmpty(reply)) return;
-
-        try
+        if (npcDialogueText)
         {
-            // Handle incremental response
-            if (reply.Length > lastReply.Length && reply.StartsWith(lastReply))
-            {
-                string newContent = reply.Substring(lastReply.Length);
-                currentResponse.Append(newContent);
-                lastReply = reply;
-            }
-            else if (reply.Length > lastReply.Length)
-            {
-                currentResponse.Append(reply);
-                lastReply = reply;
-            }
-
-            if (npcDialogueText)
-            {
-                npcDialogueText.text = currentResponse.ToString();
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error in HandleReply: {e}");
-            OnError();
+            npcDialogueText.text = text;
         }
     }
 
-    private void OnReplyComplete()
-    {
-        isProcessingResponse = false;
-        EnableInput();
-    }
-
-    private void OnError()
-    {
-        isProcessingResponse = false;
-        EnableInput();
-        Debug.LogError("Error processing LLM response");
-    }
-
-    private void EnableInput()
+    protected override void EnableInput()
     {
         if (inputBox) inputBox.SetActive(true);
         if (inputField)
         {
             inputField.interactable = true;
             inputField.ActivateInputField();
-            Debug.Log("Input Field activated");
         }
-        else
-            Debug.Log("Input Field Fucking Broke");
         if (submitButton) submitButton.interactable = true;
     }
 
-    private void DisableInput()
+    protected override void DisableInput()
     {
-        Debug.Log("Disabling Input");
         if (inputField) inputField.interactable = false;
         if (submitButton) submitButton.interactable = false;
     }
 
-    public async Task ResetDialogue()
+    public override async Task ResetDialogue()
     {
-        if (llmCharacter == null) return;
+        await base.ResetDialogue();
 
-        if (isProcessingResponse)
-        {
-            llmCharacter.CancelRequests();
-            isProcessingResponse = false;
-        }
-
-  
         if (playerDialogueText) playerDialogueText.text = "";
         if (npcDialogueText) npcDialogueText.text = "";
         if (inputField) inputField.text = "";
-
-        currentResponse.Clear();
-        lastReply = "";
-
-        llmCharacter.ClearChat();
-        await Task.Yield();
-
-        DisableInput();
-    }
-
-    private void OnDisable()
-    {
-        if (llmCharacter != null && isProcessingResponse)
-        {
-            llmCharacter.CancelRequests();
-        }
-        DisableInput();
     }
 }
