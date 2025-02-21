@@ -31,6 +31,14 @@ public class CharacterManager : MonoBehaviour
     public int maxWarmupAttempts = 3;
     public float baseBackoffDelay = 1f;
 
+    public enum CharacterState
+    {
+        Uninitialized,
+        LoadingTemplate,
+        WarmingUp,
+        Ready,
+        Failed
+    }
 
     private class CharacterStateTransition
     {
