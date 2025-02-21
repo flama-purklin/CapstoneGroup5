@@ -1,4 +1,3 @@
-// Then update the CharacterManager.cs
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,27 +12,24 @@ public class CharacterManager : MonoBehaviour
     [Header("Configuration")]
     public string charactersFolder = "Characters";
     public LLM sharedLLM;
-
-    [Header("Initialization Settings")]
-    public float characterInitDelay = 2f;     
-    public float templateTimeout = 15f;         
-    public float warmupTimeout = 30f;         
-    public int maxWarmupAttempts = 3;          
-    public float baseBackoffDelay = 1f;        
-
-    [Header("References")]
-    public UIController uiController;
     private Dictionary<string, LLMCharacter> characterCache = new Dictionary<string, LLMCharacter>();
     private Dictionary<string, string> promptCache = new Dictionary<string, string>();
-    private LLMCharacter currentCharacter;
     private bool isInitialized = false;
     private bool isInitializing = false;
     private bool isSwitchingCharacter = false;
     private Transform charactersContainer;
+    private LLMCharacter currentCharacter;
 
     public bool IsInitialized => isInitialized;
     public bool IsSwitchingCharacter => isSwitchingCharacter;
     public event System.Action OnInitializationComplete;
+
+    [Header("Initialization Settings")]
+    public float characterInitDelay = 2f;
+    public float templateTimeout = 15f;
+    public float warmupTimeout = 30f;
+    public int maxWarmupAttempts = 3;
+    public float baseBackoffDelay = 1f;
 
 
     private class CharacterStateTransition
@@ -129,13 +125,6 @@ public class CharacterManager : MonoBehaviour
         isInitialized = true;
         isInitializing = false;
 
-        if (uiController)
-        {
-            uiController.OnWarmupComplete(); 
-            uiController.UpdateLLMStatus("All characters initialized!");
-            uiController.UpdateCharacterStatus("No character selected");
-        }
-
         OnInitializationComplete?.Invoke();
     }
 
@@ -147,8 +136,6 @@ public class CharacterManager : MonoBehaviour
             Debug.LogError($"Characters folder not found at: {characterPath}");
             yield break;
         }
-
-        if (uiController) uiController.UpdateLLMStatus("Creating character objects...");
 
         var characterFiles = Directory.GetFiles(characterPath, "*.json")
             .Select(path => Path.GetFileNameWithoutExtension(path))
@@ -185,7 +172,7 @@ public class CharacterManager : MonoBehaviour
             character.save = characterName; 
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
-            character.temperature =  0.25f;
+            character.temperature =  0.8f;
             character.topK = 55;
             character.topP = 0.9f;
             character.repeatPenalty = 1.0f;
@@ -194,7 +181,7 @@ public class CharacterManager : MonoBehaviour
 
             // Load and set the prompt
             string jsonContent = File.ReadAllText(jsonPath);
-            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent);
+            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent, character);
             if (string.IsNullOrEmpty(systemPrompt))
             {
                 Debug.LogError($"Failed to generate prompt for character: {characterName}");
@@ -223,11 +210,14 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator InitializeCharacters()
     {
-        if (uiController) uiController.UpdateLLMStatus("Waiting for LLM initialization...");
         while (!sharedLLM.started) yield return null;
         yield return new WaitForSeconds(1f);
 
-        if (uiController) uiController.UpdateLLMStatus("Initializing characters...");
+        if (characterCache.Count == 0)
+        {
+            Debug.LogError("No characters in cache to initialize!");
+            yield break;
+        }
 
         float progressPerCharacter = 1f / characterCache.Count;
         int charactersInitialized = 0;
@@ -242,27 +232,16 @@ public class CharacterManager : MonoBehaviour
             ));
 
             charactersInitialized++;
+        }
 
-            if (uiController)
+        // Only set context if we have characters
+        if (characterCache.Count > 0)
+        {
+            int contextPerCharacter = sharedLLM.contextSize / characterCache.Count;
+            foreach (var character in characterCache.Values)
             {
-                float progress = charactersInitialized * progressPerCharacter;
-                uiController.UpdateLLMStatus(
-                    $"Initializing characters... ({charactersInitialized}/{characterCache.Count}) - {(progress * 100):F1}%"
-                );
+                character.nKeep = contextPerCharacter;
             }
-        }
-
-        int contextPerCharacter = sharedLLM.contextSize / characterCache.Count;
-        foreach (var character in characterCache.Values)
-        {
-            character.nKeep = contextPerCharacter;
-        }
-
-        if (uiController)
-        {
-            MonitorMemoryUsage();
-            uiController.UpdateLLMStatus("All characters initialized!");
-            uiController.UpdateCharacterStatus("No character selected");
         }
     }
 
@@ -309,7 +288,6 @@ public class CharacterManager : MonoBehaviour
         float timeoutTime = Time.time + templateTimeout;
         while (!templateTask.IsCompleted && Time.time <= timeoutTime)
         {
-            if (uiController) uiController.UpdateLLMStatus($"Loading template for {characterName}...");
             yield return null;
         }
 
@@ -366,10 +344,6 @@ public class CharacterManager : MonoBehaviour
                 timedOut = Time.time > timeoutTime;
                 if (!taskCompleted && !timedOut)
                 {
-                    if (uiController)
-                        uiController.UpdateLLMStatus(
-                            $"Warming up {characterName} (attempt {attempt}/{maxWarmupAttempts})..."
-                        );
                     yield return null;
                 }
             }
@@ -400,34 +374,17 @@ public class CharacterManager : MonoBehaviour
 
     public async Task<LLMCharacter> SwitchToCharacter(string characterName)
     {
-
         Debug.Log($"Attempting to switch to: {characterName}");
         Debug.Log($"Available characters: {string.Join(", ", characterCache.Keys)}");
 
-        if (!isInitialized)
-        {
-            Debug.LogError("CharacterManager not initialized yet!");
+        if (!isInitialized || !characterCache.ContainsKey(characterName))
             return null;
-        }
-
-        if (!characterCache.ContainsKey(characterName))
-        {
-            Debug.LogError($"Character {characterName} not found in cache!");
-            return null;
-        }
 
         if (stateTransitions[characterName].CurrentState != CharacterState.Ready)
-        {
-            Debug.LogError($"Character {characterName} is not in ready state!");
             return null;
-        }
 
         if (isSwitchingCharacter)
-        {
-            Debug.LogWarning("Character switch already in progress!");
             return null;
-        }
-
 
         isSwitchingCharacter = true;
 
@@ -437,10 +394,10 @@ public class CharacterManager : MonoBehaviour
                 stateTransitions[currentCharacter.name].CurrentState == CharacterState.Ready)
             {
                 currentCharacter.CancelRequests();
-                await Task.Yield(); // calm down buster
+                await Task.Yield();
             }
 
-            LogResourceUtilization(); ;
+            LogResourceUtilization();
             currentCharacter = characterCache[characterName];
             return currentCharacter;
         }
@@ -584,32 +541,34 @@ public class CharacterManager : MonoBehaviour
     }
 
     // FOR LATER USE, DO NOT DELETE
-    private async void LogTokenUsage(string characterName) 
-    {
-        var character = characterCache[characterName];
-        if (character != null)
-        {
-            try
-            {
-                var tokens = await character.Tokenize(character.prompt);
-                if (tokens != null)
-                {
-                    Debug.Log($"{characterName} system prompt uses {tokens.Count} tokens of {character.nKeep} allocated tokens");
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error analyzing token usage for {characterName}: {e.Message}");
-                Debug.LogError($"Stack trace: {e.StackTrace}");
-            }
-        }
-    }
+    //private async void LogTokenUsage(string characterName) 
+    //{
+    //    var character = characterCache[characterName];
+    //    if (character != null)
+    //    {
+    //        try
+    //        {
+    //            var tokens = await character.Tokenize(character.prompt);
+    //            if (tokens != null)
+    //            {
+    //                Debug.Log($"{characterName} system prompt uses {tokens.Count} tokens of {character.nKeep} allocated tokens");
+    //            }
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            Debug.LogError($"Error analyzing token usage for {characterName}: {e.Message}");
+    //            Debug.LogError($"Stack trace: {e.StackTrace}");
+    //        }
+    //    }
+    //}
 
-    private void MonitorMemoryUsage()
-    {
-        long totalMemory = System.GC.GetTotalMemory(false);
-        Debug.Log($"Total managed memory after loading: {totalMemory / 1024 / 1024} MB");
-    }
+    //private void MonitorMemoryUsage()
+    //{
+    //    long totalMemory = System.GC.GetTotalMemory(false);
+    //    Debug.Log($"Total managed memory after loading: {totalMemory / 1024 / 1024} MB");
+    //}
+
+
     private void LogResourceUtilization()
     {
         foreach (var kvp in characterCache)
@@ -648,5 +607,30 @@ public class CharacterManager : MonoBehaviour
         }
 
         return info.ToString();
+    }
+
+    public float GetInitializationProgress()
+    {
+        int totalCharacters = stateTransitions.Count;
+        if (totalCharacters == 0) return 0f;
+
+        int readyCharacters = stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready);
+        return (float)readyCharacters / totalCharacters;
+    }
+
+    public LLMCharacter GetCharacterByName(string characterName)
+    {
+        if (characterCache.TryGetValue(characterName, out LLMCharacter character))
+        {
+            Debug.Log($"Found LLMCharacter in cache for {characterName}"); 
+            return character;
+        }
+        Debug.LogError($"No LLMCharacter found in cache for {characterName}");
+        return null;
+    }
+
+    public int GetReadyCharacterCount()
+    {
+        return stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready);
     }
 }
