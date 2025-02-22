@@ -1056,7 +1056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23ec5916893d6bb4299afdbf250fcd12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  llm: {fileID: 1424623594}
+  llm: {fileID: 1424623596}
   npcManager: {fileID: 1545545254}
   characterManager: {fileID: 1545545253}
 --- !u!4 &1343384126
@@ -1199,7 +1199,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1424623595}
-  - component: {fileID: 1424623594}
+  - component: {fileID: 1424623596}
   m_Layer: 0
   m_Name: LLM
   m_TagString: Untagged
@@ -1207,43 +1207,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1424623594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1424623593}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a50e3140c3ecaaf1c848dbf141cc2074, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  advancedOptions: 1
-  remote: 0
-  port: 13333
-  numThreads: -1
-  gpuAcceleration: 1
-  _numGPULayers: 32
-  debug: 0
-  parallelPrompts: 3
-  dontDestroyOnLoad: 1
-  contextSize: 16386
-  batchSize: 2048
-  model: mistral-7b-instruct-v0.3-iq4_xs-imat.gguf
-  chatTemplate: mistral chat
-  lora: 
-  loraWeights: 
-  flashAttention: 0
-  APIKey: 
-  SSLCert: 
-  SSLCertPath: 
-  SSLKey: 
-  SSLKeyPath: 
-  minContextLength: 0
-  maxContextLength: 32768
-  embeddingsOnly: 0
-  embeddingLength: 4096
 --- !u!4 &1424623595
 Transform:
   m_ObjectHideFlags: 0
@@ -1259,6 +1222,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1286500689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1424623596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424623593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cac4a61bd4fd444a102f092e6f742c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  advancedOptions: 1
+  remote: 0
+  port: 13333
+  numThreads: -1
+  gpuAcceleration: 1
+  _numGPULayers: 32
+  debug: 0
+  parallelPrompts: 3
+  dontDestroyOnLoad: 1
+  contextSize: 12288
+  batchSize: 1024
+  model: Mistral-Nemo-Instruct-2407-Q4_K_M.gguf
+  chatTemplate: nemo
+  lora: 
+  loraWeights: 
+  flashAttention: 0
+  APIKey: 
+  SSLCert: 
+  SSLCertPath: 
+  SSLKey: 
+  SSLKeyPath: 
+  minContextLength: 0
+  maxContextLength: 1024000
+  embeddingsOnly: 0
+  embeddingLength: 5120
 --- !u!1 &1432268535
 GameObject:
   m_ObjectHideFlags: 0
@@ -1380,12 +1380,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charactersFolder: Characters
-  sharedLLM: {fileID: 1424623594}
+  sharedLLM: {fileID: 1424623596}
   characterInitDelay: 2
   templateTimeout: 15
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
+  temperature: 0.45
+  topK: 55
+  topP: 0.95
+  repeatPenalty: 1
+  presencePenalty: 0
+  frequencyPenalty: 1
 --- !u!114 &1545545254
 MonoBehaviour:
   m_ObjectHideFlags: 0
