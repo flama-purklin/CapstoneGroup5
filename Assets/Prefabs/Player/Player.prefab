@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 3363462165088957525}
   - component: {fileID: 7643346265812006836}
   - component: {fileID: 8662918361551714388}
+  - component: {fileID: 4486884796906380318}
   m_Layer: 0
   m_Name: playerSprite
   m_TagString: Untagged
@@ -220,6 +221,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4486884796906380318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5128493696467120545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23b38ef996d792f4e9496f3fe7e2ab23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7441357142540035523
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,7 +245,6 @@ GameObject:
   - component: {fileID: 4821733877407599817}
   - component: {fileID: 884967809646904070}
   - component: {fileID: 2934860917058705198}
-  - component: {fileID: -180563090084328672}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -317,15 +329,3 @@ MonoBehaviour:
     m_Bits: 64
   raycastDistance: 2
   raycastOffset: {x: 0, y: 0.1, z: 0}
---- !u!114 &-180563090084328672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7441357142540035523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23b38ef996d792f4e9496f3fe7e2ab23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
