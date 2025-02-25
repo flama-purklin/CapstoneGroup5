@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2774055563301673950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8547632229619857845}
+  m_Layer: 0
+  m_Name: Rail Cars
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8547632229619857845
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2774055563301673950}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9091059255953728102}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5507314032791782180
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9091059255953728102}
+  - component: {fileID: 3219961570550194799}
+  - component: {fileID: 3667271546179679522}
+  - component: {fileID: 6656308374510975501}
+  m_Layer: 0
+  m_Name: TrainManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9091059255953728102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507314032791782180}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.2, y: 0, z: 5.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8547632229619857845}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3219961570550194799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507314032791782180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec6c1b02beee335408515e451c65b0f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carPrefabs:
+  - {fileID: 896984304819938621, guid: 2ba352dee0941db49aea6e3d85aba618, type: 3}
+  - {fileID: 1113702497537417749, guid: 9e4e9d6d01cd3e647b87eb336187d973, type: 3}
+  spawnPoint: {fileID: 9091059255953728102}
+  carSpacing: 25
+  trainCarList: []
+  playerPrefab: {fileID: 7441357142540035523, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+  cameraPrefab: {fileID: 4926932629011586675, guid: 8fe454b1282e5614aae77733f96da520, type: 3}
+--- !u!114 &3667271546179679522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507314032791782180}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c9e4e32fd4b9446850b7061a5f9339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  railCarLength: 24
+  railCarDepth: 10
+  railCarHeight: 10
+  wallThickness: 0.2
+  floorThickness: 0.2
+  floorMaterial: {fileID: 2100000, guid: 4f9c339cbf38b684f93dcc8f21e52e57, type: 2}
+  wallMaterial: {fileID: 2100000, guid: eb2b6aa69dc3840438f697a5d3bcbfe2, type: 2}
+  roofMaterial: {fileID: 2100000, guid: 4f9c339cbf38b684f93dcc8f21e52e57, type: 2}
+  exteriorMaterial: {fileID: 2100000, guid: eb2b6aa69dc3840438f697a5d3bcbfe2, type: 2}
+  trainCar: {fileID: 0}
+  floor: {fileID: 0}
+  roof: {fileID: 0}
+  wall: {fileID: 0}
+  exteriorWall: {fileID: 0}
+  carVisibilityComp: {fileID: 0}
+  carCharacterComp: {fileID: 0}
+  gridRows: 10
+  gridColumns: 24
+  cellSize: 1
+  anchorPrefab: {fileID: 7907908990791901465, guid: 08c7a0182998b7f4dbdef22f35d86ff0, type: 3}
+  anchorsVissible: 0
+  numbToSpawn: 10
+  objectsToSpawn:
+  - {fileID: 6960268298854984819, guid: c0c15d23149e045448be5328e7da2a4b, type: 3}
+  - {fileID: 8075997473193500487, guid: 38fc9cd27a62514498ec11ff6980a2c5, type: 3}
+  - {fileID: 842377192456773448, guid: 732bac1f47862294297bd4b4c5fc203d, type: 3}
+  - {fileID: 3379271612542612805, guid: f65ca8bd4b9d5a94b96e6671dbdc91db, type: 3}
+  - {fileID: 3210559826268682587, guid: 4722f8fbc1bb9b24eb1df990df499441, type: 3}
+  - {fileID: 7740665183911596152, guid: 9db157cdf09cdaf4191d03ad49e269e4, type: 3}
+  - {fileID: 3877189797188535287, guid: e058cac87bc97254195da76be77d83e6, type: 3}
+  - {fileID: 3353554131586986753, guid: a842783c726810144a7403a0b72e9723, type: 3}
+  - {fileID: 7810333911363064787, guid: 95356d5fb12bf2f4888447f8374f77ef, type: 3}
+  - {fileID: 2240232939037026429, guid: 8e86f903db7c55740b38edd37797d9f2, type: 3}
+  - {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+  testNpcPrefab: {fileID: 7441357142540035523, guid: 247f87585d4ef344b97284d8b035006b, type: 3}
+  spawnSuccessful: 0
+  anchorPoints: []
+--- !u!114 &6656308374510975501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507314032791782180}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonFile: {fileID: 4900000, guid: 6346fc71189645a4ab50f1674accc79c, type: 3}
+  railCarRandomizer: {fileID: 3667271546179679522}
+  trainCarLayout:
+    train_car: []
+  objectPrefabsList:
+  - key: seat
+    prefab: {fileID: 3877189797188535287, guid: e058cac87bc97254195da76be77d83e6, type: 3}
+  - key: entrance
+    prefab: {fileID: 3379271612542612805, guid: f65ca8bd4b9d5a94b96e6671dbdc91db, type: 3}
+  - key: walkway
+    prefab: {fileID: 139727030224991998, guid: 4756e6a770c104c4a8bd1ab1f09a8e71, type: 3}
+  - key: table
+    prefab: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+  - key: chair
+    prefab: {fileID: 3353554131586986753, guid: a842783c726810144a7403a0b72e9723, type: 3}
+  prefabSavePath: Assets/Scenes/JamesTest/Prefabs/

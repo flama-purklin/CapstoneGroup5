@@ -117,4 +117,10 @@ public class CarCharacters : MonoBehaviour
         usedCharacters.Clear();
         Debug.Log("Reset used characters list");
     }
+
+    // method to access list of npcs currently in car
+    public List<GameObject> GetCurrCharacters()
+    {
+        return this.carCharacters;
+    }
 }

@@ -57,7 +57,7 @@ public class CarDetection : MonoBehaviour
         if (Physics.Raycast(transform.position + raycastOffset, -Vector3.up,
             out hit, raycastDistance, trainLayer))
         {
-            GameObject rootCar = hit.transform.root.gameObject;
+            GameObject rootCar = hit.transform.parent.gameObject;
             CarVisibility newCar = rootCar.GetComponent<CarVisibility>();
 
             if (newCar && newCar != currentCar)
