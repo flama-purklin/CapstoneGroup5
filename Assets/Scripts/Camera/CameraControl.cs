@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
@@ -14,83 +13,122 @@ public class CameraControl : MonoBehaviour
     float carBoundMin;
     float carBoundMax;
 
-    public float carBufferAmt;
-    public float transitionTime;
+    [SerializeField] private float carBufferAmt = 2f;
+    [SerializeField] private float transitionTime = 0.5f;
 
     bool transition = false;
+    private bool boundsInitialized = false;  // NEW: Track if bounds are set
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         player = GameObject.FindWithTag("Player");
         //carDetection = player.GetComponent<CarDetection>();
+        if (!player){Debug.LogError("Player not found!");return;}
 
         //store the y and z values so that they are always constant
         startingY = transform.position.y;
         startingZ = transform.position.z;
+
+        // NEW: find initial car if player is in it
+        var carDetection = player.GetComponent<CarDetection>();
+        if (carDetection && carDetection.GetCurrentCar())
+        {
+            CarUpdate(carDetection.GetCurrentCar().gameObject, true);
+        }
     }
 
-    // Update is called once per frame
+    // NEW: Update() --> LateUpdate()
     void Update()
     {
+
+        if (!player || transition || !boundsInitialized) return;
+
         //get the player x val
         Vector3 playerPos = player.transform.position;
-        float camX = playerPos.x;
 
         //clamp to the bounds of the current traincar
-        camX = Mathf.Clamp(camX, carBoundMin, carBoundMax);
-
+        float camX = Mathf.Clamp(playerPos.x, carBoundMin, carBoundMax);
 
         //apply to the cam
-        if (!transition)
-            transform.position = new Vector3(camX, startingY, startingZ);
+        transform.position = new Vector3(camX, startingY, startingZ);
+
     }
 
     //called whenever a new car is entered
     public void CarUpdate(GameObject newCar, bool initial)
     {
 
+        if (!newCar) return;
+
         float prevCarEdge = transform.position.x;
 
         //retrieve the new bounds from the new car object
         carCenter = newCar.transform.position.x;
 
-        //get the bounds from a renderer in the objects children
-        Vector3 size = newCar.GetComponentInChildren<Renderer>().bounds.size;
-        Debug.Log(size);
-        carBoundMin = carCenter - size.x / 2;
-        carBoundMax = carCenter + size.x / 2;
-
-        //set the actual clamps with the buffer space amount
-        carBoundMin += carBufferAmt;
-        carBoundMax -= carBufferAmt;
-
-        //calculate whether new car is left or right of the old
-        float newCarEdge;
-        if (prevCarEdge < carBoundMin)
-            newCarEdge = carBoundMin;
-        else
-            newCarEdge = carBoundMax;
-
-        //smooth transition from one clamp to the other on car enter
-        if (!initial)
-            StartCoroutine(CarTransition(prevCarEdge, newCarEdge));
-    }
-
-    IEnumerator CarTransition(float prevEdge, float newEdge)
-    {
-        transition = true;
-
-        float currentTime = 0f;
-        while (currentTime < transitionTime)
+        // NEW: For car visibility handling
+        Renderer carRenderer = newCar.GetComponentInChildren<Renderer>();
+        if (!carRenderer)
         {
-            float camX = Mathf.Lerp(prevEdge, newEdge, currentTime / transitionTime);
-            transform.position = new Vector3(camX, startingY, startingZ);
-            currentTime += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
+            Debug.LogError("No renderer found in car!");
+            return;
         }
 
-        transform.position = new Vector3(newEdge, startingY, startingZ);
+        //get the bounds from a renderer in the objects children
+        //Vector3 size = newCar.GetComponentInChildren<Renderer>().bounds.size;
+        //Debug.Log(size);
+        //carBoundMin = carCenter - size.x / 2;
+        //carBoundMax = carCenter + size.x / 2;
+
+        //set the actual clamps with the buffer space amount
+        Bounds bounds = carRenderer.bounds;
+        carBoundMin = bounds.min.x + carBufferAmt;
+        carBoundMax = bounds.max.x - carBufferAmt;
+
+        boundsInitialized = true;
+
+        //calculate whether new car is left or right of the old
+        if (initial)
+        {
+            // if it's the initial car, just set the position directly
+            float camX = Mathf.Clamp(player.transform.position.x, carBoundMin, carBoundMax);
+            transform.position = new Vector3(camX, startingY, startingZ);
+        }
+        else
+        {
+            float targetX;
+            if (prevCarEdge < carBoundMin)
+                targetX = carBoundMin;
+            else if (prevCarEdge > carBoundMax)
+                targetX = carBoundMax;
+            else
+                targetX = prevCarEdge;
+
+            // transition lol
+            StartCoroutine(CarTransition(prevCarEdge, targetX));
+        }
+    }
+
+    private IEnumerator CarTransition(float startX, float endX)
+    {
+        transition = true;
+        float elapsed = 0;
+
+        Vector3 startPos = new Vector3(startX, startingY, startingZ);
+        Vector3 endPos = new Vector3(endX, startingY, startingZ);
+
+        while (elapsed < transitionTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / transitionTime;
+            Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
+            transform.position = newPos;
+            yield return null;
+        }
+
+        transform.position = endPos;
         transition = false;
     }
 }

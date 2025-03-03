@@ -3,11 +3,20 @@ using UnityEngine;
 public class CarVisibility : MonoBehaviour
 {
     public bool selected = false;
-    [SerializeField] MeshRenderer carFront;
-    [SerializeField] GameObject carTop;
+    [SerializeField] public MeshRenderer carFront;
+    [SerializeField] public GameObject carTop;
+    private CarCharacters carCharacters;
 
+    void Awake()
+    {
+        carCharacters = GetComponent<CarCharacters>();
+        if (!carCharacters)
+        {
+            Debug.LogError($"CarCharacters component missing on {gameObject.name}!");
+        }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    }
+
     void Start()
     {
         if (selected)
@@ -16,26 +25,26 @@ public class CarVisibility : MonoBehaviour
             CarDeselected();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //disable the front mesh so you can see in
-    public void CarSelected()
-    {
-        selected = true;
-        carFront.enabled = false;
-        carTop.SetActive(false);
-        GetComponent<CarCharacters>().InitializeCharacters();
-    }
-
-    //enable the front mesh so you can't see in
     public void CarDeselected()
     {
         selected = false;
-        carFront.enabled = true;
-        carTop.SetActive(true);
+        if (carFront) carFront.enabled = true;
+        if (carTop) carTop.SetActive(true);
+    }
+
+    //enable the front mesh so you can't see in
+    public void CarSelected()
+    {
+        selected = true;
+        if (carFront) carFront.enabled = false;
+        if (carTop) carTop.SetActive(false);
+        if (carCharacters) carCharacters.InitializeCharacters();
+    }
+
+    public Bounds GetBounds()
+    {
+        Renderer mainRenderer = GetComponentInChildren<Renderer>();
+        return mainRenderer ? mainRenderer.bounds : new Bounds(transform.position, Vector3.one);
     }
 }

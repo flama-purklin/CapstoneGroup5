@@ -5,12 +5,41 @@ public class CarDetection : MonoBehaviour
 {
     [SerializeField] Rigidbody rb;
     [SerializeField] LayerMask trainLayer;
+    private CarVisibility currentCar;
+    private CarVisibility previousCar;
+    private PlayerMovement playerMovement;
 
-    public GameObject currentCar;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private CameraControl cameraControl; // NEW
+    [SerializeField] private float raycastDistance = 2f; // NEW
+    [SerializeField] private Vector3 raycastOffset = Vector3.up * 0.1f; // NEW
+
+    private void Start()
     {
-        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar, true);
+        playerMovement = GetComponent<PlayerMovement>();
+        if (!playerMovement)
+        {
+            Debug.LogError("PlayerMovement component not found on Player object!");
+        }
+
+        cameraControl = Camera.main?.GetComponent<CameraControl>();
+        if (!cameraControl)
+        {
+            Debug.LogError("CameraControl component not found on Main Camera!");
+        }
+
+        // DetectCar();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Car"))
+        {
+            CarVisibility newCar = other.GetComponent<CarVisibility>();
+            if (newCar != null && newCar != currentCar)
+            {
+                UpdateCurrentCar(newCar);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -20,31 +49,61 @@ public class CarDetection : MonoBehaviour
     }
 
     //shoots a raycast straight down to figure out what car the player is in
-    public void DetectCar()
+    private void DetectCar()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position + Vector3.up * .1f, -Vector3.up,  out hit, 2f, trainLayer))
+        Debug.DrawRay(transform.position + raycastOffset, -Vector3.up * raycastDistance, Color.red);
+
+        if (Physics.Raycast(transform.position + raycastOffset, -Vector3.up,
+            out hit, raycastDistance, trainLayer))
         {
-            //Debug.Log(hit.transform.root.gameObject);
-            if (currentCar != hit.transform.root.gameObject)
+            GameObject rootCar = hit.transform.parent.gameObject;
+            CarVisibility newCar = rootCar.GetComponent<CarVisibility>();
+
+            if (newCar && newCar != currentCar)
             {
-                NewCar(hit.transform.root.gameObject);
+                SwitchToCar(newCar);
             }
         }
-        else
+    }
+
+    private void SwitchToCar(CarVisibility newCar)
+    {
+        if (currentCar)
         {
-            Debug.Log("Nothing Hit");
+            currentCar.CarDeselected();
+        }
+
+        currentCar = newCar;
+        currentCar.CarSelected();
+
+        if (cameraControl)
+        {
+            cameraControl.CarUpdate(currentCar.gameObject, currentCar == null);
         }
     }
 
     //update the car visibility of the old and new currentcar
-    private void NewCar(GameObject newCar)
+    private void UpdateCurrentCar(CarVisibility newCarVisibility)
     {
-        currentCar.GetComponent<CarVisibility>().CarDeselected();
-        currentCar = newCar;
-        currentCar.GetComponent<CarVisibility>().CarSelected();
+        if (currentCar != null)
+        {
+            currentCar.CarDeselected();
+        }
 
-        //update the camera controls
-        Camera.main.GetComponent<CameraControl>().CarUpdate(currentCar, false);
+        currentCar = newCarVisibility;
+        currentCar.CarSelected();
+
+        if (cameraControl)
+        {
+            cameraControl.CarUpdate(currentCar.gameObject, false);
+        }
     }
+
+    public CarVisibility GetCurrentCar()
+    {
+        return currentCar;
+    }
+
+
 }

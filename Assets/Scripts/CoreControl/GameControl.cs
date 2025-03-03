@@ -1,9 +1,15 @@
+using System.Collections;
 using UnityEngine;
 
 public enum GameState
 {
     DEFAULT,
-    DIALOGUE
+    DIALOGUE,
+    PAUSE,
+    FINAL,
+    WIN,
+    LOSE,
+    MINIGAME
 }
 
 public class GameControl : MonoBehaviour
@@ -24,11 +30,21 @@ public class GameControl : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        StartCoroutine(TimerUpdate());
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    //PLACEHOLDER - replace this basic logic with Jorge's timer function when that is finished
+    IEnumerator TimerUpdate()
+    {
+        yield return new WaitForSeconds(300);
+        Debug.Log("Final State Activated");
+        currentState = GameState.FINAL;
     }
 }
