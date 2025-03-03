@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using UnityEngine.EventSystems; // Ensure input works in UI
 
 public class PauseMenu : MonoBehaviour
 {

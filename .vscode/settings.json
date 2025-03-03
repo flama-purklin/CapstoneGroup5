@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "UI TEST.sln"
+    "dotnet.defaultSolution": "CapstoneGroup5.sln"
 }
