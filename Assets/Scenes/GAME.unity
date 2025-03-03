@@ -1376,7 +1376,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notebookCanvas: {fileID: 1276526276}
-  backgroundDim: {fileID: 0}
   notebookText: {fileID: 583552441}
 --- !u!4 &560586818
 Transform:
@@ -2009,7 +2008,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notebookCanvas: {fileID: 1276526276}
-  backgroundDim: {fileID: 0}
   notebookText: {fileID: 583552441}
 --- !u!1 &1389195881
 GameObject:

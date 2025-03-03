@@ -7,23 +7,22 @@ using UnityEngine.EventSystems; // Ensure input works in UI
 public class NotebookManager : MonoBehaviour
 {
     public GameObject notebookCanvas;  // Assign the Notebook UI
-    public GameObject backgroundDim;   // Assign the dim background panel
     public TMP_Text notebookText;      // Assign the text element in the notebook
 
     private bool isNotebookOpen = false;
     private int offsetIndex = 0; // Tracks scrolling position (only for first page)
     private int currentPage = 0; // Tracks the current page
     private const int maxVisibleEntries = 5; // Number of entries visible per page
-    private const int totalPages = 2; // Adjust this based on total pages needed
+    private const int totalPages = 2; // Adjust based on total pages needed
 
-    private float scrollCooldown = 0.15f; // Delay between scrolls
-    private float nextScrollTime = 0f;    // Tracks next valid scroll time
+    private float scrollCooldown = 0.1f; // Reduced delay for smoother scrolling
+    private float nextScrollTime = 0f;  
 
     private List<string> notebookEntries = new List<string>
     {
         "- Talk to Nova Winchester",
         "- Talk to NPC #2",
-        "- Talk NPC #3",
+        "- Talk to NPC #3",
         "- Found the Wrench",
         "- Found the Key",
         "- Unlocked the Door",
@@ -34,50 +33,40 @@ public class NotebookManager : MonoBehaviour
 
     void Start()
     {
-        // Hide the notebook and dim background at the start
+        // Ensure notebook starts hidden
         notebookCanvas.SetActive(false);
-        backgroundDim.SetActive(false);
         isNotebookOpen = false;
     }
 
     void Update()
     {
-        // Toggle the notebook UI with "N"
+        // Open/Close notebook instantly with "N"
         if (Input.GetKeyDown(KeyCode.N))
         {
-            isNotebookOpen = !isNotebookOpen;
-            notebookCanvas.SetActive(isNotebookOpen);
-            backgroundDim.SetActive(isNotebookOpen); // Dim background when notebook is open
-            
-            if (isNotebookOpen)
-            {
-                currentPage = 0; // Reset to first page when opening
-                offsetIndex = 0;
-                UpdateNotebookDisplay();
-            }
+            ToggleNotebook();
         }
 
-        // If on the first page, allow scrolling with "K" and "I"
-        if (isNotebookOpen && currentPage == 0 && EventSystem.current.currentSelectedGameObject == null && Time.time >= nextScrollTime)
-        {
-            if (Input.GetKey(KeyCode.K) && offsetIndex < notebookEntries.Count - maxVisibleEntries)
-            {
-                offsetIndex++;
-                UpdateNotebookDisplay();
-                nextScrollTime = Time.time + scrollCooldown;
-            }
-
-            if (Input.GetKey(KeyCode.I) && offsetIndex > 0)
-            {
-                offsetIndex--;
-                UpdateNotebookDisplay();
-                nextScrollTime = Time.time + scrollCooldown;
-            }
-        }
-
-        // Page navigation: "L" moves to the next page, "J" moves back
         if (isNotebookOpen && EventSystem.current.currentSelectedGameObject == null)
         {
+            // Scrolling only on first page
+            if (currentPage == 0 && Time.time >= nextScrollTime)
+            {
+                if (Input.GetKey(KeyCode.K) && offsetIndex < notebookEntries.Count - maxVisibleEntries)
+                {
+                    offsetIndex++;
+                    UpdateNotebookDisplay();
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
+
+                if (Input.GetKey(KeyCode.I) && offsetIndex > 0)
+                {
+                    offsetIndex--;
+                    UpdateNotebookDisplay();
+                    nextScrollTime = Time.time + scrollCooldown;
+                }
+            }
+
+            // Page navigation: "L" for next, "J" for previous
             if (Input.GetKeyDown(KeyCode.L) && currentPage < totalPages - 1)
             {
                 currentPage++;
@@ -104,17 +93,30 @@ public class NotebookManager : MonoBehaviour
             ReplaceNotebookEntry(2, "- T̶a̶l̶k̶ ̶t̶o̶ ̶N̶P̶C̶ ̶#̶3̶");
     }
 
+    void ToggleNotebook()
+    {
+        isNotebookOpen = !isNotebookOpen;
+        notebookCanvas.SetActive(isNotebookOpen);
+
+        if (isNotebookOpen)
+        {
+            currentPage = 0;  // Reset to first page
+            offsetIndex = 0;  // Reset scrolling
+            UpdateNotebookDisplay(); // Ensure objectives show immediately
+        }
+    }
+
     void UpdateNotebookDisplay()
     {
         if (currentPage == 0)
         {
-            // Page 1: Allow scrolling
+            // Page 1: Display scrollable objectives
             notebookText.text = string.Join("\n", notebookEntries.GetRange(offsetIndex, Mathf.Min(maxVisibleEntries, notebookEntries.Count - offsetIndex)));
         }
         else if (currentPage == 1)
         {
-            // Page 2: Show a different set of text (example page content)
-            notebookText.text = "📖 Character Bio 📖\n- Nova Winchester\n- Stuff about Nove Winchester\n";
+            // Page 2: Character Bio
+            notebookText.text = "📖 Character Bio 📖\n- Nova Winchester\n- Stuff about Nova Winchester\n";
         }
     }
 
