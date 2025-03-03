@@ -1239,14 +1239,14 @@ MonoBehaviour:
   port: 13333
   numThreads: -1
   gpuAcceleration: 1
-  _numGPULayers: 32
+  _numGPULayers: 16
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
   contextSize: 12288
   batchSize: 1024
-  model: Mistral-Nemo-Instruct-2407-Q4_K_M.gguf
-  chatTemplate: nemo
+  model: qwen2-0_5b-instruct-q4_k_m.gguf
+  chatTemplate: chatml
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1256,9 +1256,9 @@ MonoBehaviour:
   SSLKey: 
   SSLKeyPath: 
   minContextLength: 0
-  maxContextLength: 1024000
+  maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 5120
+  embeddingLength: 896
 --- !u!1 &1432268535
 GameObject:
   m_ObjectHideFlags: 0

@@ -76,7 +76,7 @@ public class NPCAnimManager : MonoBehaviour
             backward = false;
 
         //then flip anim based on last movement vector
-        if ((movementControl.movementVector.x > 0 && !backward) || (movementControl.movementVector.x <= 0 && backward))
+        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
             transform.root.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
         else
             transform.root.localScale = originalScale;
@@ -90,7 +90,7 @@ public class NPCAnimManager : MonoBehaviour
 
         Vector3 playerDir = player.transform.position - transform.position;
 
-        if (playerDir.x > 0)
+        if (playerDir.x < 0)
             transform.root.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
         else
             transform.root.localScale = originalScale;

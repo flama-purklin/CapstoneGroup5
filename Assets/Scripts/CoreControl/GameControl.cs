@@ -8,7 +8,8 @@ public enum GameState
     PAUSE,
     FINAL,
     WIN,
-    LOSE
+    LOSE,
+    MINIGAME
 }
 
 public class GameControl : MonoBehaviour
