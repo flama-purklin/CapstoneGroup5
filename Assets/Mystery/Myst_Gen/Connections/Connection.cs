@@ -18,6 +18,11 @@ public class Connection : MonoBehaviour
         
     }
 
+    private void FixedUpdate()
+    {
+        ConnectionSpawn(startObj, endObj);
+    }
+
     //associated node objects are passed from NodeControl
     public void ConnectionSpawn(GameObject origin, GameObject result)
     {
@@ -37,7 +42,7 @@ public class Connection : MonoBehaviour
         float x = hypotenuse.x;
         float y = hypotenuse.y;
         float theta = 2 * Mathf.PI + Mathf.Atan2(y, -x);
-        Debug.Log(x + " " + y + " " + theta);
+        //Debug.Log(x + " " + y + " " + theta);
 
         Vector2 direction = new Vector2(Mathf.Sin(theta), Mathf.Cos(theta));
 
@@ -46,6 +51,6 @@ public class Connection : MonoBehaviour
         //send to back
         transform.SetSiblingIndex(0);
 
-        Debug.Log("new connection successfully created");
+        //Debug.Log("new connection successfully created");
     }
 }

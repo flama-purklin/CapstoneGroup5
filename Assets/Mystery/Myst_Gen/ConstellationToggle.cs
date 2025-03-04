@@ -1,8 +1,11 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ConstellationToggle : MonoBehaviour
 {
     private Canvas canvas;
+
+    [SerializeField] RectTransform mysteryHolder;
 
     void Start()
     {
@@ -18,12 +21,23 @@ public class ConstellationToggle : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M) && GameControl.GameController.currentState == GameState.DEFAULT)
+        if (Input.GetKeyDown(KeyCode.M))
         {
             if (canvas != null)
             {
-                // Toggle just the canvas visibility
-                canvas.enabled = !canvas.enabled;
+                if (GameControl.GameController.currentState == GameState.DEFAULT)
+                {
+                    // Toggle just the canvas visibility
+                    canvas.enabled = true;
+
+                    GameControl.GameController.currentState = GameState.MYSTERY;
+                }
+                else if (GameControl.GameController.currentState == GameState.MYSTERY)
+                {
+                    canvas.enabled = false;
+
+                    GameControl.GameController.currentState = GameState.DEFAULT;
+                }    
             }
             else
             {
@@ -31,5 +45,21 @@ public class ConstellationToggle : MonoBehaviour
                 gameObject.SetActive(!gameObject.activeSelf);
             }
         }
+
+        if (Input.GetKey(KeyCode.Mouse1) && GameControl.GameController.currentState == GameState.MYSTERY)
+        {
+            
+            float mouseDeltaX = Input.GetAxis("Mouse X") * 2.0f * Time.deltaTime;
+            float mouseDeltaY = Input.GetAxis("Mouse Y") * 2.0f * Time.deltaTime;
+
+            Debug.Log(mouseDeltaX + " " + mouseDeltaY);
+
+            mysteryHolder.anchoredPosition = mysteryHolder.anchoredPosition + new Vector2(mouseDeltaX, mouseDeltaY);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        
     }
 }

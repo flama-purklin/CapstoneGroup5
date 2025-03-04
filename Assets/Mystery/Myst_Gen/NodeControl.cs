@@ -26,7 +26,7 @@ public class NodeControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        HandleScroll();
+        //HandleScroll();
     }
 
     void HandleScroll()

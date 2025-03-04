@@ -1,9 +1,10 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
     //
 
@@ -53,18 +54,12 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Debug.Log("Pointer Released at " + gameObject.name);
     }
 
-    public void OnBeginDrag(PointerEventData pointEventData)
-    {
-        Debug.Log("Dragging Begin at " + gameObject.name);
-    }
-
-    public void OnEndDrag(PointerEventData pointEventData)
-    {
-        Debug.Log("Dragging End at " + gameObject.name);
-    }
-
     public void OnDrag(PointerEventData pointEventData)
     {
-        Debug.Log("Dragging this one " + gameObject.name);
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            Debug.Log("Dragging this one " + gameObject.name);
+            transform.position = Input.mousePosition;
+        }
     }
 }
