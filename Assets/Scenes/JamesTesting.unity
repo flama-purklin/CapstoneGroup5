@@ -2072,11 +2072,11 @@ PrefabInstance:
     - target: {fileID: 1548564562661033370, guid: e3574a9c592ff284f9fdfcb0716e8ad8, type: 3}
       propertyPath: infoPrefab
       value: 
-      objectReference: {fileID: 4263868681427586989, guid: 545c2c5c53b4be54d9c406b2758b7c0e, type: 3}
+      objectReference: {fileID: 4263868681427586989, guid: aa8b9776d8e1e8c4bb80cfa327c7e9dc, type: 3}
     - target: {fileID: 1548564562661033370, guid: e3574a9c592ff284f9fdfcb0716e8ad8, type: 3}
       propertyPath: evidencePrefab
       value: 
-      objectReference: {fileID: 4217250957802299677, guid: eda10bf781e57ab48839537beca749e9, type: 3}
+      objectReference: {fileID: 4217250957802299677, guid: 1c6fbc347a8946f419478ec7e34f2016, type: 3}
     - target: {fileID: 2525797679239312684, guid: e3574a9c592ff284f9fdfcb0716e8ad8, type: 3}
       propertyPath: m_Name
       value: MysteryCanvas

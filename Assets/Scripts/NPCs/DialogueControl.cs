@@ -148,7 +148,7 @@ public class DialogueControl : MonoBehaviour
             {
                 shutdown = true;
             }
-            StartCoroutine(DeactivateDialogue());
+            Deactivate();
         }
     }
 

@@ -40,13 +40,18 @@ public class Timer : MonoBehaviour
     {
         int minutes = Mathf.FloorToInt(timeToDisplay / 60);
         int seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timerText.text = "Time Remaining:" + string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     void ShowGameOverScreen()
     {
-        gameOverPanel.SetActive(true); // Show the "You Lose" screen
-        Time.timeScale = 0f; // Pause game
+        //Jorge's implementation
+        //gameOverPanel.SetActive(true); // Show the "You Lose" screen
+        //Time.timeScale = 0f; // Pause game
+
+        //Integration with current game states
+        GameControl.GameController.currentState = GameState.FINAL;
+        timerText.gameObject.SetActive(false);
     }
 
     public void RestartGame() // Attach this to Restart button

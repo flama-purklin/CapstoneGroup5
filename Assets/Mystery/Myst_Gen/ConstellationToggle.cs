@@ -13,6 +13,7 @@ public class ConstellationToggle : MonoBehaviour
         {
             Debug.LogWarning("No Canvas component found for Constellation.");
         }
+        canvas.enabled = false;
     }
 
     void Update()
