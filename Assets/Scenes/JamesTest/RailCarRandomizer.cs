@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static TMPro.TMP_Compatibility;
 
 public class RailCarRandomizer : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public Material exteriorMaterial = null; // spelled wrong I think
     public GameObject trainCar;
     public GameObject floor, roof;
-    public GameObject wall, exteriorWall;
+    public GameObject wall, exteriorWall, leftWall, rightWall;
     public CarVisibility carVisibilityComp;
     public CarCharacters carCharacterComp;
 
@@ -26,6 +27,12 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public float cellSize = 1f; // TODO: cell size should be auto calc'd based on floor size.
     [SerializeField] public GameObject anchorPrefab = null;
     [SerializeField] public bool anchorsVissible = false;
+
+    public GameObject backWallPrefab = null;
+    public GameObject leftWallPrefab = null;
+    public GameObject frontWallPrefab = null;
+    public GameObject roofPrefab = null;
+    public bool spawnWithWallPrefabs = false;
 
     [SerializeField] public int numbToSpawn = 10; // How many objects are spawned
     [SerializeField] public List<GameObject> objectsToSpawn; // List to randomize
@@ -63,50 +70,98 @@ public class RailCarRandomizer : MonoBehaviour
         spawnSuccessful = false;
         trainCar = new GameObject("Train Car");
 
-        floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        floor.transform.localScale = new Vector3(railCarLength, floorThickness, railCarDepth); // x, y, z
-        floor.name = "RailCarFloor";
-        floor.transform.SetParent(trainCar.transform);
-
-        roof = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        roof.transform.localScale = new Vector3(railCarLength, floorThickness, (railCarDepth  + (wallThickness * 2))); // x, y, z
-        roof.name = "RailCarRoof";
-        roof.transform.SetParent(trainCar.transform);
-
-        // will need to replace with smarter code to include window segmented prefabs.
-        wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
-        wall.name = "RailCarWall";
-        wall.transform.SetParent(trainCar.transform);
-
-        exteriorWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        exteriorWall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
-        exteriorWall.name = "RailCarExterior";
-        exteriorWall.transform.SetParent(trainCar.transform);
-
-        floor.transform.position = new Vector3(railCarLength/2, floorThickness/2, railCarDepth/2); // Centered at origin.
-        if (floorMaterial != null)
+        if (spawnWithWallPrefabs == true)
         {
-            floor.GetComponent<Renderer>().material = floorMaterial;
-        }
+            floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            floor.transform.localScale = new Vector3(railCarLength, floorThickness, railCarDepth); // x, y, z
+            floor.name = "RailCarFloor";
+            floor.transform.localPosition = new Vector3(0, floorThickness / 2, 0);
+            floor.transform.SetParent(trainCar.transform);
 
-        roof.transform.position = new Vector3(railCarLength / 2, (railCarHeight + (floorThickness / 2)), railCarDepth / 2); // Centered at top of train
-        if (roofMaterial != null) 
-        { 
-            roof.GetComponent<Renderer>().material = roofMaterial; 
-        }
+            roof = Instantiate(roofPrefab, Vector3.zero, Quaternion.identity);
+            roof.name = "RailCarRoof";
+            roof.transform.localPosition = new Vector3(0, railCarHeight + (floorThickness / 2), 0);
+            roof.transform.SetParent(trainCar.transform);
 
-        wall.transform.position = new Vector3(railCarLength/2, railCarHeight/2, (0 - (wallThickness/2))); // Centered at back edge of floor.
-        if (wallMaterial != null)
+            wall = Instantiate(backWallPrefab, Vector3.zero, Quaternion.identity);
+            wall.name = "RailCarWall";
+            wall.transform.localPosition = new Vector3(-(railCarLength / 2) - (wallThickness / 2), 0, -(railCarDepth / 2) - (wallThickness / 2));
+            wall.transform.SetParent(trainCar.transform);
+            // -12.1, 0,  -5
+
+            exteriorWall = Instantiate(frontWallPrefab, Vector3.zero, Quaternion.identity);
+            exteriorWall.name = "RailCarExterior";
+            exteriorWall.transform.localPosition = new Vector3(0, railCarHeight / 2, (railCarDepth / 2) + (wallThickness / 2));
+            exteriorWall.transform.SetParent(trainCar.transform);
+
+            leftWall = Instantiate(leftWallPrefab, Vector3.zero, Quaternion.identity);
+            leftWall.name = "RailCarLeft";
+            leftWall.transform.localPosition = new Vector3(-(railCarLength / 2) + (wallThickness / 2), railCarHeight / 2, 0);
+            leftWall.transform.SetParent(trainCar.transform);
+            leftWall.transform.Rotate(0, 180, 0);
+
+            rightWall = Instantiate(leftWallPrefab, Vector3.zero, Quaternion.identity);
+            rightWall.name = "RailCarRight";
+            rightWall.transform.localPosition = new Vector3((railCarLength / 2) - (wallThickness / 2), railCarHeight / 2, 0);
+            rightWall.transform.SetParent(trainCar.transform);
+
+
+
+            if (floorMaterial != null)
+            {
+                floor.GetComponent<Renderer>().material = floorMaterial;
+            }
+
+        }
+        else 
         {
-            wall.GetComponent<Renderer>().material = wallMaterial;
+            floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            floor.transform.localScale = new Vector3(railCarLength, floorThickness, railCarDepth); // x, y, z
+            floor.name = "RailCarFloor";
+            floor.transform.SetParent(trainCar.transform);
+
+            roof = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            roof.transform.localScale = new Vector3(railCarLength, floorThickness, (railCarDepth + (wallThickness * 2))); // x, y, z
+            roof.name = "RailCarRoof";
+            roof.transform.SetParent(trainCar.transform);
+
+            // will need to replace with smarter code to include window segmented prefabs.
+            wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            wall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
+            wall.name = "RailCarWall";
+            wall.transform.SetParent(trainCar.transform);
+
+            exteriorWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            exteriorWall.transform.localScale = new Vector3(railCarLength, railCarHeight, wallThickness); // x, y, z
+            exteriorWall.name = "RailCarExterior";
+            exteriorWall.transform.SetParent(trainCar.transform);
+
+            floor.transform.position = new Vector3(railCarLength / 2, floorThickness / 2, railCarDepth / 2); // Centered at origin.
+            if (floorMaterial != null)
+            {
+                floor.GetComponent<Renderer>().material = floorMaterial;
+            }
+
+            roof.transform.position = new Vector3(railCarLength / 2, (railCarHeight + (floorThickness / 2)), railCarDepth / 2); // Centered at top of train
+            if (roofMaterial != null)
+            {
+                roof.GetComponent<Renderer>().material = roofMaterial;
+            }
+
+            wall.transform.position = new Vector3(railCarLength / 2, railCarHeight / 2, (0 - (wallThickness / 2))); // Centered at back edge of floor.
+            if (wallMaterial != null)
+            {
+                wall.GetComponent<Renderer>().material = wallMaterial;
+            }
+
+            exteriorWall.transform.position = new Vector3(railCarLength / 2, railCarHeight / 2, (railCarDepth + (wallThickness / 2))); // Centered at front of train
+            if (exteriorMaterial != null)
+            {
+                exteriorWall.GetComponent<Renderer>().material = exteriorMaterial;
+            }
+
         }
 
-        exteriorWall.transform.position = new Vector3(railCarLength / 2, railCarHeight / 2, (railCarDepth + (wallThickness/2))); // Centered at front of train
-        if (exteriorMaterial != null)
-        { 
-            exteriorWall.GetComponent<Renderer>().material = exteriorMaterial;
-        }
     }
 
     // Add componenets used in train car managment such as CarVisibility and CarCharacters
