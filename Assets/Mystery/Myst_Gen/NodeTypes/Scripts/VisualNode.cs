@@ -46,20 +46,20 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnPointerDown(PointerEventData pointEventData)
     {
-        Debug.Log("Pointer Down at " + gameObject.name);
+        //Debug.Log("Pointer Down at " + gameObject.name);
     }
 
     public void OnPointerUp(PointerEventData pointerEventData)
     {
-        Debug.Log("Pointer Released at " + gameObject.name);
+        //Debug.Log("Pointer Released at " + gameObject.name);
     }
 
     public void OnDrag(PointerEventData pointEventData)
     {
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            Debug.Log("Dragging this one " + gameObject.name);
-            transform.position = Input.mousePosition;
+            //Debug.Log("Dragging this one " + gameObject.name);
+            transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, transform.position.z);
         }
     }
 }

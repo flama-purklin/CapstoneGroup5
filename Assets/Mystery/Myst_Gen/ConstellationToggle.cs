@@ -6,6 +6,8 @@ public class ConstellationToggle : MonoBehaviour
     private Canvas canvas;
 
     [SerializeField] RectTransform mysteryHolder;
+    [SerializeField] Camera mysteryCam;
+    Camera mainCam;
 
     void Start()
     {
@@ -16,7 +18,13 @@ public class ConstellationToggle : MonoBehaviour
         {
             Debug.LogWarning("No Canvas component found for Constellation.");
         }
+
+        //set the mystery stuff for main gameplay
         canvas.enabled = false;
+        mysteryHolder.gameObject.SetActive(false);
+        mysteryCam.gameObject.SetActive(false);
+
+        mainCam = Camera.main;
     }
 
     void Update()
@@ -29,14 +37,26 @@ public class ConstellationToggle : MonoBehaviour
                 {
                     // Toggle just the canvas visibility
                     canvas.enabled = true;
+                    mysteryHolder.gameObject.SetActive(true);
+
+                    //switch cams
+                    mainCam.gameObject.SetActive(false);
+                    mysteryCam.gameObject.SetActive(true);
 
                     GameControl.GameController.currentState = GameState.MYSTERY;
+                    Time.timeScale = 0f;
                 }
                 else if (GameControl.GameController.currentState == GameState.MYSTERY)
                 {
                     canvas.enabled = false;
+                    mysteryHolder.gameObject.SetActive(false);
+
+                    //switch cams
+                    mainCam.gameObject.SetActive(true);
+                    mysteryCam.gameObject.SetActive(false);
 
                     GameControl.GameController.currentState = GameState.DEFAULT;
+                    Time.timeScale = 1f;
                 }    
             }
             else
@@ -46,7 +66,7 @@ public class ConstellationToggle : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.Mouse1) && GameControl.GameController.currentState == GameState.MYSTERY)
+        /*if (Input.GetKey(KeyCode.Mouse1) && GameControl.GameController.currentState == GameState.MYSTERY)
         {
             
             float mouseDeltaX = Input.GetAxis("Mouse X") * 2.0f * Time.deltaTime;
@@ -55,7 +75,7 @@ public class ConstellationToggle : MonoBehaviour
             Debug.Log(mouseDeltaX + " " + mouseDeltaY);
 
             mysteryHolder.anchoredPosition = mysteryHolder.anchoredPosition + new Vector2(mouseDeltaX, mouseDeltaY);
-        }
+        }*/
     }
 
     private void FixedUpdate()
