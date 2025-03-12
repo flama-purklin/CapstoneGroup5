@@ -41,7 +41,7 @@ public class GameControl : MonoBehaviour
 
     }
 
-    //PLACEHOLDER - replace this basic logic with Jorge's timer function when that is finished
+    //OUTMODED - replace this basic logic with Jorge's timer function when that is finished
     IEnumerator TimerUpdate()
     {
         yield return new WaitForSeconds(300);
