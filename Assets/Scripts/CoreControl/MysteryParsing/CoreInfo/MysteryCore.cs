@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class MysteryCore : MonoBehaviour
+public class MysteryCore
 {
     [JsonProperty("type")]
     public string Type { get; set; }

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class MysteryCircumstance : MonoBehaviour
+public class MysteryCircumstance
 {
     [JsonProperty("location")]
     public string Location { get; set; }

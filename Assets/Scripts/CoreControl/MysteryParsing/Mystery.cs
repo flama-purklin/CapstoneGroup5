@@ -10,15 +10,15 @@ public class Mystery
 
     //core data
     [JsonProperty("core")]
-    public Core Core { get; set; }
+    public MysteryCore Core { get; set; }
 
     //character data
     [JsonProperty("characters")]
-    public Dictionary<string, Character> Characters { get; set; }
+    public Dictionary<string, MysteryCharacter> Characters { get; set; }
 
     //environmental data
     [JsonProperty("environment")]
-    public Environment Environment { get; set; }
+    public MysteryEnvironment Environment { get; set; }
 
     //constellation
     [JsonProperty("constellation")]

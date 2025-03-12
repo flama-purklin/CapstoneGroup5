@@ -5,6 +5,8 @@ using System.Linq;
 using Newtonsoft.Json;
 
 
+
+
 //This class will be used to parse the giant mystery json into usable game objects 
 public class ParsingControl : MonoBehaviour
 {
@@ -37,14 +39,31 @@ public class ParsingControl : MonoBehaviour
         //read json to a parsable string
         string jsonContent = File.ReadAllText(firstMystery);
 
-        //create a core mystery object with all information stored within
-        Mystery fullMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
-        MysteryConstellation constellation = fullMystery.Constellation;
+        //create a core mystery object with all information stored within - stored in the game controller for easy access throughout the game
+        GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+        MysteryConstellation constellation = GameControl.GameController.coreMystery.Constellation;
         
         //output all node ids - WORKS
         foreach (var node in constellation.Nodes)
         {
             Debug.Log("Node Id:" + node.Key);
+        }
+
+        foreach (var character in GameControl.GameController.coreMystery.Characters)
+        {
+            //check that all wherabouts are properly deserialized
+            foreach (var whereabout in character.Value.Core.Whereabouts)
+            {
+                string value = whereabout.WhereaboutData.Circumstance ?? whereabout.WhereaboutData.Location;
+                Debug.Log("Character Key: " + character.Key + " Whereabout #" + whereabout.Key + ": " + value);
+            }
+
+            //check that all relationships are properly deserialized
+            foreach (var relationship in character.Value.Core.Relationships)
+            {
+                Debug.Log("Character Key: " + character.Key + " Relationship: " + relationship.CharName);
+            }
+            
         }
     }
 }
