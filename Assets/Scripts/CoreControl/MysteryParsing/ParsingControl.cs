@@ -41,10 +41,10 @@ public class ParsingControl : MonoBehaviour
 
         //create a core mystery object with all information stored within - stored in the game controller for easy access throughout the game
         GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
-        MysteryConstellation constellation = GameControl.GameController.coreMystery.Constellation;
+        GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
         
         //output all node ids - WORKS
-        foreach (var node in constellation.Nodes)
+        foreach (var node in GameControl.GameController.coreConstellation.Nodes)
         {
             Debug.Log("Node Id:" + node.Key);
         }

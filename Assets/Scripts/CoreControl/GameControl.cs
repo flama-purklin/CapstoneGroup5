@@ -20,7 +20,10 @@ public class GameControl : MonoBehaviour
 
     public GameState currentState;
 
+    //Parsed Mystery Objects
     public Mystery coreMystery;
+    public MysteryConstellation coreConstellation;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {

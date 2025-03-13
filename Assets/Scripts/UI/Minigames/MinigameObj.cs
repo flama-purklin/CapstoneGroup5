@@ -9,6 +9,9 @@ public class MinigameObj : MonoBehaviour
 
     GameObject player;
 
+    //set an associated node Key here
+    public string nodeKey;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Awake()
     {
@@ -30,6 +33,14 @@ public class MinigameObj : MonoBehaviour
 
     public virtual void Interact()
     {
+        MysteryNode unlockedNode = null;
+        if (!string.IsNullOrEmpty(nodeKey))
+            unlockedNode = GameControl.GameController.coreConstellation.DiscoverNode(nodeKey);
+
+        if (unlockedNode != null)
+        {
+            //spawn node unlock popup here to indicate to the player a new node has opened on the mystery board
+        }
         Debug.Log("Interact Called on " + name);
     }
 }

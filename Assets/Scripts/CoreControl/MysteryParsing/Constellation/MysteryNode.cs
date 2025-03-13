@@ -34,15 +34,10 @@ public class MysteryNode
     [JsonProperty("can_pickup")]
     public bool? CanPickup { get; set; }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public bool Discover()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        bool previousVal = Discovered;
+        Discovered = true;
+        return previousVal;
     }
 }
