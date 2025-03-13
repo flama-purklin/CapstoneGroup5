@@ -9,7 +9,8 @@ public enum GameState
     FINAL,
     WIN,
     LOSE,
-    MINIGAME
+    MINIGAME,
+    MYSTERY
 }
 
 public class GameControl : MonoBehaviour
@@ -18,6 +19,11 @@ public class GameControl : MonoBehaviour
     public static GameControl GameController;
 
     public GameState currentState;
+
+    //Parsed Mystery Objects
+    public Mystery coreMystery;
+    public MysteryConstellation coreConstellation;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -40,7 +46,7 @@ public class GameControl : MonoBehaviour
 
     }
 
-    //PLACEHOLDER - replace this basic logic with Jorge's timer function when that is finished
+    //OUTMODED - replace this basic logic with Jorge's timer function when that is finished
     IEnumerator TimerUpdate()
     {
         yield return new WaitForSeconds(300);

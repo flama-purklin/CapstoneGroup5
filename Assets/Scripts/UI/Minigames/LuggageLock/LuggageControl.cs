@@ -1,9 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-public class LuggageControl : MonoBehaviour
+public class LuggageControl : MinigameCanvasControl
 {
-    [SerializeField] Animator anim;
 
     string currentCombo;
     bool solved = false;
@@ -15,11 +14,6 @@ public class LuggageControl : MonoBehaviour
     [SerializeField] NumberManager secondNum;
     [SerializeField] NumberManager thirdNum;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -82,7 +76,14 @@ public class LuggageControl : MonoBehaviour
     IEnumerator Unlock()
     {
         Debug.Log("Correct Combination!");
+
+        //fill in the canvas from the associated EvidenceData
+        FillEvidence(assignedData);
+
         anim.Play("luggageSuccess");
+
+        //unlock corresponding evidence node here
+        GameControl.GameController.coreConstellation.DiscoverNode(assignedData.nodeKey);
 
         yield return new WaitForSeconds(5f);
 

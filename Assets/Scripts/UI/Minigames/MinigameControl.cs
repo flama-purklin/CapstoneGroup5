@@ -4,6 +4,8 @@ public class MinigameControl : MonoBehaviour
 {
     //Minigame References
     [SerializeField] LuggageControl luggage;
+    [SerializeField] EvidenceControl evidence;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,5 +24,12 @@ public class MinigameControl : MonoBehaviour
     {
         luggage.gameObject.SetActive(true);
         luggage.SetCombo(combination);
+    }
+
+    //create a serializableObj for each piece of evidence, pass this instead of mysterynode
+    public void EvidenceReveal(EvidenceData revealedData)
+    {
+        evidence.gameObject.SetActive(true);
+        evidence.Reveal(revealedData);
     }
 }
