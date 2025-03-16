@@ -1,12 +1,27 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Connection : MonoBehaviour
 {
+    [Header("UI Attributes")]
+    [SerializeField] Image visualConn;
+    [SerializeField] TMP_Text connectionDesc;
+    [SerializeField] RectTransform rect;
+
+    [Header("Object Refs")]
     public GameObject startObj;
     public GameObject endObj;
 
-    RectTransform rect;
+    //MysteryConnection ref
+    MysteryConnection mystConn;
+
+    [Header("Data")]
+    public string type;
+    public bool discovered = false;
+
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -17,7 +32,8 @@ public class Connection : MonoBehaviour
     void Update()
     {
         // Debug.Log("Updating");
-        StartCoroutine(ConnectionUpdate());
+        if (discovered)
+            StartCoroutine(ConnectionUpdate());
     }
 
     void FixedUpdate()
@@ -27,13 +43,15 @@ public class Connection : MonoBehaviour
     }
 
     //associated node objects are passed from NodeControl
-    public void ConnectionSpawn(GameObject origin, GameObject result)
+    public void ConnectionSpawn(GameObject origin, GameObject result, MysteryConnection connection)
     {
         startObj = origin;
         endObj = result;
+        mystConn = connection;
+        type = mystConn.Type;
 
         //assign the length to the connection obj
-        rect = GetComponent<RectTransform>();
+        //rect = GetComponent<RectTransform>();
         Vector2 hypotenuse = endObj.transform.localPosition - startObj.transform.localPosition;
         float dist = hypotenuse.magnitude;
         rect.sizeDelta = new Vector2(dist, 20f);
@@ -54,13 +72,16 @@ public class Connection : MonoBehaviour
         //send to back
         transform.SetSiblingIndex(0);
 
+        connectionDesc.text = type;
+
         //Debug.Log("new connection successfully created");
+        DiscoveryCheck();
     }
 
     IEnumerator ConnectionUpdate()
     {
         //assign the length to the connection obj
-        rect = GetComponent<RectTransform>();
+        //rect = GetComponent<RectTransform>();
         Vector2 hypotenuse = endObj.transform.localPosition - startObj.transform.localPosition;
         float dist = hypotenuse.magnitude;
         rect.sizeDelta = new Vector2(dist, 20f);
@@ -80,5 +101,22 @@ public class Connection : MonoBehaviour
 
         //Debug.Log("Updated connection");
         yield return null;
+    }
+
+    public void DiscoveryCheck()
+    {
+        if (GameControl.GameController.coreConstellation.Nodes[mystConn.Source].Discovered
+            && GameControl.GameController.coreConstellation.Nodes[mystConn.Target].Discovered)
+        {
+            visualConn.enabled = true;
+            connectionDesc.enabled = true;
+            discovered = true;
+        }
+        else
+        {
+            visualConn.enabled = false;
+            connectionDesc.enabled = false;
+            discovered = false;
+        }
     }
 }
