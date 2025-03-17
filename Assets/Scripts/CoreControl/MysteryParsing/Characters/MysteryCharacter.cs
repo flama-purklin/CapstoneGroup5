@@ -113,6 +113,9 @@ public class MindEngine
 
     [JsonProperty("state_of_mind")]
     public StateOfMind StateOfMind { get; set; }
+    
+    [JsonProperty("speech_patterns")]
+    public SpeechPatterns SpeechPatterns { get; set; }
 }
 
 public class Identity
