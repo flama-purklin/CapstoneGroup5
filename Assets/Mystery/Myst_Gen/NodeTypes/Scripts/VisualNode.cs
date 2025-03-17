@@ -71,7 +71,12 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnPointerDown(PointerEventData pointEventData)
     {
-        //Debug.Log("Pointer Down at " + gameObject.name);
+        
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            Debug.Log("Pointer Down at " + gameObject.name);
+            GameObject.FindFirstObjectByType<EvidenceInspect>().ActivateInspect(currentNode);
+        }
     }
 
     public void OnPointerUp(PointerEventData pointerEventData)
