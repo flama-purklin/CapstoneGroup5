@@ -24,6 +24,9 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     [SerializeField] protected TMP_Text otherInfo;
     [SerializeField] protected Image background;
 
+    //other object refs
+    [SerializeField] Camera mysteryCam;
+
 
 
     //movement shit
@@ -45,7 +48,12 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         currentNode = associatedNode;
         nodeKey = newKey;
+        
+        //Debug.Log("Mystery Cam " + mysteryCam.name);
+        
+
         UpdateInformation();
+        //parent = transform.parent.GetComponent<RectTransformUtility>();
     }
 
     //call to enable the node and check whether connections also need to be unlocked
@@ -86,10 +94,18 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnDrag(PointerEventData pointEventData)
     {
+        if (mysteryCam == null)
+            mysteryCam = GameObject.FindWithTag("MysteryCam").GetComponent<Camera>();
+
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            //Debug.Log("Dragging this one " + gameObject.name);
-            transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, transform.position.z);
+            Vector2 mousePos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform.parent as RectTransform, Input.mousePosition,
+                        mysteryCam,
+                                out mousePos);
+            Debug.Log("Camera ortho size: " + mysteryCam.orthographicSize);
+            transform.localPosition = new Vector3(mousePos.x, mousePos.y, 0);
         }
     }
 }
