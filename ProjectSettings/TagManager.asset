@@ -7,6 +7,7 @@ TagManager:
   - DialogueControl
   - MysteryCanvas
   - Character
+  - MysteryCam
   layers:
   - Default
   - TransparentFX

@@ -7,6 +7,15 @@ public class MysteryConstellation
 
     [JsonProperty("nodes")]
     public Dictionary<string, MysteryNode> Nodes { get; set; }
+
+    [JsonProperty("connections")]
+    public List<MysteryConnection> Connections { get; set; }
+
+    [JsonProperty("mini_mysteries")]
+    public Dictionary<string, MiniMystery> MiniMysteries { get; set; }
+
+    [JsonProperty("scripted-events")]
+    public Dictionary<string, MysteryEvent> ScriptedEvents { get; set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     
     public MysteryNode DiscoverNode(string nodeKey)
@@ -34,6 +43,10 @@ public class MysteryConstellation
 
             //start the node notification here
             GameObject.FindFirstObjectByType<NodeNotif>().NodeUnlock();
+
+            //Unlock the Visual Node GameObject
+            GameObject.FindFirstObjectByType<NodeControl>().UnlockVisualNode(nodeKey);
+
             return Nodes[nodeKey];
         }
 

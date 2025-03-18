@@ -1,69 +1,327 @@
 using UnityEngine;
-using UnityEditor;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
 
-
-
-
-//This class will be used to parse the giant mystery json into usable game objects 
+/// <summary>
+/// Parses the mystery JSON into usable game objects and extracts character data.
+/// Integrates with MysteryCharacterExtractor to generate character files for LLM integration.
+/// </summary>
 public class ParsingControl : MonoBehaviour
 {
+    [Header("Configuration")]
     public string mysteryFiles = "MysteryStorage";
-
+    [SerializeField] private bool _verboseLogging = false;
+    
+    [Header("References")]
+    [SerializeField] private MysteryCharacterExtractor _characterExtractor;
+    
+    // Events
+    public event Action<float> OnParsingProgress;
+    public event Action<Mystery> OnMysteryParsed;
+    public event Action<int> OnCharactersExtracted;
+    public event Action OnParsingComplete;
+    
+    // Extraction status
+    private bool _parsingComplete = false;
+    public bool IsParsingComplete => _parsingComplete;
+    
     private void Awake()
     {
+        // Find or create the character extractor if not assigned
+        if (_characterExtractor == null)
+        {
+            _characterExtractor = FindFirstObjectByType<MysteryCharacterExtractor>();
+            
+            if (_characterExtractor == null && GetComponent<MysteryCharacterExtractor>() == null)
+            {
+                _characterExtractor = gameObject.AddComponent<MysteryCharacterExtractor>();
+                Debug.Log("Added MysteryCharacterExtractor component as none was assigned");
+            }
+        }
+        
+        // Connect to character extractor events
+        if (_characterExtractor != null)
+        {
+            _characterExtractor.OnExtractionProgress += HandleExtractionProgress;
+            _characterExtractor.OnCharactersExtracted += HandleCharactersExtracted;
+        }
+        
+        // Parse mystery
         ParseMystery();
     }
+    
+    private void OnDestroy()
+    {
+        // Disconnect from events
+        if (_characterExtractor != null)
+        {
+            _characterExtractor.OnExtractionProgress -= HandleExtractionProgress;
+            _characterExtractor.OnCharactersExtracted -= HandleCharactersExtracted;
+        }
+    }
 
+    /// <summary>
+    /// Parses the mystery JSON file and extracts character data
+    /// </summary>
     public void ParseMystery()
     {
-        //retrieve the mystery json from Streaming Assets
+        // Report initial progress
+        OnParsingProgress?.Invoke(0.0f);
+        
+        // Retrieve the mystery JSON from StreamingAssets
         string mysteryPath = Path.Combine(Application.streamingAssetsPath, mysteryFiles);
         if (!Directory.Exists(mysteryPath))
         {
             Debug.LogError($"Mystery folder not found at: {mysteryPath}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+            return;
+        }
+        
+        // Find mystery files
+        var foundMysteries = Directory.GetFiles(mysteryPath, "*.json").ToArray();
+        if (foundMysteries.Length == 0)
+        {
+            Debug.LogError($"No mystery JSON files found in {mysteryPath}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
             return;
         }
 
-        
-        //expand this later into a full mystery selection area
-        var foundMysteries = Directory.GetFiles(mysteryPath, "*.json")
-            .ToArray();
-
         string firstMystery = foundMysteries[0];
+        Debug.Log("Found mystery file at: " + firstMystery);
 
-        Debug.Log("First Found Mystery at: " + firstMystery);
-
-        //read json to a parsable string
+        // Read JSON to a parsable string
         string jsonContent = File.ReadAllText(firstMystery);
-
-        //create a core mystery object with all information stored within - stored in the game controller for easy access throughout the game
-        GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
-        GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
         
-        //output all node ids - WORKS
-        foreach (var node in GameControl.GameController.coreConstellation.Nodes)
-        {
-            Debug.Log("Node Id:" + node.Key);
-        }
+        // Report progress after reading file
+        OnParsingProgress?.Invoke(0.1f);
 
-        foreach (var character in GameControl.GameController.coreMystery.Characters)
+        try
         {
-            //check that all wherabouts are properly deserialized
-            foreach (var whereabout in character.Value.Core.Whereabouts)
+            // Create a core mystery object with all information stored within
+            GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
+            
+            // Report progress after deserializing
+            OnParsingProgress?.Invoke(0.3f);
+            
+            // Fire event for mystery parsed
+            OnMysteryParsed?.Invoke(GameControl.GameController.coreMystery);
+            
+            if (_verboseLogging)
             {
-                string value = whereabout.WhereaboutData.Circumstance ?? whereabout.WhereaboutData.Location;
-                Debug.Log("Character Key: " + character.Key + " Whereabout #" + whereabout.Key + ": " + value);
-            }
-
-            //check that all relationships are properly deserialized
-            foreach (var relationship in character.Value.Core.Relationships)
-            {
-                Debug.Log("Character Key: " + character.Key + " Relationship: " + relationship.CharName);
+                LogMysteryContents();
             }
             
+            // Report progress after validation
+            OnParsingProgress?.Invoke(0.5f);
+            
+            // Extract characters from the mystery
+            if (_characterExtractor != null)
+            {
+                try
+                {
+                    Debug.Log("Starting character extraction process");
+                    _characterExtractor.ExtractCharactersFromMystery(GameControl.GameController.coreMystery);
+                    
+                    // Note: Progress and completion callbacks are handled by event handlers
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error during character extraction: {ex.Message}");
+                    Debug.LogException(ex);
+                    // Signal completion even though extraction failed
+                    _parsingComplete = true;
+                    OnParsingProgress?.Invoke(1.0f);
+                    OnParsingComplete?.Invoke();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
+                _parsingComplete = true;
+                OnParsingProgress?.Invoke(1.0f); // Complete progress without extraction
+                OnParsingComplete?.Invoke();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error parsing mystery JSON: {ex.Message}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+        }
+    }
+    
+    /// <summary>
+    /// Asynchronously parses the mystery JSON file and extracts character data
+    /// </summary>
+    public async Task<Mystery> ParseMysteryAsync()
+    {
+        // Report initial progress
+        OnParsingProgress?.Invoke(0.0f);
+        
+        // Retrieve the mystery JSON from StreamingAssets
+        string mysteryPath = Path.Combine(Application.streamingAssetsPath, mysteryFiles);
+        if (!Directory.Exists(mysteryPath))
+        {
+            Debug.LogError($"Mystery folder not found at: {mysteryPath}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+            return null;
+        }
+        
+        // Find mystery files
+        var foundMysteries = Directory.GetFiles(mysteryPath, "*.json").ToArray();
+        if (foundMysteries.Length == 0)
+        {
+            Debug.LogError($"No mystery JSON files found in {mysteryPath}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+            return null;
+        }
+
+        string firstMystery = foundMysteries[0];
+        Debug.Log("Found mystery file at: " + firstMystery);
+
+        // Read JSON to a parsable string
+        string jsonContent = await File.ReadAllTextAsync(firstMystery);
+        
+        // Report progress after reading file
+        OnParsingProgress?.Invoke(0.1f);
+
+        try
+        {
+            // Create a core mystery object
+            Mystery mystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            
+            // Set in game controller
+            GameControl.GameController.coreMystery = mystery;
+            GameControl.GameController.coreConstellation = mystery.Constellation;
+            
+            // Report progress after deserializing
+            OnParsingProgress?.Invoke(0.3f);
+            
+            // Fire event for mystery parsed
+            OnMysteryParsed?.Invoke(mystery);
+            
+            if (_verboseLogging)
+            {
+                LogMysteryContents();
+            }
+            
+            // Report progress after validation
+            OnParsingProgress?.Invoke(0.5f);
+            
+            // Extract characters from the mystery asynchronously
+            if (_characterExtractor != null)
+            {
+                try
+                {
+                    Debug.Log("Starting asynchronous character extraction process");
+                    int count = await _characterExtractor.ExtractCharactersAsync(mystery);
+                    
+                    // Manually invoke handlers in case they didn't fire during async operation
+                    if (!_parsingComplete)
+                    {
+                        Debug.Log($"Async extraction completed with {count} characters");
+                        HandleCharactersExtracted(count);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error during async character extraction: {ex.Message}");
+                    Debug.LogException(ex);
+                    // Signal completion even though extraction failed
+                    _parsingComplete = true;
+                    OnParsingProgress?.Invoke(1.0f);
+                    OnParsingComplete?.Invoke();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
+                _parsingComplete = true;
+                OnParsingProgress?.Invoke(1.0f); // Complete progress without extraction
+                OnParsingComplete?.Invoke();
+            }
+            
+            return mystery;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error parsing mystery JSON: {ex.Message}");
+            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+            return null;
+        }
+    }
+    
+    /// <summary>
+    /// Handles progress updates from the character extractor
+    /// </summary>
+    private void HandleExtractionProgress(float progress)
+    {
+        // Scale extraction progress to 0.5-1.0 range (second half of overall process)
+        float overallProgress = 0.5f + (progress * 0.5f);
+        OnParsingProgress?.Invoke(overallProgress);
+        
+        if (_verboseLogging)
+        {
+            Debug.Log($"Character extraction progress: {progress:P0} (Overall: {overallProgress:P0})");
+        }
+    }
+    
+    /// <summary>
+    /// Handles completion of character extraction
+    /// </summary>
+    private void HandleCharactersExtracted(int count)
+    {
+        Debug.Log($"Character extraction complete. {count} characters processed.");
+        OnCharactersExtracted?.Invoke(count);
+        OnParsingProgress?.Invoke(1.0f); // Complete progress
+        
+        // Signal that parsing is complete
+        _parsingComplete = true;
+        Debug.Log("Parsing complete - firing OnParsingComplete event");
+        OnParsingComplete?.Invoke();
+    }
+    
+    /// <summary>
+    /// Logs detailed mystery contents for debugging
+    /// </summary>
+    private void LogMysteryContents()
+    {
+        // Log node IDs
+        Debug.Log($"Mystery contains {GameControl.GameController.coreConstellation.Nodes.Count} nodes");
+        foreach (var node in GameControl.GameController.coreConstellation.Nodes)
+        {
+            Debug.Log("Node Id: " + node.Key);
+        }
+
+        // Log character details
+        Debug.Log($"Mystery contains {GameControl.GameController.coreMystery.Characters.Count} characters");
+        foreach (var character in GameControl.GameController.coreMystery.Characters)
+        {
+            Debug.Log($"Character: {character.Key} - {character.Value.MindEngine.Identity.Name}");
+            
+            // Log whereabouts
+            if (character.Value.Core.Whereabouts != null)
+            {
+                Debug.Log($"  Whereabouts: {character.Value.Core.Whereabouts.Count}");
+                foreach (var whereabout in character.Value.Core.Whereabouts)
+                {
+                    string value = whereabout.WhereaboutData.Circumstance ?? whereabout.WhereaboutData.Location;
+                    Debug.Log($"  - Whereabout {whereabout.Key}: {value}");
+                }
+            }
+
+            // Log relationships
+            if (character.Value.Core.Relationships != null)
+            {
+                Debug.Log($"  Relationships: {character.Value.Core.Relationships.Count}");
+                foreach (var relationship in character.Value.Core.Relationships)
+                {
+                    Debug.Log($"  - Relationship with: {relationship.CharName} ({relationship.RelationshipData.Attitude})");
+                }
+            }
         }
     }
 }

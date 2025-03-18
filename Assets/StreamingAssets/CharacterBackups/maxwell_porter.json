@@ -1,0 +1,204 @@
+{
+  "core": {
+    "involvement": {
+      "role": "Murderer",
+      "type": "Paranoid killer manipulated by another",
+      "mystery_attributes": [
+        "Master forger for Gregory's operation",
+        "Killed Victoria believing she would expose him",
+        "Suffering from paranoid mental illness"
+      ]
+    },
+    "whereabouts": [
+      {
+        "key": "0",
+        "value": {
+          "location": "second_class_car_1",
+          "action": "nervously organizing art supplies",
+          "events": [
+            "Spoke briefly with Gregory who mentioned 'Victoria's investigator'"
+          ]
+        }
+      },
+      {
+        "key": "1",
+        "value": {
+          "circumstance": "business class corridor, 41-80 minutes",
+          "action": "observing passengers while sketching",
+          "events": [
+            "Noticed Gideon taking notes and watching Victoria"
+          ]
+        }
+      },
+      {
+        "key": "2",
+        "value": {
+          "circumstance": "dining car, 81-110 minutes",
+          "action": "drinking coffee alone",
+          "events": [
+            "Observed Victoria speaking with Gideon",
+            "Became increasingly agitated"
+          ]
+        }
+      },
+      {
+        "key": "3",
+        "value": {
+          "circumstance": "bar car, 111-115 minutes",
+          "action": "meeting with Gregory Crowe",
+          "events": [
+            "Heard Gregory mention Victoria showing art photos to investigator",
+            "Decided to act"
+          ]
+        }
+      },
+      {
+        "key": "4",
+        "value": {
+          "circumstance": "lounge car, 116-119 minutes",
+          "action": "entering with Gregory before separating",
+          "events": [
+            "Seen by Nova",
+            "Retrieved sedative from bag"
+          ]
+        }
+      },
+      {
+        "key": "5",
+        "value": {
+          "circumstance": "lounge car bathroom, 120-123 minutes",
+          "action": "murdering Victoria Blackwood",
+          "events": [
+            "Sedated Victoria",
+            "Staged suicide scene",
+            "Planted forged suicide note"
+          ]
+        }
+      },
+      {
+        "key": "6",
+        "value": {
+          "circumstance": "moving through train, 124-135 minutes",
+          "action": "returning to second class",
+          "events": [
+            "Disposed of evidence in kitchen incinerator",
+            "Created alibi by engaging with passengers"
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "key": "Gregory Crowe",
+        "value": {
+          "attitude": "dependent trust mixed with fear",
+          "history": [
+            "Business partner in forgery ring for 15 years",
+            "Relies on Gregory for protection and stability"
+          ],
+          "known_secrets": [
+            "Gregory's manipulative nature",
+            "The extent of their forgery operation"
+          ]
+        }
+      },
+      {
+        "key": "Victoria Blackwood",
+        "value": {
+          "attitude": "paranoid fear",
+          "history": [
+            "Never met directly before the train journey",
+            "Believes she hired an investigator to expose him"
+          ],
+          "known_secrets": []
+        }
+      },
+      {
+        "key": "Gideon Marsh",
+        "value": {
+          "attitude": "terror",
+          "history": [
+            "Observed him watching Victoria and taking notes",
+            "Believes he was hired to investigate the forgery ring"
+          ],
+          "known_secrets": []
+        }
+      },
+      {
+        "key": "Eleanor Verne",
+        "value": {
+          "attitude": "professional respect with caution",
+          "history": [
+            "Aware of her art authentication background",
+            "Fears she might recognize his artistic style"
+          ],
+          "known_secrets": []
+        }
+      }
+    ],
+    "agenda": {
+      "primary_goal": "Protect himself from exposure as a forger"
+    }
+  },
+  "mind_engine": {
+    "identity": {
+      "name": "Maxwell Porter",
+      "occupation": "Reclusive artist and master forger",
+      "personality": {
+        "O": 0.9,
+        "C": 0.8,
+        "E": 0.2,
+        "A": 0.4,
+        "N": 0.9
+      }
+    },
+    "state_of_mind": {
+      "worries": "being caught and imprisoned for forgery",
+      "feelings": "paranoid and desperate",
+      "reasoning_style": "brilliant but increasingly unstable"
+    },
+    "speech_patterns": {
+      "vocabulary_level": "precise but erratic",
+      "sentence_style": [
+        "alternates between eloquent artistic descriptions and fragmentary paranoid observations"
+      ],
+      "speech_quirks": [
+        "frequently glances over shoulder mid-conversation",
+        "repeats phrases when anxious",
+        "whispers important information",
+        "occasionally refers to himself in third person when stressed"
+      ],
+      "common_phrases": [
+        "They're watching",
+        "I can see patterns others miss",
+        "The details reveal everything"
+      ]
+    }
+  },
+  "initial_location": "second_class_car_1",
+  "key_testimonies": {
+    "maxwell_paranoia": {
+      "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
+      "reveals": "lead-maxwell-paranoia",
+      "requires": [
+        "basic_investigation"
+      ],
+      "state": "agitated",
+      "methods": [
+        "calmly_discuss_art",
+        "mention_victoria_indirectly"
+      ]
+    },
+    "maxwell_sedative": {
+      "content": "Artists like me... we need steady hands. Special techniques, special... tools. Gregory understands.",
+      "reveals": "evidence-sedative",
+      "requires": [
+        "art_techniques"
+      ],
+      "state": "relaxed",
+      "methods": [
+        "show_interest_in_art_process"
+      ]
+    }
+  }
+}

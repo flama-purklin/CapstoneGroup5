@@ -363,7 +363,7 @@ public class MysteryGenBeta
         Debug.Log("Mystery Constellation generated with " + constellation.Count + " nodes.");
 
         //Step 5.5: Actually generate the visual representation of the constellation
-        GameObject.FindWithTag("MysteryCanvas").GetComponent<NodeControl>().CreateConstellation(constellation);
+        //GameObject.FindWithTag("MysteryCanvas").GetComponent<NodeControl>().CreateConstellation(constellation);
 
         // Step 6: (Additional detail-filling) For example, output where each character is located.
         // This is where character alibis & location should be determined, as well as who reported the crime.

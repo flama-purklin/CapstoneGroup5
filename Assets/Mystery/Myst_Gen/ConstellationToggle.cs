@@ -5,8 +5,12 @@ public class ConstellationToggle : MonoBehaviour
 {
     private Canvas canvas;
 
+    [Header("Object Refs")]
     [SerializeField] RectTransform mysteryHolder;
     [SerializeField] Camera mysteryCam;
+    [SerializeField] GameObject mysteryHUD;
+    [SerializeField] GameObject mainHUD;
+
     Camera mainCam;
 
     void Start()
@@ -23,6 +27,8 @@ public class ConstellationToggle : MonoBehaviour
         canvas.enabled = false;
         mysteryHolder.gameObject.SetActive(false);
         mysteryCam.gameObject.SetActive(false);
+        mysteryHUD.SetActive(false);
+        mainHUD.SetActive(true);
 
         mainCam = Camera.main;
     }
@@ -43,6 +49,10 @@ public class ConstellationToggle : MonoBehaviour
                     mainCam.gameObject.SetActive(false);
                     mysteryCam.gameObject.SetActive(true);
 
+                    //turn on the mystery HUD
+                    mysteryHUD.SetActive(true);
+                    mainHUD.SetActive(false);
+
                     GameControl.GameController.currentState = GameState.MYSTERY;
                     Time.timeScale = 0f;
                 }
@@ -54,6 +64,10 @@ public class ConstellationToggle : MonoBehaviour
                     //switch cams
                     mainCam.gameObject.SetActive(true);
                     mysteryCam.gameObject.SetActive(false);
+
+                    //turn off the mystery HUD
+                    mysteryHUD.SetActive(false);
+                    mainHUD.SetActive(true);
 
                     GameControl.GameController.currentState = GameState.DEFAULT;
                     Time.timeScale = 1f;

@@ -121,32 +121,36 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
             //else
                 //Debug.Log("one bound outside");*/
 
+            //figure out the current delta change data
             Vector3 dragAttempt = data.delta;
             Vector3 newPos = mysteryCam.transform.position + dragAttempt;
             float height = 2f * mysteryCam.orthographicSize;
             float width = height * mysteryCam.aspect;
 
+            //identifying the bounds of the visible screen
             Vector3 topLeft = newPos - new Vector3(width / 2f, height / 2f);
             Vector3 bottomRight = newPos + new Vector3(width / 2f, height / 2f);
 
-            Vector3 backLeft = rectTransform.position - new Vector3(backWidth / 2f, backHeight / 2f);
-            Vector3 backRight = rectTransform.position + new Vector3(backWidth / 2f, backHeight / 2f);
+            //identifying the bounds of the background
+            Vector3 backLeft = rectTransform.position - new Vector3(backWidth / 3f, backHeight / 3f);
+            Vector3 backRight = rectTransform.position + new Vector3(backWidth / 3f, backHeight / 3f);
 
             //Rect background = RectTransformToScreenSpace(rectTransform, newPos);
 
             //check x
-            if (topLeft.x < backLeft.x && dragAttempt.x < 0)
+            if (topLeft.x < backLeft.x && dragAttempt.x > 0)
                 dragAttempt.x = 0;
-            else if (bottomRight.x > backRight.x && dragAttempt.x > 0)
+            else if (bottomRight.x > backRight.x && dragAttempt.x < 0)
                 dragAttempt.x = 0;
 
             //check y
-            if (topLeft.y < backRight.y && dragAttempt.y < 0)
+            if (topLeft.y < backLeft.y && dragAttempt.y > 0)
                 dragAttempt.y = 0;
-            else if (bottomRight.y > backRight.y && dragAttempt.y > 0)
+            else if (bottomRight.y > backRight.y && dragAttempt.y < 0)
                 dragAttempt.y = 0;
 
-            mysteryCam.transform.position = mysteryCam.transform.position + dragAttempt;
+            //apply the effects to the camera transform 
+            mysteryCam.transform.position = mysteryCam.transform.position - dragAttempt;
         }
     }
 

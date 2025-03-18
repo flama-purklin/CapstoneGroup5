@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class NodeControl : MonoBehaviour
 {
+    //DO NOT USE THESE
     public List<Node> allNodes;
     public List<GameObject> visualNodeStorage;
+
+
     private RectTransform canvasRect;
+
+    //new Visual Node storage with parsed MysteryNode hookup
+    public Dictionary<string, GameObject> visualNodes;
 
     [SerializeField] GameObject infoPrefab;
     [SerializeField] GameObject evidencePrefab;
@@ -17,10 +23,16 @@ public class NodeControl : MonoBehaviour
     [SerializeField] float minY = -2000f;//adjust to something sensible later
     [SerializeField] float maxY = 2000f;
 
+    bool loaded = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         contentPanel.anchoredPosition = Vector2.zero;
+        if (!loaded)
+        {
+            NewConstellation();
+        }
     }
 
     // Update is called once per frame
@@ -56,7 +68,7 @@ public class NodeControl : MonoBehaviour
         return maxLevel + 1;
     }
 
-    //recieves the nodes from the MysteryGen
+    /*recieves the nodes from the MysteryGen
     public void CreateConstellation(List<Node> generatedNodes)
     {
         allNodes = generatedNodes;
@@ -106,9 +118,48 @@ public class NodeControl : MonoBehaviour
         {
             CheckConnections(node);
         }
+    }*/
+
+    public void NewConstellation()
+    {
+        visualNodes = new Dictionary<string, GameObject>();
+
+        //create a node object for every parsed node in the constellation
+        foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
+        {
+            //create the node
+            GameObject newNode = InstantiateNode(nodePair.Value);
+
+            //assign data to the node
+            newNode.GetComponent<VisualNode>().AssignNode(nodePair.Key, nodePair.Value);
+
+            //store the node in the dictionary for easy access
+            visualNodes.Add(nodePair.Key, newNode);
+        }
+
+        Debug.Log(visualNodes.Count + " visual nodes created");
+
+        //create a connection for each parsed connection in the constellation
+        foreach (var parsedConnection in GameControl.GameController.coreConstellation.Connections)
+        {
+            //create a connection object
+            GameObject newConn = Instantiate(connectionPrefab, contentPanel);
+            newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[parsedConnection.Source], visualNodes[parsedConnection.Target], parsedConnection);
+
+            //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
+            visualNodes[parsedConnection.Source].GetComponent<VisualNode>().connections.Add(newConn);
+            visualNodes[parsedConnection.Target].GetComponent<VisualNode>().connections.Add(newConn);
+        }
     }
 
-    public void CreateVisualNode(Node node)
+    public void UnlockVisualNode(string nodeKey)
+    {
+        GameObject unlockedNode = visualNodes[nodeKey];
+        unlockedNode.SetActive(true);
+        unlockedNode.GetComponent<VisualNode>().DiscoverNode();
+    }
+
+    /*public void CreateVisualNode(Node node)
     {
         //create the correct corresponding visual node
         GameObject newNode;
@@ -185,5 +236,23 @@ public class NodeControl : MonoBehaviour
         {
             Debug.Log("Node " + node.id + " has no requirements");
         }
+    }*/
+
+    public GameObject InstantiateNode(MysteryNode mystNode)
+    {
+        GameObject createdNode;
+        //TODO - MORE NODE TYPES HERE
+        switch (mystNode.Type)
+        {
+            case "EVIDENCE":
+                createdNode = Instantiate(evidencePrefab, contentPanel);
+                break;
+            default:
+                createdNode = Instantiate(infoPrefab, contentPanel);
+                break;
+        }
+
+
+        return createdNode;
     }
 }

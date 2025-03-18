@@ -17,20 +17,20 @@ public class VisualInfoNode : VisualNode
     protected override void UpdateInformation()
     {
         //cast the node to the specific type to retrieve more specific information
-        InfoNode tempNode = (InfoNode)currentNode;
+        //InfoNode tempNode = (InfoNode)currentNode;
 
         //fill in the information stored in the currentNode
-        header.text = "Information";
-        character.text = "Source: " + tempNode.name;
-        otherInfo.text = tempNode.info;
-        idDisplay.text = tempNode.id.ToString();
+        header.text = currentNode.Type;
+        otherInfo.text = currentNode.Content;
+        //otherInfo.text = tempNode.info;
+        //idDisplay.text = tempNode.id.ToString();
 
         //set opacity based on whether node is reached yet or not (replace this with a better indicator eventually)
-        if (tempNode.reached)
+        /*if (tempNode.reached)
             background.color = new Color(background.color.r, background.color.g, background.color.b, 1f);
         else
             background.color = new Color(background.color.r, background.color.g, background.color.b, 0.5f);
-
+        */
 
         base.UpdateInformation();
     }
