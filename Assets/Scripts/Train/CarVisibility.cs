@@ -39,7 +39,15 @@ public class CarVisibility : MonoBehaviour
         selected = true;
         if (carFront) carFront.enabled = false;
         if (carTop) carTop.SetActive(false);
-        if (carCharacters) carCharacters.InitializeCharacters();
+        
+        // Check if we're in demo mode before initializing characters
+        bool isAllCharacterDemo = GameObject.FindFirstObjectByType<AllCharacterDemo>() != null;
+        
+        // Only call InitializeCharacters in normal mode - not in AllCharacterDemo mode
+        if (carCharacters && !isAllCharacterDemo) 
+        {
+            carCharacters.InitializeCharacters();
+        }
     }
 
     public Bounds GetBounds()

@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Scene version="1" xmlns="http://pantherkitty.software/xml/unity-scene/1.0">
+  <meta>
+    <value-abbreviation before="&#xA;" after=" •¬ " />
+    <value-abbreviation before="Instance" after="¡" />
+    <value-abbreviation before="UnityEngine." after="µ." />
+    <value-abbreviation before="System." after="§." />
+    <type-abbreviation before="UnityEngine." after="µ." />
+    <type-abbreviation before="System." after="§." />
+  </meta>
+  <GameObject name="Main Camera" tag="MainCamera" id="0x00018186" layer="0" activeInHierarchy="True" isStatic="False">
+    <Transform id="0x0001818C" position="(0.00, 1.00, -10.00)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+    <components>
+      <Behaviour type="µ.Camera" id="0x0001818A" enabled="True" isActiveAndEnabled="True">
+        <property name="m_ClearFlags" type="§.String" sp-name="Clear Flags" sp-type="Enum" sp-enum-index="0">Skybox</property>
+        <property name="m_BackGroundColor" type="µ.Color" m_BackGroundColor="RGBA(0.192, 0.302, 0.475, 0.000)" sp-name="Back Ground Color" />
+        <property name="m_projectionMatrixMode" type="§.Int32" sp-name="Projection Matrix Mode">1</property>
+        <property name="m_GateFitMode" type="§.Int32" sp-name="Gate Fit Mode">1</property>
+        <property name="m_FOVAxisMode" type="§.Int32" sp-name="FOV Axis Mode">0</property>
+        <property name="m_Iso" type="§.Int32" sp-name="Iso">200</property>
+        <property name="m_ShutterSpeed" type="§.Single" sp-name="Shutter Speed">0.005</property>
+        <property name="m_Aperture" type="§.Single" sp-name="Aperture">16</property>
+        <property name="m_FocusDistance" type="§.Single" sp-name="Focus Distance">10</property>
+        <property name="m_FocalLength" type="§.Single" sp-name="Focal Length">50</property>
+        <property name="m_BladeCount" type="§.Int32" sp-name="Blade Count">5</property>
+        <property name="m_Curvature" type="µ.Vector2" m_Curvature="(2.00, 11.00)" sp-name="Curvature" />
+        <property name="m_BarrelClipping" type="§.Single" sp-name="Barrel Clipping">0.25</property>
+        <property name="m_Anamorphism" type="§.Single" sp-name="Anamorphism">0</property>
+        <property name="m_SensorSize" type="µ.Vector2" m_SensorSize="(36.00, 24.00)" sp-name="Sensor Size" />
+        <property name="m_LensShift" type="µ.Vector2" m_LensShift="(0.00, 0.00)" sp-name="Lens Shift" />
+        <property name="m_NormalizedViewPortRect" type="µ.Rect" sp-name="Normalized View Port Rect">(x:0.00, y:0.00, width:1.00, height:1.00)</property>
+        <property name="near clip plane" type="§.Single" sp-name="Near clip plane">0.3</property>
+        <property name="far clip plane" type="§.Single" sp-name="Far clip plane">1000</property>
+        <property name="field of view" type="§.Single" sp-name="Field of view">60</property>
+        <property name="orthographic" type="§.Boolean" sp-name="Orthographic">False</property>
+        <property name="orthographic size" type="§.Single" sp-name="Orthographic size">5</property>
+        <property name="m_Depth" type="§.Single" sp-name="Depth">-1</property>
+        <property name="m_CullingMask" type="§.UInt32" sp-name="Culling Mask">FFFFFFFF</property>
+        <property name="m_RenderingPath" type="§.String" sp-name="Rendering Path" sp-type="Enum" sp-enum-index="0">Use Graphics Settings</property>
+        <property name="m_TargetDisplay" type="§.Int32" sp-name="Target Display">0</property>
+        <property name="m_TargetEye" type="§.Int32" sp-name="Target Eye">3</property>
+        <property name="m_HDR" type="§.Boolean" sp-name="HDR">False</property>
+        <property name="m_AllowMSAA" type="§.Boolean" sp-name="Allow MSAA">False</property>
+        <property name="m_AllowDynamicResolution" type="§.Boolean" sp-name="Allow Dynamic Resolution">False</property>
+        <property name="m_ForceIntoRT" type="§.Boolean" sp-name="Force Into RT">False</property>
+        <property name="m_OcclusionCulling" type="§.Boolean" sp-name="Occlusion Culling">True</property>
+        <property name="m_StereoConvergence" type="§.Single" sp-name="Stereo Convergence">10</property>
+        <property name="m_StereoSeparation" type="§.Single" sp-name="Stereo Separation">0.022</property>
+      </Behaviour>
+      <Behaviour type="µ.AudioListener" id="0x00018188" enabled="True" isActiveAndEnabled="True">
+        <extends>µ.AudioBehaviour</extends>
+      </Behaviour>
+      <MonoBehaviour type="µ.Rendering.HighDefinition.HDAdditionalCameraData" id="0x0001818E" enabled="True" isActiveAndEnabled="True">
+        <implements>µ.Rendering.HighDefinition.IFrameSettingsHistoryContainer</implements>
+        <implements>µ.Rendering.IAdditionalData</implements>
+        <implements>µ.Rendering.HighDefinition.IVersionable`1[[µ.Rendering.HighDefinition.HDAdditionalCameraData+Version, Unity.RenderPipelines.HighDefinition.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]</implements>
+        <implements>µ.Rendering.IDebugData</implements>
+        <property name="clearColorMode" type="§.String" sp-name="Clear Color Mode" sp-type="Enum" sp-enum-index="0">Sky</property>
+        <property name="backgroundColorHDR" type="µ.Color" backgroundColorHDR="RGBA(0.025, 0.070, 0.190, 0.000)" sp-name="Background Color HDR" />
+        <property name="clearDepth" type="§.Boolean" sp-name="Clear Depth">True</property>
+        <property name="volumeLayerMask" type="§.UInt32" sp-name="Volume Layer Mask">00000001</property>
+        <property name="antialiasing" type="§.String" sp-name="Antialiasing" sp-type="Enum" sp-enum-index="0">No Anti-aliasing</property>
+        <property name="SMAAQuality" type="§.String" sp-name="SMAA Quality" sp-type="Enum" sp-enum-index="2">High</property>
+        <property name="dithering" type="§.Boolean" sp-name="Dithering">False</property>
+        <property name="stopNaNs" type="§.Boolean" sp-name="Stop Na Ns">False</property>
+        <property name="taaSharpenStrength" type="§.Single" sp-name="Taa Sharpen Strength">0.5</property>
+        <property name="TAAQuality" type="§.String" sp-name="TAA Quality" sp-type="Enum" sp-enum-index="1">Medium</property>
+        <property name="taaSharpenMode" type="§.String" sp-name="Taa Sharpen Mode" sp-type="Enum" sp-enum-index="0">Low Quality</property>
+        <property name="taaRingingReduction" type="§.Single" sp-name="Taa Ringing Reduction">0</property>
+        <property name="taaHistorySharpening" type="§.Single" sp-name="Taa History Sharpening">0.35</property>
+        <property name="taaAntiFlicker" type="§.Single" sp-name="Taa Anti Flicker">0.5</property>
+        <property name="taaMotionVectorRejection" type="§.Single" sp-name="Taa Motion Vector Rejection">0</property>
+        <property name="taaAntiHistoryRinging" type="§.Boolean" sp-name="Taa Anti History Ringing">False</property>
+        <property name="taaBaseBlendFactor" type="§.Single" sp-name="Taa Base Blend Factor">0.875</property>
+        <property name="taaJitterScale" type="§.Single" sp-name="Taa Jitter Scale">1</property>
+        <property name="physicalParameters" type="scenedump.UnknownType" sp-name="Physical Parameters" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+        <property name="flipYMode" type="§.String" sp-name="Flip Y Mode" sp-type="Enum" sp-enum-index="0">Automatic</property>
+        <property name="xrRendering" type="§.Boolean" sp-name="Xr Rendering">True</property>
+        <property name="fullscreenPassthrough" type="§.Boolean" sp-name="Fullscreen Passthrough">False</property>
+        <property name="allowDynamicResolution" type="§.Boolean" sp-name="Allow Dynamic Resolution">False</property>
+        <property name="customRenderingSettings" type="§.Boolean" sp-name="Custom Rendering Settings">False</property>
+        <property name="invertFaceCulling" type="§.Boolean" sp-name="Invert Face Culling">False</property>
+        <property name="probeLayerMask" type="§.UInt32" sp-name="Probe Layer Mask">FFFFFFFF</property>
+        <property name="hasPersistentHistory" type="§.Boolean" sp-name="Has Persistent History">False</property>
+        <property name="screenSizeOverride" type="µ.Vector4" screenSizeOverride="(0.00, 0.00, 0.00, 0.00)" sp-name="Screen Size Override" />
+        <property name="screenCoordScaleBias" type="µ.Vector4" screenCoordScaleBias="(0.00, 0.00, 0.00, 0.00)" sp-name="Screen Coord Scale Bias" />
+        <property name="allowDeepLearningSuperSampling" type="§.Boolean" sp-name="Allow Deep Learning Super Sampling">True</property>
+        <property name="deepLearningSuperSamplingUseCustomQualitySettings" type="§.Boolean" sp-name="Deep Learning Super Sampling Use Custom Quality Settings">False</property>
+        <property name="deepLearningSuperSamplingQuality" type="§.Int32" sp-name="Deep Learning Super Sampling Quality">0</property>
+        <property name="deepLearningSuperSamplingUseCustomAttributes" type="§.Boolean" sp-name="Deep Learning Super Sampling Use Custom Attributes">False</property>
+        <property name="deepLearningSuperSamplingUseOptimalSettings" type="§.Boolean" sp-name="Deep Learning Super Sampling Use Optimal Settings">True</property>
+        <property name="deepLearningSuperSamplingSharpening" type="§.Single" sp-name="Deep Learning Super Sampling Sharpening">0</property>
+        <property name="allowFidelityFX2SuperResolution" type="§.Boolean" sp-name="Allow Fidelity FX2 Super Resolution">True</property>
+        <property name="fidelityFX2SuperResolutionUseCustomQualitySettings" type="§.Boolean" sp-name="Fidelity FX2 Super Resolution Use Custom Quality Settings">False</property>
+        <property name="fidelityFX2SuperResolutionQuality" type="§.Int32" sp-name="Fidelity FX2 Super Resolution Quality">0</property>
+        <property name="fidelityFX2SuperResolutionUseCustomAttributes" type="§.Boolean" sp-name="Fidelity FX2 Super Resolution Use Custom Attributes">False</property>
+        <property name="fidelityFX2SuperResolutionUseOptimalSettings" type="§.Boolean" sp-name="Fidelity FX2 Super Resolution Use Optimal Settings">True</property>
+        <property name="fidelityFX2SuperResolutionEnableSharpening" type="§.Boolean" sp-name="Fidelity FX2 Super Resolution Enable Sharpening">False</property>
+        <property name="fidelityFX2SuperResolutionSharpening" type="§.Single" sp-name="Fidelity FX2 Super Resolution Sharpening">0</property>
+        <property name="fsrOverrideSharpness" type="§.Boolean" sp-name="Fsr Override Sharpness">False</property>
+        <property name="fsrSharpness" type="§.Single" sp-name="Fsr Sharpness">0.92</property>
+        <property name="materialMipBias" type="§.Single" sp-name="Material Mip Bias">0</property>
+        <property name="m_RenderingPathCustomFrameSettings" type="scenedump.UnknownType" sp-name="Rendering Path Custom Frame Settings" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+        <property name="renderingPathCustomFrameSettingsOverrideMask" type="scenedump.UnknownType" sp-name="Rendering Path Custom Frame Settings Override Mask" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+        <property name="defaultFrameSettings" type="§.String" sp-name="Default Frame Settings" sp-type="Enum" sp-enum-index="0">Camera</property>
+        <property name="m_Version" type="§.String" sp-name="Version" sp-type="Enum" sp-enum-index="9">Update Physical Camera Properties To Core</property>
+        <property name="m_ObsoleteRenderingPath" type="§.Int32" sp-name="Obsolete Rendering Path">0</property>
+        <property name="m_ObsoleteFrameSettings" type="scenedump.UnknownType" sp-name="Obsolete Frame Settings" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+      </MonoBehaviour>
+    </components>
+  </GameObject>
+  <GameObject name="LoadingUI" id="0x000181DC" layer="0" activeInHierarchy="True" isStatic="False">
+    <Transform id="0x000181DE" position="(196.32, 102.60, -1104.33)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+    <components>
+      <MonoBehaviour type="LoadingUI" id="0x000181E0" enabled="True" isActiveAndEnabled="True">
+        <property name="progressBar" type="µ.UI.Slider" target-name="LLM Progress Bar" target-id="0x00018160" sp-name="Progress Bar" sp-type="ObjectReference">LLM Progress Bar (µ.UI.Slider)</property>
+        <property name="statusText" type="TMPro.TextMeshProUGUI" target-name="Status Text" target-id="0x00018196" sp-name="Status Text" sp-type="ObjectReference">Status Text (TMPro.TextMeshProUGUI)</property>
+        <property name="spinnerImage" type="µ.UI.Image" target-name="Loading Spinner" target-id="0x0001816E" sp-name="Spinner Image" sp-type="ObjectReference">Loading Spinner (µ.UI.Image)</property>
+        <property name="smoothSpeed" type="§.Single" sp-name="Smooth Speed">3</property>
+        <property name="initialAsymptoteSpeed" type="§.Single" sp-name="Initial Asymptote Speed">0.1</property>
+        <property name="characterAsymptoteSpeed" type="§.Single" sp-name="Character Asymptote Speed">0.01</property>
+      </MonoBehaviour>
+    </components>
+    <gameobjects>
+      <GameObject name="Canvas" id="0x00018174" layer="5" activeInHierarchy="True" isStatic="False">
+        <RectTransform id="0x00018176" pos="(763.68, 437.40, 1104.33)" anchorMin="(0.00, 0.00)" anchorMax="(0.00, 0.00)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+        <components>
+          <Behaviour type="µ.Canvas" id="0x0001817C" enabled="True" isActiveAndEnabled="True">
+            <property name="m_RenderMode" type="§.String" sp-name="Render Mode" sp-type="Enum" sp-enum-index="0">Screen Space - Overlay</property>
+            <property name="m_PlaneDistance" type="§.Single" sp-name="Plane Distance">100</property>
+            <property name="m_PixelPerfect" type="§.Boolean" sp-name="Pixel Perfect">False</property>
+            <property name="m_ReceivesEvents" type="§.Boolean" sp-name="Receives Events">True</property>
+            <property name="m_OverrideSorting" type="§.Boolean" sp-name="Override Sorting">False</property>
+            <property name="m_OverridePixelPerfect" type="§.Boolean" sp-name="Override Pixel Perfect">False</property>
+            <property name="m_SortingBucketNormalizedSize" type="§.Single" sp-name="Sorting Bucket Normalized Size">0</property>
+            <property name="m_VertexColorAlwaysGammaSpace" type="§.Boolean" sp-name="Vertex Color Always Gamma Space">False</property>
+            <property name="m_AdditionalShaderChannelsFlag" type="§.String" sp-name="Additional Shader Channels Flag" sp-type="Enum" sp-enum-index="-1">«error[enumValueIndex -1 is negative]»</property>
+            <property name="m_UpdateRectTransformForStandalone" type="§.String" sp-name="Update Rect Transform For Standalone" sp-type="Enum" sp-enum-index="0">Enabled</property>
+          </Behaviour>
+          <MonoBehaviour type="µ.UI.CanvasScaler" id="0x0001817A" enabled="True" isActiveAndEnabled="True">
+            <extends>µ.EventSystems.UIBehaviour</extends>
+            <property name="m_UiScaleMode" type="§.String" sp-name="Ui Scale Mode" sp-type="Enum" sp-enum-index="1">Scale With Screen Size</property>
+            <property name="m_ReferencePixelsPerUnit" type="§.Single" sp-name="Reference Pixels Per Unit">100</property>
+            <property name="m_ScaleFactor" type="§.Single" sp-name="Scale Factor">1</property>
+            <property name="m_ReferenceResolution" type="µ.Vector2" m_ReferenceResolution="(1920.00, 1080.00)" sp-name="Reference Resolution" />
+            <property name="m_ScreenMatchMode" type="§.String" sp-name="Screen Match Mode" sp-type="Enum" sp-enum-index="0">Match Width Or Height</property>
+            <property name="m_MatchWidthOrHeight" type="§.Single" sp-name="Match Width Or Height">0</property>
+            <property name="m_PhysicalUnit" type="§.String" sp-name="Physical Unit" sp-type="Enum" sp-enum-index="3">Points</property>
+            <property name="m_FallbackScreenDPI" type="§.Single" sp-name="Fallback Screen DPI">96</property>
+            <property name="m_DefaultSpriteDPI" type="§.Single" sp-name="Default Sprite DPI">96</property>
+            <property name="m_DynamicPixelsPerUnit" type="§.Single" sp-name="Dynamic Pixels Per Unit">1</property>
+            <property name="m_PresetInfoIsWorld" type="§.Boolean" sp-name="Preset Info Is World">False</property>
+          </MonoBehaviour>
+          <MonoBehaviour type="µ.UI.GraphicRaycaster" id="0x00018178" enabled="True" isActiveAndEnabled="True">
+            <extends>µ.EventSystems.BaseRaycaster</extends>
+            <extends>µ.EventSystems.UIBehaviour</extends>
+            <property name="m_IgnoreReversedGraphics" type="§.Boolean" sp-name="Ignore Reversed Graphics">True</property>
+            <property name="m_BlockingObjects" type="§.String" sp-name="Blocking Objects" sp-type="Enum" sp-enum-index="0">None</property>
+            <property name="m_BlockingMask" type="§.UInt32" sp-name="Blocking Mask">FFFFFFFF</property>
+          </MonoBehaviour>
+        </components>
+        <gameobjects>
+          <GameObject name="RawImage" id="0x000181B2" layer="5" activeInHierarchy="True" isStatic="False">
+            <RectTransform id="0x000181B4" pos="(0.00, 0.00, 0.00)" anchorMin="(0.00, 0.00)" anchorMax="(1.00, 1.00)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+            <components>
+              <Component type="µ.CanvasRenderer" id="0x000181B8">
+                <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+              </Component>
+              <MonoBehaviour type="µ.UI.RawImage" id="0x000181B6" enabled="True" isActiveAndEnabled="True">
+                <extends>µ.UI.MaskableGraphic</extends>
+                <extends>µ.UI.Graphic</extends>
+                <extends>µ.EventSystems.UIBehaviour</extends>
+                <implements>µ.UI.IClippable</implements>
+                <implements>µ.UI.IMaterialModifier</implements>
+                <implements>µ.UI.IMaskable</implements>
+                <implements>µ.UI.ICanvasElement</implements>
+                <property name="m_Color" type="µ.Color" m_Color="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Color" />
+                <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_Texture" type="µ.RenderTexture" sp-name="Texture" sp-type="ObjectReference" target-id="0x0000C380">VideoTexture (µ.RenderTexture)</property>
+                <property name="m_UVRect" type="µ.Rect" sp-name="UV Rect">(x:0.00, y:0.00, width:1.00, height:1.00)</property>
+              </MonoBehaviour>
+            </components>
+          </GameObject>
+          <GameObject name="LLM Progress Bar" id="0x0001815C" layer="5" activeInHierarchy="True" isStatic="False">
+            <RectTransform id="0x0001815E" pos="(-14.50, 392.10, 0.00)" anchorMin="(0.50, 0.50)" anchorMax="(0.50, 0.50)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+            <components>
+              <MonoBehaviour type="µ.UI.Slider" id="0x00018160" enabled="True" isActiveAndEnabled="True">
+                <referenced-by component-id="0x000181E0" property-name="progressBar">LoadingUI -» MonoBehaviour(LoadingUI) •-» progressBar</referenced-by>
+                <extends>µ.UI.Selectable</extends>
+                <extends>µ.EventSystems.UIBehaviour</extends>
+                <implements>µ.EventSystems.IInitializePotentialDragHandler</implements>
+                <implements>µ.EventSystems.IDragHandler</implements>
+                <implements>µ.UI.ICanvasElement</implements>
+                <implements>µ.EventSystems.IEventSystemHandler</implements>
+                <implements>µ.EventSystems.IPointerEnterHandler</implements>
+                <implements>µ.EventSystems.ISelectHandler</implements>
+                <implements>µ.EventSystems.IPointerExitHandler</implements>
+                <implements>µ.EventSystems.IDeselectHandler</implements>
+                <implements>µ.EventSystems.IPointerDownHandler</implements>
+                <implements>µ.EventSystems.IPointerUpHandler</implements>
+                <implements>µ.EventSystems.IMoveHandler</implements>
+                <property name="m_Navigation" type="scenedump.UnknownType" sp-name="Navigation" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_Transition" type="§.String" sp-name="Transition" sp-type="Enum" sp-enum-index="1">Color Tint</property>
+                <property name="m_Colors" type="scenedump.UnknownType" sp-name="Colors" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_SpriteState" type="scenedump.UnknownType" sp-name="Sprite State" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_AnimationTriggers" type="scenedump.UnknownType" sp-name="Animation Triggers" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_Interactable" type="§.Boolean" sp-name="Interactable">True</property>
+                <property name="m_TargetGraphic" type="µ.UI.Image" target-name="Handle" target-id="0x00018182" sp-name="Target Graphic" sp-type="ObjectReference">Handle (µ.UI.Image)</property>
+                <property name="m_FillRect" type="µ.RectTransform" target-name="Fill" target-id="0x000181C2" sp-name="Fill Rect" sp-type="ObjectReference">Fill (µ.RectTransform)</property>
+                <property name="m_HandleRect" type="µ.RectTransform" target-name="Handle" target-id="0x00018180" sp-name="Handle Rect" sp-type="ObjectReference">Handle (µ.RectTransform)</property>
+                <property name="m_Direction" type="§.String" sp-name="Direction" sp-type="Enum" sp-enum-index="0">Left To Right</property>
+                <property name="m_MinValue" type="§.Single" sp-name="Min Value">0</property>
+                <property name="m_MaxValue" type="§.Single" sp-name="Max Value">1</property>
+                <property name="m_WholeNumbers" type="§.Boolean" sp-name="Whole Numbers">False</property>
+                <property name="m_Value" type="§.Single" sp-name="Value">0</property>
+                <property name="m_OnValueChanged" type="scenedump.UnknownType" sp-name="On Value Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+              </MonoBehaviour>
+            </components>
+            <gameobjects>
+              <GameObject name="Background" id="0x00018198" layer="5" activeInHierarchy="True" isStatic="False">
+                <RectTransform id="0x0001819A" pos="(0.00, 0.00, 0.00)" anchorMin="(0.00, 0.25)" anchorMax="(1.00, 0.75)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+                <components>
+                  <Component type="µ.CanvasRenderer" id="0x0001819E">
+                    <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+                  </Component>
+                  <MonoBehaviour type="µ.UI.Image" id="0x0001819C" enabled="True" isActiveAndEnabled="True">
+                    <extends>µ.UI.MaskableGraphic</extends>
+                    <extends>µ.UI.Graphic</extends>
+                    <extends>µ.EventSystems.UIBehaviour</extends>
+                    <implements>µ.UI.IClippable</implements>
+                    <implements>µ.ISerializationCallbackReceiver</implements>
+                    <implements>µ.UI.IMaterialModifier</implements>
+                    <implements>µ.ICanvasRaycastFilter</implements>
+                    <implements>µ.UI.IMaskable</implements>
+                    <implements>µ.UI.ICanvasElement</implements>
+                    <implements>µ.UI.ILayoutElement</implements>
+                    <property name="m_Color" type="µ.Color" m_Color="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Color" />
+                    <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                    <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                    <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                    <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                    <property name="m_Sprite" type="µ.Sprite" sp-name="Sprite" sp-type="ObjectReference" target-id="0x000004BC">Background (µ.Sprite)</property>
+                    <property name="m_Type" type="§.String" sp-name="Type" sp-type="Enum" sp-enum-index="1">Sliced</property>
+                    <property name="m_PreserveAspect" type="§.Boolean" sp-name="Preserve Aspect">False</property>
+                    <property name="m_FillCenter" type="§.Boolean" sp-name="Fill Center">True</property>
+                    <property name="m_FillMethod" type="§.String" sp-name="Fill Method" sp-type="Enum" sp-enum-index="4">Radial 360</property>
+                    <property name="m_FillAmount" type="§.Single" sp-name="Fill Amount">1</property>
+                    <property name="m_FillClockwise" type="§.Boolean" sp-name="Fill Clockwise">True</property>
+                    <property name="m_FillOrigin" type="§.Int32" sp-name="Fill Origin">0</property>
+                    <property name="m_UseSpriteMesh" type="§.Boolean" sp-name="Use Sprite Mesh">False</property>
+                    <property name="m_PixelsPerUnitMultiplier" type="§.Single" sp-name="Pixels Per Unit Multiplier">1</property>
+                  </MonoBehaviour>
+                </components>
+              </GameObject>
+              <GameObject name="Fill Area" id="0x00018158" layer="5" activeInHierarchy="True" isStatic="False">
+                <RectTransform id="0x0001815A" pos="(-5.00, 0.00, 0.00)" anchorMin="(0.00, 0.25)" anchorMax="(1.00, 0.75)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+                <gameobjects>
+                  <GameObject name="Fill" id="0x000181C0" layer="5" activeInHierarchy="True" isStatic="False">
+                    <RectTransform id="0x000181C2" pos="(0.00, 0.00, 0.00)" anchorMin="(0.00, 0.00)" anchorMax="(0.00, 1.00)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)">
+                      <referenced-by component-id="0x00018160" property-name="m_FillRect">LoadingUI -» Canvas -» LLM Progress Bar -» MonoBehaviour(µ.UI.Slider) •-» m_FillRect</referenced-by>
+                    </RectTransform>
+                    <components>
+                      <Component type="µ.CanvasRenderer" id="0x000181C6">
+                        <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+                      </Component>
+                      <MonoBehaviour type="µ.UI.Image" id="0x000181C4" enabled="True" isActiveAndEnabled="True">
+                        <extends>µ.UI.MaskableGraphic</extends>
+                        <extends>µ.UI.Graphic</extends>
+                        <extends>µ.EventSystems.UIBehaviour</extends>
+                        <implements>µ.UI.IClippable</implements>
+                        <implements>µ.ISerializationCallbackReceiver</implements>
+                        <implements>µ.UI.IMaterialModifier</implements>
+                        <implements>µ.ICanvasRaycastFilter</implements>
+                        <implements>µ.UI.IMaskable</implements>
+                        <implements>µ.UI.ICanvasElement</implements>
+                        <implements>µ.UI.ILayoutElement</implements>
+                        <property name="m_Color" type="µ.Color" m_Color="RGBA(0.851, 0.404, 0.004, 1.000)" sp-name="Color" />
+                        <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                        <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                        <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                        <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                        <property name="m_Sprite" type="µ.Sprite" sp-name="Sprite" sp-type="ObjectReference" target-id="0x000004B8">UISprite (µ.Sprite)</property>
+                        <property name="m_Type" type="§.String" sp-name="Type" sp-type="Enum" sp-enum-index="1">Sliced</property>
+                        <property name="m_PreserveAspect" type="§.Boolean" sp-name="Preserve Aspect">False</property>
+                        <property name="m_FillCenter" type="§.Boolean" sp-name="Fill Center">True</property>
+                        <property name="m_FillMethod" type="§.String" sp-name="Fill Method" sp-type="Enum" sp-enum-index="4">Radial 360</property>
+                        <property name="m_FillAmount" type="§.Single" sp-name="Fill Amount">1</property>
+                        <property name="m_FillClockwise" type="§.Boolean" sp-name="Fill Clockwise">True</property>
+                        <property name="m_FillOrigin" type="§.Int32" sp-name="Fill Origin">0</property>
+                        <property name="m_UseSpriteMesh" type="§.Boolean" sp-name="Use Sprite Mesh">False</property>
+                        <property name="m_PixelsPerUnitMultiplier" type="§.Single" sp-name="Pixels Per Unit Multiplier">1</property>
+                      </MonoBehaviour>
+                    </components>
+                  </GameObject>
+                </gameobjects>
+              </GameObject>
+              <GameObject name="Handle Slide Area" id="0x00018162" layer="5" activeInHierarchy="True" isStatic="False">
+                <RectTransform id="0x00018164" pos="(0.00, 0.00, 0.00)" anchorMin="(0.00, 0.00)" anchorMax="(1.00, 1.00)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+                <gameobjects>
+                  <GameObject name="Handle" id="0x0001817E" layer="5" activeInHierarchy="True" isStatic="False">
+                    <RectTransform id="0x00018180" pos="(0.00, 0.00, 0.00)" anchorMin="(0.00, 0.00)" anchorMax="(0.00, 1.00)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)">
+                      <referenced-by component-id="0x00018160" property-name="m_HandleRect">LoadingUI -» Canvas -» LLM Progress Bar -» MonoBehaviour(µ.UI.Slider) •-» m_HandleRect</referenced-by>
+                    </RectTransform>
+                    <components>
+                      <Component type="µ.CanvasRenderer" id="0x00018184">
+                        <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+                      </Component>
+                      <MonoBehaviour type="µ.UI.Image" id="0x00018182" enabled="True" isActiveAndEnabled="True">
+                        <referenced-by component-id="0x00018160" property-name="m_TargetGraphic">LoadingUI -» Canvas -» LLM Progress Bar -» MonoBehaviour(µ.UI.Slider) •-» m_TargetGraphic</referenced-by>
+                        <extends>µ.UI.MaskableGraphic</extends>
+                        <extends>µ.UI.Graphic</extends>
+                        <extends>µ.EventSystems.UIBehaviour</extends>
+                        <implements>µ.UI.IClippable</implements>
+                        <implements>µ.ISerializationCallbackReceiver</implements>
+                        <implements>µ.UI.IMaterialModifier</implements>
+                        <implements>µ.ICanvasRaycastFilter</implements>
+                        <implements>µ.UI.IMaskable</implements>
+                        <implements>µ.UI.ICanvasElement</implements>
+                        <implements>µ.UI.ILayoutElement</implements>
+                        <property name="m_Color" type="µ.Color" m_Color="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Color" />
+                        <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                        <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                        <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                        <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                        <property name="m_Sprite" type="µ.Sprite" sp-name="Sprite" sp-type="ObjectReference" target-id="0x000004C4">Knob (µ.Sprite)</property>
+                        <property name="m_Type" type="§.String" sp-name="Type" sp-type="Enum" sp-enum-index="0">Simple</property>
+                        <property name="m_PreserveAspect" type="§.Boolean" sp-name="Preserve Aspect">False</property>
+                        <property name="m_FillCenter" type="§.Boolean" sp-name="Fill Center">True</property>
+                        <property name="m_FillMethod" type="§.String" sp-name="Fill Method" sp-type="Enum" sp-enum-index="4">Radial 360</property>
+                        <property name="m_FillAmount" type="§.Single" sp-name="Fill Amount">1</property>
+                        <property name="m_FillClockwise" type="§.Boolean" sp-name="Fill Clockwise">True</property>
+                        <property name="m_FillOrigin" type="§.Int32" sp-name="Fill Origin">0</property>
+                        <property name="m_UseSpriteMesh" type="§.Boolean" sp-name="Use Sprite Mesh">False</property>
+                        <property name="m_PixelsPerUnitMultiplier" type="§.Single" sp-name="Pixels Per Unit Multiplier">1</property>
+                      </MonoBehaviour>
+                    </components>
+                  </GameObject>
+                </gameobjects>
+              </GameObject>
+            </gameobjects>
+          </GameObject>
+          <GameObject name="Status Text" id="0x00018190" layer="5" activeInHierarchy="True" isStatic="False">
+            <RectTransform id="0x00018192" pos="(558.30, 425.00, 0.00)" anchorMin="(0.50, 0.50)" anchorMax="(0.50, 0.50)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+            <components>
+              <Component type="µ.CanvasRenderer" id="0x00018194">
+                <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+              </Component>
+              <MonoBehaviour type="TMPro.TextMeshProUGUI" id="0x00018196" enabled="True" isActiveAndEnabled="True">
+                <referenced-by component-id="0x000181E0" property-name="statusText">LoadingUI -» MonoBehaviour(LoadingUI) •-» statusText</referenced-by>
+                <extends>TMPro.TMP_Text</extends>
+                <extends>µ.UI.MaskableGraphic</extends>
+                <extends>µ.UI.Graphic</extends>
+                <extends>µ.EventSystems.UIBehaviour</extends>
+                <implements>µ.UI.IClippable</implements>
+                <implements>µ.UI.IMaterialModifier</implements>
+                <implements>µ.UI.IMaskable</implements>
+                <implements>µ.UI.ICanvasElement</implements>
+                <implements>µ.UI.ILayoutElement</implements>
+                <property name="m_Color" type="µ.Color" m_Color="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Color" />
+                <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_text" type="§.String" sp-name="Text">New Text</property>
+                <property name="m_isRightToLeft" type="§.Boolean" sp-name="Is Right To Left">False</property>
+                <property name="m_fontAsset" type="TMPro.TMP_FontAsset" sp-name="Font Asset" sp-type="ObjectReference" target-id="0x0000C14A">LiberationSans SDF (TMPro.TMP_FontAsset)</property>
+                <property name="m_sharedMaterial" type="µ.Material" sp-name="Shared Material" sp-type="ObjectReference" target-id="0x0000C14C">LiberationSans SDF Material (µ.Material)</property>
+                <property-array name="m_fontSharedMaterials" type="§.Object[]" dimensions="1" length="0" size="0" isEmpty="True" sp-name="Font Shared Materials" sp-type="Generic" />
+                <property-array name="m_fontMaterials" type="§.Object[]" dimensions="1" length="0" size="0" isEmpty="True" sp-name="Font Materials" sp-type="Generic" />
+                <property name="m_fontColor32" type="µ.Color" m_fontColor32="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Font Color 32" />
+                <property name="m_fontColor" type="µ.Color" m_fontColor="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Font Color" />
+                <property name="m_enableVertexGradient" type="§.Boolean" sp-name="Enable Vertex Gradient">False</property>
+                <property name="m_colorMode" type="§.String" sp-name="Color Mode" sp-type="Enum" sp-enum-index="3">Four Corners Gradient</property>
+                <property name="m_fontColorGradient" type="scenedump.UnknownType" sp-name="Font Color Gradient" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_tintAllSprites" type="§.Boolean" sp-name="Tint All Sprites">False</property>
+                <property name="m_TextStyleHashCode" type="§.Int32" sp-name="Text Style Hash Code">-1183493901</property>
+                <property name="m_overrideHtmlColors" type="§.Boolean" sp-name="Override Html Colors">False</property>
+                <property name="m_faceColor" type="µ.Color" m_faceColor="RGBA(1.000, 1.000, 1.000, 1.000)" sp-name="Face Color" />
+                <property name="m_fontSize" type="§.Single" sp-name="Font Size">30</property>
+                <property name="m_fontSizeBase" type="§.Single" sp-name="Font Size Base">30</property>
+                <property name="m_fontWeight" type="§.String" sp-name="Font Weight" sp-type="Enum" sp-enum-index="3">Regular</property>
+                <property name="m_enableAutoSizing" type="§.Boolean" sp-name="Enable Auto Sizing">False</property>
+                <property name="m_fontSizeMin" type="§.Single" sp-name="Font Size Min">18</property>
+                <property name="m_fontSizeMax" type="§.Single" sp-name="Font Size Max">72</property>
+                <property name="m_fontStyle" type="§.String" sp-name="Font Style" sp-type="Enum" sp-enum-index="1">Bold</property>
+                <property name="m_HorizontalAlignment" type="§.String" sp-name="Horizontal Alignment" sp-type="Enum" sp-enum-index="2">Right</property>
+                <property name="m_VerticalAlignment" type="§.String" sp-name="Vertical Alignment" sp-type="Enum" sp-enum-index="0">Top</property>
+                <property name="m_textAlignment" type="§.String" sp-name="Text Alignment" sp-type="Enum" sp-enum-index="36">Converted</property>
+                <property name="m_characterSpacing" type="§.Single" sp-name="Character Spacing">0</property>
+                <property name="m_wordSpacing" type="§.Single" sp-name="Word Spacing">0</property>
+                <property name="m_lineSpacing" type="§.Single" sp-name="Line Spacing">0</property>
+                <property name="m_lineSpacingMax" type="§.Single" sp-name="Line Spacing Max">0</property>
+                <property name="m_paragraphSpacing" type="§.Single" sp-name="Paragraph Spacing">0</property>
+                <property name="m_charWidthMaxAdj" type="§.Single" sp-name="Char Width Max Adj">0</property>
+                <property name="m_TextWrappingMode" type="§.String" sp-name="Text Wrapping Mode" sp-type="Enum" sp-enum-index="1">Normal</property>
+                <property name="m_wordWrappingRatios" type="§.Single" sp-name="Word Wrapping Ratios">0.4</property>
+                <property name="m_overflowMode" type="§.String" sp-name="Overflow Mode" sp-type="Enum" sp-enum-index="0">Overflow</property>
+                <property name="m_enableKerning" type="§.Boolean" sp-name="Enable Kerning">False</property>
+                <property-array name="m_ActiveFontFeatures" type="§.Object[]" dimensions="1" length="1" sp-name="Active Font Features" sp-type="Generic">
+                  <value name="m_ActiveFontFeatures[0]" type="§.String" index="0">Kern</value>
+                </property-array>
+                <property name="m_enableExtraPadding" type="§.Boolean" sp-name="Enable Extra Padding">False</property>
+                <property name="checkPaddingRequired" type="§.Boolean" sp-name="Check Padding Required">False</property>
+                <property name="m_isRichText" type="§.Boolean" sp-name="Is Rich Text">True</property>
+                <property name="m_EmojiFallbackSupport" type="§.Boolean" sp-name="Emoji Fallback Support">True</property>
+                <property name="m_parseCtrlCharacters" type="§.Boolean" sp-name="Parse Ctrl Characters">True</property>
+                <property name="m_isOrthographic" type="§.Boolean" sp-name="Is Orthographic">True</property>
+                <property name="m_isCullingEnabled" type="§.Boolean" sp-name="Is Culling Enabled">False</property>
+                <property name="m_horizontalMapping" type="§.String" sp-name="Horizontal Mapping" sp-type="Enum" sp-enum-index="0">Character</property>
+                <property name="m_verticalMapping" type="§.String" sp-name="Vertical Mapping" sp-type="Enum" sp-enum-index="0">Character</property>
+                <property name="m_uvLineOffset" type="§.Single" sp-name="Uv Line Offset">0</property>
+                <property name="m_geometrySortingOrder" type="§.String" sp-name="Geometry Sorting Order" sp-type="Enum" sp-enum-index="0">Normal</property>
+                <property name="m_IsTextObjectScaleStatic" type="§.Boolean" sp-name="Is Text Object Scale Static">False</property>
+                <property name="m_VertexBufferAutoSizeReduction" type="§.Boolean" sp-name="Vertex Buffer Auto Size Reduction">False</property>
+                <property name="m_useMaxVisibleDescender" type="§.Boolean" sp-name="Use Max Visible Descender">True</property>
+                <property name="m_pageToDisplay" type="§.Int32" sp-name="Page To Display">1</property>
+                <property name="m_margin" type="µ.Vector4" m_margin="(0.00, 0.00, 0.00, 0.00)" sp-name="Margin" />
+                <property name="m_isUsingLegacyAnimationComponent" type="§.Boolean" sp-name="Is Using Legacy Animation Component">False</property>
+                <property name="m_isVolumetricText" type="§.Boolean" sp-name="Is Volumetric Text">False</property>
+                <property name="m_hasFontAssetChanged" type="§.Boolean" sp-name="Has Font Asset Changed">False</property>
+                <property name="m_maskOffset" type="µ.Vector4" m_maskOffset="(0.00, 0.00, 0.00, 0.00)" sp-name="Mask Offset" />
+              </MonoBehaviour>
+            </components>
+          </GameObject>
+          <GameObject name="Loading Spinner" id="0x0001816C" layer="5" activeInHierarchy="True" isStatic="False">
+            <RectTransform id="0x00018172" pos="(886.70, 432.70, 0.00)" anchorMin="(0.50, 0.50)" anchorMax="(0.50, 0.50)" pivot="(0.50, 0.50)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+            <components>
+              <Component type="µ.CanvasRenderer" id="0x00018170">
+                <property name="m_CullTransparentMesh" type="§.Boolean" sp-name="Cull Transparent Mesh">True</property>
+              </Component>
+              <MonoBehaviour type="µ.UI.Image" id="0x0001816E" enabled="True" isActiveAndEnabled="True">
+                <referenced-by component-id="0x000181E0" property-name="spinnerImage">LoadingUI -» MonoBehaviour(LoadingUI) •-» spinnerImage</referenced-by>
+                <extends>µ.UI.MaskableGraphic</extends>
+                <extends>µ.UI.Graphic</extends>
+                <extends>µ.EventSystems.UIBehaviour</extends>
+                <implements>µ.UI.IClippable</implements>
+                <implements>µ.ISerializationCallbackReceiver</implements>
+                <implements>µ.UI.IMaterialModifier</implements>
+                <implements>µ.ICanvasRaycastFilter</implements>
+                <implements>µ.UI.IMaskable</implements>
+                <implements>µ.UI.ICanvasElement</implements>
+                <implements>µ.UI.ILayoutElement</implements>
+                <property name="m_Color" type="µ.Color" m_Color="RGBA(0.790, 0.906, 0.202, 1.000)" sp-name="Color" />
+                <property name="m_RaycastTarget" type="§.Boolean" sp-name="Raycast Target">True</property>
+                <property name="m_RaycastPadding" type="µ.Vector4" m_RaycastPadding="(0.00, 0.00, 0.00, 0.00)" sp-name="Raycast Padding" />
+                <property name="m_Maskable" type="§.Boolean" sp-name="Maskable">True</property>
+                <property name="m_OnCullStateChanged" type="scenedump.UnknownType" sp-name="On Cull State Changed" sp-type="Generic">«@ToDo:unknown-type[Generic]»</property>
+                <property name="m_Sprite" type="µ.Sprite" sp-name="Sprite" sp-type="ObjectReference" target-id="0x0000C4A4">gem-1 (µ.Sprite)</property>
+                <property name="m_Type" type="§.String" sp-name="Type" sp-type="Enum" sp-enum-index="0">Simple</property>
+                <property name="m_PreserveAspect" type="§.Boolean" sp-name="Preserve Aspect">False</property>
+                <property name="m_FillCenter" type="§.Boolean" sp-name="Fill Center">True</property>
+                <property name="m_FillMethod" type="§.String" sp-name="Fill Method" sp-type="Enum" sp-enum-index="4">Radial 360</property>
+                <property name="m_FillAmount" type="§.Single" sp-name="Fill Amount">1</property>
+                <property name="m_FillClockwise" type="§.Boolean" sp-name="Fill Clockwise">True</property>
+                <property name="m_FillOrigin" type="§.Int32" sp-name="Fill Origin">0</property>
+                <property name="m_UseSpriteMesh" type="§.Boolean" sp-name="Use Sprite Mesh">False</property>
+                <property name="m_PixelsPerUnitMultiplier" type="§.Single" sp-name="Pixels Per Unit Multiplier">1</property>
+              </MonoBehaviour>
+            </components>
+          </GameObject>
+          <GameObject name="ProgressBar" id="0x000181D6" layer="5" activeInHierarchy="True" isStatic="False">
+            <Transform id="0x000181D8" position="(960.00, 540.00, 0.00)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+            <components>
+              <MonoBehaviour type="µ.UIElements.UIDocument" id="0x000181DA" enabled="True" isActiveAndEnabled="True">
+                <property name="m_PanelSettings" type="µ.UIElements.PanelSettings" sp-name="Panel Settings" sp-type="ObjectReference" target-id="0x0000C3F2">PanelSettings (µ.UIElements.PanelSettings)</property>
+                <property name="sourceAsset" type="µ.UIElements.VisualTreeAsset" sp-name="Source Asset" sp-type="ObjectReference" target-id="0x0000C4A8">LoadingProgressBar (µ.UIElements.VisualTreeAsset)</property>
+                <property name="m_SortingOrder" type="§.Single" sp-name="Sorting Order">0</property>
+                <property name="m_WorldSpaceSizeMode" type="§.String" sp-name="World Space Size Mode" sp-type="Enum" sp-enum-index="1">Fixed</property>
+                <property name="m_WorldSpaceWidth" type="§.Single" sp-name="World Space Width">1920</property>
+                <property name="m_WorldSpaceHeight" type="§.Single" sp-name="World Space Height">1080</property>
+              </MonoBehaviour>
+            </components>
+          </GameObject>
+        </gameobjects>
+      </GameObject>
+    </gameobjects>
+  </GameObject>
+  <GameObject name="Persistent Systems" id="0x000181A0" layer="0" activeInHierarchy="True" isStatic="False">
+    <Transform id="0x000181A2" position="(210.14, 107.00, -1115.83)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+    <components>
+      <MonoBehaviour type="PersistentSystemsManager" id="0x000181A4" enabled="True" isActiveAndEnabled="True" />
+    </components>
+    <gameobjects>
+      <GameObject name="LLM" id="0x000181BA" layer="0" activeInHierarchy="True" isStatic="False">
+        <Transform id="0x000181BC" position="(210.14, 107.00, -1115.83)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+        <components>
+          <MonoBehaviour type="LLMUnity.LLM" id="0x000181BE" enabled="True" isActiveAndEnabled="True">
+            <referenced-by component-id="0x000181A8" property-name="llm">GameInitializer -» MonoBehaviour(GameInitializer) •-» llm</referenced-by>
+            <referenced-by component-id="0x000181D2" property-name="sharedLLM">Persistent Systems -» GameManager -» MonoBehaviour(CharacterManager) •-» sharedLLM</referenced-by>
+            <property name="remote" type="§.Boolean" sp-name="Remote">False</property>
+            <property name="port" type="§.Int32" sp-name="Port">13333</property>
+            <property name="numThreads" type="§.Int32" sp-name="Num Threads">-1</property>
+            <property name="gpuAcceleration" type="§.String" sp-name="Gpu Acceleration" sp-type="Enum" sp-enum-index="1">Automatic</property>
+            <property name="_numGPULayers" type="§.Int32" sp-name="Num GPU Layers">32</property>
+            <property name="debug" type="§.Boolean" sp-name="Debug">False</property>
+            <property name="parallelPrompts" type="§.Int32" sp-name="Parallel Prompts">6</property>
+            <property name="dontDestroyOnLoad" type="§.Boolean" sp-name="Dont Destroy On Load">True</property>
+            <property name="contextSize" type="§.Int32" sp-name="Context Size">12288</property>
+            <property name="batchSize" type="§.Int32" sp-name="Batch Size">1024</property>
+            <property name="model" type="§.String" sp-name="Model">Ministral-3b-instruct.Q4_K_M.gguf</property>
+            <property name="chatTemplate" type="§.String" sp-name="Chat Template">mistral chat</property>
+            <property name="lora" type="§.String" sp-name="Lora">
+            </property>
+            <property name="loraWeights" type="§.String" sp-name="Lora Weights">
+            </property>
+            <property name="flashAttention" type="§.Boolean" sp-name="Flash Attention">False</property>
+            <property name="APIKey" type="§.String" sp-name="API Key">
+            </property>
+            <property name="SSLCert" type="§.String" sp-name="SSL Cert">
+            </property>
+            <property name="SSLCertPath" type="§.String" sp-name="SSL Cert Path">
+            </property>
+            <property name="SSLKey" type="§.String" sp-name="SSL Key">
+            </property>
+            <property name="SSLKeyPath" type="§.String" sp-name="SSL Key Path">
+            </property>
+            <property name="minContextLength" type="§.Int32" sp-name="Min Context Length">0</property>
+            <property name="maxContextLength" type="§.Int32" sp-name="Max Context Length">131072</property>
+            <property name="embeddingsOnly" type="§.Boolean" sp-name="Embeddings Only">False</property>
+            <property name="embeddingLength" type="§.Int32" sp-name="Embedding Length">4096</property>
+          </MonoBehaviour>
+          <MonoBehaviour type="LLMConfig" id="0xFFFD868E" enabled="True" isActiveAndEnabled="True">
+            <property name="autoConfigureForAllCharacters" type="§.Boolean" sp-name="Auto Configure For All Characters">True</property>
+          </MonoBehaviour>
+        </components>
+      </GameObject>
+      <GameObject name="GameManager" id="0x000181CE" layer="0" activeInHierarchy="True" isStatic="False">
+        <Transform id="0x000181D0" position="(210.14, 107.00, -1115.83)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+        <components>
+          <MonoBehaviour type="NPCManager" id="0x000181D4" enabled="True" isActiveAndEnabled="True">
+            <referenced-by component-id="0x000181A8" property-name="npcManager">GameInitializer -» MonoBehaviour(GameInitializer) •-» npcManager</referenced-by>
+            <property name="npcPrefab" type="µ.GameObject" target-name="NPC" target-id="0x0000C4A6" sp-name="Npc Prefab" sp-type="ObjectReference" />
+            <property-array name="spawnPoints" type="§.Object[]" dimensions="1" length="0" size="0" isEmpty="True" sp-name="Spawn Points" sp-type="Generic" />
+            <property name="characterManager" type="CharacterManager" target-name="GameManager" target-id="0x000181D2" sp-name="Character Manager" sp-type="ObjectReference">GameManager (CharacterManager)</property>
+          </MonoBehaviour>
+          <MonoBehaviour type="CharacterManager" id="0x000181D2" enabled="True" isActiveAndEnabled="True">
+            <referenced-by component-id="0x000181A8" property-name="characterManager">GameInitializer -» MonoBehaviour(GameInitializer) •-» characterManager</referenced-by>
+            <referenced-by component-id="0x000181D4" property-name="characterManager">Persistent Systems -» GameManager -» MonoBehaviour(NPCManager) •-» characterManager</referenced-by>
+            <property name="charactersFolder" type="§.String" sp-name="Characters Folder">Characters</property>
+            <property name="sharedLLM" type="LLMUnity.LLM" target-name="LLM" target-id="0x000181BE" sp-name="Shared LLM" sp-type="ObjectReference">LLM (LLMUnity.LLM)</property>
+            <property name="characterInitDelay" type="§.Single" sp-name="Character Init Delay">2</property>
+            <property name="templateTimeout" type="§.Single" sp-name="Template Timeout">15</property>
+            <property name="warmupTimeout" type="§.Single" sp-name="Warmup Timeout">30</property>
+            <property name="maxWarmupAttempts" type="§.Int32" sp-name="Max Warmup Attempts">3</property>
+            <property name="baseBackoffDelay" type="§.Single" sp-name="Base Backoff Delay">1</property>
+            <property name="temperature" type="§.Single" sp-name="Temperature">0.45</property>
+            <property name="topK" type="§.Int32" sp-name="Top K">55</property>
+            <property name="topP" type="§.Single" sp-name="Top P">0.95</property>
+            <property name="repeatPenalty" type="§.Single" sp-name="Repeat Penalty">1</property>
+            <property name="presencePenalty" type="§.Single" sp-name="Presence Penalty">0</property>
+            <property name="frequencyPenalty" type="§.Single" sp-name="Frequency Penalty">1</property>
+          </MonoBehaviour>
+        </components>
+      </GameObject>
+      <GameObject name="CoreSystems" id="0x000181AC" layer="0" activeInHierarchy="True" isStatic="False">
+        <Transform id="0x000181AE" position="(196.32, 102.60, -1104.33)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+        <components>
+          <MonoBehaviour type="CoreSystemsManager" id="0x000181B0" enabled="True" isActiveAndEnabled="True" />
+        </components>
+      </GameObject>
+      <GameObject name="MysteryParser" id="0x000181C8" layer="0" activeInHierarchy="True" isStatic="False">
+        <Transform id="0x000181CA" position="(210.14, 107.00, -1115.83)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+        <components>
+          <MonoBehaviour type="ParsingControl" id="0x000181CC" enabled="True" isActiveAndEnabled="True">
+            <property name="mysteryFiles" type="§.String" sp-name="Mystery Files">MysteryStorage</property>
+            <property name="_verboseLogging" type="§.Boolean" sp-name="Verbose Logging">False</property>
+          </MonoBehaviour>
+        </components>
+      </GameObject>
+    </gameobjects>
+  </GameObject>
+  <GameObject name="GameInitializer" id="0x000181A6" layer="0" activeInHierarchy="True" isStatic="False">
+    <Transform id="0x000181AA" position="(2.47, -19.92, -34.62)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+    <components>
+      <MonoBehaviour type="GameInitializer" id="0x000181A8" enabled="True" isActiveAndEnabled="True">
+        <property name="llm" type="LLMUnity.LLM" target-name="LLM" target-id="0x000181BE" sp-name="Llm" sp-type="ObjectReference">LLM (LLMUnity.LLM)</property>
+        <property name="npcManager" type="NPCManager" target-name="GameManager" target-id="0x000181D4" sp-name="Npc Manager" sp-type="ObjectReference">GameManager (NPCManager)</property>
+        <property name="characterManager" type="CharacterManager" target-name="GameManager" target-id="0x000181D2" sp-name="Character Manager" sp-type="ObjectReference">GameManager (CharacterManager)</property>
+      </MonoBehaviour>
+    </components>
+  </GameObject>
+  <GameObject name="GameController" id="0x00018166" layer="0" activeInHierarchy="True" isStatic="False">
+    <Transform id="0x0001816A" position="(-18.00, -7.15, 25.58)" rotation="(0.00, 0.00, 0.00)" scale="(1.00, 1.00, 1.00)" />
+    <components>
+      <MonoBehaviour type="GameControl" id="0x00018168" enabled="True" isActiveAndEnabled="True">
+        <property name="currentState" type="§.String" sp-name="Current State" sp-type="Enum" sp-enum-index="0">DEFAULT</property>
+      </MonoBehaviour>
+    </components>
+  </GameObject>
+  <references />
+</Scene>

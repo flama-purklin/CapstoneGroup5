@@ -2,6 +2,7 @@ using LLMUnity;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Collections;
 
 public class GameInitializer : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameInitializer : MonoBehaviour
 
     private void Start()
     {
+        // Register for scene loaded events
+        SceneManager.sceneLoaded += OnSceneLoaded;
   
         GameObject persistentSystems = GameObject.Find("Persistent Systems");
         if (!persistentSystems)
@@ -23,7 +26,19 @@ public class GameInitializer : MonoBehaviour
         if (!npcManager) npcManager = FindFirstObjectByType<NPCManager>();
         if (!characterManager) characterManager = FindFirstObjectByType<CharacterManager>();
 
-        if (llm) llm.transform.SetParent(persistentSystems.transform);
+        if (llm) 
+        {
+            // Configure LLM for parallel processing of all characters
+            string charactersPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Characters");
+            if (System.IO.Directory.Exists(charactersPath))
+            {
+                int characterCount = System.IO.Directory.GetFiles(charactersPath, "*.json").Length;
+                llm.parallelPrompts = characterCount;
+                Debug.Log($"Set LLM parallelPrompts to {characterCount} to handle all characters");
+            }
+            llm.transform.SetParent(persistentSystems.transform);
+        }
+        
         if (npcManager) npcManager.transform.SetParent(persistentSystems.transform);
         if (characterManager) characterManager.transform.SetParent(persistentSystems.transform);
 
@@ -147,6 +162,129 @@ public class GameInitializer : MonoBehaviour
         // Load main scene
         SceneManager.LoadScene("SystemsTest");
         Debug.Log("Main scene load requested");
+    }
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "SystemsTest")
+        {
+            // Give a short delay for scene initialization
+            StartCoroutine(SpawnCharactersAfterDelay());
+        }
+    }
+    
+    private IEnumerator SpawnCharactersAfterDelay()
+    {
+        // Wait for scene to fully initialize
+        yield return new WaitForSeconds(1.0f);
+        
+        // Ensure NPCManager has placed characters container
+        NPCManager npcManager = FindFirstObjectByType<NPCManager>();
+        if (npcManager)
+        {
+            // Make sure the character container is created
+            npcManager.PlaceNPCsInGameScene();
+            
+            // Check if we're in all-character demo mode
+            bool allCharacterDemoActive = GameObject.FindFirstObjectByType<AllCharacterDemo>() != null;
+            
+            if (allCharacterDemoActive)
+            {
+                Debug.Log("ALL CHARACTER DEMO MODE DETECTED - Using CharacterSpawnerService");
+                
+                // Create spawner service if it doesn't exist
+                var spawnerService = FindFirstObjectByType<CharacterSpawnerService>();
+                if (spawnerService == null)
+                {
+                    GameObject spawnerObj = new GameObject("CharacterSpawnerService");
+                    spawnerService = spawnerObj.AddComponent<CharacterSpawnerService>();
+                    DontDestroyOnLoad(spawnerObj);
+                    Debug.Log("Created CharacterSpawnerService for global character management");
+                }
+                
+                // Let the service handle character spawning
+                Debug.Log("Using CharacterSpawnerService to spawn all characters");
+                spawnerService.ClearAllCharacters();
+                
+                // First check if we need to enable all train cars
+                // Find and reactivate all train cars that might be inactive
+                var trainCars = GameObject.FindGameObjectsWithTag("Train");
+                if (trainCars.Length == 0)
+                {
+                    Debug.LogWarning("No train cars found with 'Train' tag! Searching for car objects...");
+                    
+                    // Look for train car objects by name pattern
+                    GameObject trainManager = GameObject.Find("TrainManager");
+                    if (trainManager)
+                    {
+                        Transform railCars = trainManager.transform.Find("Rail Cars");
+                        if (railCars)
+                        {
+                            Debug.Log($"Found Rail Cars container with {railCars.childCount} children");
+                            // Activate all train cars
+                            foreach (Transform car in railCars)
+                            {
+                                car.gameObject.SetActive(true);
+                                Debug.Log($"Activated train car: {car.gameObject.name}");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Found {trainCars.Length} train cars with 'Train' tag");
+                    foreach (var car in trainCars)
+                    {
+                        car.SetActive(true);
+                        Debug.Log($"Activated train car: {car.name}");
+                    }
+                }
+                
+                // Now use the service for spawning
+                spawnerService.SpawnAllCharacters();
+                
+                // Wait and validate
+                yield return new WaitForSeconds(2.0f);
+                spawnerService.ValidateAllCharacters();
+                
+                // Verify characters were spawned
+                var characters = GameObject.FindObjectsByType<Character>(FindObjectsSortMode.None);
+                if (characters.Length == 0)
+                {
+                    Debug.LogWarning("No characters spawned! Trying one more time...");
+                    spawnerService.SpawnAllCharacters();
+                    
+                    yield return new WaitForSeconds(1.0f);
+                    spawnerService.ValidateAllCharacters();
+                }
+                else
+                {
+                    Debug.Log($"Successfully spawned {characters.Length} characters globally across all train cars");
+                }
+            }
+            else
+            {
+                // In normal mode, we don't spawn all characters - let CarVisibility handle it
+                Debug.Log("Normal mode - characters will spawn when player enters each car");
+                
+                // Just ensure the first visible car gets characters
+                var firstCar = GameObject.FindFirstObjectByType<CarVisibility>();
+                if (firstCar != null)
+                {
+                    firstCar.CarSelected();
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Failed to find NPCManager when trying to spawn characters!");
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        // Unregister from scene loaded events
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     
     private void VerifyCharacterFiles()

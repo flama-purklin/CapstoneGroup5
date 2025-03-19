@@ -33,10 +33,75 @@ public class NPCAnimManager : MonoBehaviour
         //Debug.Log(originalScale);
     }
 
-    private void AnimContainerAssign()
+    private void AnimContainerAssign(string overrideCharacterName = null)
     {
-        GameObject[] allNPCs = GameObject.FindGameObjectsWithTag("Character");
-        anims = allAnims[allNPCs.Length - 1];
+        // Get character name from various sources, with priority order
+        string characterName = "unknown";
+        
+        // 1. Use override if provided (highest priority)
+        if (!string.IsNullOrEmpty(overrideCharacterName))
+        {
+            characterName = overrideCharacterName;
+            Debug.Log($"Using override name for animation assignment: {characterName}");
+        }
+        // 2. Try to get character name by working up the hierarchy
+        else
+        {
+            // First try to get from Character component (most reliable)
+            Character characterComponent = GetComponentInParent<Character>();
+            if (characterComponent != null && !string.IsNullOrEmpty(characterComponent.CharacterName))
+            {
+                characterName = characterComponent.CharacterName;
+                Debug.Log($"Found Character component with name: {characterName}");
+                
+                // Fix parent name if needed
+                Transform parentTransform = characterComponent.transform.parent;
+                if (parentTransform != null && parentTransform.name != $"NPC_{characterName}")
+                {
+                    Debug.LogWarning($"Fixing parent name: {parentTransform.name} -> NPC_{characterName}");
+                    parentTransform.name = $"NPC_{characterName}";
+                }
+            }
+            // Fallback to searching hierarchy
+            else
+            {
+                // Look for parent GameObject name - search up the hierarchy
+                Transform current = transform;
+                while (current != null)
+                {
+                    // If we found a parent starting with NPC_, use it
+                    if (current.name.StartsWith("NPC_"))
+                    {
+                        characterName = current.name.Replace("NPC_", "");
+                        Debug.Log($"Found parent object with NPC_ prefix: {characterName}");
+                        break;
+                    }
+                    current = current.parent;
+                }
+            }
+        }
+        
+        // Don't proceed if we don't have valid animations
+        if (allAnims == null || allAnims.Length == 0)
+        {
+            Debug.LogError($"No animation containers available for {characterName}");
+            return;
+        }
+        
+        // Use character name's hash code to determine animation set consistently
+        int nameHashCode = characterName.GetHashCode();
+        int animIndex = Mathf.Abs(nameHashCode) % allAnims.Length;
+        
+        // Assign the animation set
+        anims = allAnims[animIndex];
+        
+        // Apply initial sprite
+        if (sprite != null && anims != null && anims.idleFront != null && anims.idleFront.Length > 0)
+        {
+            sprite.sprite = anims.idleFront[0];
+        }
+        
+        Debug.Log($"Character '{characterName}' assigned animation set #{animIndex+1} (based on name hash)");
     }
 
     // Update is called once per frame
