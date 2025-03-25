@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "title": "Test Mystery",
+    "description": "A test mystery for validating the refactored architecture",
+    "author": "Claude",
+    "version": "1.0.0",
+    "date_created": "2025-03-25"
+  },
+  "core": {
+    "title": "Murder on the Refactoring Express",
+    "premise": "A developer has been murdered while refactoring a messy codebase. The killer could be any of the team members who were frustrated with the legacy architecture."
+  },
+  "characters": {
+    "lead_architect": {
+      "initial_location": "engine_car.control_panel",
+      "core": {
+        "name": "Alex Turner",
+        "description": "The lead architect who started the refactoring project.",
+        "motivation": "To create a clean, maintainable codebase that follows best practices.",
+        "whereabouts": [
+          {
+            "time": "8:00",
+            "whereparout_data": {
+              "location": "engine_car.control_panel",
+              "circumstance": "Reviewing architectural diagrams before the team meeting."
+            }
+          }
+        ]
+      },
+      "mind_engine": {
+        "role_playing_prompt": "You are Alex Turner, the lead architect of a complex software project. You are passionate about clean code and architectural patterns. You speak in precise, technical terms and often use software design metaphors."
+      }
+    },
+    "frontend_dev": {
+      "initial_location": "dining_car.table_1",
+      "core": {
+        "name": "Jordan Hayes",
+        "description": "The frontend developer who was skeptical about the refactoring.",
+        "motivation": "To ensure the UI remains responsive and user-friendly regardless of the backend architecture.",
+        "whereabouts": [
+          {
+            "time": "8:00",
+            "whereparout_data": {
+              "location": "dining_car.table_1",
+              "circumstance": "Having breakfast while prototyping new UI designs."
+            }
+          }
+        ]
+      },
+      "mind_engine": {
+        "role_playing_prompt": "You are Jordan Hayes, a frontend developer with an eye for design. You value user experience above all else and are skeptical about architectural changes that don't directly benefit the end user."
+      }
+    },
+    "backend_dev": {
+      "initial_location": "passenger_car.window_seat",
+      "core": {
+        "name": "Morgan Chen",
+        "description": "The backend developer who was most resistant to changes in the data layer.",
+        "motivation": "To protect the stability and performance of the core system logic.",
+        "whereabouts": [
+          {
+            "time": "8:00",
+            "whereparout_data": {
+              "location": "passenger_car.window_seat",
+              "circumstance": "Working on database optimization issues."
+            }
+          }
+        ]
+      },
+      "mind_engine": {
+        "role_playing_prompt": "You are Morgan Chen, a backend developer who values stability and performance. You speak in concise, logical statements and are skeptical of architectural changes that might impact system reliability."
+      }
+    }
+  },
+  "train_layout": {
+    "cars": [
+      {
+        "car_id": "engine_car",
+        "car_type": "engine",
+        "car_class": "standard",
+        "properties": {
+          "description": "The engine car at the front of the train."
+        },
+        "available_locations": [
+          "control_panel",
+          "engine_room",
+          "storage_area"
+        ]
+      },
+      {
+        "car_id": "dining_car",
+        "car_type": "dining",
+        "car_class": "first",
+        "properties": {
+          "description": "A luxurious dining car with multiple tables and a bar."
+        },
+        "available_locations": [
+          "table_1",
+          "table_2",
+          "bar",
+          "kitchen"
+        ]
+      },
+      {
+        "car_id": "passenger_car",
+        "car_type": "passenger",
+        "car_class": "standard",
+        "properties": {
+          "description": "A standard passenger car with multiple seating arrangements."
+        },
+        "available_locations": [
+          "window_seat",
+          "aisle_seat",
+          "compartment_1",
+          "compartment_2"
+        ]
+      }
+    ],
+    "connections": {
+      "engine_car": {
+        "connected_to": "dining_car",
+        "connection_type": "door"
+      },
+      "dining_car": {
+        "connected_to": "passenger_car",
+        "connection_type": "door"
+      }
+    }
+  },
+  "constellation": {
+    "nodes": {
+      "architecture_diagram": {
+        "title": "Architecture Diagram",
+        "description": "A detailed diagram showing the proposed new architecture for the system.",
+        "physical_evidence": true,
+        "location": "engine_car.control_panel",
+        "properties": {
+          "evidence_type": "document",
+          "color": "#FFFFFF"
+        }
+      },
+      "coffee_cup": {
+        "title": "Coffee Cup with Fingerprints",
+        "description": "A coffee cup with multiple sets of fingerprints, found near the scene of the crime.",
+        "physical_evidence": true,
+        "location": "dining_car.table_1",
+        "properties": {
+          "evidence_type": "container",
+          "color": "#A0522D"
+        }
+      },
+      "usb_drive": {
+        "title": "USB Drive",
+        "description": "A USB drive containing the victim's latest code changes, hidden in a seat cushion.",
+        "physical_evidence": true,
+        "location": "passenger_car.window_seat",
+        "properties": {
+          "evidence_type": "electronics",
+          "color": "#000000"
+        }
+      }
+    }
+  }
+}
