@@ -3124,6 +3124,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   finalCanvas: {fileID: 1482382611}
   anim: {fileID: 1482382616}
+  buttonHolder: {fileID: 0}
+  buttonPrefab: {fileID: 0}
 --- !u!4 &1067611397
 Transform:
   m_ObjectHideFlags: 0
