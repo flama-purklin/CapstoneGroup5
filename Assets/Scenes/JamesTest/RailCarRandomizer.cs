@@ -85,7 +85,7 @@ public class RailCarRandomizer : MonoBehaviour
 
             wall = Instantiate(backWallPrefab, Vector3.zero, Quaternion.identity);
             wall.name = "RailCarWall";
-            wall.transform.localPosition = new Vector3(-(railCarLength / 2) - (wallThickness / 2), 0, -(railCarDepth / 2) - (wallThickness / 2));
+            wall.transform.localPosition = new Vector3(-(railCarLength / 2) - (wallThickness / 2), 0, -(railCarDepth / 2) + (wallThickness / 2));
             wall.transform.SetParent(trainCar.transform);
             // -12.1, 0,  -5
 
@@ -96,13 +96,13 @@ public class RailCarRandomizer : MonoBehaviour
 
             leftWall = Instantiate(leftWallPrefab, Vector3.zero, Quaternion.identity);
             leftWall.name = "RailCarLeft";
-            leftWall.transform.localPosition = new Vector3(-(railCarLength / 2) + (wallThickness / 2), railCarHeight / 2, 0);
+            leftWall.transform.localPosition = new Vector3(-(railCarLength / 2) - (wallThickness / 2), railCarHeight / 2, 0);
             leftWall.transform.SetParent(trainCar.transform);
             leftWall.transform.Rotate(0, 180, 0);
 
             rightWall = Instantiate(leftWallPrefab, Vector3.zero, Quaternion.identity);
             rightWall.name = "RailCarRight";
-            rightWall.transform.localPosition = new Vector3((railCarLength / 2) - (wallThickness / 2), railCarHeight / 2, 0);
+            rightWall.transform.localPosition = new Vector3((railCarLength / 2) + (wallThickness / 2), railCarHeight / 2, 0);
             rightWall.transform.SetParent(trainCar.transform);
 
 

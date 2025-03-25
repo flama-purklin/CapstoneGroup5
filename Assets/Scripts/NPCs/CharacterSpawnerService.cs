@@ -309,7 +309,7 @@ public class CharacterSpawnerService : MonoBehaviour
                 }
             }
         }
-        
+
         // Now check each registry entry
         foreach (var entry in characterRegistry.Values)
         {
@@ -320,20 +320,20 @@ public class CharacterSpawnerService : MonoBehaviour
                 allValid = false;
                 continue;
             }
-            
+
             // Validate naming
             if (!entry.ValidateNaming())
             {
                 fixedCount++;
                 allValid = false;
             }
-            
+
             // Validate character component name
             if (entry.CharacterComponent.CharacterName != entry.Id)
             {
                 Debug.LogWarning($"Character component name mismatch: {entry.CharacterComponent.CharacterName} vs {entry.Id}");
                 // Try to fix the name
-                var charNameField = typeof(Character).GetField("characterName", 
+                var charNameField = typeof(Character).GetField("characterName",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 if (charNameField != null)
                 {
@@ -346,15 +346,15 @@ public class CharacterSpawnerService : MonoBehaviour
                     allValid = false;
                 }
             }
-            
+
             // Validate animation (if applicable)
             var animManager = entry.GameObject.GetComponentInChildren<NPCAnimManager>();
             if (animManager != null)
             {
                 // Force animation container refresh
-                var refreshMethod = animManager.GetType().GetMethod("AnimContainerAssign", 
+                var refreshMethod = animManager.GetType().GetMethod("AnimContainerAssign",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                    
+
                 if (refreshMethod != null)
                 {
                     // Send the actual character ID to ensure consistent sprite assignment
@@ -362,7 +362,8 @@ public class CharacterSpawnerService : MonoBehaviour
                     Debug.Log($"Refreshed animation for {entry.Id}");
                 }
             }
-        
+        }
+
         // Log result
         if (allValid)
         {
