@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class AnchorPlacerUI : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class AnchorPlacerUI : MonoBehaviour
     void Start()
     {
         uiPanel.SetActive(false);
-        placeButton.onClick.AddListener(PlaceObject);
+        //placeButton.onClick.AddListener(PlaceObject);
     }
 
     public void OpenUI(AnchorPlacer anchor)
@@ -38,6 +39,14 @@ public class AnchorPlacerUI : MonoBehaviour
         {
             GameObject placedObject = Instantiate(prefabEntry.prefab, selectedAnchor.transform.position, Quaternion.Euler(0, rotation, 0));
 
+            // Extract coordinates from anchor.
+            string anchorName = selectedAnchor.transform.parent != null ? selectedAnchor.transform.parent.name : "Unknown";
+            //Debug.Log($"Anchor name: {anchorName}");
+            string coordinates = anchorName.Contains("(") ? anchorName.Substring(anchorName.IndexOf("(")).Replace(" ", "") : "(?,?)";
+
+            // Setting the object's name in the required format
+            placedObject.name = $"{selectedType} {coordinates} {rotation}";
+
             // Set parent of placed object anchor sibling
             placedObject.transform.SetParent(selectedAnchor.transform.parent);
             if (selectedAnchor.placedObject != null)
@@ -46,6 +55,7 @@ public class AnchorPlacerUI : MonoBehaviour
             }
 
             selectedAnchor.placedObject = placedObject;
+            Debug.Log($"{anchorName} spawned object '{placedObject.name}'");
         }
 
         uiPanel.SetActive(false);
