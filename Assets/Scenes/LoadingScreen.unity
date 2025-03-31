@@ -1285,7 +1285,7 @@ MonoBehaviour:
   port: 13333
   numThreads: -1
   gpuAcceleration: 1
-  _numGPULayers: 16
+  _numGPULayers: 32
   debug: 0
   parallelPrompts: 3
   dontDestroyOnLoad: 1
@@ -1425,6 +1425,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mysteryFiles: MysteryStorage
+  _verboseLogging: 0
+  _characterExtractor: {fileID: 0}
 --- !u!1 &1545545251
 GameObject:
   m_ObjectHideFlags: 0
