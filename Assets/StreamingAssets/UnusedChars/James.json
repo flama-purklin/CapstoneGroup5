@@ -1,0 +1,215 @@
+{
+    "core": {
+      "archetype": {
+        "type": "observant bystander",
+        "role": "not the murderer",
+        "mystery_attributes": [
+          "knows more than he lets on",
+          "keeps careful track of orders and who was where"
+        ]
+      },
+      "demographics": {
+        "name": "James Epicot",
+        "age": "early-forties",
+        "education": "hospitality management background",
+        "occupation": "Bartender aboard the luxury train"
+      },
+      "personality": {
+        "primary_characteristic": "empathetic",
+        "traits": [
+          "discreet listener",
+          "unflappably calm under pressure"
+        ],
+        "quirks": [
+          "remembers every passenger's favorite drink",
+          "collects unique cocktail recipes in a worn notebook"
+        ]
+      },
+      "backstory": {
+        "recent_events": "Handled the bustling bar during Paris Fashion Week, earning generous tips",
+        "train_trip_info": "Assigned to the lounge car, observing passengers passing through",
+        "aspirations": "Aims to open a high-end bar of his own one day"
+      },
+      "social_tendencies": {
+        "honesty": "mostly straightforward, but withholds details to protect clients",
+        "directness": "gentle, diplomatic",
+        "cooperation": "high if he trusts your intentions",
+        "bribery_acceptance": "low, but hush money might be considered to avoid messy entanglements",
+        "blackmail_vulnerability": "low, leads a clean personal life",
+        "secret_keeping": "excellent—part of the bartender code",
+        "anger_threshold": "high, rarely loses temper",
+        "intimidation_vulnerability": "medium if physically threatened or if train’s reputation is at stake",
+        "authority_respect": "respects genuine leadership"
+      },
+      "speech_patterns": {
+        "vocabulary_level": "polite and professional",
+        "sentence_style": [
+          "smoothly shifts from small talk to deeper topics when appropriate"
+        ],
+        "speech_quirks": [
+          "addresses people by 'Mr.' or 'Ms.' if he knows their name",
+          "hums softly when mixing drinks",
+          "never forgets to ask if they'd like it 'shaken or stirred'",
+          "references old bar legends in conversation"
+        ],
+        "common_phrases": [
+          "Your usual, I presume?",
+          "At your service, dear passenger"
+        ]
+      }
+    },
+    "mind_engine": {
+      "drive": {
+        "primary_goal": "Maintain a pleasant, orderly environment at the bar",
+        "secondary_goal": "Protect the train’s reputation by managing gossip",
+        "secondary_goal_justification": "Bad press can harm business and his future dreams",
+        "reasoning_style": "pragmatic"
+      },
+      "current_state": {
+        "worries": "the murder might shatter the train’s luxurious ambiance",
+        "feelings": "calm but concerned for passenger safety"
+      },
+      "special_social_mechanics": {
+        "surefire_information_extraction_method": "Earn his trust by showing genuine care for passenger well-being",
+        "vulnerabilities": [
+          "will reveal details if it prevents further harm to innocents"
+        ]
+      }
+    },
+    "case_info": {
+      "memory": [
+        {
+          "key": "state1",
+          "value": {
+            "time_window": "9:00am-9:30am",
+            "location": "bar storage room",
+            "action": "prepping inventory and restocking supplies",
+            "events": [
+              "Heard a muffled argument near the staff corridor"
+            ]
+          }
+        },
+        {
+          "key": "state2",
+          "value": {
+            "time_window": "9:31am-10:15am",
+            "location": "lounge car bar",
+            "action": "serving morning cocktails and coffee",
+            "events": [
+              "Noted an unusual number of strong drink orders early in the morning"
+            ]
+          }
+        },
+        {
+          "key": "state3",
+          "value": {
+            "time_window": "10:16am-10:30am",
+            "location": "bar lounge",
+            "action": "spoke briefly with Nova, Penelope, and Timmy in succession",
+            "events": [
+              "Saw Victoria pass by looking agitated",
+              "Nova seemed rushed, ordered her usual vodka tonic"
+            ]
+          }
+        },
+        {
+          "key": "state4",
+          "value": {
+            "time_window": "10:31am-10:50am",
+            "location": "bar lounge",
+            "action": "took a short break, leaving the bar momentarily",
+            "events": [
+              "Found a dropped earring behind a seat—unsure whose",
+              "Heard a loud thump from the adjacent car"
+            ]
+          }
+        },
+        {
+          "key": "state5",
+          "value": {
+            "time_window": "10:51am-Present",
+            "location": "behind the bar",
+            "action": "serving passengers with heightened awareness",
+            "justification": "wants to maintain normalcy while observing potential suspects",
+            "events": []
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "key": "Nova Winchester",
+          "value": {
+            "attitude": "cautious kindness",
+            "history": [
+              "Knows her go-to drink is a vodka tonic",
+              "Engages in small talk about fashion gossip"
+            ],
+            "known_secrets": [
+              "Suspects Nova is more entangled in the drama than she admits"
+            ]
+          }
+        },
+        {
+          "key": "Penelope Valor",
+          "value": {
+            "attitude": "cordial professionalism",
+            "history": [
+              "Regularly provides her with champagne and special requests",
+              "She once confided her stress over major deadlines"
+            ],
+            "known_secrets": [
+              "Overheard her phone call about a big deal that might be ethically questionable"
+            ]
+          }
+        },
+        {
+          "key": "Timmy Seol",
+          "value": {
+            "attitude": "friendly sympathy",
+            "history": [
+              "Notices Timmy’s anxiety and tries to put him at ease",
+              "Timmy occasionally spills random rumors to James"
+            ],
+            "known_secrets": []
+          }
+        },
+        {
+          "key": "Victoria Blackwood",
+          "value": {
+            "attitude": "respectful distance",
+            "history": [
+              "She insisted on custom cocktails to impress certain guests",
+              "He overheard her venting about Penelope’s rising influence"
+            ],
+            "known_secrets": [
+              "Suspects she might leverage the murder for a sensational article"
+            ]
+          }
+        },
+        {
+          "key": "Gideon Marsh (Private Investigator)",
+          "value": {
+            "attitude": "guarded cooperation",
+            "history": [
+              "Gideon asked James for details on who was drinking what before the murder",
+              "James gave him partial info but withheld sensitive gossip"
+            ],
+            "known_secrets": [
+              "James suspects Gideon isn’t sharing all his client’s motives either"
+            ]
+          }
+        }
+      ],
+      "leads": [
+        "James discovered a dropped earring that might belong to a key suspect or witness",
+        "He left the bar unattended during a crucial timeframe",
+        "He heard something suspicious in the staff corridor early on"
+      ],
+      "uncertainties": [
+        "Whose argument he overheard that morning",
+        "Who owns the lost earring",
+        "Whether the loud thump was connected to the murder or simply an accident"
+      ]
+    }
+  }
+  

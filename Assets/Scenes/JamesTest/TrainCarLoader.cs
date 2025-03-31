@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Collections;
-using static UnityEngine.Rendering.DebugUI.Table;
-using UnityEditor.Overlays;
 using UnityEditor;
 
 [System.Serializable]
@@ -59,8 +57,8 @@ public class TrainCarLoader : MonoBehaviour
     // Coroutine to wait for the floor to be generated
     IEnumerator WaitForTrainShell()
     {
-        // Wait until floor is assigned in RailCarRandomizer
-        while (railCarRandomizer.floor == null)
+        // Wait until shell and anchors are generated in RailCarRandomizer
+        while (railCarRandomizer.spawnSuccessful == false)
         {
             yield return null;
         }
@@ -97,14 +95,14 @@ public class TrainCarLoader : MonoBehaviour
         }
 
         Vector3 floorPosition = railCarRandomizer.floor.transform.position;
-        float startX = floorPosition.x - (railCarRandomizer.railCarLength / 2) + (railCarRandomizer.cellSize / 2);
+        float startX = floorPosition.x + (railCarRandomizer.railCarLength / 2) - (railCarRandomizer.cellSize / 2);
         float startZ = floorPosition.z - (railCarRandomizer.railCarDepth / 2) + (railCarRandomizer.cellSize / 2);
         float y = floorPosition.y + (railCarRandomizer.floorThickness / 2);
 
         // Note* grid starts from top right, aka -z, -x. so populates top right, to bottom left, rows aka z's first.
         foreach (TrainCarObject obj in trainCarLayout.train_car)
         {
-            float x = startX + obj.position[1] * railCarRandomizer.cellSize;
+            float x = startX - obj.position[1] * railCarRandomizer.cellSize;
             float z = startZ + obj.position[0] * railCarRandomizer.cellSize;
             Vector3 position = new Vector3(x, y, z);
 
@@ -112,7 +110,7 @@ public class TrainCarLoader : MonoBehaviour
             {
                 //Debug.Log("objectPrefabs contain obj.type" + obj.type.ToString());
                 GameObject prefab = objectPrefabs[obj.type];
-                string anchorName = $"Anchor ({(int)z}, {(int)x})";
+                string anchorName = $"Anchor ({obj.position[0]}, {obj.position[1]})";
                 //Debug.Log("Anchor name = " + anchorName);
                 GameObject instance = Instantiate(prefab, position, Quaternion.Euler(0, obj.rotation, 0));
                 instance.transform.SetParent(anchorPoints.Find(obj => obj.name == anchorName).transform);

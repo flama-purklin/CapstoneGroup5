@@ -1,115 +1,160 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+using TMPro;
+using LLMUnity;
 
 public class DialogueControl : MonoBehaviour
 {
-    //character present in dialogue - REPLACE WITH CHARACTER OBJECT
-    GameObject currentChar;
+    [Header("Core References")]
+    [SerializeField] private LLMDialogueManager llmDialogueManager;
+    [SerializeField] private GameObject dialogueCanvas;
+    [SerializeField] private GameObject defaultHud;
+    [SerializeField] private RectTransform dialoguePanel;
 
-    //UI Elements
-    [SerializeField] GameObject dialogueCanvas;
-    
-    //from top
-    [SerializeField] RectTransform dialogueHolder;
-    [SerializeField] RectTransform playerDialogue;
+    [Header("Canvas Components")]
+    [SerializeField] Image characterProf;
+    [SerializeField] TMP_Text characterName;
 
-    //from bottom
-    [SerializeField] RectTransform inputBox;
-    [SerializeField] RectTransform characterImage;
-    [SerializeField] RectTransform submitButton;
+    [SerializeField] private Animator anim;
 
-    //from right
-    [SerializeField] RectTransform rightButtons;
+    private bool isTransitioning = false;
+    private bool shutdown = false;
 
-    //from left
-    [SerializeField] RectTransform leftButtons;
-
-    [SerializeField] float lerpTime;
-
-    //animation
-    [SerializeField] Animator lerpingAnim;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!llmDialogueManager)
         {
-            Deactivate();
+            Debug.LogError("LLMDialogueManager reference not set in DialogueControl!!");
+            enabled = false;
+            return;
         }
+
+        if (!dialogueCanvas)
+        {
+            Debug.LogError("DialogueCanvas reference not set!");
+            enabled = false;
+            return;
+        }
+
+        if (!anim)
+        {
+            Debug.LogError("Animator reference not set!");
+            enabled = false;
+            return;
+        }
+
+        dialogueCanvas.SetActive(false);
     }
 
-    //called whenever dialogue system is activated - TODO replace GameObject here with Character data container
-    public void Activate(GameObject character)
+    public void Activate(GameObject npcObject)
     {
-        currentChar = character;
+        if (isTransitioning) return;
+
+        Debug.Log($"Attempting to activate dialogue with {npcObject.name}");
+
+        Character character = npcObject.GetComponent<Character>();
+        if (character == null)
+        {
+            Debug.LogError($"No Character component found on NPC: {npcObject.name}");
+            return;
+        }
+
+        var llmCharacter = character.GetLLMCharacter();
+        if (llmCharacter == null)
+        {
+            Debug.LogError($"Failed to get LLMCharacter for {character.GetCharacterName()}");
+            return;
+        }
+
+        llmDialogueManager.SetCharacter(llmCharacter);
+        GameControl.GameController.currentState = GameState.DIALOGUE;
+
+        if (defaultHud)
+        {
+            defaultHud.SetActive(false);
+        }
+
+        //set the character name
+        characterName.text = npcObject.GetComponentInChildren<LLMCharacter>().AIName;
+
+        StartCoroutine(ActivateDialogue());
+    }
+
+    private IEnumerator ActivateDialogue()
+    {
+        isTransitioning = true;
         dialogueCanvas.SetActive(true);
-        StartCoroutine(DialogueEntryLerp());
+        anim.Play("DialogueActivate");
+
+        // wait for animation to start
+        yield return null;
+
+        // wait for animation to complete
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        {
+            yield return null;
+        }
+
+        llmDialogueManager.InitializeDialogue();
+        isTransitioning = false;
+
+        //return null; // for now...
+    }
+
+    private IEnumerator DeactivateDialogue()
+    {
+        Debug.Log("deactivating dialogue");
+        isTransitioning = true;
+
+        // Start the reset process
+        var resetTask = llmDialogueManager.ResetDialogue();
+        while (!resetTask.IsCompleted)
+        {
+            yield return null;
+        }
+
+        anim.Rebind();
+        anim.Update(0f);
+        anim.Play("DialogueDeactivate");
+        
+        Debug.Log(anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+
+        // Wait for animation to complete
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        {
+            yield return null;
+        }
+
+        dialogueCanvas.SetActive(false);
+
+        if (GameControl.GameController.currentState == GameState.DIALOGUE)
+        {
+            defaultHud.SetActive(true);
+            GameControl.GameController.currentState = GameState.DEFAULT;
+        }
+
+        isTransitioning = false;
+    }
+
+    private void Update()
+    {
+        if (isTransitioning) return;
+
+        if ((Input.GetKeyDown(KeyCode.Escape) && GameControl.GameController.currentState == GameState.DIALOGUE) ||
+            (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
+        {
+            if (GameControl.GameController.currentState == GameState.FINAL)
+            {
+                shutdown = true;
+            }
+            StartCoroutine(DeactivateDialogue());
+        }
     }
 
     public void Deactivate()
     {
-        StartCoroutine(DialogueExitLerp());
-    }
-
-    IEnumerator DialogueEntryLerp()
-    {
-        float currentTime = 0f;
-
-        lerpingAnim.speed = 1f;
-        lerpingAnim.Play("DialogueActivation");
-
-        while (currentTime < lerpTime)
-        {
-            //lerp in all objects
-
-            //from top
-
-            //from left
-
-            //from right
-
-            //from bottom
-
-            currentTime += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-
-        //lerpingAnim.Stop();
-        yield return null;
-    }
-
-    IEnumerator DialogueExitLerp()
-    {
-        float currentTime = 0f;
-
-        //lerpingAnim.speed = -1f;
-        lerpingAnim.Play("DialogueDeactivation");
-
-        while (currentTime < lerpTime)
-        {
-            //lerp out all objects
-
-            //from top
-
-            //from left
-
-            //from right
-
-            //from bottom
-            Debug.Log(currentTime);
-            currentTime += Time.fixedDeltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-
-        Debug.Log("End Reached");
-        dialogueCanvas.SetActive(false);
-        GameControl.GameController.currentState = GameState.DEFAULT;
-        yield return null;
+        if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
+        StartCoroutine(DeactivateDialogue());
     }
 }

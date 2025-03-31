@@ -26,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (GameControl.GameController.currentState == GameState.DEFAULT)
             InputCheck();
+        else
+            playerAnim.enabled = false;
     }
 
     private void InputCheck()
