@@ -14,6 +14,16 @@ public class LoadingUI : MonoBehaviour
     [SerializeField] private float smoothSpeed = 1f;
     [SerializeField] private float initialAsymptoteSpeed = 0.1f;
     [SerializeField] private float characterAsymptoteSpeed = 0.01f;
+    
+    /// <summary>
+    /// Set up references to UI components
+    /// </summary>
+    public void SetupReferences(Slider progressBar, TMP_Text statusText, Image spinnerImage)
+    {
+        this.progressBar = progressBar;
+        this.statusText = statusText;
+        this.spinnerImage = spinnerImage;
+    }
 
     private LLM llm;
     private NPCManager npcManager;

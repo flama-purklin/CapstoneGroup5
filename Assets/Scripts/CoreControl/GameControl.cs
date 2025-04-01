@@ -10,7 +10,8 @@ public enum GameState
     WIN,
     LOSE,
     MINIGAME,
-    MYSTERY
+    MYSTERY,
+    LOADING
 }
 
 public class GameControl : MonoBehaviour

@@ -1,17 +1,47 @@
 using LLMUnity;
-using UnityEngine.SceneManagement;
 using UnityEngine;
-using System.Threading.Tasks;
+using System.IO;
 
+/// <summary>
+/// Legacy GameInitializer script - updated to work with the unified scene approach.
+/// This script is now just a bridge to the new InitializationManager.
+/// </summary>
 public class GameInitializer : MonoBehaviour
 {
     [SerializeField] private LLM llm;
     [SerializeField] private NPCManager npcManager;
     [SerializeField] private CharacterManager characterManager;
+    
+    [Header("Unified Scene Configuration")]
+    [SerializeField] private GameObject loadingOverlay;
+    [SerializeField] private bool useUnifiedSceneApproach = true;
 
     private void Start()
     {
-  
+        // Check if we're using the unified scene approach
+        if (useUnifiedSceneApproach)
+        {
+            // Set up InitializationManager
+            var initializationManager = FindFirstObjectByType<InitializationManager>();
+            if (initializationManager == null)
+            {
+                GameObject initManagerObj = new GameObject("InitializationManager");
+                initializationManager = initManagerObj.AddComponent<InitializationManager>();
+                
+                // Configure the initialization manager
+                var initManagerComponent = initManagerObj.GetComponent<InitializationManager>();
+                if (initManagerComponent != null)
+                {
+                    // Use SerializedField to assign references in editor
+                    Debug.Log("Using unified scene approach with InitializationManager");
+                }
+            }
+            return;
+        }
+        
+        // Legacy approach - only used if not using unified scene
+        Debug.LogWarning("Using legacy scene transition approach. Consider switching to unified scene approach.");
+        
         GameObject persistentSystems = GameObject.Find("Persistent Systems");
         if (!persistentSystems)
         {
@@ -26,139 +56,23 @@ public class GameInitializer : MonoBehaviour
         if (llm) llm.transform.SetParent(persistentSystems.transform);
         if (npcManager) npcManager.transform.SetParent(persistentSystems.transform);
         if (characterManager) characterManager.transform.SetParent(persistentSystems.transform);
-
-        InitializeGame();
-    }
-
-    private async void InitializeGame()
-    {
-        Debug.Log("Starting game initialization sequence...");
         
-        // Find parsing control
-        ParsingControl parsingControl = FindFirstObjectByType<ParsingControl>();
-        
-        // Step 1: Wait for LLM to start
-        Debug.Log("INITIALIZATION STEP 1: Waiting for LLM to start...");
-        int waitCount = 0;
-        float startTime = Time.realtimeSinceStartup;
-        
-        while (!llm.started)
-        {
-            waitCount++;
-            if (waitCount % 100 == 0) // Log every 100 frames to avoid spam
-            {
-                float elapsedTime = Time.realtimeSinceStartup - startTime;
-                Debug.Log($"Still waiting for LLM to start... ({elapsedTime:F1} seconds elapsed)");
-            }
-            await Task.Yield();
-        }
-        
-        float llmLoadTime = Time.realtimeSinceStartup - startTime;
-        Debug.Log($"LLM started successfully in {llmLoadTime:F1} seconds");
-        
-        // Step 2: Wait for mystery parsing and character extraction
-        Debug.Log("INITIALIZATION STEP 2: Mystery parsing and character extraction");
-        bool parsingCompleted = false;
-        
-        if (parsingControl != null)
-        {
-            // Register for completion event
-            void OnParsingComplete()
-            {
-                parsingCompleted = true;
-                Debug.Log("Received parsing completion event");
-            }
-            
-            // Subscribe to completion event
-            parsingControl.OnParsingComplete += OnParsingComplete;
-            
-            // Start waiting
-            startTime = Time.realtimeSinceStartup;
-            waitCount = 0;
-            
-            Debug.Log("Waiting for mystery parsing and character extraction to complete...");
-            
-            // Wait for either the event or the IsParsingComplete flag
-            while (!parsingCompleted && !parsingControl.IsParsingComplete)
-            {
-                waitCount++;
-                if (waitCount % 100 == 0)
-                {
-                    float elapsedTime = Time.realtimeSinceStartup - startTime;
-                    Debug.Log($"Still waiting for parsing to complete... ({elapsedTime:F1} seconds elapsed)");
-                }
-                await Task.Yield();
-            }
-            
-            // Unsubscribe from event
-            parsingControl.OnParsingComplete -= OnParsingComplete;
-            
-            float parsingTime = Time.realtimeSinceStartup - startTime;
-            Debug.Log($"Mystery parsing and character extraction complete in {parsingTime:F1} seconds");
-            
-            // Verify character files
-            VerifyCharacterFiles();
-        }
-        else
-        {
-            Debug.LogWarning("ParsingControl not found. Character files may not be properly extracted!");
-        }
-        
-        // Step 3: Initialize NPCs and Character Manager
-        Debug.Log("INITIALIZATION STEP 3: Character Manager initialization");
-        startTime = Time.realtimeSinceStartup;
-        
-        if (characterManager != null)
-        {
-            // Ensure character manager is initialized
-            Debug.Log("Initializing character manager...");
-            
-            // Wait for character initialization to complete
-            if (npcManager != null)
-            {
-                Debug.Log("Initializing NPCs with character data...");
-                try 
-                {
-                    await npcManager.Initialize();
-                    Debug.Log("NPC initialization complete");
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError($"Error during NPC initialization: {ex.Message}");
-                    Debug.LogException(ex);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("NPCManager not found. NPCs will not be properly initialized.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("CharacterManager not found. Character dialogue may not work properly.");
-        }
-        
-        float npcInitTime = Time.realtimeSinceStartup - startTime;
-        Debug.Log($"Character initialization complete in {npcInitTime:F1} seconds");
-        
-        // Step 4: Finalize and load main scene
-        Debug.Log("INITIALIZATION STEP 4: Loading main game scene");
-        
-        // Load main scene
-        SceneManager.LoadScene("SystemsTest");
-        Debug.Log("Main scene load requested");
+        Debug.LogError("Legacy initialization approach is deprecated. Please update to unified scene approach.");
     }
     
+    /// <summary>
+    /// Legacy method - kept for backwards compatibility but not used in unified scene approach
+    /// </summary>
     private void VerifyCharacterFiles()
     {
-        string charactersPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Characters");
-        if (!System.IO.Directory.Exists(charactersPath))
+        string charactersPath = Path.Combine(Application.streamingAssetsPath, "Characters");
+        if (!Directory.Exists(charactersPath))
         {
             Debug.LogError("Characters directory not found! Character dialogue will not work correctly.");
             return;
         }
         
-        string[] characterFiles = System.IO.Directory.GetFiles(charactersPath, "*.json");
+        string[] characterFiles = Directory.GetFiles(charactersPath, "*.json");
         Debug.Log($"Found {characterFiles.Length} character files:");
         
         int validFileCount = 0;
@@ -166,12 +80,12 @@ public class GameInitializer : MonoBehaviour
         
         foreach (string file in characterFiles)
         {
-            string fileName = System.IO.Path.GetFileName(file);
+            string fileName = Path.GetFileName(file);
             
             try
             {
                 // Load and verify the file structure
-                string fileContent = System.IO.File.ReadAllText(file);
+                string fileContent = File.ReadAllText(file);
                 
                 // Check if it has the required two-chamber structure
                 bool hasCoreSection = fileContent.Contains("\"core\":");

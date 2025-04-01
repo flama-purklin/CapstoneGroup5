@@ -14,7 +14,7 @@ using UnityEditor;
 /// Extracts character data from the unified mystery JSON and generates individual character files
 /// that are compatible with the CharacterPromptGenerator.
 /// </summary>
-public class MysteryCharacterExtractor : MonoBehaviour
+public class MysteryCharacterExtractorCore : MonoBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private string _charactersOutputFolder = "Characters";
@@ -43,7 +43,7 @@ public class MysteryCharacterExtractor : MonoBehaviour
         _outputPath = Path.Combine(Application.streamingAssetsPath, _charactersOutputFolder);
         _backupPath = Path.Combine(Application.streamingAssetsPath, _charactersBackupFolder);
         
-        Debug.Log($"MysteryCharacterExtractor initializing with output path: {_outputPath}");
+        Debug.Log($"MysteryCharacterExtractorCore initializing with output path: {_outputPath}");
         
         // Ensure StreamingAssets exists
         string streamingAssetsPath = Application.streamingAssetsPath;
@@ -63,7 +63,7 @@ public class MysteryCharacterExtractor : MonoBehaviour
             Debug.Log($"Created characters backup directory at: {_backupPath}");
         }
         
-        Debug.Log("MysteryCharacterExtractor initialization complete");
+        Debug.Log("MysteryCharacterExtractorCore initialization complete");
     }
     
     /// <summary>

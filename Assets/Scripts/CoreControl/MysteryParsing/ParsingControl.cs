@@ -2,8 +2,10 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections;
 using Newtonsoft.Json;
 using System;
+using CoreControl.MysteryParsing;
 
 /// <summary>
 /// Parses the mystery JSON into usable game objects and extracts character data.
@@ -102,7 +104,29 @@ public class ParsingControl : MonoBehaviour
         {
             // Create a core mystery object with all information stored within
             GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
-            GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
+            
+            // Add null check for safety
+            if (GameControl.GameController.coreMystery == null)
+            {
+                Debug.LogError("Failed to deserialize mystery JSON - Mystery object is null");
+                _parsingComplete = true;
+                OnParsingProgress?.Invoke(1.0f);
+                OnParsingComplete?.Invoke();
+                return;
+            }
+            
+            // Ensure Constellation property is not null
+            if (GameControl.GameController.coreMystery.Constellation == null)
+            {
+                Debug.LogError("Mystery object has null Constellation property");
+                // Create an empty constellation to prevent null reference exceptions
+                GameControl.GameController.coreMystery.Constellation = new MysteryConstellation();
+                GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
+            }
+            else
+            {
+                GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
+            }
             
             // Report progress after deserializing
             OnParsingProgress?.Invoke(0.3f);
@@ -127,6 +151,9 @@ public class ParsingControl : MonoBehaviour
                     _characterExtractor.ExtractCharactersFromMystery(GameControl.GameController.coreMystery);
                     
                     // Note: Progress and completion callbacks are handled by event handlers
+                    
+                    // Add timeout check (will be used in InitializationManager)
+                    StartCoroutine(ExtractionTimeoutCheck());
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +176,12 @@ public class ParsingControl : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError($"Error parsing mystery JSON: {ex.Message}");
-            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
+            Debug.LogException(ex);
+            
+            // Signal completion even if parsing failed
+            _parsingComplete = true;
+            OnParsingProgress?.Invoke(1.0f);
+            OnParsingComplete?.Invoke();
         }
     }
     
@@ -282,6 +314,30 @@ public class ParsingControl : MonoBehaviour
         _parsingComplete = true;
         Debug.Log("Parsing complete - firing OnParsingComplete event");
         OnParsingComplete?.Invoke();
+    }
+    
+    /// <summary>
+    /// Timeout coroutine to ensure extraction doesn't hang indefinitely
+    /// </summary>
+    private IEnumerator ExtractionTimeoutCheck()
+    {
+        // Wait up to 60 seconds for extraction to complete
+        float startTime = Time.realtimeSinceStartup;
+        const float EXTRACTION_TIMEOUT = 60f;
+        
+        while (!_parsingComplete && Time.realtimeSinceStartup - startTime < EXTRACTION_TIMEOUT)
+        {
+            yield return new WaitForSeconds(1f);
+        }
+        
+        // If still not complete after timeout, force completion
+        if (!_parsingComplete)
+        {
+            Debug.LogWarning($"Character extraction timed out after {EXTRACTION_TIMEOUT} seconds. Forcing completion.");
+            _parsingComplete = true;
+            OnParsingProgress?.Invoke(1.0f);
+            OnParsingComplete?.Invoke();
+        }
     }
     
     /// <summary>

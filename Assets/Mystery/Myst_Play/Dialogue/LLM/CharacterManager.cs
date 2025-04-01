@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections;
 using LLMUnity;
 using System;
+using TMPro;
 
 public class CharacterManager : MonoBehaviour
 {
