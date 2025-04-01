@@ -3,6 +3,9 @@ using UnityEngine;
 using System.IO;
 using System.Collections;
 using UnityEditor;
+using Unity.AI.Navigation;
+using UnityEngine.AI;
+using Newtonsoft.Json.Linq;
 
 [System.Serializable]
 // Struct for storing data from Json
@@ -33,6 +36,7 @@ public class TrainCarLoader : MonoBehaviour
 {
     [SerializeField] public TextAsset jsonFile; // Assign JSON in inspector
     [SerializeField] public RailCarRandomizer railCarRandomizer; // Assign RailCarRandomizer script
+    [SerializeField] public bool spawnOnStart = false; // Added for support with placement scene? Can be updated to remove. In fact I dont think its used.
     [SerializeField] private TrainCarLayout trainCarLayout;
     [SerializeField] public List<PrefabEntry> objectPrefabsList;
     [SerializeField] public string prefabSavePath = "Assets/Scenes/JamesTest/Prefabs/";
@@ -50,10 +54,16 @@ public class TrainCarLoader : MonoBehaviour
             objectPrefabs[entry.key] = entry.prefab;
         }
 
+        // *NOte, unneded as method modified to just take in a reference to the train car shell object.
         // Wait for RailCarRandomizer to finish generating the train shell
-        StartCoroutine(WaitForTrainShell());
+        if (spawnOnStart == true)
+        {
+            StartCoroutine(WaitForTrainShell());
+        }
     }
 
+    // *NOte, unneded as method modified to just take in a reference to the train car shell object.
+    // *Note, still used for now in the train car placement scene
     // Coroutine to wait for the floor to be generated
     IEnumerator WaitForTrainShell()
     {
@@ -82,6 +92,18 @@ public class TrainCarLoader : MonoBehaviour
         }
 
         trainCarLayout = JsonUtility.FromJson<TrainCarLayout>(jsonFile.text);
+    }
+
+    // To be called outside of the class, uses previously spawned shell so RailCarRandomizer.SpawnShell() must be called first to set it up
+    public GameObject PopulateTrain(TextAsset json)
+    {
+        // Load shell, setup loader for placement, return finished object
+        GameObject shell = railCarRandomizer.SpawnShell();
+        this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
+        this.jsonFile = json;
+        LoadTrainCarLayout();
+        PlaceObjects();
+        return railCarRandomizer.trainCar;
     }
 
     // Places objects at anchor points, not just in world. $"Anchor ({row}, {col})". Starts at -z, -x of floor. Populates twords positive z first, then positive x.
@@ -118,7 +140,20 @@ public class TrainCarLoader : MonoBehaviour
             }
         }
 
+        // Finish prefab setup and save if in editor
+        BakeNavMesh();
         SaveAsPrefab(railCarRandomizer.trainCar);
+    }
+
+    // Get component on floor, get objects and bake around them
+    public void BakeNavMesh()
+    {
+        GameObject floor = railCarRandomizer.floor;
+        NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
+        navMeshSurface.collectObjects = CollectObjects.Children;
+        navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+        navMeshSurface.layerMask = LayerMask.GetMask("Default");
+        navMeshSurface.BuildNavMesh();
     }
 
     // WARNING* "Debug.LogError("Prefab saving is only supported in the Unity Editor.");"
