@@ -23,7 +23,10 @@ public class CameraControl : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Start the coroutine to find (enables spawning player and camera at runtime)
+        StartCoroutine(FindPlayerAsync());
 
+/*
         player = GameObject.FindWithTag("Player");
         //carDetection = player.GetComponent<CarDetection>();
         if (!player){Debug.LogError("Player not found!");return;}
@@ -37,6 +40,44 @@ public class CameraControl : MonoBehaviour
         if (carDetection && carDetection.GetCurrentCar())
         {
             CarUpdate(carDetection.GetCurrentCar().gameObject, true);
+        }*/
+    }
+
+    // Coroutine to find player
+    IEnumerator FindPlayerAsync()
+    {
+        // Continue checking until player found
+        while (player == null)
+        {
+            player = GameObject.FindWithTag("Player");
+
+            if (player != null)
+            {
+                break; // Exit when found
+            }
+
+            // Wait for one frame before retrying
+            yield return null;
+        }
+
+        // Proceed with the rest of the logic once the player is found
+        if (player != null)
+        {
+            //store the y and z values so that they are always constant
+            startingY = transform.position.y;
+            startingZ = transform.position.z;
+
+            // NEW: find initial car if player is in it
+            var carDetection = player.GetComponent<CarDetection>();
+            if (carDetection && carDetection.GetCurrentCar())
+            {
+                CarUpdate(carDetection.GetCurrentCar().gameObject, true);
+            }
+
+        }
+        else
+        {
+            Debug.LogError("Player not found! The coroutine finished but the player still wasn't found.");
         }
     }
 
