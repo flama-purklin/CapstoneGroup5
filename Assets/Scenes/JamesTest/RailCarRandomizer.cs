@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static TMPro.TMP_Compatibility;
 
 public class RailCarRandomizer : MonoBehaviour
 {
+    [SerializeField] public bool spawnOnStart = false;
     [SerializeField] public float railCarLength = 10f;
     [SerializeField] public float railCarDepth = 5f;
     [SerializeField] public float railCarHeight = 5.5f;
@@ -39,16 +42,19 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public GameObject testNpcPrefab = null;
     public bool spawnSuccessful = false; //Flag to signal shell creation
 
-    public List<GameObject> anchorPoints = new List<GameObject>(); // Stores all anchor points
+    public List<GameObject> anchorPoints; // Stores all anchor points
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        GenerateTrainShell();
-        AttachTrainScripts();
-        GenerateAnchorGrid();
-        //SpawnObjects();
+        if (spawnOnStart)
+        {
+            GenerateTrainShell();
+            AttachTrainScripts();
+            GenerateAnchorGrid();
+            //SpawnObjects();
+        }
     }
 
     // Update is called once per frame
@@ -65,6 +71,15 @@ public class RailCarRandomizer : MonoBehaviour
         }*/
     }
 
+    // Enables spawning shell from outside components. Returns the gameobject or use int TrainCarLoader
+    public GameObject SpawnShell()
+    {
+        GenerateTrainShell();
+        AttachTrainScripts();
+        GenerateAnchorGrid();
+        return trainCar;
+    }
+
     public void GenerateTrainShell()
     {
         spawnSuccessful = false;
@@ -77,6 +92,7 @@ public class RailCarRandomizer : MonoBehaviour
             floor.name = "RailCarFloor";
             floor.transform.localPosition = new Vector3(0, floorThickness / 2, 0);
             floor.transform.SetParent(trainCar.transform);
+            floor.layer = LayerMask.NameToLayer("TrainFloor"); // Ensures camera tracking and car transition works
 
             roof = Instantiate(roofPrefab, Vector3.zero, Quaternion.identity);
             roof.name = "RailCarRoof";
@@ -119,6 +135,7 @@ public class RailCarRandomizer : MonoBehaviour
             floor.transform.localScale = new Vector3(railCarLength, floorThickness, railCarDepth); // x, y, z
             floor.name = "RailCarFloor";
             floor.transform.SetParent(trainCar.transform);
+            floor.layer = LayerMask.NameToLayer("TrainFloor"); // Ensures camera tracking and car transition works
 
             roof = GameObject.CreatePrimitive(PrimitiveType.Cube);
             roof.transform.localScale = new Vector3(railCarLength, floorThickness, (railCarDepth + (wallThickness * 2))); // x, y, z
@@ -177,14 +194,22 @@ public class RailCarRandomizer : MonoBehaviour
         carVisibilityComp = trainCar.GetComponent<CarVisibility>();
         carVisibilityComp.carFront = exteriorWall.GetComponent<MeshRenderer>();
         carVisibilityComp.carTop = roof;
-        carVisibilityComp.selected = true;
         carVisibilityComp.CarSelected();
 
-        
+        // Add navmensh, collect objects within it, bake navmesh
+        floor.AddComponent<NavMeshSurface>();
+        NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
+        navMeshSurface.collectObjects = CollectObjects.Children;
+        navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+        navMeshSurface.layerMask = LayerMask.GetMask("Default"); // Adjust as needed
+        navMeshSurface.BuildNavMesh();
     }
 
     public void GenerateAnchorGrid()
     {
+        // Clear current anchorPoints reference. Start with blank list.
+        anchorPoints = new List<GameObject>();
+
         // Grid origin = floor top left (pos x, neg z)
         Vector3 floorPosition = floor.transform.position;
         float startX = floorPosition.x + (railCarLength/2) - (cellSize/2);

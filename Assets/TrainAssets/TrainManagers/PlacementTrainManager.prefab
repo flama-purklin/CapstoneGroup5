@@ -1,0 +1,179 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7501293409308066000
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: carPrefabs.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: gridRows
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: roofPrefab
+      value: 
+      objectReference: {fileID: 7959890088601910980, guid: 5a35318c429110e41943b901b892b957, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: gridColumns
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarDepth
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: spawnOnStart
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: floorMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: c4b89cd4a638c0a43941cba576865431, type: 2}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarHeight
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarLength
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: backWallPrefab
+      value: 
+      objectReference: {fileID: 2783179887702738703, guid: 72f94fd4b87e0a145a7bb172296a74b7, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: leftWallPrefab
+      value: 
+      objectReference: {fileID: 8781483659765563545, guid: 59b01bd572fc9754fa36cd59e4d006a7, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: anchorsVissible
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: frontWallPrefab
+      value: 
+      objectReference: {fileID: 4905155126863232419, guid: 08406a9aba9d1754384bbcac131f28d6, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: spawnWithWallPrefabs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5507314032791782180, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Name
+      value: TrainManager Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: jsonFile
+      value: 
+      objectReference: {fileID: 4900000, guid: 7bdb4d70764592249bc30ef13bc9f43d, type: 3}
+    - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1045
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -785
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -347
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5507314032791782180, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8486802166971582592}
+    - targetCorrespondingSourceObject: {fileID: 5507314032791782180, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 828280098389829339}
+  m_SourcePrefab: {fileID: 100100000, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+--- !u!1 &2626753566955357172 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5507314032791782180, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+  m_PrefabInstance: {fileID: 7501293409308066000}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8486802166971582592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2626753566955357172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b3ff3cc5ddd1d54da5aba4edeeae8c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiPanel: {fileID: 0}
+  typeDropdown: {fileID: 0}
+  rotationDropdown: {fileID: 0}
+  placeButton: {fileID: 0}
+  objectPrefabsList:
+  - key: seat
+    prefab: {fileID: 3877189797188535287, guid: e058cac87bc97254195da76be77d83e6, type: 3}
+  - key: table
+    prefab: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+--- !u!114 &828280098389829339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2626753566955357172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba99c3e57b92844c84192de6a44efc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveFileName: Custom.json
+  savePath: Assets/TrainAssets/Jsons/
+  maxRows: 5
+  maxColumns: 15
