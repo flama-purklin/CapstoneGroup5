@@ -1,6 +1,17 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum TheoryMode
+{
+    None,
+    Addition,
+    Removal,
+    Simulation
+}
 
 public class NodeControl : MonoBehaviour
 {
@@ -14,16 +25,28 @@ public class NodeControl : MonoBehaviour
     //new Visual Node storage with parsed MysteryNode hookup
     public Dictionary<string, GameObject> visualNodes;
 
+    [Header("Prefabs")]
     [SerializeField] GameObject infoPrefab;
     [SerializeField] GameObject evidencePrefab;
     [SerializeField] GameObject connectionPrefab;
+
+    [Header("UI Elements")]
     [SerializeField] RectTransform contentPanel;
+    [SerializeField] TMP_Text instructions;
+    [SerializeField] Button addTheoryButton;
+    [SerializeField] Button removeTheoryButton;
+    [SerializeField] Button simButton;
+
 
     [SerializeField] float scrollSpeed = 2000f;
     [SerializeField] float minY = -2000f;//adjust to something sensible later
     [SerializeField] float maxY = 2000f;
 
     bool loaded = false;
+
+    public TheoryMode theoryMode = TheoryMode.None;
+
+    string baseInstructions;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,6 +56,7 @@ public class NodeControl : MonoBehaviour
         {
             NewConstellation();
         }
+        baseInstructions = instructions.text;
     }
 
     // Update is called once per frame
@@ -254,5 +278,56 @@ public class NodeControl : MonoBehaviour
 
 
         return createdNode;
+    }
+
+    //all button handlers here
+
+    //called by the addition button
+    public void TheoryAdd()
+    {
+        //turn off the Addition mode
+        if (theoryMode == TheoryMode.Addition)
+        { 
+            theoryMode = TheoryMode.None;
+            instructions.text = baseInstructions;
+        }
+        //turn on the Addition mode
+        else
+        {
+            theoryMode = TheoryMode.Addition;
+            instructions.text = "Left click on first node to begin a theory | Right click anywhere to cancel";
+        }
+    }
+
+    //called by the removal butotn
+    public void TheoryRemove()
+    {
+        //turn off the Addition mode
+        if (theoryMode == TheoryMode.Addition)
+        {
+            theoryMode = TheoryMode.None;
+            instructions.text = baseInstructions;
+        }
+        //turn on the Addition mode
+        else
+        {
+            theoryMode = TheoryMode.Addition;
+            instructions.text = "Left click on any theory to remove it | Right click anywhere to cancel";
+        }
+    }
+
+    //called by the simulation button
+    public void RunSimulation()
+    {
+        theoryMode = TheoryMode.Simulation;
+        instructions.text = "Running simulation...";
+        StartCoroutine(Simulation());
+    }
+
+    IEnumerator Simulation()
+    {
+        yield return new WaitForSeconds(5f);
+        theoryMode = TheoryMode.None;
+        instructions.text = baseInstructions;
     }
 }

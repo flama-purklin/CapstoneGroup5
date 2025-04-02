@@ -1286,14 +1286,14 @@ MonoBehaviour:
   port: 13333
   numThreads: -1
   gpuAcceleration: 1
-  _numGPULayers: 32
+  _numGPULayers: 16
   debug: 0
   parallelPrompts: 6
   dontDestroyOnLoad: 1
-  contextSize: 40000
+  contextSize: 32768
   batchSize: 1024
-  model: Ministral-3b-instruct.Q4_K_M.gguf
-  chatTemplate: mistral chat
+  model: qwen2-0_5b-instruct-q4_k_m.gguf
+  chatTemplate: chatml
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1303,9 +1303,9 @@ MonoBehaviour:
   SSLKey: 
   SSLKeyPath: 
   minContextLength: 0
-  maxContextLength: 131072
+  maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 4096
+  embeddingLength: 896
 --- !u!114 &1424623597
 MonoBehaviour:
   m_ObjectHideFlags: 0
