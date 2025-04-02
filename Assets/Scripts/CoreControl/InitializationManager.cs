@@ -667,10 +667,48 @@ public class InitializationManager : MonoBehaviour
     private void VerifyCharacterFiles()
     {
         string charactersPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Characters");
+        
+        // If Characters directory doesn't exist, try to copy from backups
         if (!System.IO.Directory.Exists(charactersPath))
         {
-            Debug.LogError("Characters directory not found! Character dialogue will not work correctly.");
-            return;
+            Debug.LogError("Characters directory not found! Attempting to create it and restore from backups...");
+            
+            try
+            {
+                // Create the directory
+                System.IO.Directory.CreateDirectory(charactersPath);
+                
+                // Look for backup files
+                string backupsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "CharacterBackups");
+                
+                if (System.IO.Directory.Exists(backupsPath))
+                {
+                    var backupFiles = System.IO.Directory.GetFiles(backupsPath, "*.json");
+                    
+                    foreach (var file in backupFiles)
+                    {
+                        string fileName = System.IO.Path.GetFileName(file);
+                        string destPath = System.IO.Path.Combine(charactersPath, fileName);
+                        System.IO.File.Copy(file, destPath, true);
+                        Debug.Log($"Restored backup character file: {fileName}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("No character backups found at: " + backupsPath);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error restoring character files: {ex.Message}");
+            }
+            
+            // Check if the directory exists now
+            if (!System.IO.Directory.Exists(charactersPath))
+            {
+                Debug.LogError("Failed to create Characters directory. Character dialogue will not work correctly.");
+                return;
+            }
         }
         
         string[] characterFiles = System.IO.Directory.GetFiles(charactersPath, "*.json");
@@ -678,6 +716,38 @@ public class InitializationManager : MonoBehaviour
         
         int validFileCount = 0;
         bool novaFileVerified = false;
+        
+        // If we have no character files, try copying from backups again
+        if (characterFiles.Length == 0)
+        {
+            Debug.LogWarning("No character files found in Characters directory. Attempting to restore from backups...");
+            
+            try
+            {
+                string backupsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "CharacterBackups");
+                
+                if (System.IO.Directory.Exists(backupsPath))
+                {
+                    var backupFiles = System.IO.Directory.GetFiles(backupsPath, "*.json");
+                    
+                    foreach (var file in backupFiles)
+                    {
+                        string fileName = System.IO.Path.GetFileName(file);
+                        string destPath = System.IO.Path.Combine(charactersPath, fileName);
+                        System.IO.File.Copy(file, destPath, true);
+                        Debug.Log($"Restored backup character file: {fileName}");
+                    }
+                    
+                    // Get the updated list of files
+                    characterFiles = System.IO.Directory.GetFiles(charactersPath, "*.json");
+                    Debug.Log($"After restoration, found {characterFiles.Length} character files");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error restoring character files: {ex.Message}");
+            }
+        }
         
         foreach (string file in characterFiles)
         {
@@ -738,13 +808,14 @@ public class InitializationManager : MonoBehaviour
         
         if (!novaFileVerified)
         {
-            Debug.LogError("Nova's character file was not found or could not be verified!");
+            Debug.LogWarning("Nova's character file was not found or could not be verified! This may impact dialogue quality.");
+            // Not treating this as an error since we want to continue even if Nova's file isn't perfect
         }
         
-        // Create the character files directory if it doesn't exist (only a safeguard)
+        // Final warning if we still have no character files
         if (characterFiles.Length == 0)
         {
-            Debug.LogWarning("No character files found. This will cause dialogue system issues!");
+            Debug.LogWarning("No character files found even after recovery attempts. This will cause dialogue system issues!");
         }
     }
 }

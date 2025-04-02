@@ -31,7 +31,7 @@ public class GameControl : MonoBehaviour
         if (GameController == null)
         {
             GameController = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad removed as we're using a unified scene approach
         }
         else
         {

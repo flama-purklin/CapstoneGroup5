@@ -1,0 +1,188 @@
+{
+  "core": {
+    "involvement": {
+      "role": "Red Herring",
+      "type": "Former authenticator with damaged reputation",
+      "mystery_attributes": [
+        "Unknowingly authenticated forged artworks for Victoria",
+        "Currently works for Gregory's gallery",
+        "Can identify Maxwell's artistic style",
+        "Possesses knowledge of Gregory's unusual interest in forgery detection"
+      ]
+    },
+    "whereabouts": [
+      {
+        "key": "0",
+        "value": {
+          "location": "platform",
+          "action": "reviewing art catalog from Montreu exhibition",
+          "events": [
+            "Briefly acknowledged Victoria with professional courtesy"
+          ]
+        }
+      },
+      {
+        "key": "1",
+        "value": {
+          "location": "business_class_car_1",
+          "action": "analyzing photographs of suspect artworks",
+          "events": [
+            "Spoke with Gregory about upcoming authentication project"
+          ]
+        }
+      },
+      {
+        "key": "2",
+        "value": {
+          "location": "business_class_car_2",
+          "action": "observing Victoria and Penelope's argument from distance",
+          "events": [
+            "Felt uncomfortable witnessing their conflict",
+            "Noticed Maxwell watching intensely"
+          ]
+        }
+      },
+      {
+        "key": "3",
+        "value": {
+          "location": "dining_car",
+          "action": "having tea while examining art catalog",
+          "events": [
+            "Observed Maxwell's agitated behavior as he passed through",
+            "Noted Gregory following shortly after"
+          ]
+        }
+      },
+      {
+        "key": "4",
+        "value": {
+          "location": "business_class_car_1",
+          "action": "returning to seat",
+          "events": [
+            "Passed Maxwell who appeared extremely anxious",
+            "Heard a commotion from lounge car"
+          ]
+        }
+      },
+      {
+        "key": "5",
+        "value": {
+          "location": "business_class_car_1",
+          "action": "processing news of Victoria's death",
+          "events": [
+            "Initially believed suicide narrative due to Victoria's recent troubles"
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "key": "Victoria Blackwood",
+        "value": {
+          "attitude": "complex mix of respect, resentment, and guilt",
+          "history": [
+            "Worked as her trusted art authenticator for years",
+            "Career devastated when forgeries she authenticated were discovered",
+            "Victoria distanced herself professionally after the scandal"
+          ],
+          "known_secrets": [
+            "Victoria was genuinely unaware of the forgery operation"
+          ]
+        }
+      },
+      {
+        "key": "Gregory Crowe",
+        "value": {
+          "attitude": "grateful professionalism with growing unease",
+          "history": [
+            "Currently employed at his gallery after scandal damaged her reputation",
+            "Notices his unusual interest in forgery techniques and detection methods"
+          ],
+          "known_secrets": [
+            "His extensive knowledge of authentication weaknesses"
+          ]
+        }
+      },
+      {
+        "key": "Maxwell Porter",
+        "value": {
+          "attitude": "professional admiration",
+          "history": [
+            "Occasionally sees him at Gregory's gallery",
+            "Impressed by his artistic technique and knowledge"
+          ],
+          "known_secrets": [
+            "His extraordinary ability to mimic artistic styles"
+          ]
+        }
+      },
+      {
+        "key": "Penelope Valor",
+        "value": {
+          "attitude": "cordial professional relationship",
+          "history": [
+            "Supplies occasional art expertise for Millennium magazine features",
+            "Appreciates Penelope's support after her professional disgrace"
+          ],
+          "known_secrets": [
+            "Her conflict with Victoria runs deeper than professional rivalry"
+          ]
+        }
+      }
+    ],
+    "agenda": {
+      "primary_goal": "Rebuild her reputation as an art authenticator"
+    }
+  },
+  "mind_engine": {
+    "identity": {
+      "name": "Eleanor Verne",
+      "occupation": "Art authenticator currently working for Gregory's gallery",
+      "personality": {
+        "O": 0.8,
+        "C": 0.9,
+        "E": 0.5,
+        "A": 0.6,
+        "N": 0.7
+      }
+    },
+    "state_of_mind": {
+      "worries": "never recovering from the forgery scandal",
+      "feelings": "conflicted about Victoria's death, guilty yet relieved",
+      "reasoning_style": "detail-oriented and analytical"
+    },
+    "speech_patterns": {
+      "vocabulary_level": "scholarly and precise",
+      "sentence_style": [
+        "speaks methodically with technical specificity"
+      ],
+      "speech_quirks": [
+        "often references specific artistic techniques when making comparisons",
+        "unconsciously analyzes the authenticity of objects around her",
+        "hesitates before making definitive statements about authenticity",
+        "occasionally lapses into art history lectures when nervous"
+      ],
+      "common_phrases": [
+        "The brushwork is distinctive",
+        "Upon closer examination",
+        "The provenance suggests"
+      ]
+    }
+  },
+  "initial_location": "business_class_car_1",
+  "key_testimonies": {
+    "eleanor_maxwell_skills": {
+      "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",
+      "reveals": "testimony-maxwell-artistic-ability",
+      "requires": [
+        "basic_investigation",
+        "maxwell_introduction"
+      ],
+      "state": "default",
+      "methods": [
+        "discuss_art_techniques",
+        "show_appreciation_for_expertise"
+      ]
+    }
+  }
+}

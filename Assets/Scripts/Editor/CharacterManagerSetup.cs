@@ -4,7 +4,7 @@ using LLMUnity;
 
 public class CharacterManagerSetup : EditorWindow
 {
-    [MenuItem("Tools/Setup Scene References")]
+    [MenuItem("Tools/Setup Character Manager")]
     static void Init()
     {
         // Find the objects

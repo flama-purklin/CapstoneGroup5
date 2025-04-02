@@ -104,7 +104,9 @@ namespace CoreControl.MysteryParsing
             if (mystery == null || mystery.Characters == null || mystery.Characters.Count == 0)
             {
                 Debug.LogError("Mystery object is invalid or contains no characters");
-                OnCharactersExtracted?.Invoke(0);
+                Debug.Log("Attempting to restore character files from backups...");
+                int restoredCount = RestoreBackupCharacterFiles();
+                OnCharactersExtracted?.Invoke(restoredCount);
                 return;
             }
     
@@ -129,7 +131,9 @@ namespace CoreControl.MysteryParsing
             if (!File.Exists(mysteryPath))
             {
                 Debug.LogError($"Mystery file not found at: {mysteryPath}");
-                OnCharactersExtracted?.Invoke(0);
+                Debug.Log("Attempting to restore character files from backups...");
+                int restoredCount = RestoreBackupCharacterFiles();
+                OnCharactersExtracted?.Invoke(restoredCount);
                 return;
             }
             
@@ -143,7 +147,9 @@ namespace CoreControl.MysteryParsing
                 if (mysteryObject["characters"] == null)
                 {
                     Debug.LogError("Mystery file does not contain a 'characters' section");
-                    OnCharactersExtracted?.Invoke(0);
+                    Debug.Log("Attempting to restore character files from backups...");
+                    int restoredCount = RestoreBackupCharacterFiles();
+                    OnCharactersExtracted?.Invoke(restoredCount);
                     return;
                 }
                 
@@ -190,6 +196,19 @@ namespace CoreControl.MysteryParsing
                     }
                 }
                 
+                // If no characters were extracted, try to use backups
+                if (_totalCharactersProcessed == 0)
+                {
+                    Debug.LogWarning("No characters extracted from mystery. Attempting to restore from backups...");
+                    int restoredCount = RestoreBackupCharacterFiles();
+                    
+                    if (restoredCount > 0)
+                    {
+                        Debug.Log($"Successfully restored {restoredCount} character files from backups");
+                        _totalCharactersProcessed = restoredCount;
+                    }
+                }
+                
                 LogExtractionResults(_totalCharactersProcessed);
                 OnCharactersExtracted?.Invoke(_totalCharactersProcessed);
             }
@@ -197,7 +216,19 @@ namespace CoreControl.MysteryParsing
             {
                 Debug.LogError($"Error processing mystery JSON: {ex.Message}");
                 Debug.LogException(ex);
-                OnCharactersExtracted?.Invoke(0);
+                
+                Debug.Log("Attempting to restore character files from backups...");
+                int restoredCount = RestoreBackupCharacterFiles();
+                
+                if (restoredCount > 0)
+                {
+                    Debug.Log($"Successfully restored {restoredCount} character files from backups");
+                    OnCharactersExtracted?.Invoke(restoredCount);
+                }
+                else
+                {
+                    OnCharactersExtracted?.Invoke(0);
+                }
             }
         }
     
@@ -521,58 +552,67 @@ namespace CoreControl.MysteryParsing
                 Debug.LogError($"Mystery file not found at: {mysteryPath}");
             }
         }
-    }
     
-    /// <summary>
-    /// Helper class to execute code on the main thread from background threads.
-    /// This is needed because Unity's API can only be called from the main thread.
-    /// </summary>
-    public class MainThreadHelper : MonoBehaviour
-    {
-        private static MainThreadHelper _instance;
-        public static MainThreadHelper Instance
+        /// <summary>
+        /// Restores character files from backup if extraction fails
+        /// </summary>
+        /// <returns>Number of character files restored</returns>
+        public int RestoreBackupCharacterFiles()
         {
-            get
+            int restoredCount = 0;
+            
+            // First check if we have character backups
+            string backupsFolderPath = Path.Combine(Application.streamingAssetsPath, _charactersBackupFolder);
+            
+            if (!Directory.Exists(backupsFolderPath))
             {
-                if (_instance == null)
+                Debug.LogError($"Character backups folder not found at: {backupsFolderPath}");
+                
+                // As a fallback, check CharacterBackups/UnusedChars folder which is known to contain files
+                string fallbackPath = Path.Combine(Application.streamingAssetsPath, "CharacterBackups", "UnusedChars");
+                if (Directory.Exists(fallbackPath))
                 {
-                    // Create a new game object for our manager
-                    var go = new GameObject("MainThreadHelper");
-                    // Add the script to the game object
-                    _instance = go.AddComponent<MainThreadHelper>();
-                    // Make sure the object is never destroyed during scene changes
-                    DontDestroyOnLoad(go);
+                    backupsFolderPath = fallbackPath;
+                    Debug.Log($"Found fallback character backups at: {fallbackPath}");
                 }
-                return _instance;
-            }
-        }
-        
-        private readonly Queue<Action> _executionQueue = new Queue<Action>();
-        private readonly object _lock = new object();
-        
-        private void Update()
-        {
-            lock (_lock)
-            {
-                while (_executionQueue.Count > 0)
+                else
                 {
-                    _executionQueue.Dequeue().Invoke();
+                    Debug.LogError("No backup character files found. Character initialization will likely fail.");
+                    return 0;
                 }
-            }
-        }
-        
-        public void QueueOnMainThread(Action action)
-        {
-            if (action == null)
-            {
-                Debug.LogError("Action to execute can't be null");
-                return;
             }
             
-            lock (_lock)
+            // Get all JSON files in the backup folder
+            var backupFiles = Directory.GetFiles(backupsFolderPath, "*.json");
+            if (backupFiles.Length == 0)
             {
-                _executionQueue.Enqueue(action);
+                Debug.LogError("No backup character files found in backup folder.");
+                return 0;
             }
+            
+            // Ensure output directory exists
+            EnsureCharactersDirectoryExists();
+            
+            // Copy files from backup
+            foreach (var backupFile in backupFiles)
+            {
+                try
+                {
+                    string fileName = Path.GetFileName(backupFile);
+                    string destPath = Path.Combine(_outputPath, fileName);
+                    
+                    File.Copy(backupFile, destPath, true);
+                    restoredCount++;
+                    
+                    Debug.Log($"Restored character file: {fileName}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error restoring backup file {Path.GetFileName(backupFile)}: {ex.Message}");
+                }
+            }
+            
+            return restoredCount;
         }
     }
 }

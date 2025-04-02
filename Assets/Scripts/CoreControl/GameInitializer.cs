@@ -14,50 +14,29 @@ public class GameInitializer : MonoBehaviour
     
     [Header("Unified Scene Configuration")]
     [SerializeField] private GameObject loadingOverlay;
-    [SerializeField] private bool useUnifiedSceneApproach = true;
+    
+    // useUnifiedSceneApproach field removed - all code now uses unified approach
 
     private void Start()
     {
-        // Check if we're using the unified scene approach
-        if (useUnifiedSceneApproach)
+        // Always use the unified scene approach
+        // Set up InitializationManager
+        var initializationManager = FindFirstObjectByType<InitializationManager>();
+        if (initializationManager == null)
         {
-            // Set up InitializationManager
-            var initializationManager = FindFirstObjectByType<InitializationManager>();
-            if (initializationManager == null)
+            GameObject initManagerObj = new GameObject("InitializationManager");
+            initializationManager = initManagerObj.AddComponent<InitializationManager>();
+            
+            // Configure the initialization manager
+            var initManagerComponent = initManagerObj.GetComponent<InitializationManager>();
+            if (initManagerComponent != null)
             {
-                GameObject initManagerObj = new GameObject("InitializationManager");
-                initializationManager = initManagerObj.AddComponent<InitializationManager>();
-                
-                // Configure the initialization manager
-                var initManagerComponent = initManagerObj.GetComponent<InitializationManager>();
-                if (initManagerComponent != null)
-                {
-                    // Use SerializedField to assign references in editor
-                    Debug.Log("Using unified scene approach with InitializationManager");
-                }
+                // Use SerializedField to assign references in editor
+                Debug.Log("Using unified scene approach with InitializationManager");
             }
-            return;
         }
         
-        // Legacy approach - only used if not using unified scene
-        Debug.LogWarning("Using legacy scene transition approach. Consider switching to unified scene approach.");
-        
-        GameObject persistentSystems = GameObject.Find("Persistent Systems");
-        if (!persistentSystems)
-        {
-            persistentSystems = new GameObject("Persistent Systems");
-            DontDestroyOnLoad(persistentSystems);
-        }
-
-        if (!llm) llm = FindFirstObjectByType<LLM>();
-        if (!npcManager) npcManager = FindFirstObjectByType<NPCManager>();
-        if (!characterManager) characterManager = FindFirstObjectByType<CharacterManager>();
-
-        if (llm) llm.transform.SetParent(persistentSystems.transform);
-        if (npcManager) npcManager.transform.SetParent(persistentSystems.transform);
-        if (characterManager) characterManager.transform.SetParent(persistentSystems.transform);
-        
-        Debug.LogError("Legacy initialization approach is deprecated. Please update to unified scene approach.");
+        // Legacy code removed completely - all initialization now handled by InitializationManager
     }
     
     /// <summary>

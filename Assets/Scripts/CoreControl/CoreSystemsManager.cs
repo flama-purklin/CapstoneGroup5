@@ -1,7 +1,6 @@
-// New CoreSystemsManager.cs
+// Simplified CoreSystemsManager.cs for unified scene approach
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 
 public class CoreSystemsManager : MonoBehaviour
 {
@@ -14,11 +13,15 @@ public class CoreSystemsManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            SceneManager.sceneLoaded += OnSceneLoaded;
 
             // Create managed systems
             SetupEventSystem();
             SetupAudioListener();
+            
+            // Initial cleanup on start
+            CleanupDuplicateSystems();
+            
+            Debug.Log("CoreSystemsManager initialized (simplified for unified scene)");
         }
         else
         {
@@ -43,20 +46,15 @@ public class CoreSystemsManager : MonoBehaviour
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        CleanupDuplicateSystems();
-    }
-
     public void CleanupDuplicateSystems()
     {
         // Clean up EventSystems
         var eventSystems = FindObjectsByType<EventSystem>(FindObjectsSortMode.None);
         foreach (var eventSystem in eventSystems)
         {
-            if (eventSystem != managedEventSystem)
+            if (eventSystem != managedEventSystem && eventSystem != null)
             {
-                Debug.Log($"Removing duplicate EventSystem in {eventSystem.gameObject.scene.name}");
+                Debug.Log("Removing duplicate EventSystem");
                 Destroy(eventSystem.gameObject);
             }
         }
@@ -65,19 +63,11 @@ public class CoreSystemsManager : MonoBehaviour
         var audioListeners = FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
         foreach (var listener in audioListeners)
         {
-            if (listener != managedAudioListener)
+            if (listener != managedAudioListener && listener != null)
             {
-                Debug.Log($"Removing duplicate AudioListener in {listener.gameObject.scene.name}");
+                Debug.Log("Removing duplicate AudioListener");
                 Destroy(listener);
             }
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (instance == this)
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
 }

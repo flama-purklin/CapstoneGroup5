@@ -102,8 +102,30 @@ public class ParsingControl : MonoBehaviour
 
         try
         {
+            // First ensure GameControl.GameController exists
+            if (GameControl.GameController == null)
+            {
+                Debug.LogError("GameControl.GameController is null during mystery parsing! Attempting to find it...");
+                
+                // Try to find GameController
+                var gameController = FindFirstObjectByType<GameControl>();
+                if (gameController == null)
+                {
+                    Debug.LogError("No GameControl found in scene! Creating one to prevent errors...");
+                    GameObject controllerObj = new GameObject("GameController");
+                    gameController = controllerObj.AddComponent<GameControl>();
+                }
+                
+                // Wait for next frame to ensure Awake() has run
+                StartCoroutine(DelayedParsing(jsonContent));
+                return;
+            }
+            
             // Create a core mystery object with all information stored within
-            GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            Mystery parsedMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            
+            // Set the mystery on the GameController
+            GameControl.GameController.coreMystery = parsedMystery;
             
             // Add null check for safety
             if (GameControl.GameController.coreMystery == null)
@@ -343,8 +365,104 @@ public class ParsingControl : MonoBehaviour
     /// <summary>
     /// Logs detailed mystery contents for debugging
     /// </summary>
+    /// <summary>
+    /// Coroutine to attempt parsing after a delay to ensure GameController is initialized
+    /// </summary>
+    private IEnumerator DelayedParsing(string jsonContent)
+    {
+        yield return new WaitForEndOfFrame();
+        
+        // Check if GameController is now available
+        if (GameControl.GameController == null)
+        {
+            Debug.LogError("GameController still null after delay. Proceeding with parsing anyway with fallback.");
+            
+            // Create a Mystery object directly without assigning to GameController
+            Mystery parsedMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            
+            // Signal completion
+            _parsingComplete = true;
+            OnParsingProgress?.Invoke(1.0f);
+            OnParsingComplete?.Invoke();
+            yield break;
+        }
+        
+        // Retry parsing now that GameController exists
+        try
+        {
+            GameControl.GameController.coreMystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
+            
+            // Set up constellation
+            if (GameControl.GameController.coreMystery.Constellation == null)
+            {
+                GameControl.GameController.coreMystery.Constellation = new MysteryConstellation();
+            }
+            
+            GameControl.GameController.coreConstellation = GameControl.GameController.coreMystery.Constellation;
+            
+            // Continue with extraction
+            OnParsingProgress?.Invoke(0.3f);
+            OnMysteryParsed?.Invoke(GameControl.GameController.coreMystery);
+            
+            if (_verboseLogging)
+            {
+                LogMysteryContents();
+            }
+            
+            OnParsingProgress?.Invoke(0.5f);
+            
+            // Extract characters from the mystery
+            if (_characterExtractor != null)
+            {
+                try
+                {
+                    Debug.Log("Starting character extraction process");
+                    _characterExtractor.ExtractCharactersFromMystery(GameControl.GameController.coreMystery);
+                    
+                    StartCoroutine(ExtractionTimeoutCheck());
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error during character extraction: {ex.Message}");
+                    Debug.LogException(ex);
+                    
+                    // Signal completion even though extraction failed
+                    _parsingComplete = true;
+                    OnParsingProgress?.Invoke(1.0f);
+                    OnParsingComplete?.Invoke();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
+                _parsingComplete = true;
+                OnParsingProgress?.Invoke(1.0f);
+                OnParsingComplete?.Invoke();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in delayed parsing: {ex.Message}");
+            Debug.LogException(ex);
+            
+            // Signal completion even if parsing failed
+            _parsingComplete = true;
+            OnParsingProgress?.Invoke(1.0f);
+            OnParsingComplete?.Invoke();
+        }
+    }
+
     private void LogMysteryContents()
     {
+        // Safety check
+        if (GameControl.GameController == null || 
+            GameControl.GameController.coreConstellation == null ||
+            GameControl.GameController.coreMystery == null)
+        {
+            Debug.LogError("Cannot log mystery contents - GameController or mystery data is null");
+            return;
+        }
+        
         // Log node IDs
         Debug.Log($"Mystery contains {GameControl.GameController.coreConstellation.Nodes.Count} nodes");
         foreach (var node in GameControl.GameController.coreConstellation.Nodes)

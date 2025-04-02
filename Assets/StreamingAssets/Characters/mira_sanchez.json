@@ -1,0 +1,185 @@
+{
+  "core": {
+    "involvement": {
+      "role": "Witness",
+      "type": "Opportunistic observer with evidence",
+      "mystery_attributes": [
+        "Has photos of Maxwell before and after the murder",
+        "Documented Victoria's confrontations throughout the train journey",
+        "Seeking sensational story rather than truth"
+      ]
+    },
+    "whereabouts": [
+      {
+        "key": "0",
+        "value": {
+          "circumstance": "boarding area, 0-30 minutes",
+          "action": "taking pictures of passengers and train",
+          "events": [
+            "Captured Victoria and Gregory having a tense conversation"
+          ]
+        }
+      },
+      {
+        "key": "1",
+        "value": {
+          "circumstance": "various train cars, exploring, 31-60 minutes",
+          "action": "collecting ambient footage and photos",
+          "events": [
+            "Nearly collided with Timmy who was rushing to Penelope"
+          ]
+        }
+      },
+      {
+        "key": "2",
+        "value": {
+          "circumstance": "dining car then lounge car, 61-100 minutes",
+          "action": "conducting casual interviews with passengers",
+          "events": [
+            "Documented Victoria and Penelope's heated argument",
+            "Overheard Gregory speaking quietly to Maxwell"
+          ]
+        }
+      },
+      {
+        "key": "3",
+        "value": {
+          "circumstance": "seat near the lounge windows, 101-115 minutes",
+          "action": "reviewing photos on her device",
+          "events": [
+            "Captured Maxwell looking agitated in bar car",
+            "Photographed Gregory's meeting with Maxwell"
+          ]
+        }
+      },
+      {
+        "key": "4",
+        "value": {
+          "circumstance": "moving between lounge car and corridor, 116-123 minutes",
+          "action": "attempting to follow Maxwell",
+          "events": [
+            "Photographed Maxwell near bathroom area",
+            "Captured blurred image of someone (Maxwell) fleeing scene"
+          ]
+        }
+      },
+      {
+        "key": "5",
+        "value": {
+          "circumstance": "business class seat, 124-present",
+          "action": "organizing photos and preparing story",
+          "events": [
+            "Reviewing evidence while deciding how to maximize publicity"
+          ]
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "key": "Victoria Blackwood",
+        "value": {
+          "attitude": "opportunistic interest",
+          "history": [
+            "Invited by Victoria to document Montreu Fashion Week scandals",
+            "Recognized Victoria was creating drama for publicity"
+          ],
+          "known_secrets": [
+            "Victoria's desperate tactics to save her magazine"
+          ]
+        }
+      },
+      {
+        "key": "Maxwell Porter",
+        "value": {
+          "attitude": "journalistic curiosity",
+          "history": [
+            "No prior relationship",
+            "Photographed him multiple times during the journey"
+          ],
+          "known_secrets": [
+            "Has photographic evidence of his movements before and after the murder"
+          ]
+        }
+      },
+      {
+        "key": "Gregory Crowe",
+        "value": {
+          "attitude": "professional interest",
+          "history": [
+            "Attempted to interview him about art market trends",
+            "Received polite but evasive responses"
+          ],
+          "known_secrets": [
+            "Photographed his meeting with Maxwell before the murder"
+          ]
+        }
+      },
+      {
+        "key": "Penelope Valor",
+        "value": {
+          "attitude": "competitive respect",
+          "history": [
+            "Has approached her for exclusive interviews previously",
+            "Interested in her rivalry with Victoria"
+          ],
+          "known_secrets": [
+            "Her relationship with Nova that Victoria threatened to expose"
+          ]
+        }
+      }
+    ],
+    "agenda": {
+      "primary_goal": "Create a sensational exclusive story about Victoria's death"
+    }
+  },
+  "mind_engine": {
+    "identity": {
+      "name": "Mira Sanchez",
+      "occupation": "Tabloid journalist known for celebrity exposés",
+      "personality": {
+        "O": 0.7,
+        "C": 0.6,
+        "E": 0.8,
+        "A": 0.4,
+        "N": 0.5
+      }
+    },
+    "state_of_mind": {
+      "worries": "someone might confiscate her evidence before she can publish",
+      "feelings": "excited by the story potential yet cautious",
+      "reasoning_style": "opportunistic and strategic"
+    },
+    "speech_patterns": {
+      "vocabulary_level": "contemporary with tabloid flair",
+      "sentence_style": [
+        "speaks energetically with dramatic emphasis"
+      ],
+      "speech_quirks": [
+        "frequently frames observations as potential headlines",
+        "refers to 'my readers' or 'my audience'",
+        "takes quick photos or notes during conversations",
+        "uses rhetorical questions to keep people talking"
+      ],
+      "common_phrases": [
+        "This is absolutely huge",
+        "My readers would go crazy for this",
+        "Off the record, of course"
+      ]
+    }
+  },
+  "initial_location": "business_class_car_1",
+  "key_testimonies": {
+    "mira_photos": {
+      "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",
+      "reveals": "barrier-camera",
+      "requires": [
+        "basic_investigation"
+      ],
+      "state": "default",
+      "methods": [
+        "appeal_to_journalistic_ambition",
+        "information_exchange"
+      ]
+    }
+  }
+}
