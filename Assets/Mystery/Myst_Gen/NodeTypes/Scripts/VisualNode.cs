@@ -16,6 +16,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     //associated connections
     public List<GameObject> connections;
+    public List<GameObject> theories;
 
     //all components of the visual object
     [SerializeField] protected TMP_Text idDisplay;

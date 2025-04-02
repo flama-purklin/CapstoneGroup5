@@ -1,6 +1,17 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum TheoryMode
+{
+    None,
+    Addition,
+    Removal,
+    Simulation
+}
 
 public class NodeControl : MonoBehaviour
 {
@@ -14,10 +25,18 @@ public class NodeControl : MonoBehaviour
     //new Visual Node storage with parsed MysteryNode hookup
     public Dictionary<string, GameObject> visualNodes;
 
+    [Header("Prefabs")]
     [SerializeField] GameObject infoPrefab;
     [SerializeField] GameObject evidencePrefab;
     [SerializeField] GameObject connectionPrefab;
+
+    [Header("UI Elements")]
     [SerializeField] RectTransform contentPanel;
+    [SerializeField] TMP_Text instructions;
+    [SerializeField] Button addTheoryButton;
+    [SerializeField] Button removeTheoryButton;
+    [SerializeField] Button simButton;
+
 
     [SerializeField] float scrollSpeed = 2000f;
     [SerializeField] float minY = -2000f;//adjust to something sensible later
@@ -25,14 +44,19 @@ public class NodeControl : MonoBehaviour
 
     bool loaded = false;
 
+    public TheoryMode theoryMode = TheoryMode.None;
+
+    string baseInstructions;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         contentPanel.anchoredPosition = Vector2.zero;
         if (!loaded)
         {
-            NewConstellation(); // Restore original call, even if it might fail due to old dependencies
+            NewConstellation();
         }
+        baseInstructions = instructions.text;
     }
 
     // Update is called once per frame
@@ -120,32 +144,15 @@ public class NodeControl : MonoBehaviour
         }
     }*/
 
-    // NOTE: This NewConstellation method likely still relies on the old,
-    // potentially incorrect way of accessing mystery data (GameControl.GameController.coreConstellation)
-    // directly, which might cause errors if called before parsing is complete.
-    // However, restoring it removes the incorrect InitializeBoard logic.
-    // Further refactoring might be needed if this UI is actually used.
     public void NewConstellation()
     {
         visualNodes = new Dictionary<string, GameObject>();
 
         //create a node object for every parsed node in the constellation
-        // WARNING: This accesses GameControl directly, which might be problematic depending on execution order
-        if (GameControl.GameController == null || GameControl.GameController.coreConstellation == null || GameControl.GameController.coreConstellation.Nodes == null)
-        {
-             Debug.LogError("NewConstellation called but GameController or coreConstellation data is not ready!");
-             return;
-        }
-
         foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
         {
             //create the node
             GameObject newNode = InstantiateNode(nodePair.Value);
-             if (newNode == null)
-            {
-                Debug.LogError($"Failed to instantiate visual node for key: {nodePair.Key}");
-                continue;
-            }
 
             //assign data to the node
             newNode.GetComponent<VisualNode>().AssignNode(nodePair.Key, nodePair.Value);
@@ -157,27 +164,10 @@ public class NodeControl : MonoBehaviour
         Debug.Log(visualNodes.Count + " visual nodes created");
 
         //create a connection for each parsed connection in the constellation
-         if (GameControl.GameController.coreConstellation.Connections == null)
-        {
-             Debug.LogError("NewConstellation called but GameController.coreConstellation.Connections is null!");
-             return;
-        }
         foreach (var parsedConnection in GameControl.GameController.coreConstellation.Connections)
         {
-             // Ensure source and target nodes exist before creating connection
-            if (!visualNodes.ContainsKey(parsedConnection.Source) || !visualNodes.ContainsKey(parsedConnection.Target))
-            {
-                Debug.LogError($"Skipping connection: Source ('{parsedConnection.Source}') or Target ('{parsedConnection.Target}') node not found in visualNodes dictionary.");
-                continue;
-            }
-
             //create a connection object
             GameObject newConn = Instantiate(connectionPrefab, contentPanel);
-             if (newConn == null)
-            {
-                 Debug.LogError($"Failed to instantiate connectionPrefab for connection between {parsedConnection.Source} and {parsedConnection.Target}.");
-                 continue;
-            }
             newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[parsedConnection.Source], visualNodes[parsedConnection.Target], parsedConnection);
 
             //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
@@ -185,7 +175,6 @@ public class NodeControl : MonoBehaviour
             visualNodes[parsedConnection.Target].GetComponent<VisualNode>().connections.Add(newConn);
         }
     }
-
 
     public void UnlockVisualNode(string nodeKey)
     {
@@ -289,5 +278,56 @@ public class NodeControl : MonoBehaviour
 
 
         return createdNode;
+    }
+
+    //all button handlers here
+
+    //called by the addition button
+    public void TheoryAdd()
+    {
+        //turn off the Addition mode
+        if (theoryMode == TheoryMode.Addition)
+        { 
+            theoryMode = TheoryMode.None;
+            instructions.text = baseInstructions;
+        }
+        //turn on the Addition mode
+        else
+        {
+            theoryMode = TheoryMode.Addition;
+            instructions.text = "Left click on first node to begin a theory | Right click anywhere to cancel";
+        }
+    }
+
+    //called by the removal butotn
+    public void TheoryRemove()
+    {
+        //turn off the Addition mode
+        if (theoryMode == TheoryMode.Addition)
+        {
+            theoryMode = TheoryMode.None;
+            instructions.text = baseInstructions;
+        }
+        //turn on the Addition mode
+        else
+        {
+            theoryMode = TheoryMode.Addition;
+            instructions.text = "Left click on any theory to remove it | Right click anywhere to cancel";
+        }
+    }
+
+    //called by the simulation button
+    public void RunSimulation()
+    {
+        theoryMode = TheoryMode.Simulation;
+        instructions.text = "Running simulation...";
+        StartCoroutine(Simulation());
+    }
+
+    IEnumerator Simulation()
+    {
+        yield return new WaitForSeconds(5f);
+        theoryMode = TheoryMode.None;
+        instructions.text = baseInstructions;
     }
 }

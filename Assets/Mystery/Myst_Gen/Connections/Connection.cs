@@ -20,6 +20,7 @@ public class Connection : MonoBehaviour
     [Header("Data")]
     public string type;
     public bool discovered = false;
+    public bool confirmed = false;
 
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -106,7 +107,8 @@ public class Connection : MonoBehaviour
     public void DiscoveryCheck()
     {
         if (GameControl.GameController.coreConstellation.Nodes[mystConn.Source].Discovered
-            && GameControl.GameController.coreConstellation.Nodes[mystConn.Target].Discovered)
+            && GameControl.GameController.coreConstellation.Nodes[mystConn.Target].Discovered
+            && confirmed)
         {
             visualConn.enabled = true;
             connectionDesc.enabled = true;
