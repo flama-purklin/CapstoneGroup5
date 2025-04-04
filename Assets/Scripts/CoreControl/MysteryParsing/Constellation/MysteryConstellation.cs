@@ -14,6 +14,8 @@ public class MysteryConstellation
     [JsonProperty("mini_mysteries")]
     public Dictionary<string, MiniMystery> MiniMysteries { get; set; }
 
+    //scripted events should be a flexible system - triggered by the unlocking of nodes, which has function calls to do specific things
+    //reveal hidden details on existing nodes, kill off certain characters, reveal new piece of evidence, move a character, etc.
     [JsonProperty("scripted-events")]
     public Dictionary<string, MysteryEvent> ScriptedEvents { get; set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -54,3 +56,18 @@ public class MysteryConstellation
             
     }
 }
+
+/*
+ * "appearance": {
+ *  "base": "woman1.png",
+ *  "hair": "black_hair.png",
+ *  "dress": "bruh.png",
+ *  "shoes": "airjordans.png",
+ *  "eyes": "green.png",
+ *  "nose": "schnauz2.png",
+ *  "mouth": "lusciouslips.png"
+ * 
+ * }
+ * 
+ * 
+ */

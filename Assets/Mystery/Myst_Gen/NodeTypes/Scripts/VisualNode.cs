@@ -16,7 +16,6 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     //associated connections
     public List<GameObject> connections;
-    public List<GameObject> theories;
 
     //all components of the visual object
     [SerializeField] protected TMP_Text idDisplay;
@@ -27,6 +26,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     //other object refs
     [SerializeField] Camera mysteryCam;
+    NodeControl control;
 
 
 
@@ -37,6 +37,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     void Start()
     {
         connections = new List<GameObject>();
+        
     }
 
     // Update is called once per frame
@@ -47,6 +48,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void AssignNode(string newKey, MysteryNode associatedNode)
     {
+        control = GameObject.FindFirstObjectByType<NodeControl>();
         currentNode = associatedNode;
         nodeKey = newKey;
         
@@ -80,8 +82,12 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnPointerDown(PointerEventData pointEventData)
     {
-        
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && control.theoryMode == TheoryMode.Addition)
+        {
+            //send a call to node control to tell it this object has been clicked
+            control.NodeClick(this);
+        }
+        if (Input.GetKey(KeyCode.Mouse1) && control.theoryMode == TheoryMode.None)
         {
             Debug.Log("Pointer Down at " + gameObject.name);
             GameObject.FindFirstObjectByType<EvidenceInspect>().ActivateInspect(currentNode);
@@ -98,7 +104,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         if (mysteryCam == null)
             mysteryCam = GameObject.FindWithTag("MysteryCam").GetComponent<Camera>();
 
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0) && control.theoryMode == TheoryMode.None)
         {
             Vector2 mousePos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
