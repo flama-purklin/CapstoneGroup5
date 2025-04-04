@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using NUnit.Framework.Constraints;
 
 public enum TheoryMode
 {
@@ -29,6 +30,7 @@ public class NodeControl : MonoBehaviour
     [SerializeField] GameObject infoPrefab;
     [SerializeField] GameObject evidencePrefab;
     [SerializeField] GameObject connectionPrefab;
+    [SerializeField] GameObject theoryPrefab;
 
     [Header("UI Elements")]
     [SerializeField] RectTransform contentPanel;
@@ -44,7 +46,10 @@ public class NodeControl : MonoBehaviour
 
     bool loaded = false;
 
+    //theory stuff
     public TheoryMode theoryMode = TheoryMode.None;
+    public GameObject currentTheory;
+    public List<GameObject> untestedTheories;
 
     string baseInstructions;
 
@@ -57,12 +62,25 @@ public class NodeControl : MonoBehaviour
             NewConstellation();
         }
         baseInstructions = instructions.text;
+
+        //instantiate theory list
+        untestedTheories = new List<GameObject>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //HandleScroll();
+        if (theoryMode != TheoryMode.None && Input.GetMouseButtonDown(1))
+        {
+            if (theoryMode == TheoryMode.Addition)
+            {
+                TheoryAdd();
+            }
+            else if (theoryMode == TheoryMode.Removal)
+            {
+                TheoryRemove();
+            }
+        }
     }
 
     void HandleScroll()
@@ -287,23 +305,45 @@ public class NodeControl : MonoBehaviour
     {
         //turn off the Addition mode
         if (theoryMode == TheoryMode.Addition)
-        { 
+        {
             theoryMode = TheoryMode.None;
             instructions.text = baseInstructions;
+
+            //reset the currentTheory
+            if (currentTheory != null)
+                currentTheory.GetComponent<Theory>().KillYourself();
+            currentTheory = null;
         }
         //turn on the Addition mode
         else
         {
             theoryMode = TheoryMode.Addition;
             instructions.text = "Left click on first node to begin a theory | Right click anywhere to cancel";
+
+            //spawn a new theory
+            currentTheory = Instantiate(theoryPrefab, contentPanel);
+            currentTheory.transform.SetAsFirstSibling();
         }
+    }
+
+    public void NodeClick(VisualNode node)
+    {
+        //send a call to the current theory to assign the node to it
+        currentTheory.GetComponent<Theory>().NodeAssign(node);
+    }
+
+    public void TheoryPlaced()
+    {
+        untestedTheories.Add(currentTheory);
+        currentTheory = null;
+        TheoryAdd();
     }
 
     //called by the removal butotn
     public void TheoryRemove()
     {
-        //turn off the Addition mode
-        if (theoryMode == TheoryMode.Addition)
+        //turn off the Removal mode
+        if (theoryMode == TheoryMode.Removal)
         {
             theoryMode = TheoryMode.None;
             instructions.text = baseInstructions;
@@ -311,9 +351,19 @@ public class NodeControl : MonoBehaviour
         //turn on the Addition mode
         else
         {
-            theoryMode = TheoryMode.Addition;
+            theoryMode = TheoryMode.Removal;
             instructions.text = "Left click on any theory to remove it | Right click anywhere to cancel";
         }
+    }
+
+    public void TheoryRemoved(GameObject theory)
+    {
+        untestedTheories.Remove(theory);
+
+        theory.GetComponent<Theory>().KillYourself();
+
+        Debug.Log("There are now " + untestedTheories.Count + " untested theories");
+        TheoryRemove();
     }
 
     //called by the simulation button
@@ -326,7 +376,18 @@ public class NodeControl : MonoBehaviour
 
     IEnumerator Simulation()
     {
-        yield return new WaitForSeconds(5f);
+        //start at the head node and progressively reveal whether connections are real or not, layer by layer
+        Debug.Log("Running simulation on " + untestedTheories.Count + " untested theories");
+
+        while (untestedTheories.Count > 0)
+        {
+            untestedTheories[0].GetComponent<Theory>().Reveal();
+            untestedTheories.RemoveAt(0);
+            yield return new WaitForSecondsRealtime(2f);
+        }
+
+        untestedTheories.Clear();
+
         theoryMode = TheoryMode.None;
         instructions.text = baseInstructions;
     }

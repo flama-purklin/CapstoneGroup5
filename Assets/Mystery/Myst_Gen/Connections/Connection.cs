@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class Connection : MonoBehaviour
 {
     [Header("UI Attributes")]
-    [SerializeField] Image visualConn;
-    [SerializeField] TMP_Text connectionDesc;
-    [SerializeField] RectTransform rect;
+    [SerializeField] protected Image visualConn;
+    [SerializeField] protected TMP_Text connectionDesc;
+    [SerializeField] protected RectTransform rect;
 
     [Header("Object Refs")]
     public GameObject startObj;
@@ -30,7 +30,7 @@ public class Connection : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public virtual void Update()
     {
         // Debug.Log("Updating");
         if (discovered)
@@ -79,11 +79,11 @@ public class Connection : MonoBehaviour
         DiscoveryCheck();
     }
 
-    IEnumerator ConnectionUpdate()
+    protected IEnumerator ConnectionUpdate()
     {
         //assign the length to the connection obj
         //rect = GetComponent<RectTransform>();
-        Vector2 hypotenuse = endObj.transform.localPosition - startObj.transform.localPosition;
+        Vector2 hypotenuse = startObj.transform.localPosition - endObj.transform.localPosition;
         float dist = hypotenuse.magnitude;
         rect.sizeDelta = new Vector2(dist, 20f);
 
