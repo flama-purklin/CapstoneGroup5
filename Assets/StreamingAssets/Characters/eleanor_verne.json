@@ -24,7 +24,7 @@
       {
         "key": "1",
         "value": {
-          "location": "business_class_car_1",
+          "location": "business_class",
           "action": "analyzing photographs of suspect artworks",
           "events": [
             "Spoke with Gregory about upcoming authentication project"
@@ -34,7 +34,7 @@
       {
         "key": "2",
         "value": {
-          "location": "business_class_car_2",
+          "location": "business_class",
           "action": "observing Victoria and Penelope's argument from distance",
           "events": [
             "Felt uncomfortable witnessing their conflict",
@@ -56,18 +56,18 @@
       {
         "key": "4",
         "value": {
-          "location": "business_class_car_1",
+          "location": "business_class",
           "action": "returning to seat",
           "events": [
             "Passed Maxwell who appeared extremely anxious",
-            "Heard a commotion from lounge car"
+            "Heard a commotion from dining_car"
           ]
         }
       },
       {
         "key": "5",
         "value": {
-          "location": "business_class_car_1",
+          "location": "business_class",
           "action": "processing news of Victoria's death",
           "events": [
             "Initially believed suicide narrative due to Victoria's recent troubles"
@@ -169,7 +169,7 @@
       ]
     }
   },
-  "initial_location": "business_class_car_1",
+  "initial_location": "business_class",
   "key_testimonies": {
     "eleanor_maxwell_skills": {
       "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",

@@ -13,7 +13,7 @@
       {
         "key": "0",
         "value": {
-          "circumstance": "first class car corridor, 0-45 minutes",
+          "circumstance": "first_class corridor, 0-45 minutes",
           "action": "boarding and settling in",
           "events": [
             "Making final calls about upcoming magazine features"
@@ -23,7 +23,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "first class car seat, 46-75 minutes",
+          "circumstance": "first_class seat, 46-75 minutes",
           "action": "reviewing magazine layouts",
           "events": [
             "Preparing notes for confrontation with Penelope"
@@ -33,7 +33,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "lounge car, 76-100 minutes",
+          "circumstance": "dining_car, 76-100 minutes",
           "action": "arguing with Penelope Valor",
           "events": [
             "Threatened to expose Penelope's relationship with Nova",
@@ -44,7 +44,7 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "bar car, 101-115 minutes",
+          "circumstance": "dining_car, 101-115 minutes",
           "action": "confronting Gregory about art fraud rumors",
           "events": [
             "Hinted at suspicions about his connection to forgeries"

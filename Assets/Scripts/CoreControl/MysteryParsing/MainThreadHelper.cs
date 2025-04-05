@@ -21,8 +21,8 @@ namespace CoreControl.MysteryParsing
                     var go = new GameObject("MainThreadHelper");
                     // Add the script to the game object
                     _instance = go.AddComponent<MainThreadHelper>();
-                    // Make sure the object is never destroyed during scene changes
-                    DontDestroyOnLoad(go);
+                    // Make sure the object is never destroyed during scene changes - REMOVED for unified scene
+                    // DontDestroyOnLoad(go); 
                 }
                 return _instance;
             }

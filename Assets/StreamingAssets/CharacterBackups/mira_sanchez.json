@@ -33,7 +33,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "dining car then lounge car, 61-100 minutes",
+          "circumstance": "dining_car then dining_car, 61-100 minutes",
           "action": "conducting casual interviews with passengers",
           "events": [
             "Documented Victoria and Penelope's heated argument",
@@ -44,10 +44,10 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "seat near the lounge windows, 101-115 minutes",
+          "circumstance": "seat near the dining_car windows, 101-115 minutes",
           "action": "reviewing photos on her device",
           "events": [
-            "Captured Maxwell looking agitated in bar car",
+            "Captured Maxwell looking agitated in dining_car",
             "Photographed Gregory's meeting with Maxwell"
           ]
         }
@@ -55,7 +55,7 @@
       {
         "key": "4",
         "value": {
-          "circumstance": "moving between lounge car and corridor, 116-123 minutes",
+          "circumstance": "moving between dining_car and corridor, 116-123 minutes",
           "action": "attempting to follow Maxwell",
           "events": [
             "Photographed Maxwell near bathroom area",
@@ -66,7 +66,7 @@
       {
         "key": "5",
         "value": {
-          "circumstance": "business class seat, 124-present",
+          "circumstance": "business_class seat, 124-present",
           "action": "organizing photos and preparing story",
           "events": [
             "Reviewing evidence while deciding how to maximize publicity"
@@ -167,7 +167,7 @@
       ]
     }
   },
-  "initial_location": "business_class_car_1",
+  "initial_location": "business_class",
   "key_testimonies": {
     "mira_photos": {
       "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",

@@ -32,7 +32,6 @@ The project is built around the following architectural components:
 
 ### Singleton Managers
 - **GameControl**: Main game state manager
-- **PersistentSystemsManager**: Handles cross-scene persistence
 - **CoreSystemsManager**: Manages Unity systems (EventSystem, AudioListener)
 - **ParsingControl**: Handles mystery JSON parsing
 - **NPCManager**: Manages NPC creation and behavior
@@ -51,24 +50,20 @@ The project is built around the following architectural components:
 
 ## Scene Structure
 
-The project uses a multi-scene approach:
+The project utilizes a **unified single-scene architecture**:
 
-1. **LoadingScreen Scene**
-   - Entry point for the game
-   - Contains initialization logic
-   - Handles loading UI and progress display
-   - Core objects:
-     - Main Camera
-     - LoadingUI
-     - Persistent Systems
-     - GameInitializer
-     - GameController
-
-2. **SystemsTest Scene** (Main Gameplay)
-   - Main gameplay environment
-   - Contains train environment
-   - Player and NPCs interact here
-   - Loaded after initialization completes
+1.  **SystemsTest Scene** (Main Gameplay & Initialization)
+    - Sole entry point and gameplay environment.
+    - Contains the train environment where player and NPCs interact.
+    - Includes a **LoadingOverlay** GameObject that manages the entire initialization sequence before revealing the gameplay area.
+    - Core Initialization/Gameplay Objects:
+        - Main Camera
+        - Player
+        - GameController
+        - InitializationManager (manages startup)
+        - LoadingOverlay (displays progress, blocks view initially)
+        - LLM, CharacterManager, ParsingControl, NPCManager, etc.
+        - Train environment, NPCs, UI elements (PauseMenu, DialogueControl, etc.)
 
 ## Game Systems
 
@@ -237,29 +232,36 @@ The project's data flow follows this pattern:
 
 ## Initialization Sequence
 
-The game initialization follows this sequence:
+The game initialization occurs entirely within the `SystemsTest` scene, managed by the `InitializationManager` and visually represented by the `LoadingOverlay`:
 
-1. **Game Launch**:
-   - LoadingScreen scene loaded
-   - GameInitializer starts initialization
+1.  **Scene Load**:
+    - `SystemsTest` scene loads.
+    - `LoadingOverlay` is active, blocking the game view. Player input is disabled.
+    - `InitializationManager` starts the sequence.
 
-2. **LLM Startup** (Step 1):
-   - Wait for LLM to start
-   - Log progress and timing
+2.  **LLM Startup** (Step 1):
+    - Wait for the shared LLM service to start.
+    - Update LoadingOverlay status.
 
-3. **Mystery Parsing** (Step 2):
-   - Parse mystery JSON
-   - Extract character data
-   - Verify character files
+3.  **Mystery Parsing & Character Extraction** (Step 2):
+    - `ParsingControl` parses the mystery JSON.
+    - `MysteryCharacterExtractor` extracts character data to files.
+    - Character files are validated.
+    - Update LoadingOverlay status.
 
-4. **Character Initialization** (Step 3):
-   - Initialize CharacterManager
-   - Load and warm up character models
-   - Initialize NPCs with character data
+4.  **Character Manager Initialization** (Step 3):
+    - `CharacterManager` initializes.
+    - Loads character data from files.
+    - Creates and warms up `LLMCharacter` instances for each character.
+    - `NPCManager` initializes, spawning NPCs and linking them to their `LLMCharacter`.
+    - Update LoadingOverlay status.
 
-5. **Scene Loading** (Step 4):
-   - Load main game scene (SystemsTest)
-   - Resume normal gameplay
+5.  **Transition to Gameplay** (Step 4):
+    - Once all steps are complete, `InitializationManager` signals completion.
+    - `LoadingOverlay` fades out or is disabled.
+    - Player input is enabled.
+    - Game state transitions to `DEFAULT`.
+    - Normal gameplay resumes.
 
 ## Event System
 
@@ -356,15 +358,7 @@ The project has the following key dependencies:
    - Stores mystery data
    - Singleton access via GameControl.GameController
 
-2. **PersistentSystemsManager.cs**:
-   - Manages cross-scene persistence
-   - Creates core systems hierarchy
-   - Handles scene loading events
-
-3. **GameInitializer.cs**:
-   - Controls initialization sequence
-   - Coordinates system startup
-   - Triggers scene transitions
+*(Note: PersistentSystemsManager.cs and GameInitializer.cs removed as they are deprecated or superseded by InitializationManager in the unified scene)*
 
 ### Mystery System
 

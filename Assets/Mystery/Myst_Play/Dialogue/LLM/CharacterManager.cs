@@ -485,16 +485,44 @@ public class CharacterManager : MonoBehaviour
 
     private void CleanupCharacters()
     {
-        if (currentCharacter != null)
+        // --- DIAGNOSTIC LOGGING START ---
+        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Entering cleanup. sharedLLM is {(sharedLLM != null ? "NOT NULL" : "NULL")}. LLM started: {(sharedLLM != null ? sharedLLM.started.ToString() : "N/A")}");
+        // --- DIAGNOSTIC LOGGING END ---
+
+        // Check if currentCharacter and its LLM are valid and started before cancelling
+        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Checking currentCharacter: {(currentCharacter != null ? currentCharacter.name : "NULL")}");
+        if (currentCharacter != null && currentCharacter.llm != null && currentCharacter.llm.started)
         {
+            Debug.Log($"Cleaning up current character: {currentCharacter.name}");
             currentCharacter.CancelRequests();
         }
+        else if (currentCharacter != null)
+        {
+             Debug.LogWarning($"Skipping CancelRequests for current character {currentCharacter.name}; LLM not started or reference missing.");
+        }
 
+
+        // --- DIAGNOSTIC LOGGING START ---
+        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Starting loop through characterCache ({characterCache.Count} items).");
+        // --- DIAGNOSTIC LOGGING END ---
         foreach (var character in characterCache.Values)
         {
             if (character != null)
             {
-                character.CancelRequests();
+                // --- DIAGNOSTIC LOGGING START ---
+                Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Processing character: {character.name}. LLM ref: {(character.llm != null ? "OK" : "NULL")}. LLM started: {(character.llm != null ? character.llm.started.ToString() : "N/A")}");
+                // --- DIAGNOSTIC LOGGING END ---
+                 // Check if character and its LLM are valid and started before cancelling
+                if (character.llm != null && character.llm.started)
+                {
+                    Debug.Log($"Cleaning up character: {character.name}");
+                    character.CancelRequests();
+                }
+                else
+                {
+                    Debug.LogWarning($"Skipping CancelRequests for character {character.name}; LLM not started or reference missing.");
+                }
+                // Destroy the GameObject regardless of LLM state
                 Destroy(character.gameObject);
             }
         }

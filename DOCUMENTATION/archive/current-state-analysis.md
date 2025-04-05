@@ -1,5 +1,9 @@
 # Current State Analysis - Working Document
 
+**[ARCHIVAL NOTE - DATE: 2025-04-05]** This document describes the project architecture *before* the scene unification process merged the `LoadingScreen` and `SystemsTest` scenes. It details the previous multi-scene setup and initialization flow. For the current architecture, please refer to `full-technical-documentation.md`.
+
+---
+
 ## Event & Messaging Systems
 
 ### Event Publishers

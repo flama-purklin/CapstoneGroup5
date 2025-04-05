@@ -35,14 +35,13 @@ stateDiagram-v2
         DialogueActivate --> IdleState: Dialogue ends
     }
     
-    %% Game Initialization Sequence
-    state "Game Initialization" as GameInit {
-        [*] --> LLMStartup
-        LLMStartup --> MysteryParsing: LLM started
-        MysteryParsing --> CharacterExtraction: Mystery parsed
-        CharacterExtraction --> NPCInitialization: Characters extracted
-        NPCInitialization --> SceneLoading: NPCs initialized
-        SceneLoading --> [*]: Main scene loaded
+    %% Game Initialization Sequence (Unified Scene)
+    state "Game Initialization (within SystemsTest)" as GameInit {
+        [*] --> LLMStartup : Scene Loaded, LoadingOverlay Active
+        LLMStartup --> MysteryParsingAndExtraction : LLM started
+        MysteryParsingAndExtraction --> CharacterAndNPCInitialization : Parsing & Extraction complete
+        CharacterAndNPCInitialization --> TransitionToGameplay : Characters & NPCs ready
+        TransitionToGameplay --> [*] : LoadingOverlay Hidden, Gameplay Enabled
     }
     
     %% Dialogue System States

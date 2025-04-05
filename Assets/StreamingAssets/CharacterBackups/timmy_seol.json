@@ -23,7 +23,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "first class seat near Penelope, 16-45 minutes",
+          "circumstance": "first_class seat near Penelope, 16-45 minutes",
           "action": "organizing her schedule",
           "events": [
             "Overheard Nova mocking another passenger's fashion choices"
@@ -33,7 +33,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "lounge car, 46-80 minutes",
+          "circumstance": "dining_car, 46-80 minutes",
           "action": "fetching drinks for Penelope",
           "events": [
             "Bumped into Victoria, who interrogated him about Penelope's plans"
@@ -43,7 +43,7 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "corridor between lounge and dining car, 81-95 minutes",
+          "circumstance": "corridor between dining_car and dining_car, 81-95 minutes",
           "action": "spilled coffee on Maxwell Porter",
           "events": [
             "Maxwell seemed unusually agitated",
@@ -57,7 +57,7 @@
           "circumstance": "various spots on the train, 96-present",
           "action": "running errands for Penelope, collecting gossip",
           "events": [
-            "Observed Gregory and Maxwell having intense conversation in bar car"
+            "Observed Gregory and Maxwell having intense conversation in dining_car"
           ]
         }
       }
@@ -155,7 +155,7 @@
       ]
     }
   },
-  "initial_location": "first_class_car",
+  "initial_location": "first_class",
   "key_testimonies": {
     "timmy_hired_gideon": {
       "content": "Please don't tell Penelope, but I hired Mr. Marsh to investigate Victoria! I thought if we could prove she was involved in those art forgeries, it would protect Penelope's magazine from Victoria's threats.",

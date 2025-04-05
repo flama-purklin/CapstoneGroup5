@@ -6,21 +6,21 @@ flowchart TD
     LLMDialogueManager["LLMDialogueManager\n(Publisher)"]
     
     %% Event Subscribers
-    GameInit["GameInitializer\n(Subscriber)"]
+    InitManager["InitializationManager\n(Subscriber)"]
     ParsingControlSub["ParsingControl\n(Subscriber)"]
-    LoadingUI["LoadingUI\n(Subscriber)"]
+    LoadingUI["LoadingOverlay/UI\n(Subscriber)"]
     DialogueUI["DialogueUI\n(Subscriber)"]
     
     %% Event Relationships with Data Payloads
     ParsingControl -->|"OnParsingProgress(float)"| LoadingUI
     ParsingControl -->|"OnMysteryParsed(Mystery)"| GameControl["GameControl"]
-    ParsingControl -->|"OnCharactersExtracted(int)"| GameInit
-    ParsingControl -->|"OnParsingComplete()"| GameInit
+    ParsingControl -->|"OnCharactersExtracted(int)"| InitManager
+    ParsingControl -->|"OnParsingComplete()"| InitManager
     
     MysteryExtractor -->|"OnExtractionProgress(float)"| ParsingControlSub
     MysteryExtractor -->|"OnCharactersExtracted(int)"| ParsingControlSub
     
-    CharManager -->|"OnInitializationComplete()"| GameInit
+    CharManager -->|"OnInitializationComplete()"| InitManager
     
     %% UI Events
     SubmitButton["Submit Button"] -->|"onClick.AddListener()"| LLMDialogueManager
@@ -34,8 +34,8 @@ flowchart TD
     LLMCharacter["LLMCharacter"] -->|"Chat(..., HandleReply, OnReplyComplete)"| LLMDialogueManager
     
     %% Connections between systems
-    GameInit -.->|"Initialization Flow"| ParsingControl
-    GameInit -.->|"After Parse Complete"| CharManager
+    InitManager -.->|"Initialization Flow"| ParsingControl
+    InitManager -.->|"After Parse Complete"| CharManager
     CharManager -.->|"Character Creation"| LLMCharacter
     
     %% Visual Styling
@@ -45,6 +45,6 @@ flowchart TD
     classDef ui fill:#d9f,stroke:#333,stroke-width:1px
     
     class ParsingControl,MysteryExtractor,CharManager,LLMDialogueManager publisher
-    class GameInit,ParsingControlSub,LoadingUI,DialogueUI subscriber
+    class InitManager,ParsingControlSub,LoadingUI,DialogueUI subscriber
     class GameControl state
     class SubmitButton,InputField ui

@@ -18,6 +18,7 @@ public class InitializationManager : MonoBehaviour
     [SerializeField] private NPCManager npcManager;
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private GameObject loadingOverlay;
+    [SerializeField] private TrainLayoutManager trainLayoutManager; // Added reference
     
     private ParsingControl parsingControl;
 
@@ -65,6 +66,7 @@ public class InitializationManager : MonoBehaviour
         
         if (!npcManager) npcManager = FindFirstObjectByType<NPCManager>();
         if (!characterManager) characterManager = FindFirstObjectByType<CharacterManager>();
+        if (!trainLayoutManager) trainLayoutManager = FindFirstObjectByType<TrainLayoutManager>(); // Find TrainLayoutManager
         parsingControl = FindFirstObjectByType<ParsingControl>();
         
         // Create CharacterManager if not found
@@ -129,7 +131,7 @@ public class InitializationManager : MonoBehaviour
         }
         
         // Ensure systems are properly organized
-        SetupCoreSystems();
+        // SetupCoreSystems(); // Commented out as CoreSystemsManager creation is redundant
     }
 
     private void Start()
@@ -180,12 +182,12 @@ public class InitializationManager : MonoBehaviour
             eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
         }
         
-        // Create core systems manager if needed
-        if (FindFirstObjectByType<CoreSystemsManager>() == null)
-        {
-            GameObject coreSystemsObj = new GameObject("CoreSystems");
-            coreSystemsObj.AddComponent<CoreSystemsManager>();
-        }
+        // // Create core systems manager if needed - REMOVED as it's redundant
+        // if (FindFirstObjectByType<CoreSystemsManager>() == null)
+        // {
+        //     GameObject coreSystemsObj = new GameObject("CoreSystems");
+        //     coreSystemsObj.AddComponent<CoreSystemsManager>();
+        // }
     }
 
     /// <summary>
@@ -203,7 +205,10 @@ public class InitializationManager : MonoBehaviour
             // Step 2: Wait for mystery parsing and character extraction
             await WaitForParsingComplete();
             
-            // Step 3: Initialize NPCs and Character Manager
+            // Step 2.5: Build the train layout using the new manager
+            BuildTrain();
+
+            // Step 3: Initialize NPCs and Character Manager (Now depends on train existing)
             await InitializeCharactersAndNPCs();
             
             // Step 4: Complete initialization and hide loading overlay
@@ -233,6 +238,43 @@ public class InitializationManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Step 2.5: Build the train layout
+    /// </summary>
+    private void BuildTrain()
+    {
+        Debug.Log("INITIALIZATION STEP 2.5: Building Train Layout...");
+        if (trainLayoutManager != null)
+        {
+            // Ensure mystery data is loaded before building
+            if (GameControl.GameController != null && GameControl.GameController.coreMystery != null)
+            {
+                 trainLayoutManager.BuildTrainLayout();
+                 Debug.Log("Train build initiated.");
+            }
+            else
+            {
+                Debug.LogError("Cannot build train: GameControl or coreMystery is null.");
+            }
+        }
+        else
+        {
+            Debug.LogError("TrainLayoutManager reference not found! Cannot build train.");
+        }
+    }
+
+    // /// <summary>
+    // /// Step 2.5 (Old): Find and initialize the Mystery Board UI - REMOVED as MysteryBoardControl was vestigial
+    // /// </summary>
+    // private void InitializeMysteryBoard()
+    // {
+    //     Debug.Log("INITIALIZATION STEP 2.5: Initializing Mystery Board UI...");
+    //     // Removed code that searched for and attempted to initialize using the now-deleted MysteryBoardControl GameObject.
+    //     // The actual Mystery Board UI initialization should be handled by the relevant UI controller (e.g., associated with MysteryCanvas/NodeControl).
+    //     Debug.LogWarning("Mystery Board UI initialization logic related to 'MysteryBoardControl' object removed. Ensure the correct UI controller handles initialization.");
+    // }
+
 
     /// <summary>
     /// Step 1: Wait for LLM to start with timeout

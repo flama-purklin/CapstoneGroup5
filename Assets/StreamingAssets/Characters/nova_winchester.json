@@ -4,7 +4,7 @@
       "role": "Witness",
       "type": "Uninterested participant who observed key moments",
       "mystery_attributes": [
-        "Saw Gregory and Maxwell entering the lounge car shortly before the murder",
+        "Saw Gregory and Maxwell entering the dining_car shortly before the murder",
         "Discovered blood flowing from the bathroom door"
       ]
     },
@@ -12,7 +12,7 @@
       {
         "key": "0",
         "value": {
-          "circumstance": "first class car seat, 15-90 minutes",
+          "circumstance": "first_class seat, 15-90 minutes",
           "action": "working on fashion article",
           "events": [
             "Reviewing Montreu Fashion Week notes"
@@ -22,7 +22,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "lounge car, 91-95 minutes",
+          "circumstance": "dining_car, 91-95 minutes",
           "action": "walking to dining car",
           "events": [
             "Saw Penelope Valor arguing with Victoria Blackwood"
@@ -32,18 +32,18 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "dining car, 95-120 minutes",
+          "circumstance": "dining_car, 95-120 minutes",
           "action": "ordering vodka tonic",
           "events": [
-            "Spotted Gregory and Maxwell (two suspicious men) entering the lounge car"
+            "Spotted Gregory and Maxwell (two suspicious men) entering the dining_car"
           ]
         }
       },
       {
         "key": "3",
         "value": {
-          "circumstance": "lounge car, 121-123 minutes",
-          "action": "returning to first class",
+          "circumstance": "dining_car, 121-123 minutes",
+          "action": "returning to first_class",
           "events": [
             "Discovered blood flowing from inside the bathroom door"
           ]
@@ -52,7 +52,7 @@
       {
         "key": "4",
         "value": {
-          "circumstance": "first class car seat, 124-present",
+          "circumstance": "first_class seat, 124-present",
           "action": "working on her article",
           "events": [
             "Fighting off exhaustion while reviewing fashion notes"
@@ -148,10 +148,10 @@
       ]
     }
   },
-  "initial_location": "first_class_car",
+  "initial_location": "first_class",
   "key_testimonies": {
     "nova_sighting": {
-      "content": "Yeah, I saw two blokes enter the lounge car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.",
+      "content": "Yeah, I saw two blokes enter the dining_car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.",
       "reveals": "testimony-two-men",
       "requires": [
         "murder_scene"
@@ -159,7 +159,7 @@
       "state": "default",
       "methods": [
         "direct_questioning",
-        "mention_lounge_car"
+        "mention_dining_car"
       ]
     }
   }

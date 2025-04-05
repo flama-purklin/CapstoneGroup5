@@ -31,7 +31,7 @@ public class NodeControl : MonoBehaviour
         contentPanel.anchoredPosition = Vector2.zero;
         if (!loaded)
         {
-            NewConstellation();
+            NewConstellation(); // Restore original call, even if it might fail due to old dependencies
         }
     }
 
@@ -120,15 +120,32 @@ public class NodeControl : MonoBehaviour
         }
     }*/
 
+    // NOTE: This NewConstellation method likely still relies on the old,
+    // potentially incorrect way of accessing mystery data (GameControl.GameController.coreConstellation)
+    // directly, which might cause errors if called before parsing is complete.
+    // However, restoring it removes the incorrect InitializeBoard logic.
+    // Further refactoring might be needed if this UI is actually used.
     public void NewConstellation()
     {
         visualNodes = new Dictionary<string, GameObject>();
 
         //create a node object for every parsed node in the constellation
+        // WARNING: This accesses GameControl directly, which might be problematic depending on execution order
+        if (GameControl.GameController == null || GameControl.GameController.coreConstellation == null || GameControl.GameController.coreConstellation.Nodes == null)
+        {
+             Debug.LogError("NewConstellation called but GameController or coreConstellation data is not ready!");
+             return;
+        }
+
         foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
         {
             //create the node
             GameObject newNode = InstantiateNode(nodePair.Value);
+             if (newNode == null)
+            {
+                Debug.LogError($"Failed to instantiate visual node for key: {nodePair.Key}");
+                continue;
+            }
 
             //assign data to the node
             newNode.GetComponent<VisualNode>().AssignNode(nodePair.Key, nodePair.Value);
@@ -140,10 +157,27 @@ public class NodeControl : MonoBehaviour
         Debug.Log(visualNodes.Count + " visual nodes created");
 
         //create a connection for each parsed connection in the constellation
+         if (GameControl.GameController.coreConstellation.Connections == null)
+        {
+             Debug.LogError("NewConstellation called but GameController.coreConstellation.Connections is null!");
+             return;
+        }
         foreach (var parsedConnection in GameControl.GameController.coreConstellation.Connections)
         {
+             // Ensure source and target nodes exist before creating connection
+            if (!visualNodes.ContainsKey(parsedConnection.Source) || !visualNodes.ContainsKey(parsedConnection.Target))
+            {
+                Debug.LogError($"Skipping connection: Source ('{parsedConnection.Source}') or Target ('{parsedConnection.Target}') node not found in visualNodes dictionary.");
+                continue;
+            }
+
             //create a connection object
             GameObject newConn = Instantiate(connectionPrefab, contentPanel);
+             if (newConn == null)
+            {
+                 Debug.LogError($"Failed to instantiate connectionPrefab for connection between {parsedConnection.Source} and {parsedConnection.Target}.");
+                 continue;
+            }
             newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[parsedConnection.Source], visualNodes[parsedConnection.Target], parsedConnection);
 
             //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
@@ -151,6 +185,7 @@ public class NodeControl : MonoBehaviour
             visualNodes[parsedConnection.Target].GetComponent<VisualNode>().connections.Add(newConn);
         }
     }
+
 
     public void UnlockVisualNode(string nodeKey)
     {

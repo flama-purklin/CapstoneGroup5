@@ -23,7 +23,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "first class car seat next to Timmy, 31-75 minutes",
+          "circumstance": "first_class seat next to Timmy, 31-75 minutes",
           "action": "discussing upcoming magazine layouts",
           "events": [
             "Instructed Timmy to gather industry gossip from passengers"
@@ -33,7 +33,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "lounge car, 76-100 minutes",
+          "circumstance": "dining_car, 76-100 minutes",
           "action": "argumentative meeting with Victoria",
           "events": [
             "Heated exchange about professional rivalry",
@@ -44,7 +44,7 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "dining car, 101-120 minutes",
+          "circumstance": "dining_car, 101-120 minutes",
           "action": "ordering brunch with champagne",
           "events": [
             "Saw Timmy trailing behind",
@@ -55,7 +55,7 @@
       {
         "key": "4",
         "value": {
-          "circumstance": "private compartment in first class, 121-present",
+          "circumstance": "private compartment in first_class, 121-present",
           "action": "reviewing documents for new designer deal",
           "events": [
             "Unaware of Victoria's death until commotion began"
@@ -155,10 +155,10 @@
       ]
     }
   },
-  "initial_location": "first_class_car",
+  "initial_location": "first_class",
   "key_testimonies": {
     "penelope_argument": {
-      "content": "Yes, Victoria and I had words in the lounge car. It was a professional disagreement about designer exclusivity contracts, nothing more.",
+      "content": "Yes, Victoria and I had words in the dining_car. It was a professional disagreement about designer exclusivity contracts, nothing more.",
       "reveals": "testimony-victoria-penelope-argument",
       "requires": [
         "basic_investigation"

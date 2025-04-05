@@ -1,8 +1,8 @@
 {
   "metadata": {
     "id": "art_forgery_murder",
-    "version": "1.0",
-    "last_updated": "2025-03-05 11:30:46",
+    "version": "1.1",
+    "last_updated": "2025-04-05 04:43:00", 
     "title": "Art Fraud on the Fashion Express"
   },
   
@@ -16,7 +16,7 @@
     "method": "Staged Suicide",
     "motive": "Protecting Art Forgery Ring",
     "circumstance": {
-      "location": "lounge_bathroom",
+      "location": "lounge_bathroom", 
       "time_minutes": 123,
       "details": "Maxwell sedated Victoria and staged a suicide by hanging using her scarf and bathroom fixtures"
     }
@@ -49,7 +49,7 @@
           {
             "key": "1",
             "value": {
-              "location": "business_class_car_1",
+              "location": "business_class", 
               "action": "analyzing photographs of suspect artworks",
               "events": [
                 "Spoke with Gregory about upcoming authentication project"
@@ -59,7 +59,7 @@
           {
             "key": "2",
             "value": {
-              "location": "business_class_car_2",
+              "location": "business_class", 
               "action": "observing Victoria and Penelope's argument from distance",
               "events": [
                 "Felt uncomfortable witnessing their conflict",
@@ -81,18 +81,18 @@
           {
             "key": "4",
             "value": {
-              "location": "business_class_car_1",
+              "location": "business_class", 
               "action": "returning to seat",
               "events": [
                 "Passed Maxwell who appeared extremely anxious",
-                "Heard a commotion from lounge car"
+                "Heard a commotion from dining_car" 
               ]
             }
           },
           {
             "key": "5",
             "value": {
-              "location": "business_class_car_1",
+              "location": "business_class", 
               "action": "processing news of Victoria's death",
               "events": [
                 "Initially believed suicide narrative due to Victoria's recent troubles"
@@ -194,7 +194,7 @@
           ]
         }
       },
-      "initial_location": "business_class_car_1",
+      "initial_location": "business_class", 
       "key_testimonies": {
         "eleanor_maxwell_skills": {
           "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",
@@ -231,7 +231,7 @@
           {
             "key": "1", 
             "value": {
-              "location": "first_class_car",
+              "location": "first_class", 
               "action": "shadowing Victoria discreetly",
               "events": [
                 "Observed Timmy's nervous behavior around Penelope"
@@ -241,7 +241,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "lounge car seating area, 61-90 minutes",
+              "circumstance": "dining_car seating area, 61-90 minutes", 
               "action": "making notes while appearing to read",
               "events": [
                 "Noticed Mira taking photos",
@@ -252,7 +252,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "between lounge car and private compartments, 91-119 minutes",
+              "circumstance": "between dining_car and private compartments, 91-119 minutes", 
               "action": "investigating Victoria's known associates",
               "events": [
                 "Spoke briefly with Victoria about 'recent art market developments'",
@@ -263,10 +263,10 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "dining car, 120-123 minutes",
+              "circumstance": "dining_car, 120-123 minutes",
               "action": "reviewing notes while maintaining observation",
               "events": [
-                "Heard commotion from lounge car",
+                "Heard commotion from dining_car",
                 "Began moving toward disturbance"
               ]
             }
@@ -274,7 +274,7 @@
           {
             "key": "5",
             "value": {
-              "circumstance": "corridor near lounge car, 124-present",
+              "circumstance": "corridor near dining_car, 124-present", 
               "action": "investigation crime scene and questioning passengers",
               "events": [
                 "Discovered Victoria's body",
@@ -402,7 +402,7 @@
           {
             "key": "0",
             "value": {
-              "location": "first_class_car",
+              "location": "first_class", 
               "action": "networking with art collectors",
               "events": [
                 "Noticed Gideon observing Victoria",
@@ -413,7 +413,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "corridor near lounge car, 51-80 minutes",
+              "circumstance": "corridor near dining_car, 51-80 minutes", 
               "action": "private conversation with Eleanor about an upcoming exhibition",
               "events": [
                 "Repeatedly steered conversation to forgery detection techniques"
@@ -423,7 +423,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "dining car, 81-110 minutes",
+              "circumstance": "dining_car, 81-110 minutes",
               "action": "reviewing documents while observing other passengers",
               "events": [
                 "Noticed Victoria's argument with Penelope",
@@ -434,7 +434,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "bar car, 111-115 minutes",
+              "circumstance": "dining_car, 111-115 minutes", 
               "action": "meeting with Maxwell Porter",
               "events": [
                 "Mentioned 'Victoria showing art photos to the investigator'",
@@ -445,7 +445,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "lounge car, 116-119 minutes",
+              "circumstance": "dining_car, 116-119 minutes", 
               "action": "entering with Maxwell before separating",
               "events": [
                 "Seen by Nova entering with Maxwell",
@@ -456,7 +456,7 @@
           {
             "key": "5",
             "value": {
-              "circumstance": "dining car, 120-present",
+              "circumstance": "dining_car, 120-present",
               "action": "publicly conversing with art collectors",
               "events": [
                 "Created perfect alibi during the time of murder"
@@ -556,10 +556,10 @@
           ]
         }
       },
-      "initial_location": "first_class_car",
+      "initial_location": "first_class", 
       "key_testimonies": {
         "gregory_alibi": {
-          "content": "At the time in question, I was in the dining car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
+          "content": "At the time in question, I was in the dining_car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
           "reveals": "lead-gregory-alibi",
           "requires": ["murder_time"],
           "state": "default",
@@ -599,7 +599,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "business class corridor, 41-80 minutes",
+              "circumstance": "business_class corridor, 41-80 minutes", 
               "action": "observing passengers while sketching",
               "events": [
                 "Noticed Gideon taking notes and watching Victoria"
@@ -609,7 +609,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "dining car, 81-110 minutes",
+              "circumstance": "dining_car, 81-110 minutes",
               "action": "drinking coffee alone",
               "events": [
                 "Observed Victoria speaking with Gideon",
@@ -620,7 +620,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "bar car, 111-115 minutes",
+              "circumstance": "dining_car, 111-115 minutes", 
               "action": "meeting with Gregory Crowe",
               "events": [
                 "Heard Gregory mention Victoria showing art photos to investigator",
@@ -631,7 +631,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "lounge car, 116-119 minutes",
+              "circumstance": "dining_car, 116-119 minutes", 
               "action": "entering with Gregory before separating",
               "events": [
                 "Seen by Nova",
@@ -642,7 +642,7 @@
           {
             "key": "5",
             "value": {
-              "circumstance": "lounge car bathroom, 120-123 minutes",
+              "circumstance": "lounge car bathroom, 120-123 minutes", 
               "action": "murdering Victoria Blackwood",
               "events": [
                 "Sedated Victoria",
@@ -655,9 +655,9 @@
             "key": "6",
             "value": {
               "circumstance": "moving through train, 124-135 minutes",
-              "action": "returning to second class",
+              "action": "returning to second class", 
               "events": [
-                "Disposed of evidence in kitchen incinerator",
+                "Disposed of evidence in kitchen incinerator", 
                 "Created alibi by engaging with passengers"
               ]
             }
@@ -751,7 +751,7 @@
           ]
         }
       },
-      "initial_location": "second_class_car_1",
+      "initial_location": "second_class_car_1", 
       "key_testimonies": {
         "maxwell_paranoia": {
           "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
@@ -794,7 +794,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "various train cars, exploring, 31-60 minutes",
+              "circumstance": "various train cars, exploring, 31-60 minutes", 
               "action": "collecting ambient footage and photos",
               "events": [
                 "Nearly collided with Timmy who was rushing to Penelope"
@@ -804,7 +804,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "dining car then lounge car, 61-100 minutes",
+              "circumstance": "dining_car then dining_car, 61-100 minutes", 
               "action": "conducting casual interviews with passengers",
               "events": [
                 "Documented Victoria and Penelope's heated argument",
@@ -815,10 +815,10 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "seat near the lounge windows, 101-115 minutes",
+              "circumstance": "seat near the dining_car windows, 101-115 minutes", 
               "action": "reviewing photos on her device",
               "events": [
-                "Captured Maxwell looking agitated in bar car",
+                "Captured Maxwell looking agitated in dining_car", 
                 "Photographed Gregory's meeting with Maxwell"
               ]
             }
@@ -826,7 +826,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "moving between lounge car and corridor, 116-123 minutes",
+              "circumstance": "moving between dining_car and corridor, 116-123 minutes", 
               "action": "attempting to follow Maxwell",
               "events": [
                 "Photographed Maxwell near bathroom area",
@@ -837,7 +837,7 @@
           {
             "key": "5",
             "value": {
-              "circumstance": "business class seat, 124-present",
+              "circumstance": "business_class seat, 124-present", 
               "action": "organizing photos and preparing story",
               "events": [
                 "Reviewing evidence while deciding how to maximize publicity"
@@ -938,7 +938,7 @@
           ]
         }
       },
-      "initial_location": "business_class_car_1",
+      "initial_location": "business_class", 
       "key_testimonies": {
         "mira_photos": {
           "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",
@@ -974,7 +974,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "first class car seat next to Timmy, 31-75 minutes",
+              "circumstance": "first_class seat next to Timmy, 31-75 minutes", 
               "action": "discussing upcoming magazine layouts",
               "events": [
                 "Instructed Timmy to gather industry gossip from passengers"
@@ -984,7 +984,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "lounge car, 76-100 minutes",
+              "circumstance": "dining_car, 76-100 minutes", 
               "action": "argumentative meeting with Victoria",
               "events": [
                 "Heated exchange about professional rivalry",
@@ -995,7 +995,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "dining car, 101-120 minutes",
+              "circumstance": "dining_car, 101-120 minutes",
               "action": "ordering brunch with champagne",
               "events": [
                 "Saw Timmy trailing behind",
@@ -1006,7 +1006,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "private compartment in first class, 121-present",
+              "circumstance": "private compartment in first_class, 121-present", 
               "action": "reviewing documents for new designer deal",
               "events": [
                 "Unaware of Victoria's death until commotion began"
@@ -1106,10 +1106,10 @@
           ]
         }
       },
-      "initial_location": "first_class_car",
+      "initial_location": "first_class", 
       "key_testimonies": {
         "penelope_argument": {
-          "content": "Yes, Victoria and I had words in the lounge car. It was a professional disagreement about designer exclusivity contracts, nothing more.",
+          "content": "Yes, Victoria and I had words in the dining_car. It was a professional disagreement about designer exclusivity contracts, nothing more.", 
           "reveals": "testimony-victoria-penelope-argument",
           "requires": ["basic_investigation"],
           "state": "default",
@@ -1149,7 +1149,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "first class seat near Penelope, 16-45 minutes",
+              "circumstance": "first_class seat near Penelope, 16-45 minutes", 
               "action": "organizing her schedule",
               "events": [
                 "Overheard Nova mocking another passenger's fashion choices"
@@ -1159,7 +1159,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "lounge car, 46-80 minutes",
+              "circumstance": "dining_car, 46-80 minutes", 
               "action": "fetching drinks for Penelope",
               "events": [
                 "Bumped into Victoria, who interrogated him about Penelope's plans"
@@ -1169,7 +1169,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "corridor between lounge and dining car, 81-95 minutes",
+              "circumstance": "corridor between dining_car and dining_car, 81-95 minutes", 
               "action": "spilled coffee on Maxwell Porter",
               "events": [
                 "Maxwell seemed unusually agitated",
@@ -1183,7 +1183,7 @@
               "circumstance": "various spots on the train, 96-present",
               "action": "running errands for Penelope, collecting gossip",
               "events": [
-                "Observed Gregory and Maxwell having intense conversation in bar car"
+                "Observed Gregory and Maxwell having intense conversation in dining_car" 
               ]
             }
           }
@@ -1281,7 +1281,7 @@
           ]
         }
       },
-      "initial_location": "first_class_car",
+      "initial_location": "first_class", 
       "key_testimonies": {
         "timmy_hired_gideon": {
           "content": "Please don't tell Penelope, but I hired Mr. Marsh to investigate Victoria! I thought if we could prove she was involved in those art forgeries, it would protect Penelope's magazine from Victoria's threats.",
@@ -1307,7 +1307,7 @@
           {
             "key": "0",
             "value": {
-              "circumstance": "first class car corridor, 0-45 minutes",
+              "circumstance": "first_class corridor, 0-45 minutes", 
               "action": "boarding and settling in",
               "events": [
                 "Making final calls about upcoming magazine features"
@@ -1317,7 +1317,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "first class car seat, 46-75 minutes",
+              "circumstance": "first_class seat, 46-75 minutes", 
               "action": "reviewing magazine layouts",
               "events": [
                 "Preparing notes for confrontation with Penelope"
@@ -1327,7 +1327,7 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "lounge car, 76-100 minutes",
+              "circumstance": "dining_car, 76-100 minutes", 
               "action": "arguing with Penelope Valor",
               "events": [
                 "Threatened to expose Penelope's relationship with Nova",
@@ -1338,7 +1338,7 @@
           {
             "key": "3",
             "value": {
-              "circumstance": "bar car, 101-115 minutes",
+              "circumstance": "dining_car, 101-115 minutes", 
               "action": "confronting Gregory about art fraud rumors",
               "events": [
                 "Hinted at suspicions about his connection to forgeries"
@@ -1348,7 +1348,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "lounge car bathroom, 116-123 minutes",
+              "circumstance": "lounge car bathroom, 116-123 minutes", 
               "action": "composing herself after confrontations",
               "events": [
                 "Murdered by Maxwell Porter",
@@ -1448,7 +1448,7 @@
           ]
         }
       },
-      "initial_location": "lounge_bathroom",
+      "initial_location": "lounge_bathroom", 
       "key_testimonies": {}
     },
     "nova_winchester": {
@@ -1457,7 +1457,7 @@
           "role": "Witness",
           "type": "Uninterested participant who observed key moments",
           "mystery_attributes": [
-            "Saw Gregory and Maxwell entering the lounge car shortly before the murder",
+            "Saw Gregory and Maxwell entering the dining_car shortly before the murder", 
             "Discovered blood flowing from the bathroom door"
           ]
         },
@@ -1465,7 +1465,7 @@
           {
             "key": "0",
             "value": {
-              "circumstance": "first class car seat, 15-90 minutes",
+              "circumstance": "first_class seat, 15-90 minutes", 
               "action": "working on fashion article",
               "events": [
                 "Reviewing Montreu Fashion Week notes"
@@ -1475,7 +1475,7 @@
           {
             "key": "1",
             "value": {
-              "circumstance": "lounge car, 91-95 minutes",
+              "circumstance": "dining_car, 91-95 minutes", 
               "action": "walking to dining car",
               "events": [
                 "Saw Penelope Valor arguing with Victoria Blackwood"
@@ -1485,18 +1485,18 @@
           {
             "key": "2",
             "value": {
-              "circumstance": "dining car, 95-120 minutes",
+              "circumstance": "dining_car, 95-120 minutes",
               "action": "ordering vodka tonic",
               "events": [
-                "Spotted Gregory and Maxwell (two suspicious men) entering the lounge car"
+                "Spotted Gregory and Maxwell (two suspicious men) entering the dining_car" 
               ]
             }
           },
           {
             "key": "3",
             "value": {
-              "circumstance": "lounge car, 121-123 minutes",
-              "action": "returning to first class",
+              "circumstance": "dining_car, 121-123 minutes", 
+              "action": "returning to first_class", 
               "events": [
                 "Discovered blood flowing from inside the bathroom door"
               ]
@@ -1505,7 +1505,7 @@
           {
             "key": "4",
             "value": {
-              "circumstance": "first class car seat, 124-present",
+              "circumstance": "first_class seat, 124-present", 
               "action": "working on her article",
               "events": [
                 "Fighting off exhaustion while reviewing fashion notes"
@@ -1601,14 +1601,14 @@
           ]
         }
       },
-      "initial_location": "first_class_car",
+      "initial_location": "first_class", 
       "key_testimonies": {
         "nova_sighting": {
-          "content": "Yeah, I saw two blokes enter the lounge car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.",
+          "content": "Yeah, I saw two blokes enter the dining_car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.", 
           "reveals": "testimony-two-men",
           "requires": ["murder_scene"],
           "state": "default",
-          "methods": ["direct_questioning", "mention_lounge_car"]
+          "methods": ["direct_questioning", "mention_dining_car"] 
         }
       }
     }
@@ -1663,8 +1663,8 @@
           }
         }
       },
-      "business_class_car_1": {
-        "name": "Business Class Car (Front)",
+      "business_class": { 
+        "name": "Business Class Car", 
         "description": "Upgraded seating for business travelers",
         "points_of_interest": {
           "eleanor_seat": {
@@ -1681,27 +1681,16 @@
           }
         }
       },
-      "bar_car": {
-        "name": "Bar Car",
-        "description": "Serving drinks and light refreshments",
+      "dining_car": { 
+        "name": "Dining/Lounge/Bar Car", 
+        "description": "Comfortable area for relaxation, socializing, drinks and light refreshments",
         "points_of_interest": {
           "corner_table": {
             "name": "Corner Table",
             "description": "Where Gregory and Maxwell had their final conversation",
             "evidence_items": [],
             "initial_state": "normal"
-          }
-        }
-      },
-      "business_class_car_2": {
-        "name": "Business Class Car (Rear)",
-        "description": "Additional upgraded seating for business travelers",
-        "points_of_interest": {}
-      },
-      "lounge_car": {
-        "name": "Lounge Car",
-        "description": "Comfortable area for relaxation and socializing",
-        "points_of_interest": {
+          },
           "central_area": {
             "name": "Central Seating Area",
             "description": "Where Victoria and Penelope had their heated argument",
@@ -1716,7 +1705,7 @@
           }
         }
       },
-      "first_class_car": {
+      "first_class": { 
         "name": "First Class Car",
         "description": "Luxurious accommodations for premium passengers",
         "points_of_interest": {
@@ -1740,7 +1729,7 @@
         "points_of_interest": {}
       }
     },
-    "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class_car_1", "bar_car", "business_class_car_2", "lounge_car", "first_class_car", "engine_room"]
+    "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class", "dining_car", "business_class", "dining_car", "first_class", "engine_room"] 
   },
   
   "constellation": {
@@ -1748,9 +1737,9 @@
       "fact-murder": {
         "type": "FACT",
         "category": "MAIN_MYSTERY",
-        "content": "Victoria Blackwood was found dead in the bathroom of the Lounge Car, appearing to have hanged herself with her scarf",
+        "content": "Victoria Blackwood was found dead in the bathroom of the Dining Car, appearing to have hanged herself with her scarf", 
         "discovered": true,
-        "location": "lounge_bathroom",
+        "location": "lounge_bathroom", 
         "time": 123,
         "characters": ["victoria_blackwood"]
       },
@@ -1773,7 +1762,7 @@
         "category": "MAIN_MYSTERY",
         "content": "Suicide note found beside Victoria",
         "discovered": false,
-        "location": "lounge_bathroom",
+        "location": "lounge_bathroom", 
         "time": 123,
         "characters": ["victoria_blackwood", "maxwell_porter"],
         "description": "A handwritten note on Victoria's personal stationery",
@@ -1789,7 +1778,7 @@
         "category": "MAIN_MYSTERY",
         "content": "Traces of sedative in bathroom sink",
         "discovered": false,
-        "location": "lounge_bathroom",
+        "location": "lounge_bathroom", 
         "time": 123,
         "characters": ["maxwell_porter"],
         "description": "Faint chemical residue in the sink drain",
@@ -1804,11 +1793,11 @@
         "category": "MINI_MYSTERY_A",
         "content": "Mira's photographs showing Maxwell before and after murder",
         "discovered": false,
-        "location": "business_class_car_1",
+        "location": "business_class", 
         "characters": ["mira_sanchez", "maxwell_porter", "gregory_crowe"],
         "description": "Digital photos on Mira's camera device",
         "hidden_details": [
-          "Shows Maxwell with Gregory entering lounge car shortly before murder",
+          "Shows Maxwell with Gregory entering dining_car shortly before murder", 
           "Captures Maxwell's agitated state",
           "Blurred image of someone fleeing the scene"
         ],
@@ -1819,7 +1808,7 @@
         "category": "MINI_MYSTERY_B",
         "content": "Financial records of Victoria's magazine",
         "discovered": false,
-        "location": "victoria_compartment",
+        "location": "victoria_compartment", 
         "characters": ["victoria_blackwood"],
         "description": "Folder containing financial statements",
         "hidden_details": [
@@ -1834,7 +1823,7 @@
         "category": "MAIN_MYSTERY",
         "content": "Partially burned medical packaging in kitchen incinerator",
         "discovered": false,
-        "location": "incinerator",
+        "location": "incinerator", 
         "characters": ["maxwell_porter"],
         "description": "Charred remains of a sedative ampule packaging",
         "hidden_details": [
@@ -1846,7 +1835,7 @@
       "testimony-two-men": {
         "type": "TESTIMONY",
         "category": "MAIN_MYSTERY",
-        "content": "Nova saw two mysterious men entering the lounge car before the murder",
+        "content": "Nova saw two mysterious men entering the dining_car before the murder", 
         "discovered": false,
         "characters": ["nova_winchester", "maxwell_porter", "gregory_crowe"]
       },
@@ -1902,7 +1891,7 @@
       "lead-two-men": {
         "type": "LEAD",
         "category": "MAIN_MYSTERY",
-        "content": "Who were the two men Nova saw entering the lounge car?",
+        "content": "Who were the two men Nova saw entering the dining_car?", 
         "discovered": false,
         "characters": ["maxwell_porter", "gregory_crowe"]
       },
@@ -1932,7 +1921,7 @@
         "category": "MINI_MYSTERY_A",
         "content": "Mira's locked camera device",
         "discovered": false,
-        "location": "business_class_car_1",
+        "location": "business_class", 
         "characters": ["mira_sanchez"],
         "blocking_access": ["evidence-mira-photos"],
         "solution": "Password hint found in her notebook ('First cover story's month+year')",
@@ -2120,7 +2109,7 @@
       "phase_1": {
         "character": null,
         "trigger": "fact-murder AND evidence-suicide-note AND lead-suicide-question AND lead-two-men",
-        "description": "Maxwell begins pacing nervously in the second class car"
+        "description": "Maxwell begins pacing nervously in the second class car" 
       },
       "phase_2": {
         "character": null,

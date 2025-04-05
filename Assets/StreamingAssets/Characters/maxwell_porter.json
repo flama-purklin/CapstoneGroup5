@@ -23,7 +23,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "business class corridor, 41-80 minutes",
+          "circumstance": "business_class corridor, 41-80 minutes",
           "action": "observing passengers while sketching",
           "events": [
             "Noticed Gideon taking notes and watching Victoria"
@@ -33,7 +33,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "dining car, 81-110 minutes",
+          "circumstance": "dining_car, 81-110 minutes",
           "action": "drinking coffee alone",
           "events": [
             "Observed Victoria speaking with Gideon",
@@ -44,7 +44,7 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "bar car, 111-115 minutes",
+          "circumstance": "dining_car, 111-115 minutes",
           "action": "meeting with Gregory Crowe",
           "events": [
             "Heard Gregory mention Victoria showing art photos to investigator",
@@ -55,7 +55,7 @@
       {
         "key": "4",
         "value": {
-          "circumstance": "lounge car, 116-119 minutes",
+          "circumstance": "dining_car, 116-119 minutes",
           "action": "entering with Gregory before separating",
           "events": [
             "Seen by Nova",

@@ -37,7 +37,16 @@ public class CarDetection : MonoBehaviour
             CarVisibility newCar = other.GetComponent<CarVisibility>();
             if (newCar != null && newCar != currentCar)
             {
+                // --- DIAGNOSTIC LOGGING START ---
+                Debug.Log($"[CarDetection OnTriggerEnter @ {Time.frameCount}] Player entered trigger for NEW car: {newCar.gameObject.name}");
+                // --- DIAGNOSTIC LOGGING END ---
                 UpdateCurrentCar(newCar);
+            }
+            else if (newCar != null && newCar == currentCar)
+            {
+                 // --- DIAGNOSTIC LOGGING START ---
+                 Debug.Log($"[CarDetection OnTriggerEnter @ {Time.frameCount}] Player entered trigger for SAME car: {newCar.gameObject.name}");
+                 // --- DIAGNOSTIC LOGGING END ---
             }
         }
     }
@@ -62,9 +71,22 @@ public class CarDetection : MonoBehaviour
 
             if (newCar && newCar != currentCar)
             {
+                // --- DIAGNOSTIC LOGGING START ---
+                Debug.Log($"[CarDetection DetectCar @ {Time.frameCount}] Raycast detected NEW car below player: {newCar.gameObject.name}");
+                // --- DIAGNOSTIC LOGGING END ---
                 SwitchToCar(newCar);
             }
+            // Optional: Log if raycast hits but it's the same car (can be noisy)
+            // else if (newCar && newCar == currentCar)
+            // {
+            //     Debug.Log($"[CarDetection DetectCar @ {Time.frameCount}] Raycast detected SAME car below player: {newCar.gameObject.name}");
+            // }
         }
+        // Optional: Log if raycast misses (can be noisy)
+        // else
+        // {
+        //     Debug.Log($"[CarDetection DetectCar @ {Time.frameCount}] Raycast missed train layer.");
+        // }
     }
 
     private void SwitchToCar(CarVisibility newCar)

@@ -13,7 +13,7 @@
       {
         "key": "0",
         "value": {
-          "location": "first_class_car",
+          "location": "first_class",
           "action": "networking with art collectors",
           "events": [
             "Noticed Gideon observing Victoria",
@@ -24,7 +24,7 @@
       {
         "key": "1",
         "value": {
-          "circumstance": "corridor near lounge car, 51-80 minutes",
+          "circumstance": "corridor near dining_car, 51-80 minutes",
           "action": "private conversation with Eleanor about an upcoming exhibition",
           "events": [
             "Repeatedly steered conversation to forgery detection techniques"
@@ -34,7 +34,7 @@
       {
         "key": "2",
         "value": {
-          "circumstance": "dining car, 81-110 minutes",
+          "circumstance": "dining_car, 81-110 minutes",
           "action": "reviewing documents while observing other passengers",
           "events": [
             "Noticed Victoria's argument with Penelope",
@@ -45,7 +45,7 @@
       {
         "key": "3",
         "value": {
-          "circumstance": "bar car, 111-115 minutes",
+          "circumstance": "dining_car, 111-115 minutes",
           "action": "meeting with Maxwell Porter",
           "events": [
             "Mentioned 'Victoria showing art photos to the investigator'",
@@ -56,7 +56,7 @@
       {
         "key": "4",
         "value": {
-          "circumstance": "lounge car, 116-119 minutes",
+          "circumstance": "dining_car, 116-119 minutes",
           "action": "entering with Maxwell before separating",
           "events": [
             "Seen by Nova entering with Maxwell",
@@ -67,7 +67,7 @@
       {
         "key": "5",
         "value": {
-          "circumstance": "dining car, 120-present",
+          "circumstance": "dining_car, 120-present",
           "action": "publicly conversing with art collectors",
           "events": [
             "Created perfect alibi during the time of murder"
@@ -167,10 +167,10 @@
       ]
     }
   },
-  "initial_location": "first_class_car",
+  "initial_location": "first_class",
   "key_testimonies": {
     "gregory_alibi": {
-      "content": "At the time in question, I was in the dining car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
+      "content": "At the time in question, I was in the dining_car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
       "reveals": "lead-gregory-alibi",
       "requires": [
         "murder_time"
