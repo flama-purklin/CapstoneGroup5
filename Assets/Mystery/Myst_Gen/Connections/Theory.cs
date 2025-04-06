@@ -38,6 +38,7 @@ public class Theory : Connection, IPointerDownHandler
     public void KillYourself()
     {
         //remove from any references of existing theories, then kill yourself
+        Debug.Log("Theory has been eliminated");
         Destroy(gameObject);
     }
 
@@ -56,23 +57,15 @@ public class Theory : Connection, IPointerDownHandler
         //if this is the second click received, set the endObj and fully place
         else
         {
-            if (node.gameObject != startObj)
-            {
-                endObj = node.gameObject;
-                placing = false;
+            endObj = node.gameObject;
+            placing = false;
 
-                //place the 
-                control.TheoryPlaced();
+            //place the 
+            control.TheoryPlaced();
 
-                //check whether the theory has a real connection associated with it
-                StartCoroutine(TheoryEvaluate());
-                Debug.Log("endObj chosen");
-            }
-            else
-            {
-                Debug.Log("Can't connect node to itself");
-            }
-            
+            //check whether the theory has a real connection associated with it
+            StartCoroutine(TheoryEvaluate());
+            Debug.Log("endObj chosen");
         }
     }
 
@@ -97,16 +90,29 @@ public class Theory : Connection, IPointerDownHandler
         {
             //correct animation
             Debug.Log("A real connection was found, theory correct!");
-            realConn.confirmed = true;
-            realConn.DiscoveryCheck();
-
-            KillYourself();
+            animControl.SetTrigger("confirm");
+            
         }
         else
         {
             //incorrect animation
             Debug.Log("This theory was a bust");
+            animControl.SetTrigger("bust");
         }
+    }
+
+    public void ConfirmFinish()
+    {
+        realConn.confirmed = true;
+        realConn.DiscoveryCheck();
+
+        KillYourself();
+    }
+
+    public void BustFinish()
+    {
+        //TODO - might want to add to a list of disproven theories, so the player doesn't make the same mistake twice
+        KillYourself();
     }
 
     //call this to make the connection stretch between starting point and mouse location

@@ -4,7 +4,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using NUnit.Framework.Constraints;
 
 public enum TheoryMode
 {
@@ -38,6 +37,7 @@ public class NodeControl : MonoBehaviour
     [SerializeField] Button addTheoryButton;
     [SerializeField] Button removeTheoryButton;
     [SerializeField] Button simButton;
+    [SerializeField] TMP_Text theoryNotif;
 
 
     [SerializeField] float scrollSpeed = 2000f;
@@ -50,6 +50,7 @@ public class NodeControl : MonoBehaviour
     public TheoryMode theoryMode = TheoryMode.None;
     public GameObject currentTheory;
     public List<GameObject> untestedTheories;
+    Coroutine currentNotif;
 
     string baseInstructions;
 
@@ -334,9 +335,49 @@ public class NodeControl : MonoBehaviour
 
     public void TheoryPlaced()
     {
-        untestedTheories.Add(currentTheory);
-        currentTheory = null;
+        if (TheoryVerify())
+        {
+            untestedTheories.Add(currentTheory);
+            currentTheory = null;
+        }
         TheoryAdd();
+    }
+
+    public bool TheoryVerify()
+    {
+        Theory theoryTest = currentTheory.GetComponent<Theory>();
+        //make sure that the starting and endingPos are not equal
+        if (theoryTest.startObj == theoryTest.endObj)
+        {
+            NotifCall("Theory cannot connect to itself", Color.red);
+            return false;
+        }
+
+        //make new list of all connections to check, include connections for the startObj of currenttheory
+        List<GameObject> allConnects = new List<GameObject>(untestedTheories);
+        allConnects.AddRange(theoryTest.startObj.GetComponent<VisualNode>().connections);
+        //make sure that no theory or connection currently exists with the same node pair
+        foreach (GameObject connect in allConnects)
+        {
+            Connection connectTest = connect.GetComponent<Connection>();
+
+            //don't check this one if the connection is not a theory and not confirmed
+            if (!(connectTest is Theory || connectTest.confirmed))
+            {
+                Debug.Log("Skipping this one");
+                continue;
+            }
+
+            if ((theoryTest.startObj == connectTest.startObj || theoryTest.startObj == connectTest.endObj) && 
+                (theoryTest.endObj == connectTest.startObj || theoryTest.endObj == connectTest.endObj))
+            {
+                NotifCall("Connection or theory already exists", Color.red);
+                return false;
+            }
+        }
+
+        NotifCall("New Theory Added!", Color.green);
+        return true;
     }
 
     //called by the removal butotn
@@ -390,5 +431,23 @@ public class NodeControl : MonoBehaviour
 
         theoryMode = TheoryMode.None;
         instructions.text = baseInstructions;
+    }
+
+    private void NotifCall(string message, Color fill)
+    {
+        if (currentNotif != null)
+            StopCoroutine(currentNotif);
+        currentNotif = StartCoroutine(NotifActivate(message, fill));
+    }
+
+    IEnumerator NotifActivate(string message, Color fill)
+    {
+        theoryNotif.color = fill;
+        theoryNotif.text = message;
+
+        yield return new WaitForSecondsRealtime(3f);
+
+        theoryNotif.text = string.Empty;
+        currentNotif = null;
     }
 }

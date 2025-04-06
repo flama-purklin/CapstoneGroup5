@@ -9,6 +9,7 @@ public class Connection : MonoBehaviour
     [SerializeField] protected Image visualConn;
     [SerializeField] protected TMP_Text connectionDesc;
     [SerializeField] protected RectTransform rect;
+    [SerializeField] protected Animator animControl;
 
     [Header("Object Refs")]
     public GameObject startObj;
