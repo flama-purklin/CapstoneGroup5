@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2400446122382639083}
   - component: {fileID: 3520087291072529773}
   - component: {fileID: 1013774469016227893}
+  - component: {fileID: 3700850798277464663}
   m_Layer: 5
   m_Name: Theory
   m_TagString: Untagged
@@ -61,11 +62,34 @@ MonoBehaviour:
   visualConn: {fileID: 274554523861627787}
   connectionDesc: {fileID: 0}
   rect: {fileID: 4069918222062215979}
+  animControl: {fileID: 3700850798277464663}
   startObj: {fileID: 0}
   endObj: {fileID: 0}
   type: 
   discovered: 0
   confirmed: 0
+--- !u!95 &3700850798277464663
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2293038674493858465}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a87780c4d0044b6449acd0c18d70c7df, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 2
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6490632379211594454
 GameObject:
   m_ObjectHideFlags: 0

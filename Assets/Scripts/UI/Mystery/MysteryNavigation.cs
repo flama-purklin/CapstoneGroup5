@@ -43,7 +43,7 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
     void OnDisable()
     {
         //Camera.main.orthographic = false;
-        Camera.main.transform.localPosition = initCamPos;
+        //Camera.main.transform.localPosition = initCamPos;
         //Time.timeScale = 1f;
         Debug.Log("Mystery Disabled");
     }
