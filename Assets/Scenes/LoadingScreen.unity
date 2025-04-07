@@ -1246,7 +1246,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1424623595}
   - component: {fileID: 1424623596}
-  - component: {fileID: 1424623597}
   m_Layer: 0
   m_Name: LLM
   m_TagString: Untagged
@@ -1286,14 +1285,14 @@ MonoBehaviour:
   port: 13333
   numThreads: -1
   gpuAcceleration: 1
-  _numGPULayers: 32
+  _numGPULayers: 16
   debug: 0
-  parallelPrompts: 6
+  parallelPrompts: 3
   dontDestroyOnLoad: 1
-  contextSize: 40000
+  contextSize: 12288
   batchSize: 1024
-  model: Ministral-3b-instruct.Q4_K_M.gguf
-  chatTemplate: mistral chat
+  model: qwen2-0_5b-instruct-q4_k_m.gguf
+  chatTemplate: chatml
   lora: 
   loraWeights: 
   flashAttention: 0
@@ -1303,22 +1302,9 @@ MonoBehaviour:
   SSLKey: 
   SSLKeyPath: 
   minContextLength: 0
-  maxContextLength: 131072
+  maxContextLength: 32768
   embeddingsOnly: 0
-  embeddingLength: 4096
---- !u!114 &1424623597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1424623593}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ef3ffa6f95d36e48a9d347bc13a5b89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoConfigureForAllCharacters: 1
+  embeddingLength: 896
 --- !u!1 &1432268535
 GameObject:
   m_ObjectHideFlags: 0
@@ -1439,8 +1425,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mysteryFiles: MysteryStorage
-  _verboseLogging: 0
-  _characterExtractor: {fileID: 0}
 --- !u!1 &1545545251
 GameObject:
   m_ObjectHideFlags: 0

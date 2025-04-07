@@ -118,14 +118,6 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator MovementState()
     {
-        // Check if all components are valid
-        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh)
-        {
-            Debug.LogWarning($"NavMeshAgent not ready for {gameObject.name} - returning to idle state");
-            StartCoroutine(IdleState());
-            yield break;
-        }
-        
         //Debug.Log("Now Moving");
         //calculate a random point in a 20 meter radius
         movementVector = Random.insideUnitSphere * maxMovementDist;
@@ -133,51 +125,24 @@ public class NPCMovement : MonoBehaviour
         //find a place in the actual navmesh that works and set destination
         Vector3 finalMovement = movementVector + transform.position;
         NavMeshHit hit;
-        
-        // Make sure the position is on a valid NavMesh
-        if (NavMesh.SamplePosition(finalMovement, out hit, maxMovementDist, 1))
+        NavMesh.SamplePosition(finalMovement, out hit, maxMovementDist, 1);
+
+        //begin navigation
+        agent.isStopped = false;
+        agent.SetDestination(hit.position);
+
+        //update anim
+        animator.SetBool("moving", true);
+        animManager.ApplyAnim();
+
+
+        while (agent.remainingDistance > agent.stoppingDistance)
         {
-            //begin navigation
-            agent.isStopped = false;
-            agent.SetDestination(hit.position);
-
-            //update anim
-            animator.SetBool("moving", true);
-            animManager.ApplyAnim();
-
-            // Check for path validity
-            if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
-            {
-                Debug.LogWarning($"Invalid path for {gameObject.name} - returning to idle state");
-                StartCoroutine(IdleState());
-                yield break;
-            }
-
-            float timeout = 0f;
-            float maxTime = 10f; // Maximum time to try reaching destination
-
-            while (agent.remainingDistance > agent.stoppingDistance && timeout < maxTime)
-            {
-                //break out if the player enters dialogue range
-                if (Vector3.Distance(player.transform.position, transform.position) < dialogueDist)
-                    break;
-                else
-                {
-                    timeout += Time.fixedDeltaTime;
-                    yield return new WaitForFixedUpdate();
-                }
-                
-                // Break if the path becomes invalid
-                if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
-                {
-                    Debug.LogWarning($"Path became invalid for {gameObject.name}");
-                    break;
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Could not find valid NavMesh position for {gameObject.name}");
+            //break out if the player enters dialogue range
+            if (Vector3.Distance(player.transform.position, transform.position) < dialogueDist)
+                break;
+            else
+                yield return new WaitForFixedUpdate();
         }
 
         StartCoroutine(IdleState());
