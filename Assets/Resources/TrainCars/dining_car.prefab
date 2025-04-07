@@ -1624,7 +1624,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 618812577261481968, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_Name
-      value: Train Car (Demo Pass Common) Variant
+      value: dining_car
       objectReference: {fileID: 0}
     - target: {fileID: 2076642007570970278, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_NavMeshData
@@ -1640,15 +1640,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c4d39bcfb3dee5a4f99b4af52e3131c7, type: 2}
     - target: {fileID: 6890124682280441783, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -40.34133
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6890124682280441783, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0000009536743
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6890124682280441783, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.861223
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6890124682280441783, guid: 0f7642a396c129f46a7b73f3fdc36921, type: 3}
       propertyPath: m_LocalRotation.w

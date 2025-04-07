@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEngine.UI;
+using TMPro;
 
 public class TrainCarSaver : MonoBehaviour
 {
@@ -8,10 +11,13 @@ public class TrainCarSaver : MonoBehaviour
     public string savePath = "Assets/TrainAssets/Jsons/"; //Default path.
     public int maxRows = 5; // Settable max rows
     public int maxColumns = 15; // Settable max columns
+    public TMP_InputField fileNameField, pathField;
 
     void Start()
     {
         //SaveTrainCarLayout();
+        fileNameField.onValueChanged.AddListener(setFileName);
+        pathField.onValueChanged.AddListener(setPath);
     }
 
     public void setRows(int x) { maxRows = x; }
@@ -104,6 +110,10 @@ public class TrainCarSaver : MonoBehaviour
 
         // Save JSON to file
         //string filePath = Path.Combine(Application.persistentDataPath, saveFileName);
+        if (!saveFileName.EndsWith(".json", System.StringComparison.OrdinalIgnoreCase))
+        {
+            saveFileName += ".json"; // Add extension if not specified
+        }
         string filePath = Path.Combine(savePath, saveFileName);
         File.WriteAllText(filePath, json);
 

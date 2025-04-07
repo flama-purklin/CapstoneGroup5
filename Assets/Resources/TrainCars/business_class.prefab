@@ -773,11 +773,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1527826246009558900, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_Name
-      value: Train Car (Demo Pass Common)
+      value: business_class
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -38.682705
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.y
@@ -785,7 +785,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -19.067284
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalRotation.w

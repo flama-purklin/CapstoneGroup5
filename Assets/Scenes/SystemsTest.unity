@@ -2304,7 +2304,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 377154505}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a37c62490e3de8a49905a1ec6d9fdb86, type: 3}
   m_Name: 
@@ -3597,10 +3597,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceFolderPath: TrainCars
-  shellCarPrefabName: shell_car
+  shellCarPrefabName: shell_car_new
+  jsonFolderPath: TrainJsons
+  shellCarJsonName: shell_car
   spawnPoint: {fileID: 1339278003}
-  carSpacing: 16
-  trainParent: {fileID: 1221452152}
+  carSpacing: 16.5
+  trainParent: {fileID: 2072095370}
+  trainManager: {fileID: 2072095371}
+  spawnFromPrefab: 1
 --- !u!1 &649272323
 GameObject:
   m_ObjectHideFlags: 0
@@ -6648,7 +6652,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 125.65
+  m_fontSize: 125.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7536,7 +7540,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.2
+  m_fontSize: 23.15
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -8069,7 +8073,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.2
+  m_fontSize: 23.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11594,9 +11598,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: loader
+      value: 
+      objectReference: {fileID: 2072095368}
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: carSpacing
+      value: 16.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: spawnPoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1339278003}
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: cameraPrefab
       value: 
@@ -11606,13 +11618,77 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 114889852}
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: spawnWithJsons
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: carPrefabs.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: gridRows
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: roofPrefab
+      value: 
+      objectReference: {fileID: 7959890088601910980, guid: 5a35318c429110e41943b901b892b957, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: gridColumns
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarDepth
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: floorMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: c4b89cd4a638c0a43941cba576865431, type: 2}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarHeight
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarLength
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: backWallPrefab
+      value: 
+      objectReference: {fileID: 2783179887702738703, guid: 72f94fd4b87e0a145a7bb172296a74b7, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: leftWallPrefab
+      value: 
+      objectReference: {fileID: 8781483659765563545, guid: 59b01bd572fc9754fa36cd59e4d006a7, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: frontWallPrefab
+      value: 
+      objectReference: {fileID: 4905155126863232419, guid: 08406a9aba9d1754384bbcac131f28d6, type: 3}
+    - target: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: spawnWithWallPrefabs
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5507314032791782180, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: m_Name
       value: TrainManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: jsonFile
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: railCarRandomizer
+      value: 
+      objectReference: {fileID: 2072095369}
     - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.2
@@ -11653,8 +11729,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -11662,6 +11737,44 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 641991973}
   m_SourcePrefab: {fileID: 100100000, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+--- !u!114 &2072095368 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+  m_PrefabInstance: {fileID: 2072095367}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641991968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2072095369 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+  m_PrefabInstance: {fileID: 2072095367}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641991968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c9e4e32fd4b9446850b7061a5f9339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2072095370 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8547632229619857845, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+  m_PrefabInstance: {fileID: 2072095367}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2072095371 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+  m_PrefabInstance: {fileID: 2072095367}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 641991968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec6c1b02beee335408515e451c65b0f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2114658576
 GameObject:
   m_ObjectHideFlags: 0
@@ -12165,6 +12278,10 @@ PrefabInstance:
     - target: {fileID: 7441357142540035523, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7441357142540035523, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

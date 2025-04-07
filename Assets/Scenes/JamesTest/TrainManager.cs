@@ -1,7 +1,9 @@
 using NUnit.Framework.Internal;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using static TrainManager;
 
 public class TrainManager : MonoBehaviour
@@ -51,16 +53,21 @@ public class TrainManager : MonoBehaviour
     public GameObject cameraPrefab;
     public GameObject playerInstance;
     public GameObject cameraInstance;
-    
+
+    public bool spawnOnStart = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (spawnPoint == null) { spawnPoint = this.transform; }
 
-        tempPosition = spawnPoint.position; // Use the stored position
+        tempPosition = spawnPoint.position; // Use the stored position. (useless) set in spawn cars
 
-        SpawnCars();
+        if (spawnOnStart)
+        {
+            SpawnCars();
+        }
     }
 
     // Method to spawn cars
@@ -84,6 +91,7 @@ public class TrainManager : MonoBehaviour
                 carInstance.transform.rotation = Quaternion.Euler(0, 180, 0); // Apply rotation as if it were a prefab (used since spawn goes from + to neg x and camera wierd)
                 CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
                 carSelected.CarDeselected();
+                BakeNavmeshAtRuntime(carInstance);
                 PositionAndStoreTrainCar(carInstance);
             }
         }
@@ -94,6 +102,7 @@ public class TrainManager : MonoBehaviour
                 GameObject carInstance = Instantiate(prefab, tempPosition, Quaternion.Euler(0, 180, 0)); //Included 180 rotation
                 CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
                 carSelected.CarDeselected();
+                //BakeNavmeshAtRuntime(carInstance);
                 PositionAndStoreTrainCar(carInstance);
             }
         }
@@ -101,9 +110,8 @@ public class TrainManager : MonoBehaviour
         // Spawn player if cars exists, else spawn at train manager pos
         if (trainCarList.Count > 0)
         {
-            SpawnPlayerAndCamera(trainCarList[0]);
+            //SpawnPlayerAndCamera(trainCarList[0]);
         }
-        else { }
     }
 
     // Abstracted so whether spawning from json or prefab they are added to the train manager properly
@@ -124,6 +132,7 @@ public class TrainManager : MonoBehaviour
         tempPosition += Vector3.left * carSpacing; // Spacing, left is -x?
     }
 
+    // No, this stinks, use the point of intrest system to be made soon
     // Method to spawn the player and camera in the first car
     private void SpawnPlayerAndCamera(TrainCar car)
     {
@@ -136,6 +145,7 @@ public class TrainManager : MonoBehaviour
         //cameraInstance = Instantiate(cameraPrefab, new Vector3(-698.669983f, -385.386841f, -8.52000046f), Quaternion.Euler(30.0000076f, 0f, 0f));
     }
 
+    // No, this stinks, use the point of intrest system to be made soon
     // Method to spawn the player and camera at manager location
     public void SpawnPlayerAndCamera()
     {
@@ -155,6 +165,23 @@ public class TrainManager : MonoBehaviour
             car.npcsInCar = car.trainCar.GetComponent<CarCharacters>().GetCurrCharacters();
             car.isSelected = car.trainCar.GetComponent<CarVisibility>().selected;
         }
+    }
+
+    // Bakes navmesh for each car as spawned. Needed since runtime baked navmeshes arnt saved.
+    public void BakeNavmeshAtRuntime(GameObject carInstance) 
+    {
+        // yes, the following is called in each nested script. A bit of a compute waste...
+        GameObject floor = carInstance.transform.Find("RailCarFloor")?.gameObject;
+        if (floor == null) 
+        {
+            Debug.LogWarning($"Floor instance not found for {carInstance.name} in script TrainManager.cs... Navmesh baking failed!");
+            return;
+        }
+        NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
+        navMeshSurface.collectObjects = CollectObjects.Children;
+        navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
+        navMeshSurface.layerMask = LayerMask.GetMask("Default");
+        navMeshSurface.BuildNavMesh();
     }
 
 }

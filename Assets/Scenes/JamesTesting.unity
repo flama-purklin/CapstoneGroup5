@@ -4306,19 +4306,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1402295053}
-        m_TargetAssemblyTypeName: TrainCarSaver, Assembly-CSharp
-        m_MethodName: setFileName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -5070,19 +5058,7 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1402295053}
-        m_TargetAssemblyTypeName: TrainCarSaver, Assembly-CSharp
-        m_MethodName: setFileName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -11290,7 +11266,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2421847435503990288, guid: d9725b410ed56bc449e8e963302edfcc, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6155365355276109784, guid: d9725b410ed56bc449e8e963302edfcc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11345,6 +11321,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 707991437}
     m_Modifications:
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: pathField
+      value: 
+      objectReference: {fileID: 885307976}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: fileNameField
+      value: 
+      objectReference: {fileID: 983800571}
     - target: {fileID: 1598809370075816630, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1045
@@ -11493,9 +11477,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2421847435503990288, guid: d9725b410ed56bc449e8e963302edfcc, type: 3}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: spawnOnStart
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: cameraInstance
       value: 
       objectReference: {fileID: 1228835326}
+    - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: carJsons.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: 'carJsons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4900000, guid: f1b2d5565664f194fa900cda2de43858, type: 3}
+    - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: prefabSavePath
+      value: Assets/Resources/TrainCars
+      objectReference: {fileID: 0}
     - target: {fileID: 6155875150888036045, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: m_Name
       value: TrainManager

@@ -887,7 +887,7 @@ PrefabInstance:
       objectReference: {fileID: 23800000, guid: 1b058f47fae6c96438d293d9623cf635, type: 2}
     - target: {fileID: 1527826246009558900, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_Name
-      value: Train Car (Demo Shell) Variant
+      value: first_class
       objectReference: {fileID: 0}
     - target: {fileID: 4699350866252081665, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -895,7 +895,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: cf10f84fe1f714b2ca589a07a26c7499, type: 2}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -37.60971
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.y
@@ -903,7 +903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.061827
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4772470654067273523, guid: 3ac6ce531eac33d4ca02a183bf6a0671, type: 3}
       propertyPath: m_LocalRotation.w

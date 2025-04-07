@@ -351,7 +351,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1992590858686788210, guid: b6198c1a4bc27d7449303f38fc30d628, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -37.60971
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1992590858686788210, guid: b6198c1a4bc27d7449303f38fc30d628, type: 3}
       propertyPath: m_LocalPosition.y
@@ -359,7 +359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1992590858686788210, guid: b6198c1a4bc27d7449303f38fc30d628, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.061827
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1992590858686788210, guid: b6198c1a4bc27d7449303f38fc30d628, type: 3}
       propertyPath: m_LocalRotation.w
@@ -411,7 +411,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5525863906666056245, guid: b6198c1a4bc27d7449303f38fc30d628, type: 3}
       propertyPath: m_Name
-      value: Train Car (Demo Shell)
+      value: shell_car
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

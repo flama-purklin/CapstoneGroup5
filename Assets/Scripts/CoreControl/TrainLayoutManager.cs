@@ -9,7 +9,12 @@ public class TrainLayoutManager : MonoBehaviour
     [Tooltip("The subfolder within Assets/Resources where train car prefabs are located (e.g., 'TrainCars').")]
     public string resourceFolderPath = "TrainCars"; 
     [Tooltip("The exact name of the fallback/shell prefab (without .prefab extension).")]
-    public string shellCarPrefabName = "shell_car"; 
+    public string shellCarPrefabName = "shell_car";
+    // Added by James, for future use
+    [Tooltip("The subfolder within Assets/Resources where train car jsons are located (e.g., 'TrainJsons').")]
+    public string jsonFolderPath = "TrainJsons";
+    [Tooltip("The exact name of the fallback/shell json (without .json extension).")]
+    public string shellCarJsonName = "shell";
 
     [Header("Spawning Configuration")]
     [Tooltip("The starting point for the first car. Assign an empty GameObject transform.")]
@@ -17,7 +22,10 @@ public class TrainLayoutManager : MonoBehaviour
     [Tooltip("Distance between the centers of spawned cars.")]
     public float carSpacing = 25f;
     [Tooltip("Optional: Parent transform for spawned cars to keep hierarchy clean.")]
-    public Transform trainParent; 
+    public Transform trainParent;
+    // Added by James, I know its not pretty
+    public TrainManager trainManager; // Should have couroutine to find if not set in editor
+    public bool spawnFromPrefab = true; // If false will spawn from json files
 
     private GameObject shellCarPrefab; // Cached reference to the loaded fallback prefab
     private bool hasBuiltTrain = false;
@@ -93,9 +101,10 @@ public class TrainLayoutManager : MonoBehaviour
         List<string> layoutOrder = GameControl.GameController.coreMystery.Environment.LayoutOrder;
         if (layoutOrder.Count == 0)
         {
-             Debug.LogWarning("TrainLayoutManager: Layout order in mystery JSON is empty. No train cars will be spawned.", this);
-             return;
+            Debug.LogWarning("TrainLayoutManager: Layout order in mystery JSON is empty. No train cars will be spawned.", this);
+            return;
         }
+        else { Debug.Log("Parsed Train Layout: " + layoutOrder.ToString()); }
 
         // Initialize spawning position and rotation
         Vector3 currentSpawnPosition = spawnPoint.position;
@@ -106,70 +115,180 @@ public class TrainLayoutManager : MonoBehaviour
         // Loop through the layout order defined in the JSON
         for (int i = 0; i < layoutOrder.Count; i++)
         {
-            string carKey = layoutOrder[i];
-            GameObject prefabToLoad = null;
-            // Construct the path within the Resources folder (e.g., "TrainCars/first_class")
-            string resourcePath = Path.Combine(resourceFolderPath, carKey);
-
-            // Try loading the specific prefab based on the JSON key
-            prefabToLoad = Resources.Load<GameObject>(resourcePath);
-
-            // Determine which prefab to actually instantiate
-            GameObject prefabToSpawn;
-            if (prefabToLoad != null)
+            if (spawnFromPrefab)
             {
-                 // Specific prefab found, use it
-                 prefabToSpawn = prefabToLoad;
-                 Debug.Log($"  Spawning car {i + 1}: Key='{carKey}', Loaded Prefab='{prefabToSpawn.name}' from Resources/{resourcePath}");
-            }
-            else 
-            {
-                // Specific prefab not found, use the pre-loaded fallback shell
-                prefabToSpawn = shellCarPrefab; 
-                Debug.LogWarning($"  Spawning car {i + 1}: Key='{carKey}' not found at Resources/{resourcePath}. Using fallback Shell Prefab ('{shellCarPrefab?.name ?? "NULL"}').");
-            }
+                trainManager.spawnWithJsons = false;    // This is set more times than needs to be but idc
 
-            // Instantiate the chosen prefab (ensure it's not null)
-            if (prefabToSpawn != null)
-            {
-                GameObject carInstance = Instantiate(prefabToSpawn, currentSpawnPosition, spawnRotation);
-                
-                // Parent the instance if a parent transform is assigned
-                if (trainParent != null) 
+                string carKey = layoutOrder[i];
+                GameObject prefabToLoad = null;
+                // Construct the path within the Resources folder (e.g., "TrainCars/first_class")
+                string resourcePath = Path.Combine(resourceFolderPath, carKey);
+
+                // Try loading the specific prefab based on the JSON key
+                prefabToLoad = Resources.Load<GameObject>(resourcePath);
+
+                // Determine which prefab to actually instantiate
+                GameObject prefabToSpawn;
+                if (prefabToLoad != null)
                 {
-                    carInstance.transform.SetParent(trainParent);
-                }
-                
-                // Name the instance clearly for easier debugging in the hierarchy
-                carInstance.name = $"TrainCar_{i}_{carKey}";
-
-                // --- Calculate next position based on the actual bounds of the spawned car ---
-                float carLength = carSpacing; // Use configured spacing as a fallback
-                Collider carCollider = carInstance.GetComponent<Collider>(); // Get the main collider
-
-                if (carCollider != null)
-                {
-                    // Use the collider's bounds size along the X-axis for accurate length
-                    carLength = carCollider.bounds.size.x;
-                    // Optional: Add a tiny buffer if needed for visual separation, e.g., carLength += 0.01f;
-                    Debug.Log($"  Car {i + 1} ('{carKey}') actual length from Collider: {carLength}");
+                    // Specific prefab found, use it
+                    prefabToSpawn = prefabToLoad;
+                    Debug.Log($"  Spawning car {i + 1}: Key='{carKey}', Loaded Prefab='{prefabToSpawn.name}' from Resources/{resourcePath}");
                 }
                 else
                 {
-                     Debug.LogWarning($"  Car {i + 1} ('{carKey}') has no Collider component. Falling back to configured carSpacing ({carSpacing}) for positioning. This might cause gaps/overlaps.");
+                    // Specific prefab not found, use the pre-loaded fallback shell
+                    prefabToSpawn = shellCarPrefab;
+                    Debug.LogWarning($"  Spawning car {i + 1}: Key='{carKey}' not found at Resources/{resourcePath}. Using fallback Shell Prefab ('{shellCarPrefab?.name ?? "NULL"}').");
                 }
 
-                // Update the position for the next car using the calculated or fallback length
-                currentSpawnPosition += Vector3.right * carLength;
+                // Instantiate the chosen prefab (ensure it's not null)
+                if (prefabToSpawn != null)
+                {
+                    // Will be using "TrainManager.cs" for spawning to ensure central access
+
+                    /*                    GameObject carInstance = Instantiate(prefabToSpawn, currentSpawnPosition, spawnRotation);
+
+                                        // Parent the instance if a parent transform is assigned
+                                        if (trainParent != null)
+                                        {
+                                            carInstance.transform.SetParent(trainParent);
+                                        }
+
+                                        // Name the instance clearly for easier debugging in the hierarchy
+                                        carInstance.name = $"TrainCar_{i}_{carKey}";
+
+                                        // --- Calculate next position based on the actual bounds of the spawned car ---
+                                        float carLength = carSpacing; // Use configured spacing as a fallback
+                                        Collider carCollider = carInstance.GetComponent<Collider>(); // Get the main collider
+
+                                        if (carCollider != null)
+                                        {
+                                            // Use the collider's bounds size along the X-axis for accurate length
+                                            carLength = carCollider.bounds.size.x;
+                                            // Optional: Add a tiny buffer if needed for visual separation, e.g., carLength += 0.01f;
+                                            Debug.Log($"  Car {i + 1} ('{carKey}') actual length from Collider: {carLength}");
+                                        }
+                                        else
+                                        {
+                                            Debug.LogWarning($"  Car {i + 1} ('{carKey}') has no Collider component. Falling back to configured carSpacing ({carSpacing}) for positioning. This might cause gaps/overlaps.");
+                                        }
+
+                                        // Update the position for the next car using the calculated or fallback length
+                                        currentSpawnPosition += Vector3.right * carLength;*/
+
+                    // Add prefab to TrainManager.cs's carPrefab list
+                    trainManager.carPrefabs.Add(prefabToSpawn);
+                }
+                else
+                {
+                    // This error should only occur if the fallback prefab failed to load in Awake
+                    Debug.LogError($"  Failed to spawn car {i + 1}: Prefab for key '{carKey}' not found AND fallback shell is missing!", this);
+                }
             }
-            else
+            else 
             {
-                 // This error should only occur if the fallback prefab failed to load in Awake
-                 Debug.LogError($"  Failed to spawn car {i + 1}: Prefab for key '{carKey}' not found AND fallback shell is missing!", this);
+                // Logic here to spawn from jsons, basically the same  as above, just add the jsons to the carJsons instead
+                trainManager.spawnWithJsons = true;    // This is set more times than needs to be but idc
+
+                string carKey = layoutOrder[i];
+                TextAsset jsonToLoad = null;
+                // Construct the path within the Resources folder (e.g., "TrainJsons/shell.json")
+                string resourcePath = Path.Combine(jsonFolderPath, carKey);
+
+                // Try loading the specific json based on the JSON key
+                jsonToLoad = Resources.Load<TextAsset>(resourcePath);
+
+                // Determine which json to actually instantiate
+                TextAsset jsonToSpawn;
+                if (jsonToLoad != null)
+                {
+                    // Specific json found, use it
+                    jsonToSpawn = jsonToLoad;
+                    Debug.Log($"  Spawning car {i + 1}: Key='{carKey}', Loaded Json='{jsonToSpawn.name}' from Resources/{resourcePath}");
+                }
+                else
+                {
+                    // Specific json not found, use the pre - loaded fallback shell json
+                    jsonToSpawn = Resources.Load<TextAsset>(Path.Combine(jsonFolderPath, shellCarJsonName));
+                    if (jsonToSpawn != null)
+                    {
+                        Debug.LogWarning($"  Spawning car {i + 1}: Key='{carKey}' not found. Using fallback Shell Json ('{jsonToSpawn.name}') from Resources/{jsonFolderPath}/{shellCarJsonName}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"  Failed to load fallback shell JSON ('{shellCarJsonName}') from Resources/{jsonFolderPath}.");
+                    }
+                }
+
+                // Instantiate the chosen json (ensure it's not null)
+                if (jsonToSpawn != null)
+                {
+                    // Will be using "TrainManager.cs" for spawning to ensure central access
+
+                    /*                    GameObject carInstance = Instantiate(prefabToSpawn, currentSpawnPosition, spawnRotation);
+
+                                        // Parent the instance if a parent transform is assigned
+                                        if (trainParent != null)
+                                        {
+                                            carInstance.transform.SetParent(trainParent);
+                                        }
+
+                                        // Name the instance clearly for easier debugging in the hierarchy
+                                        carInstance.name = $"TrainCar_{i}_{carKey}";
+
+                                        // --- Calculate next position based on the actual bounds of the spawned car ---
+                                        float carLength = carSpacing; // Use configured spacing as a fallback
+                                        Collider carCollider = carInstance.GetComponent<Collider>(); // Get the main collider
+
+                                        if (carCollider != null)
+                                        {
+                                            // Use the collider's bounds size along the X-axis for accurate length
+                                            carLength = carCollider.bounds.size.x;
+                                            // Optional: Add a tiny buffer if needed for visual separation, e.g., carLength += 0.01f;
+                                            Debug.Log($"  Car {i + 1} ('{carKey}') actual length from Collider: {carLength}");
+                                        }
+                                        else
+                                        {
+                                            Debug.LogWarning($"  Car {i + 1} ('{carKey}') has no Collider component. Falling back to configured carSpacing ({carSpacing}) for positioning. This might cause gaps/overlaps.");
+                                        }
+
+                                        // Update the position for the next car using the calculated or fallback length
+                                        currentSpawnPosition += Vector3.right * carLength;*/
+
+                    // Add json to TrainManager.cs's carJson list
+                    trainManager.carJsons.Add(jsonToSpawn);
+                }
+                else
+                {
+                    // This error should only occur if the fallback Json failed to load in Awake
+                    Debug.LogError($"  Failed to spawn car {i + 1}: Json for key '{carKey}' not found AND fallback shell is missing!", this);
+                }
             }
         }
 
+        // Setup TrainManager script and call it to spawn cars added to its lists above.
+        trainManager.carSpacing = carSpacing;
+        trainManager.spawnPoint = spawnPoint;
+        trainManager.SpawnCars();
+
+        NameCars();
+
         hasBuiltTrain = true; // Mark the train as built
         Debug.Log("TrainLayoutManager: Train build process complete.", this);
+    }
+
+    // Likely better to name as they spawn but this works. Not as error resiliant though.
+    private void NameCars()
+    {
+        List<string> layoutOrder = GameControl.GameController.coreMystery.Environment.LayoutOrder; // Prob could just make global
+
+        // Loop through layout parsed by mystery, assume trainManager layour properly spawned the same. Rename the cars
+        for (int i = 0; i < layoutOrder.Count; i++)
+        {
+            string carKey = layoutOrder[i];
+
+            trainManager.trainCarList[i].trainCar.name = $"TrainCar_{i}_{carKey}";
+        }
     }
 }
