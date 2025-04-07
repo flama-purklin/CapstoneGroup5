@@ -1,0 +1,828 @@
+# Basic Summary of the Hierarchies of Relevant Scenes:
+
+## LoadingScreen
+
+### Scene Overview
+- Total GameObjects: 20
+- Custom scripts: 18
+- Active objects: 20
+- Grid-based structures detected: 0
+
+### Custom Scripts
+- Image: 4 instances
+- HDAdditionalCameraData: 1 instances
+- LoadingUI: 1 instances
+- CanvasScaler: 1 instances
+- GraphicRaycaster: 1 instances
+- RawImage: 1 instances
+- Slider: 1 instances
+- TextMeshProUGUI: 1 instances
+- UIDocument: 1 instances
+- PersistentSystemsManager: 1 instances
+- LLM: 1 instances
+- LLMConfig: 1 instances
+- NPCManager: 1 instances
+- CharacterManager: 1 instances
+- CoreSystemsManager: 1 instances
+- ParsingControl: 1 instances
+- GameInitializer: 1 instances
+- GameControl: 1 instances
+
+### Hierarchy
+- **Main Camera**
+  - HDAdditionalCameraData.cs
+  - [Standard components: 2]
+- **LoadingUI**
+  - **Canvas**
+    - **RawImage**
+      - RawImage.cs
+      - [Standard components: 1]
+    - **LLM Progress Bar**
+      - **Background**
+        - Image.cs
+        - [Standard components: 1]
+      - **Fill Area** ? **Fill**
+      - **Handle Slide Area** ? **Handle**
+      - Slider.cs
+    - **Status Text**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - **Loading Spinner**
+      - Image.cs
+      - [Standard components: 1]
+    - **ProgressBar**
+      - UIDocument.cs
+    - CanvasScaler.cs
+    - GraphicRaycaster.cs
+    - [Standard components: 1]
+  - LoadingUI.cs
+- **Persistent Systems**
+  - **LLM**
+    - LLM.cs
+    - LLMConfig.cs
+  - **GameManager**
+    - CharacterManager.cs
+    - NPCManager.cs
+  - **CoreSystems**
+    - CoreSystemsManager.cs
+  - **MysteryParser**
+    - ParsingControl.cs
+  - PersistentSystemsManager.cs
+- **GameInitializer**
+  - GameInitializer.cs
+- **GameController**
+  - GameControl.cs
+
+
+## SystemsTest
+
+### Scene Overview
+- Total GameObjects: 1687
+- Custom scripts: 50
+- Active objects: 84
+- Grid-based structures detected: 379
+
+### Custom Scripts
+- Image: 71 instances
+- TextMeshProUGUI: 51 instances
+- Button: 18 instances
+- ParallaxControl: 15 instances
+- CanvasScaler: 8 instances
+- GraphicRaycaster: 8 instances
+- Mask: 5 instances
+- CameraShake: 4 instances
+- BillboardEffect: 3 instances
+- ScrollRect: 3 instances
+- VerticalLayoutGroup: 3 instances
+- CarCharacters: 3 instances
+- CarVisibility: 3 instances
+- NavMeshSurface: 3 instances
+- NumberManager: 3 instances
+- RawImage: 3 instances
+- HDAdditionalCameraData: 2 instances
+- HorizontalLayoutGroup: 2 instances
+- Scrollbar: 2 instances
+- NotebookManager: 2 instances
+- HDAdditionalLightData: 1 instances
+- PlayerMovement: 1 instances
+- CarDetection: 1 instances
+- CameraControl: 1 instances
+- StaticLightingSky: 1 instances
+- GameControl: 1 instances
+- PauseMenu: 1 instances
+- FinalSubmission: 1 instances
+- DialogueControl: 1 instances
+- LLMDialogueManager: 1 instances
+- TMP_InputField: 1 instances
+- RectMask2D: 1 instances
+- MysteryGenRunner: 1 instances
+- MinigameControl: 1 instances
+- LuggageControl: 1 instances
+- EvidenceControl: 1 instances
+- EventSystem: 1 instances
+- StandaloneInputModule: 1 instances
+- LuggageObj: 1 instances
+- EvidenceObj: 1 instances
+- TrainManager: 1 instances
+- RailCarRandomizer: 1 instances
+- TrainCarLoader: 1 instances
+- Timer: 1 instances
+- NodeNotif: 1 instances
+- EvidenceInspect: 1 instances
+- NodeControl: 1 instances
+- ConstellationToggle: 1 instances
+- MysteryNavigation: 1 instances
+- AllCharacterDemo: 1 instances
+
+### Hierarchy
+- **Directional Light**
+  - HDAdditionalLightData.cs
+  - [Standard components: 1]
+- **Player**
+  - **PlayerModel**
+    - [Standard components: 3]
+  - **playerSprite**
+    - BillboardEffect.cs
+    - [Standard components: 2]
+  - CarDetection.cs
+  - PlayerMovement.cs
+  - [Standard components: 1]
+- **Main Camera**
+  - **ParallaxBackground**
+    - **Background**
+      - **Background** [similar-group] (x4)
+        - |ParallaxControl.cs [inactive]:1
+      - CameraShake.cs
+      - ParallaxControl.cs
+      - [Standard components: 1]
+    - **Midground**
+      - **Midground** [similar-group] (x4)
+        - |ParallaxControl.cs [inactive]:1
+      - CameraShake.cs
+      - ParallaxControl.cs
+      - [Standard components: 1]
+    - **Foreground**
+      - **Foreground** [similar-group] (x4)
+        - |ParallaxControl.cs [inactive]:1
+      - CameraShake.cs
+      - ParallaxControl.cs
+      - [Standard components: 1]
+    - CameraShake.cs [inactive]
+  - CameraControl.cs
+  - HDAdditionalCameraData.cs
+  - [Standard components: 2]
+- **StaticLightingSky**
+  - StaticLightingSky.cs
+- **GameController**
+  - GameControl.cs
+- **PauseMenu** [inactive]
+  - **BlackFade** [inactive]
+    - Image.cs [inactive]
+    - [Standard components: 1]
+  - **Panel** [inactive]
+    - **ResumeButton** [inactive]
+      - **Text (TMP)** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Button.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **MenuButton** [inactive]
+      - **Text (TMP)** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Button.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **QuitButton** [inactive]
+      - **Text (TMP)** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Button.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - Image.cs [inactive]
+    - [Standard components: 1]
+  - CanvasScaler.cs [inactive]
+  - GraphicRaycaster.cs [inactive]
+  - PauseMenu.cs [inactive]
+  - [Standard components: 2]
+- **FinalSubmissionControl**
+  - **FinalSubmissionCanvas** [inactive]
+    - **Blackout** [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **NameButtonHolder** [inactive]
+      - HorizontalLayoutGroup.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **DialogueView (old)** [inactive]
+      - **Viewport** [inactive]
+        - **DialogueHolder** [inactive]
+          - VerticalLayoutGroup.cs [inactive]
+        - Image.cs [inactive]
+        - Mask.cs [inactive]
+        - [Standard components: 1]
+      - **Scrollbar Vertical** [inactive]
+        - **Sliding Area** ? **Handle**
+        - Image.cs [inactive]
+        - Scrollbar.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - ScrollRect.cs [inactive]
+      - [Standard components: 1]
+    - **CharacterHolder** [inactive]
+      - **CharacterImage** [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **PoliceHat** [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+    - **CharacterDialoguePanel** [inactive]
+      - **CharacterDialogue** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **LeftButtonPanel** [inactive]
+      - **Notebook** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **Transcript** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - CanvasScaler.cs [inactive]
+    - GraphicRaycaster.cs [inactive]
+    - [Standard components: 2]
+  - FinalSubmission.cs
+- **DialogueControl (1)**
+  - **DialogueCanvas** [inactive]
+    - **Blackout** [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **DialogueInput** [inactive]
+      - **Text Area** [inactive]
+        - **Text** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - RectMask2D.cs [inactive]
+      - Image.cs [inactive]
+      - TMP_InputField.cs [inactive]
+      - [Standard components: 1]
+    - **DialogueView (old)** [inactive]
+      - **Viewport** [inactive]
+        - **DialogueHolder** [inactive]
+          - VerticalLayoutGroup.cs [inactive]
+        - Image.cs [inactive]
+        - Mask.cs [inactive]
+        - [Standard components: 1]
+      - **Scrollbar Vertical** [inactive]
+        - **Sliding Area** ? **Handle**
+        - Image.cs [inactive]
+        - Scrollbar.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - ScrollRect.cs [inactive]
+      - [Standard components: 1]
+    - **CharacterHolder** [inactive]
+      - **CharacterImage** [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **CharacterName** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+    - **Submit Button** [inactive]
+      - **Text (TMP)** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Button.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **PlayerTextPanel** [inactive]
+      - **PlayerDialogue** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **CharacterDialoguePanel** [inactive]
+      - **CharacterDialogue** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **LeftButtonPanel** [inactive]
+      - **Notebook** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **Transcript** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **RightButtonPanel** [inactive]
+      - **ExitButton** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **SilentButton** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **InterruptButton** [inactive]
+        - **Text (TMP)** [inactive]
+          - TextMeshProUGUI.cs [inactive]
+          - [Standard components: 1]
+        - Button.cs [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - CanvasScaler.cs [inactive]
+    - GraphicRaycaster.cs [inactive]
+    - [Standard components: 2]
+  - DialogueControl.cs
+  - LLMDialogueManager.cs
+- **MysteryGenTest**
+  - MysteryGenRunner.cs
+- **Train Car (diningCarDataManual) Variant** [inactive]
+  - **RailCarFloor** [inactive]
+    - **Anchor** [similar-group] (x240) [inactive]
+    - NavMeshSurface.cs [inactive]
+    - [Standard components: 3]
+  - **RailCarRoof** [inactive] [inactive-branch]
+  - **RailCarWall (AutoGen)** [inactive] [inactive-branch]
+  - **RailCarExterior** [inactive]
+    - [Standard components: 3]
+  - **RailCarWall** [inactive]
+    - **WallBottom** [similar-group] (x4) [inactive]
+      - |BoxCollider:1|MeshFilter:1|MeshRenderer:1
+    - **WallBottom** [inactive]
+      - [Standard components: 3]
+    - **Steel_Window** [inactive]
+      - [Standard components: 2]
+    - **Steel_Window (1)** [inactive]
+      - [Standard components: 2]
+  - **RailCarPartitionWall** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - **RailCarPartitionWall (1)** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - CarCharacters.cs [inactive]
+  - CarVisibility.cs [inactive]
+- **Train Car (passengerCarDataManual) Variant** [inactive]
+  - **RailCarFloor** [inactive]
+    - **Anchor** [similar-group] (x240) [inactive]
+    - NavMeshSurface.cs [inactive]
+    - [Standard components: 3]
+  - **RailCarRoof** [inactive] [inactive-branch]
+  - **RailCarWall (AutoGen)** [inactive] [inactive-branch]
+  - **RailCarExterior** [inactive]
+    - [Standard components: 3]
+  - **RailCarWall ** [inactive]
+    - **WallBottom** [similar-group] (x4) [inactive]
+      - |BoxCollider:1|MeshFilter:1|MeshRenderer:1
+    - **WallBottom** [inactive]
+      - [Standard components: 3]
+    - **Steel_Window** [inactive]
+      - [Standard components: 2]
+    - **Steel_Window (1)** [inactive]
+      - [Standard components: 2]
+  - **RailCarPartitionWall (2)** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - **RailCarPartitionWall (3)** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - CarCharacters.cs [inactive]
+  - CarVisibility.cs [inactive]
+- **Train Car (passengerCarDataManual) Variant (1)** [inactive]
+  - **RailCarFloor** [inactive]
+    - **Anchor** [similar-group] (x240) [inactive]
+    - NavMeshSurface.cs [inactive]
+    - [Standard components: 3]
+  - **RailCarRoof** [inactive] [inactive-branch]
+  - **RailCarWall (AutoGen)** [inactive] [inactive-branch]
+  - **RailCarExterior** [inactive]
+    - [Standard components: 3]
+  - **RailCarWall ** [inactive]
+    - **WallBottom** [similar-group] (x4) [inactive]
+      - |BoxCollider:1|MeshFilter:1|MeshRenderer:1
+    - **WallBottom** [inactive]
+      - [Standard components: 3]
+    - **Steel_Window** [inactive]
+      - [Standard components: 2]
+    - **Steel_Window (1)** [inactive]
+      - [Standard components: 2]
+  - **RailCarPartitionWall (2)** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - **RailCarPartitionWall (3)** [inactive]
+    - **DoorV2** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - **DoorV2 (1)** [inactive]
+      - **01_low** [inactive]
+        - [Standard components: 2]
+      - **03_low** [inactive]
+        - [Standard components: 2]
+      - [Standard components: 1]
+    - [Standard components: 4]
+  - CarCharacters.cs [inactive]
+  - CarVisibility.cs [inactive]
+- **MinigameControl**
+  - **LuggageCanvas** [inactive]
+    - **Blackout** [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **LuggagePanel** [inactive]
+      - **NumberPanel** [inactive]
+        - **UpButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **DownButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **NumberMask** [inactive]
+          - **NumberHolder** [inactive]
+            - **Number** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (1)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (2)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - Image.cs [inactive]
+            - NumberManager.cs [inactive]
+            - [Standard components: 1]
+          - Image.cs [inactive]
+          - Mask.cs [inactive]
+          - [Standard components: 1]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **NumberPanel (1)** [inactive]
+        - **UpButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **DownButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **NumberMask** [inactive]
+          - **NumberHolder** [inactive]
+            - **Number** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (1)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (2)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - Image.cs [inactive]
+            - NumberManager.cs [inactive]
+            - [Standard components: 1]
+          - Image.cs [inactive]
+          - Mask.cs [inactive]
+          - [Standard components: 1]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **NumberPanel (2)** [inactive]
+        - **UpButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **DownButton** [inactive]
+          - **Text (TMP)** [inactive]
+            - TextMeshProUGUI.cs [inactive]
+            - [Standard components: 1]
+          - Button.cs [inactive]
+          - Image.cs [inactive]
+          - [Standard components: 1]
+        - **NumberMask** [inactive]
+          - **NumberHolder** [inactive]
+            - **Number** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (1)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - **Number (2)** [inactive]
+              - Image.cs [inactive]
+              - [Standard components: 1]
+            - Image.cs [inactive]
+            - NumberManager.cs [inactive]
+            - [Standard components: 1]
+          - Image.cs [inactive]
+          - Mask.cs [inactive]
+          - [Standard components: 1]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - HorizontalLayoutGroup.cs [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **SuccessHolder** [inactive]
+      - **ClueImage** [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **ClueTitle** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - **ClueDescription** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - CanvasScaler.cs [inactive]
+    - GraphicRaycaster.cs [inactive]
+    - LuggageControl.cs [inactive]
+    - [Standard components: 2]
+  - **EvidenceCanvas** [inactive]
+    - **Blackout** [inactive]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - **SuccessHolder** [inactive]
+      - **ClueImage** [inactive]
+        - Image.cs [inactive]
+        - [Standard components: 1]
+      - **ClueTitle** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - **ClueDescription** [inactive]
+        - TextMeshProUGUI.cs [inactive]
+        - [Standard components: 1]
+      - Image.cs [inactive]
+      - [Standard components: 1]
+    - CanvasScaler.cs [inactive]
+    - EvidenceControl.cs [inactive]
+    - GraphicRaycaster.cs [inactive]
+    - [Standard components: 2]
+  - MinigameControl.cs
+- **EventSystem**
+  - EventSystem.cs
+  - StandaloneInputModule.cs
+- **LuggageObj**
+  - **Indicator**
+    - BillboardEffect.cs
+    - [Standard components: 1]
+  - LuggageObj.cs
+  - [Standard components: 3]
+- **EvidenceObj**
+  - **Indicator**
+    - BillboardEffect.cs
+    - [Standard components: 1]
+  - EvidenceObj.cs
+  - [Standard components: 3]
+- **TrainManager**
+  - **Rail Cars**
+  - RailCarRandomizer.cs [inactive]
+  - TrainCarLoader.cs [inactive]
+  - TrainManager.cs
+- **NotebookCanvas**
+  - **DimBackground**
+    - Image.cs
+    - [Standard components: 1]
+  - **NotebookPNG**
+    - RawImage.cs
+    - [Standard components: 1]
+  - **NotebookText**
+    - TextMeshProUGUI.cs
+    - [Standard components: 1]
+  - CanvasScaler.cs
+  - GraphicRaycaster.cs
+  - NotebookManager.cs
+  - [Standard components: 1]
+- **NotebookManager**
+  - NotebookManager.cs
+- **HUD**
+  - **TimerText** [inactive] [inactive-branch]
+  - **GAMEOVERPANEL**
+    - **emoji**
+      - RawImage.cs
+      - [Standard components: 1]
+    - **Text (TMP)**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - Image.cs
+    - [Standard components: 1]
+  - **NodeUnlockNotif**
+    - **NotifTitle**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - **Control Prompt**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - Image.cs
+    - NodeNotif.cs
+    - [Standard components: 2]
+  - **MysteryHUD**
+    - **Title**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - **MysteryControls**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - **NodeInspect**
+      - **Type**
+        - TextMeshProUGUI.cs
+        - [Standard components: 1]
+      - **Category**
+        - TextMeshProUGUI.cs
+        - [Standard components: 1]
+      - **ContentHolder**
+        - **Content Title**
+          - TextMeshProUGUI.cs
+          - [Standard components: 1]
+        - **Content Information**
+          - TextMeshProUGUI.cs
+          - [Standard components: 1]
+      - **Additional Information**
+        - **Info Title**
+          - TextMeshProUGUI.cs
+          - [Standard components: 1]
+        - **Info Information**
+          - **Description**
+            - **Title**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - **Information**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - [Standard components: 1]
+          - **Location**
+            - **Title**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - **Information**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - [Standard components: 1]
+          - **Time**
+            - **Title**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - **Information**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - [Standard components: 1]
+          - **Associated Characters**
+            - **Title**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - **Information**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - [Standard components: 1]
+          - **Hidden Details**
+            - **Title**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - **Information**
+              - TextMeshProUGUI.cs
+              - [Standard components: 1]
+            - [Standard components: 1]
+          - VerticalLayoutGroup.cs
+          - [Standard components: 1]
+      - **ExitButton**
+        - **Text (TMP)**
+          - TextMeshProUGUI.cs
+          - [Standard components: 1]
+        - Button.cs
+        - Image.cs
+        - [Standard components: 1]
+      - EvidenceInspect.cs
+      - Image.cs
+      - [Standard components: 2]
+  - **DefaultHUD**
+    - **ACTUALTIMER**
+      - TextMeshProUGUI.cs
+      - [Standard components: 1]
+    - **Notebook Panel**
+      - **NotebookText**
+        - TextMeshProUGUI.cs
+        - [Standard components: 1]
+      - **NotebookIconPNG**
+        - RawImage.cs
+        - [Standard components: 1]
+  - CanvasScaler.cs
+  - GraphicRaycaster.cs
+  - Timer.cs
+  - [Standard components: 1]
+- **MysteryCanvas**
+  - **NodeHolder**
+    - Image.cs
+    - MysteryNavigation.cs
+    - ScrollRect.cs [inactive]
+    - [Standard components: 1]
+  - **MysteryCam**
+    - HDAdditionalCameraData.cs
+    - [Standard components: 2]
+  - CanvasScaler.cs
+  - ConstellationToggle.cs
+  - GraphicRaycaster.cs
+  - NodeControl.cs
+  - [Standard components: 1]
+- **AllCharacterDemoPrefab**
+  - AllCharacterDemo.cs
