@@ -395,7 +395,7 @@ public class InitializationManager : MonoBehaviour
     {
         Debug.Log("INITIALIZATION STEP 3: Character Manager initialization");
         float startTime = Time.realtimeSinceStartup;
-        const float CHARACTER_INIT_TIMEOUT = 180; // 30 seconds timeout (testing with 180 seconds timout for my laptop)
+        const float CHARACTER_INIT_TIMEOUT = 240; // 30 seconds timeout (testing with 240 seconds timout for my laptop)
         
         if (characterManager != null)
         {

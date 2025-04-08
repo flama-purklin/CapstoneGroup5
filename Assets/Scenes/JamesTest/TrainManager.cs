@@ -120,7 +120,7 @@ public class TrainManager : MonoBehaviour
                 GameObject carInstance = Instantiate(prefab, tempPosition, Quaternion.Euler(0, 180, 0)); //Included 180 rotation
                 CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
                 carSelected.CarDeselected();
-                //BakeNavmeshAtRuntime(carInstance);
+                BakeNavmeshAtRuntime(carInstance);
                 PositionAndStoreTrainCar(carInstance);
             }
         }
@@ -199,6 +199,24 @@ public class TrainManager : MonoBehaviour
         navMeshSurface.collectObjects = CollectObjects.Children;
         navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
         navMeshSurface.layerMask = ~0; // Was "LayerMask.GetMask("Default")", but since floor is on "TrainFloor" may have caused errors."
+
+        // Get agent type ID for "HumanModified" (it was -1372625422, but better to just get each time in case it changes)
+        int agentTypeId = -1;
+        for (int i = 0; i < NavMesh.GetSettingsCount(); i++)
+        {
+            var settings = NavMesh.GetSettingsByIndex(i);
+            if (NavMesh.GetSettingsNameFromID(settings.agentTypeID) == "HumanModified")
+            {
+                agentTypeId = settings.agentTypeID;
+                break;
+            }
+        }
+        if (agentTypeId == -1) { Debug.LogWarning("Agent Type 'HumanModified' not found. Using default agent type."); }
+        else
+        {
+            navMeshSurface.agentTypeID = agentTypeId;
+        }
+
         navMeshSurface.BuildNavMesh();
     }
 

@@ -114,6 +114,7 @@ public class TrainLayoutManager : MonoBehaviour
         }
 
         List<string> layoutOrder = GameControl.GameController.coreMystery.Environment.LayoutOrder;
+
         if (layoutOrder.Count == 0)
         {
             Debug.LogWarning("TrainLayoutManager: Layout order in mystery JSON is empty. No train cars will be spawned.", this);
@@ -126,6 +127,7 @@ public class TrainLayoutManager : MonoBehaviour
         {
             trainManager.carPrefabs.Clear();
             trainManager.carJsons.Clear();
+            trainManager.carJsonConfigs.Clear();
         }
         else
         {
