@@ -6,9 +6,29 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static TMPro.TMP_Compatibility;
+using static TrainManager;
 
 public class RailCarRandomizer : MonoBehaviour
 {
+    // To easily change surface materials
+    [System.Serializable]
+    public class ShellConfig
+    {
+        public Material floorMaterial;
+        public Material wallMaterial;
+        public Material roofMaterial;
+        public Material exteriorMaterial;
+    }
+
+    // To associate configs with keys
+    [System.Serializable]
+    public class ShellConfigEntry
+    {
+        public CarClass carClass;
+        public CarType carType;
+        public ShellConfig shellConfig;  // This holds the material configuration
+    }
+
     [SerializeField] public bool spawnOnStart = false;
     [SerializeField] public float railCarLength = 10f;
     [SerializeField] public float railCarDepth = 5f;
@@ -19,6 +39,11 @@ public class RailCarRandomizer : MonoBehaviour
     [SerializeField] public Material wallMaterial = null;
     [SerializeField] public Material roofMaterial = null;
     [SerializeField] public Material exteriorMaterial = null; // spelled wrong I think
+    //[SerializeField] public List<ShellConfig> shellConfigs; 
+    [SerializeField] public List<ShellConfigEntry> shellConfigEntries; // A list of configurations based on CarClass and CarType, set in editor
+    public CarClass currentCarClass;
+    public CarType currentCarType;
+
     public GameObject trainCar;
     public GameObject floor, roof;
     public GameObject wall, exteriorWall, leftWall, rightWall;
@@ -48,6 +73,8 @@ public class RailCarRandomizer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        ApplyShellConfigForCar(currentCarClass, currentCarType);
+
         if (spawnOnStart)
         {
             GenerateTrainShell();
@@ -55,6 +82,48 @@ public class RailCarRandomizer : MonoBehaviour
             GenerateAnchorGrid();
             //SpawnObjects();
         }
+    }
+
+    // Can call outside of class like by Loader using the CarLoadConfig data struct
+    // This method applies the material config for the current car class and type
+    public void ApplyShellConfigForCar(CarClass carClass, CarType carType)
+    {
+        ShellConfig selectedConfig = GetShellConfigForCar(carClass, carType);
+
+        if (selectedConfig != null)
+        {
+            floorMaterial = selectedConfig.floorMaterial;
+            wallMaterial = selectedConfig.wallMaterial;
+            roofMaterial = selectedConfig.roofMaterial;
+            exteriorMaterial = selectedConfig.exteriorMaterial;
+        }
+    }
+
+    // Lookup the ShellConfig based on the CarClass and CarType combo
+    private ShellConfig GetShellConfigForCar(CarClass carClass, CarType carType)
+    {
+        // Iterate and find match
+        foreach (var entry in shellConfigEntries)
+        {
+            if (entry.carClass == carClass && entry.carType == carType)
+            {
+                return entry.shellConfig;
+            }
+        }
+
+        // Fallback to just match class
+        // Iterate and find match
+        foreach (var entry in shellConfigEntries)
+        {
+            if (entry.carClass == carClass)
+            {
+                return entry.shellConfig;
+            }
+        }
+
+        // Return null if no match
+        Debug.LogWarning("RailCarRandomizer not provided a shell config, using default values");
+        return null;
     }
 
     // Update is called once per frame
@@ -201,7 +270,7 @@ public class RailCarRandomizer : MonoBehaviour
         NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
         navMeshSurface.collectObjects = CollectObjects.Children;
         navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
-        navMeshSurface.layerMask = LayerMask.GetMask("Default"); // Adjust as needed
+        navMeshSurface.layerMask = ~0; // Was "LayerMask.GetMask("Default")", but since floor is on "TrainFloor" may have caused errors."
         navMeshSurface.BuildNavMesh();
     }
 

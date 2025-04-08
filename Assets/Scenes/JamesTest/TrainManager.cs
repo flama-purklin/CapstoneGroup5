@@ -42,6 +42,7 @@ public class TrainManager : MonoBehaviour
 
     public List<GameObject> carPrefabs; // List of spawnable cars
     public List<TextAsset> carJsons; // List of json files, will call Randomizer and Loader to make shell and populate.
+    public List<CarLoadConfig> carJsonConfigs; // List of Config data structs that include json and car type/pallet info.
     public bool spawnWithJsons = false;
     public Transform spawnPoint;
     private Vector3 tempPosition; // For car placment manipulation
@@ -84,16 +85,33 @@ public class TrainManager : MonoBehaviour
                 return;
             }
 
-            // For each Json in list, call loader, then place that object
-            foreach (TextAsset jsonFile in carJsons)
+            if ((carJsonConfigs == null || carJsonConfigs.Count == 0) && carJsons.Count > 0)
             {
-                GameObject carInstance = loader.PopulateTrain(jsonFile);
-                carInstance.transform.rotation = Quaternion.Euler(0, 180, 0); // Apply rotation as if it were a prefab (used since spawn goes from + to neg x and camera wierd)
-                CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
-                carSelected.CarDeselected();
-                BakeNavmeshAtRuntime(carInstance);
-                PositionAndStoreTrainCar(carInstance);
+                // For each Json in list, call loader, then place that object
+                foreach (TextAsset jsonFile in carJsons)
+                {
+                    GameObject carInstance = loader.PopulateTrain(jsonFile);
+                    carInstance.transform.rotation = Quaternion.Euler(0, 180, 0); // Apply rotation as if it were a prefab (used since spawn goes from + to neg x and camera wierd)
+                    CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
+                    carSelected.CarDeselected();
+                    BakeNavmeshAtRuntime(carInstance);
+                    PositionAndStoreTrainCar(carInstance);
+                }
             }
+            else if (carJsonConfigs != null && carJsonConfigs.Count > 0)
+            {
+                // For each Json in list, call loader, then place that object
+                foreach (CarLoadConfig config in carJsonConfigs)
+                {
+                    GameObject carInstance = loader.PopulateTrain(config);
+                    carInstance.transform.rotation = Quaternion.Euler(0, 180, 0); // Apply rotation as if it were a prefab (used since spawn goes from + to neg x and camera wierd)
+                    CarVisibility carSelected = carInstance.GetComponent<CarVisibility>(); // Ensures cars spawn closed
+                    carSelected.CarDeselected();
+                    BakeNavmeshAtRuntime(carInstance);
+                    PositionAndStoreTrainCar(carInstance);
+                }
+            }
+            else { Debug.LogError("Trying to spawn cars from json when both carJsonConfigs and carJsons are null. SpawnCars in TrainManager.cs has failed!"); }
         }
         else
         {
@@ -134,7 +152,7 @@ public class TrainManager : MonoBehaviour
 
     // No, this stinks, use the point of intrest system to be made soon
     // Method to spawn the player and camera in the first car
-    private void SpawnPlayerAndCamera(TrainCar car)
+    public void SpawnPlayerAndCamera(TrainCar car)
     {
         // Position player and camera relative to car position
         Vector3 playerPosition = car.trainCar.transform.position + new Vector3(0, loader.railCarRandomizer.floorThickness, 0); // Adjust based on the car's layout
@@ -180,7 +198,7 @@ public class TrainManager : MonoBehaviour
         NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
         navMeshSurface.collectObjects = CollectObjects.Children;
         navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
-        navMeshSurface.layerMask = LayerMask.GetMask("Default");
+        navMeshSurface.layerMask = ~0; // Was "LayerMask.GetMask("Default")", but since floor is on "TrainFloor" may have caused errors."
         navMeshSurface.BuildNavMesh();
     }
 

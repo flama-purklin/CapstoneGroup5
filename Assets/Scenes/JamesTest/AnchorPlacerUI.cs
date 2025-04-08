@@ -10,6 +10,7 @@ public class AnchorPlacerUI : MonoBehaviour
     public TMP_Dropdown typeDropdown;
     public TMP_Dropdown rotationDropdown;
     public Button placeButton;
+    public TrainCarLoader loader; // if set, take list from RCR script
     public List<PrefabEntry> objectPrefabsList;
 
     private AnchorPlacer selectedAnchor;
@@ -18,6 +19,12 @@ public class AnchorPlacerUI : MonoBehaviour
     {
         uiPanel.SetActive(false);
         //placeButton.onClick.AddListener(PlaceObject);
+
+        // Avoids having to manually populate each list. Just set rom RailCarRandomizer script
+        if (loader != null)
+        { 
+            this.objectPrefabsList = loader.objectPrefabsList;
+        }
     }
 
     public void OpenUI(AnchorPlacer anchor)
