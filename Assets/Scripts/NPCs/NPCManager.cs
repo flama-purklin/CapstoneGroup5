@@ -161,48 +161,43 @@ public class NPCManager : MonoBehaviour
                 var agent = movement.GetComponent<NavMeshAgent>();
                 if (agent)
                 {
-                    agent.enabled = true;
-                    // --- Cline: Verify NavMesh placement after Warp ---
-                    if (!agent.Warp(position))
+                    // +++ Cline: Try alternative placement method +++
+                    agent.enabled = false; // Disable agent
+                    npcInstance.transform.position = position; // Set position directly
+                    agent.enabled = true; // Re-enable agent
+                    // --- End Cline changes ---
+
+                    // --- Cline: Verify NavMesh placement after setting position ---
+                    if (!agent.isOnNavMesh)
                     {
-                        Debug.LogError($"NPC {characterName} NavMeshAgent.Warp failed initially for position {position}. Agent might be invalid.");
-                    }
-                    else if (!agent.isOnNavMesh)
-                    {
-                        Debug.LogWarning($"NPC {characterName} warped to {position} but is not on NavMesh. Attempting to find nearest valid point.");
-                        NavMeshHit hit; // Declare hit variable here
-                        // Sample position with a small radius (e.g., 1.0f) around the intended position
+                        Debug.LogWarning($"NPC {characterName} placed at {position} but is not on NavMesh after re-enabling agent. Attempting to find nearest valid point.");
+                        NavMeshHit hit;
                         if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))
                         {
-                            Debug.Log($"Found valid NavMesh point {hit.position} for {characterName}. Warping again.");
-                            if (!agent.Warp(hit.position)) // Warp to the valid point
+                            Debug.Log($"Found valid NavMesh point {hit.position} for {characterName}. Setting position again.");
+                            agent.enabled = false;
+                            npcInstance.transform.position = hit.position; // Set to the valid point
+                            agent.enabled = true;
+                            if (!agent.isOnNavMesh)
                             {
-                                Debug.LogError($"NPC {characterName} NavMeshAgent.Warp failed on second attempt to {hit.position}.");
-                            }
-                            else if (!agent.isOnNavMesh) // Double-check after second warp
-                            {
-                                Debug.LogError($"NPC {characterName} STILL not on NavMesh after second warp to {hit.position}!");
+                                Debug.LogError($"NPC {characterName} STILL not on NavMesh after setting position to valid point {hit.position}!");
                             }
                         }
                         else
                         {
-                            Debug.LogError($"NPC {characterName} could not find ANY valid NavMesh point near {position} after initial warp failed!");
-                            // Consider disabling the NPC or its movement if spawning fails completely
-                            // if (movement) movement.enabled = false;
+                            Debug.LogError($"NPC {characterName} could not find ANY valid NavMesh point near {position} after initial placement failed!");
                         }
                      }
-                     // --- Cline: Log position immediately after warp ---
+                     // --- Cline: Log position immediately after placement ---
                      if (agent.isOnNavMesh) {
-                         Debug.Log($"[NPCManager Debug] NPC {characterName} IS on NavMesh immediately after warp to {agent.transform.position}.");
+                         Debug.Log($"[NPCManager Debug] NPC {characterName} IS on NavMesh immediately after placement at {agent.transform.position}.");
                      } else {
                          // Use position variable here since hit might not be assigned if SamplePosition failed
-                         Debug.LogWarning($"[NPCManager Debug] NPC {characterName} IS NOT on NavMesh immediately after warp attempt to {agent.transform.position} (intended: {position}).");
-                     }
-                     // +++ Cline: Add timestamped log after Warp +++
-                     Debug.Log($"[Timestamp {Time.frameCount}] NPCManager Post-Warp: {npcInstance.transform.position} for {characterName}");
+                          Debug.LogWarning($"[NPCManager Debug] NPC {characterName} IS NOT on NavMesh immediately after warp attempt to {agent.transform.position} (intended: {position}).");
+                      }
+                      // --- Cline: Removed timestamped log ---
                      // --- End Cline changes ---
-                    // --- End Cline changes ---
-                }
+                 }
             }
 
             npcInstance.SetActive(true);

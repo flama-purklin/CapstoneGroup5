@@ -1,4 +1,4 @@
-# Character Spawning System Overview (Updated 2025-04-07)
+# Character Spawning System Overview (Updated 2025-04-08)
 
 ## 1. Goal
 
@@ -48,15 +48,14 @@ The spawning process involves several key scripts and assets, with recent modifi
         *   Assigns an `NPCAnimContainer` from the `availableAnimContainers` array using `characterIndex % availableAnimContainers.Length`. Logs a warning if the array or specific container is null.
         *   Calls `SetAnimContainer` on the `NPCAnimManager`.
         *   Initializes the `Character.cs` component.
-        *   Attempts to place the `NavMeshAgent` using `agent.Warp(position)`.
+        *   Attempts to place the NPC using direct `transform.position` assignment (after temporarily disabling/re-enabling the NavMeshAgent), rather than `agent.Warp()`.
 *   **`NPCAnimManager.cs`:**
     *   `SetAnimContainer(NPCAnimContainer container)`: Receives the assigned container from `NPCManager` and stores it in the `anims` field, setting the initial `currentAnim`.
-    *   `Awake()`: Contains a null check for `anims` but may still log a warning if the component was added dynamically (as `Awake` runs before `SetAnimContainer`).
-    *   `Update()`: Contains a null check for `movementControl` to prevent errors if the component was added dynamically and the reference wasn't set (though it attempts `GetComponent` as a fallback).
-    *   `DirectionOverride()`: Contains a null check for `anims` to prevent errors if called before `SetAnimContainer`.
+    *   `Awake()`: Gets references and the initial local scale of the assigned `sprite` transform.
+    *   `UpdateDirection()` / `DirectionOverride()`: Applies horizontal scale flipping (multiplying X scale by -1) to the **`sprite.transform.localScale`** to change the visual facing direction, **not** the root transform's scale. This prevents interference with the NavMeshAgent.
 *   **`NPCMovement.cs`:**
     *   Contains safety checks (`agent.isOnNavMesh`) before attempting NavMeshAgent operations (`SetDestination`, `isStopped`).
-    *   Calls to `animator.SetBool` and `animManager.ApplyAnim` are **currently commented out** for testing purposes.
+    *   Calls to `animator.SetBool` and `animManager.ApplyAnim` are now **re-enabled**.
 *   **`NPC.prefab` (`Assets/Prefabs/Characters/NPC.prefab`):** The template used for all NPCs.
     *   **Must** have `NavMeshAgent`, `Character`, `NPCMovement` components attached.
     *   **Should** have `NPCAnimManager` component attached (currently missing, added dynamically at runtime).
@@ -82,26 +81,14 @@ The spawning process involves several key scripts and assets, with recent modifi
 *   **Inspector Assignments:** `NPCManager` has its `availableAnimContainers` array correctly assigned.
 *   **Script Errors:** Previous `NullReferenceException` errors and warnings related to missing components/references are resolved.
 *   **Spawn Point Selection:** `TrainLayoutManager.GetSpawnPointInCar` correctly identifies central anchors (e.g., "Anchor (3, 7)") and finds valid NavMesh points near them.
-*   **Initial Placement:** Debug logs confirm `NPCManager.SpawnNPCInCar` successfully warps NPCs to the correct central NavMesh point (`agent.isOnNavMesh` is true immediately after warp).
-*   **[CORE ISSUE] Position Corruption & Glitchy Movement:** Despite correct initial placement, NPCs are observed visually spawning/snapping to the edge of the train car (often with a flipped positive X coordinate). Debug logs confirm their position is correct immediately after warp and at the start of `NPCMovement.IdleState`, but becomes incorrect (X flipped) by the time `MovementState` starts or shortly after. This leads to:
-    *   Erratic "spasming" or "pulling back" movement as they try to pathfind from an invalid location.
-    *   Frequent `NPCMovement (...): Failed to find valid NavMesh point near... Returning to Idle.` warnings, as pathfinding fails from the corrupted position.
-*   **[Ruled Out Causes]:**
-    *   Incorrect `NPCAnimContainer` assignment.
-    *   Missing `NPCAnimManager` component or its internal references.
-    *   `BillboardEffect` component interference (disabling it didn't fix the flip).
-    *   Animation system calls during movement (disabling them didn't fix the flip).
-    *   `NavMeshAgent.updatePosition = false` (caused NPCs to disappear).
-    *   Simple `NavMesh.SamplePosition` failures during initial spawn (logs show it succeeds).
-    *   Incorrect anchor selection logic in `TrainLayoutManager` (logs show correct anchor is chosen).
-*   **[Remaining Warning] `NPCAnimManager ... Awake: 'anims' ... is null`:** This warning persists due to script execution order (`Awake` vs. `SetAnimContainer` call). It is considered cosmetic now as the container *is* assigned correctly later.
+*   **Initial Placement:** NPCs are placed correctly near the center of their designated car using direct transform assignment.
+*   **[RESOLVED] Position Corruption & Glitchy Movement:** The previous issue where NPCs would snap to the edge of the NavMesh or have their X coordinate flipped upon stopping movement or starting idle has been resolved.
+    *   **Cause:** The issue stemmed from `NPCAnimManager.cs` modifying the `transform.root.localScale` to visually flip the sprite. This interfered with the `NavMeshAgent`'s internal position calculations, causing it to believe it was off-mesh or in an invalid state when movement stopped, resulting in the snap to the nearest edge.
+    *   **Fix:** The `NPCAnimManager` script was modified to apply the scale flip only to the child `sprite.transform.localScale` instead of the root transform. This isolates the visual flip from the NavMeshAgent's positioning logic.
+*   **Movement:** NPCs now correctly navigate the NavMesh, stop, idle, and resume movement without position corruption.
+*   **[Remaining Warning] `NPCAnimManager ... Awake: 'anims' ... is null`:** This warning persists due to script execution order (`Awake` runs before `SetAnimContainer` is called by `NPCManager`). It is considered cosmetic as the container *is* assigned correctly later, preventing runtime errors.
 
-## 5. Troubleshooting / Next Steps
+## 5. Known Issues / Future Considerations
 
-1.  **Investigate Position Corruption:** The primary goal is to find what modifies the NPC's `transform.position` (specifically flipping the X coordinate) *after* `NPCManager.SpawnNPCInCar` successfully warps it, but *before* or *during* the initial execution of `NPCMovement` coroutines. Possible causes:
-    *   **Script Execution Order:** Another script's `Awake`, `OnEnable`, or `Start` modifying the transform.
-    *   **Physics Interaction:** Immediate physics update conflict with `Rigidbody` or colliders after warp.
-    *   **NavMeshAgent Internal State:** An issue with how the agent handles its position immediately after `Warp`.
-    *   **Parenting Side Effects:** Unlikely, but the parenting to `characterContainer` could have a frame-delay issue.
-2.  **Interactive Debugging:** Requires using the Unity Editor's debugger or frame-by-frame stepping to pinpoint the exact moment and script causing the position change after the initial warp. Inspecting `Transform` and `NavMeshAgent` properties during stepping is crucial.
-3.  **Component Isolation:** Systematically disable other components on the `NPC.prefab` (e.g., `Rigidbody`, `Character.cs`) to see if the position flip stops.
+*   The cosmetic `NPCAnimManager` Awake warning could be resolved by ensuring `SetAnimContainer` is called before the first frame where `anims` might be accessed (e.g., by adjusting script execution order or initialization timing), but it's low priority as it doesn't break functionality.
+*   Ensure the `NPC.prefab` hierarchy remains consistent (i.e., the `SpriteRenderer` used for flipping stays as a child of the root object containing the `NavMeshAgent`).

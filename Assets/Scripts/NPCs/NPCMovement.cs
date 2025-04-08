@@ -25,6 +25,7 @@ public class NPCMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        // --- Cline: Removed timestamped log ---
         player = GameObject.FindWithTag("Player");
         dialogueControl = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
 
@@ -64,6 +65,7 @@ public class NPCMovement : MonoBehaviour
 
     private void OnEnable()
     {
+        // --- Cline: Removed timestamped log ---
         StartCoroutine(InitializeWhenReady());
     }
 
@@ -111,6 +113,7 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator IdleState()
     {
+        // --- Cline: Removed timestamped log ---
         // --- Cline: Log position at start of IdleState ---
         if (agent != null) {
              Debug.Log($"[NPCMovement Debug] NPC {gameObject.name} starting IdleState at position {agent.transform.position}. Is on NavMesh: {agent.isOnNavMesh}");
@@ -127,7 +130,7 @@ public class NPCMovement : MonoBehaviour
         // Ensure agent is valid and on NavMesh before stopping
         if (agent != null && agent.isOnNavMesh)
         {
-            agent.isStopped = true;
+            agent.isStopped = true; // Cline: Restored this line
         }
         else if (agent != null)
         {
@@ -235,7 +238,7 @@ public class NPCMovement : MonoBehaviour
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = true;
-            agent.ResetPath(); // Clear any remaining path
+            // agent.ResetPath(); // Cline: Temporarily comment out to test if this causes position flip
         }
         // --- End Cline changes ---
 

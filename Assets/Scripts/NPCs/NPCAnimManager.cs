@@ -45,8 +45,18 @@ public class NPCAnimManager : MonoBehaviour
             Debug.LogWarning($"NPCAnimManager on {gameObject.name} Awake: 'anims' or 'anims.idleFront' is null.");
         }
 
-        originalScale = Vector3.one;
-        transform.root.localScale = originalScale;
+        // +++ Cline: Get original scale from sprite transform +++
+        if (sprite != null)
+        {
+            originalScale = sprite.transform.localScale;
+        }
+        else
+        {
+            originalScale = Vector3.one; // Fallback if sprite is missing
+            Debug.LogError($"NPCAnimManager on {gameObject.name} Awake: Cannot get originalScale because sprite reference is null!");
+        }
+        // --- End Cline changes ---
+        // transform.root.localScale = originalScale; // Don't set root scale here
         //Debug.Log(originalScale);
     }
 
@@ -120,11 +130,15 @@ public class NPCAnimManager : MonoBehaviour
             backward = false;
 
     //then flip anim based on last movement vector
-    if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
-        transform.root.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
-    else
-        transform.root.localScale = originalScale;
-    // --- Cline: Restored original scale flipping logic ---
+    // +++ Cline: Apply scale flip to sprite transform, not root +++
+    if (sprite != null) // Add null check for safety
+    {
+        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
+            sprite.transform.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
+        else
+            sprite.transform.localScale = originalScale;
+    }
+    // --- End Cline changes ---
 }
 
     //called whenever the player is in range to initiate dialogue - the npc will turn to face them
@@ -143,10 +157,15 @@ public class NPCAnimManager : MonoBehaviour
 
         Vector3 playerDir = player.transform.position - transform.position;
 
-        if (playerDir.x < 0)
-            transform.root.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
-        else
-            transform.root.localScale = originalScale;
+        // +++ Cline: Apply scale flip to sprite transform, not root +++
+        if (sprite != null) // Add null check for safety
+        {
+            if (playerDir.x < 0)
+                sprite.transform.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
+            else
+                sprite.transform.localScale = originalScale;
+        }
+        // --- End Cline changes ---
     }
 
     public void Animate(int currentSprite)
