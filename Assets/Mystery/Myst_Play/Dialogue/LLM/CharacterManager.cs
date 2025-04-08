@@ -7,6 +7,7 @@ using System.Collections;
 using LLMUnity;
 using System;
 using TMPro;
+// using System.IO; // Already included via other using statements or implicitly? Removing duplicate.
 
 public class CharacterManager : MonoBehaviour
 {
@@ -677,5 +678,65 @@ public class CharacterManager : MonoBehaviour
     public int GetReadyCharacterCount()
     {
         return stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready);
+    }
+
+    // --- Helper class for JSON Parsing (Simplified) ---
+    // Only need the top-level field we care about for now
+    [System.Serializable]
+    private class CharacterLocationData
+    {
+        public string initial_location;
+        // We don't need to define 'core' or 'mind_engine' if we only parse 'initial_location'
+    }
+    // --- End Helper class ---
+
+
+    /// <summary>
+    /// Gets the starting car name for a given character from their JSON file.
+    /// Assumes JSON structure like {"core": {"initial_location": "CarName"}}
+    /// </summary>
+    /// <param name="characterName">The name of the character (without .json extension).</param>
+    /// <returns>The starting car name, or null if not found or an error occurs.</returns>
+    public string GetCharacterStartingCar(string characterName)
+    {
+        if (string.IsNullOrEmpty(characterName))
+        {
+            Debug.LogError("GetCharacterStartingCar: Provided characterName is null or empty.");
+            return null;
+        }
+
+        string characterFilePath = Path.Combine(Application.streamingAssetsPath, charactersFolder, $"{characterName}.json");
+
+        if (!File.Exists(characterFilePath))
+        {
+            Debug.LogError($"GetCharacterStartingCar: Character file not found at '{characterFilePath}' for character '{characterName}'.");
+            return null;
+        }
+
+        try
+        {
+            string jsonContent = File.ReadAllText(characterFilePath);
+
+            // Attempt to parse using JsonUtility and the simplified helper class
+            CharacterLocationData parsedData = JsonUtility.FromJson<CharacterLocationData>(jsonContent);
+
+            // Check the top-level field directly
+            if (parsedData != null && !string.IsNullOrEmpty(parsedData.initial_location))
+            {
+                 Debug.Log($"Found starting location '{parsedData.initial_location}' for character '{characterName}'."); // Re-enabled debug log
+                return parsedData.initial_location;
+            }
+            else
+            {
+                Debug.LogWarning($"GetCharacterStartingCar: Could not parse 'initial_location' (as a top-level field) from JSON file for character '{characterName}'. Check JSON structure and content.");
+                // Fallback or more robust parsing could be added here if needed (e.g., using Newtonsoft.Json for more flexibility)
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"GetCharacterStartingCar: Error reading or parsing JSON file for character '{characterName}' at '{characterFilePath}'. Exception: {ex.Message}");
+            return null;
+        }
     }
 }

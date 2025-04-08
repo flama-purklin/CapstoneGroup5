@@ -39,7 +39,7 @@ public class CarVisibility : MonoBehaviour
         selected = true;
         if (carFront) carFront.enabled = false;
         if (carTop) carTop.SetActive(false);
-        if (carCharacters) carCharacters.InitializeCharacters();
+        // Removed call to carCharacters.InitializeCharacters(); - Spawning is now handled by InitializationManager
     }
 
     public Bounds GetBounds()

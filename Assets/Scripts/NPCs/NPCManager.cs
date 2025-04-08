@@ -12,8 +12,9 @@ public class NPCManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject npcPrefab;
-    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private Transform[] spawnPoints; // Note: This might become obsolete if spawning logic changes entirely
     [SerializeField] private CharacterManager characterManager;
+    [SerializeField] private NPCAnimContainer[] availableAnimContainers = new NPCAnimContainer[4]; // Assign the 4 Winchester containers here in Inspector
 
     private Dictionary<string, GameObject> activeNPCs = new Dictionary<string, GameObject>();
     private bool isInitialized = false;
@@ -66,7 +67,8 @@ public class NPCManager : MonoBehaviour
         Debug.Log("NPCManager initialization complete");
     }
 
-    public GameObject SpawnNPCInCar(string characterName, Vector3 position, Transform carTransform)
+    // Modified signature to accept characterIndex for animation assignment
+    public GameObject SpawnNPCInCar(string characterName, Vector3 position, Transform carTransform, int characterIndex)
     {
         if (!characterCache.ContainsKey(characterName))
         {
@@ -85,7 +87,67 @@ public class NPCManager : MonoBehaviour
             LLMCharacter newLLMChar = llmObject.AddComponent<LLMCharacter>();
             CopyLLMCharacterProperties(characterCache[characterName], newLLMChar);
 
-       
+            // --- Assign Animation Container ---
+            // Ensure NPCAnimManager exists, add if missing from prefab
+            NPCAnimManager npcAnimManager = npcInstance.GetComponent<NPCAnimManager>();
+            if (npcAnimManager == null)
+            {
+                Debug.LogWarning($"NPCManager: Adding missing NPCAnimManager component to {npcInstance.name}. Check the base NPC prefab!");
+                npcAnimManager = npcInstance.AddComponent<NPCAnimManager>();
+
+                // Manually assign references that would normally be serialized, if possible
+                // We need to get the NPCMovement component from the same instance
+                NPCMovement movementComponent = npcInstance.GetComponent<NPCMovement>(); // <--- Renamed variable
+                if (movementComponent != null)
+                {
+                    // Accessing private field via reflection is messy, ideally make movementControl public or add a setter
+                    // For now, let's assume we add a public setter or make it public temporarily
+                    // npcAnimManager.movementControl = movement; // Requires movementControl to be public or have a setter
+
+                    // Alternative: If NPCAnimManager can get its own reference in Awake/Start, this might not be needed,
+                    // but the Update fix already added a GetComponent check there as a fallback.
+                    // Let's log if we couldn't find the movement component here.
+                     Debug.Log($"NPCManager: Assigned NPCMovement reference to dynamically added NPCAnimManager on {npcInstance.name}.");
+                }
+                else
+                {
+                     Debug.LogError($"NPCManager: Could not find NPCMovement component on {npcInstance.name} to assign to dynamically added NPCAnimManager.");
+                }
+                 // We might also need to assign sprite and animator references if they are null
+                 // npcAnimManager.sprite = npcInstance.GetComponentInChildren<SpriteRenderer>(); // Example
+                 // npcAnimManager.animator = npcInstance.GetComponentInChildren<Animator>(); // Example
+            }
+
+            // Proceed with assigning the animation container
+            if (npcAnimManager != null)
+            {
+                if (availableAnimContainers != null && availableAnimContainers.Length > 0)
+                {
+                    // Assign container cyclically based on the character's index in the overall list
+                    int containerIndex = characterIndex % availableAnimContainers.Length;
+                    NPCAnimContainer containerToAssign = availableAnimContainers[containerIndex];
+
+                    if (containerToAssign != null)
+                    {
+                        npcAnimManager.SetAnimContainer(containerToAssign);
+                        // Debug.Log($"Assigned AnimContainer {containerToAssign.name} to {characterName} (Index: {characterIndex} -> Container Index: {containerIndex})");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"NPCManager: AnimContainer at index {containerIndex} is null for {characterName}. Check Inspector assignment.");
+                    }
+                }
+                else
+                {
+                     Debug.LogWarning($"NPCManager: availableAnimContainers array is null or empty for {characterName}. Cannot assign animation. Check Inspector assignment.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"NPCManager: NPCAnimManager component not found on prefab instance for {characterName}.");
+            }
+            // --- End Assign Animation Container ---
+
             var character = npcInstance.GetComponent<Character>();
             if (character)
             {
@@ -100,7 +162,46 @@ public class NPCManager : MonoBehaviour
                 if (agent)
                 {
                     agent.enabled = true;
-                    agent.Warp(position);
+                    // --- Cline: Verify NavMesh placement after Warp ---
+                    if (!agent.Warp(position))
+                    {
+                        Debug.LogError($"NPC {characterName} NavMeshAgent.Warp failed initially for position {position}. Agent might be invalid.");
+                    }
+                    else if (!agent.isOnNavMesh)
+                    {
+                        Debug.LogWarning($"NPC {characterName} warped to {position} but is not on NavMesh. Attempting to find nearest valid point.");
+                        NavMeshHit hit; // Declare hit variable here
+                        // Sample position with a small radius (e.g., 1.0f) around the intended position
+                        if (NavMesh.SamplePosition(position, out hit, 1.0f, NavMesh.AllAreas))
+                        {
+                            Debug.Log($"Found valid NavMesh point {hit.position} for {characterName}. Warping again.");
+                            if (!agent.Warp(hit.position)) // Warp to the valid point
+                            {
+                                Debug.LogError($"NPC {characterName} NavMeshAgent.Warp failed on second attempt to {hit.position}.");
+                            }
+                            else if (!agent.isOnNavMesh) // Double-check after second warp
+                            {
+                                Debug.LogError($"NPC {characterName} STILL not on NavMesh after second warp to {hit.position}!");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"NPC {characterName} could not find ANY valid NavMesh point near {position} after initial warp failed!");
+                            // Consider disabling the NPC or its movement if spawning fails completely
+                            // if (movement) movement.enabled = false;
+                        }
+                     }
+                     // --- Cline: Log position immediately after warp ---
+                     if (agent.isOnNavMesh) {
+                         Debug.Log($"[NPCManager Debug] NPC {characterName} IS on NavMesh immediately after warp to {agent.transform.position}.");
+                     } else {
+                         // Use position variable here since hit might not be assigned if SamplePosition failed
+                         Debug.LogWarning($"[NPCManager Debug] NPC {characterName} IS NOT on NavMesh immediately after warp attempt to {agent.transform.position} (intended: {position}).");
+                     }
+                     // +++ Cline: Add timestamped log after Warp +++
+                     Debug.Log($"[Timestamp {Time.frameCount}] NPCManager Post-Warp: {npcInstance.transform.position} for {characterName}");
+                     // --- End Cline changes ---
+                    // --- End Cline changes ---
                 }
             }
 

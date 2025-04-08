@@ -194,7 +194,7 @@
           ]
         }
       },
-      "initial_location": "business_class", 
+      "initial_location": "business_class_1", 
       "key_testimonies": {
         "eleanor_maxwell_skills": {
           "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",
@@ -751,7 +751,7 @@
           ]
         }
       },
-      "initial_location": "second_class_car_1", 
+      "initial_location": "second_class_1", 
       "key_testimonies": {
         "maxwell_paranoia": {
           "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
@@ -938,7 +938,7 @@
           ]
         }
       },
-      "initial_location": "business_class", 
+      "initial_location": "business_class_2", 
       "key_testimonies": {
         "mira_photos": {
           "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",
@@ -1448,7 +1448,7 @@
           ]
         }
       },
-      "initial_location": "lounge_bathroom", 
+      "initial_location": "lounge_car", 
       "key_testimonies": {}
     },
     "nova_winchester": {
@@ -1729,7 +1729,7 @@
         "points_of_interest": {}
       }
     },
-    "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class", "dining_car", "business_class", "dining_car", "first_class", "engine_room"] 
+    "layout_order": ["storage_car", "second_class", "second_class", "kitchen_car", "business_class", "lounge_car", "business_class", "dining_car", "first_class", "engine_room"] 
   },
   
   "constellation": {

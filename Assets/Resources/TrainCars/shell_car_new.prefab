@@ -5795,7 +5795,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 4294967295
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -7034,10 +7034,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e48277ab920f7e478fc3986f17c9ae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcPrefab: {fileID: 7441357142540035523, guid: 247f87585d4ef344b97284d8b035006b, type: 3}
-  carFloor: {fileID: 5818245705445918989}
-  minCharacters: 3
-  maxCharacters: 10
 --- !u!114 &611369389980451190
 MonoBehaviour:
   m_ObjectHideFlags: 0

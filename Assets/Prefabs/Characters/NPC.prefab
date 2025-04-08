@@ -216,11 +216,6 @@ MonoBehaviour:
   animator: {fileID: 8662918361551714388}
   movementControl: {fileID: 5989971033946942912}
   anims: {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
-  allAnims:
-  - {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
-  - {fileID: 11400000, guid: 6a14f850ff6d00647a2a8cbbab1a1026, type: 2}
-  - {fileID: 11400000, guid: 529680c6e047083479f730f8333a80b8, type: 2}
-  - {fileID: 11400000, guid: 63029a5ab55b1a5428d5ebaf7fa9e1cd, type: 2}
 --- !u!95 &8662918361551714388
 Animator:
   serializedVersion: 7
@@ -269,6 +264,7 @@ GameObject:
   - component: {fileID: 5989971033946942912}
   - component: {fileID: 2343209185002496409}
   - component: {fileID: 3300630251465967910}
+  - component: {fileID: -1474981623712691821}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Character
@@ -387,6 +383,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1789545cad2166846af334c331481eaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-1474981623712691821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7441357142540035523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c850887b59764640842110f3481e3c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 7643346265812006836}
+  animator: {fileID: 8662918361551714388}
+  movementControl: {fileID: 5989971033946942912}
+  anims: {fileID: 0}
 --- !u!1 &7569976503464529842
 GameObject:
   m_ObjectHideFlags: 0

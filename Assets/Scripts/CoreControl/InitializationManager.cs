@@ -208,9 +208,12 @@ public class InitializationManager : MonoBehaviour
             // Step 2.5: Build the train layout using the new manager
             BuildTrain();
 
-            // Step 3: Initialize NPCs and Character Manager (Now depends on train existing)
+            // Step 3: Initialize Character Manager and NPC Manager (Caches LLM data)
             await InitializeCharactersAndNPCs();
-            
+
+            // Step 3.5: Spawn NPCs into the built train layout
+            await SpawnAllNPCs(); // New step to handle actual spawning
+
             // Step 4: Complete initialization and hide loading overlay
             CompleteInitialization();
         }
@@ -455,8 +458,85 @@ public class InitializationManager : MonoBehaviour
         }
         
         float npcInitTime = Time.realtimeSinceStartup - startTime;
-        Debug.Log($"Character initialization complete in {npcInitTime:F1} seconds");
+        Debug.Log($"Character/NPC Manager initialization complete in {npcInitTime:F1} seconds");
     }
+
+    /// <summary>
+    /// Step 3.5: Spawn all NPCs into their designated cars
+    /// </summary>
+    private async Task SpawnAllNPCs()
+    {
+        Debug.Log("INITIALIZATION STEP 3.5: Spawning NPCs...");
+        if (characterManager == null || npcManager == null || trainLayoutManager == null)
+        {
+            Debug.LogError("Cannot spawn NPCs: Missing manager references (Character, NPC, or TrainLayout).");
+            return;
+        }
+
+        // Ensure the container for NPC GameObjects exists
+        npcManager.PlaceNPCsInGameScene();
+
+        string[] characterNames = characterManager.GetAvailableCharacters();
+        if (characterNames == null || characterNames.Length == 0)
+        {
+            Debug.LogWarning("No available characters found to spawn.");
+            return;
+        }
+
+        Debug.Log($"Attempting to spawn {characterNames.Length} NPCs...");
+
+        // Reset anchor tracking before starting the spawn loop for this sequence - Cline: Removed obsolete call
+        // trainLayoutManager.ResetUsedAnchorTracking();
+
+        for (int i = 0; i < characterNames.Length; i++)
+        {
+            string characterName = characterNames[i];
+            if (string.IsNullOrEmpty(characterName)) continue;
+
+            try
+            {
+                // --- Get Spawn Location Data (Requires methods in other managers) ---
+                // TODO: Implement GetCharacterStartingCar in CharacterManager
+                string startCarName = characterManager.GetCharacterStartingCar(characterName);
+                if (string.IsNullOrEmpty(startCarName))
+                {
+                    Debug.LogWarning($"No starting car specified for character '{characterName}'. Skipping spawn.");
+                    continue;
+                }
+
+                // TODO: Implement GetCarTransform in TrainLayoutManager
+                Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
+                if (carTransform == null)
+                {
+                     Debug.LogWarning($"Could not find car transform for car name '{startCarName}' (Character: '{characterName}'). Skipping spawn.");
+                     continue;
+                }
+
+                // TODO: Implement GetSpawnPointInCar in TrainLayoutManager
+                Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
+                // Optional: Add check if spawnPos is valid (e.g., not Vector3.zero if that indicates failure)
+
+                // --- Spawn the NPC ---
+                Debug.Log($"Spawning '{characterName}' in car '{startCarName}' at {spawnPos} (Index: {i})");
+                GameObject spawnedNPC = npcManager.SpawnNPCInCar(characterName, spawnPos, carTransform, i);
+
+                if (spawnedNPC == null)
+                {
+                     Debug.LogError($"Failed to spawn NPC for character '{characterName}'.");
+                }
+
+                // Optional: Add a small delay if spawning many NPCs causes performance hitches during loading
+                // await Task.Yield();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error spawning NPC for character '{characterName}': {ex.Message}");
+                Debug.LogException(ex);
+            }
+        }
+         Debug.Log("Finished NPC spawning loop.");
+    }
+
 
     /// <summary>
     /// Step 4: Complete initialization and transition to gameplay

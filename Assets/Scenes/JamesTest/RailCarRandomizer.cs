@@ -184,12 +184,12 @@ public class RailCarRandomizer : MonoBehaviour
     // Add componenets used in train car managment such as CarVisibility and CarCharacters
     public void AttachTrainScripts()
     {
-        // Do first since setting car to visible initializes npcs.
+        // Add CarCharacters component (now simplified, mainly for tracking)
         trainCar.AddComponent<CarCharacters>();
         carCharacterComp = trainCar.GetComponent<CarCharacters>();
-        carCharacterComp.carFloor = floor.GetComponent<MeshRenderer>();
-        carCharacterComp.npcPrefab = testNpcPrefab;
+        // Removed assignment to carCharacterComp.carFloor and carCharacterComp.npcPrefab as they no longer exist
 
+        // Add CarVisibility component
         trainCar.AddComponent<CarVisibility>();
         carVisibilityComp = trainCar.GetComponent<CarVisibility>();
         carVisibilityComp.carFront = exteriorWall.GetComponent<MeshRenderer>();
