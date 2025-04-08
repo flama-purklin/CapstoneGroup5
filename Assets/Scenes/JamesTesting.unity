@@ -3103,7 +3103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &707991437
 Transform:
   m_ObjectHideFlags: 0
@@ -4659,7 +4659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &958192798
 Transform:
   m_ObjectHideFlags: 0
@@ -11416,7 +11416,7 @@ PrefabInstance:
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[0].prefab
       value: 
-      objectReference: {fileID: 5531807671494129236, guid: ab993ee80c5d6e44ba6ab8ac6531a4e3, type: 3}
+      objectReference: {fileID: 1645515263693116029, guid: 90997e898d49c8441914580fb5dcda48, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[1].prefab
       value: 
@@ -11696,7 +11696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: anchorsVissible
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: shellConfigEntries.Array.size
@@ -11772,7 +11772,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: carJsonConfigs.Array.data[0].carClass
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: carJsonConfigs.Array.data[0].layoutJson
@@ -11821,7 +11821,7 @@ PrefabInstance:
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[5].prefab
       value: 
-      objectReference: {fileID: 5531807671494129236, guid: ab993ee80c5d6e44ba6ab8ac6531a4e3, type: 3}
+      objectReference: {fileID: 1645515263693116029, guid: 90997e898d49c8441914580fb5dcda48, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[6].prefab
       value: 

@@ -143,6 +143,8 @@ public class RailCarRandomizer : MonoBehaviour
     // Enables spawning shell from outside components. Returns the gameobject or use int TrainCarLoader
     public GameObject SpawnShell()
     {
+        ApplyShellConfigForCar(currentCarClass, currentCarType); // Allows config to be applied by external calls
+
         GenerateTrainShell();
         AttachTrainScripts();
         GenerateAnchorGrid();

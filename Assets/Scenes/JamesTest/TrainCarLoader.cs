@@ -121,11 +121,12 @@ public class TrainCarLoader : MonoBehaviour
     // To be called outside of the class, uses previously spawned shell so RailCarRandomizer.SpawnShell() must be called first to set it up
     public GameObject PopulateTrain(TextAsset json)
     {
-        // Load shell, setup loader for placement, return finished object
+        // Load shell, setup loader for placement, return finished object\        this.jsonFile = json;
+        this.currentConfig.layoutJson = jsonFile;
+        railCarRandomizer.currentCarClass = selectedCarClass;
+        railCarRandomizer.currentCarType = selectedCarType;
         GameObject shell = railCarRandomizer.SpawnShell();
         this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
-        this.jsonFile = json;
-        this.currentConfig.layoutJson = jsonFile;
         LoadTrainCarLayout();
         PlaceObjects();
         return railCarRandomizer.trainCar;
@@ -135,12 +136,14 @@ public class TrainCarLoader : MonoBehaviour
     public GameObject PopulateTrain(CarLoadConfig config)
     {
         // Load shell, setup loader for placement, return finished object
-        GameObject shell = railCarRandomizer.SpawnShell();
-        this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
         this.jsonFile = config.layoutJson;
         this.selectedCarClass = config.carClass;
         this.selectedCarType = config.carType;
         this.currentConfig = config; // Above should be redundent with this assignment but better safe than sorry
+        railCarRandomizer.currentCarClass = selectedCarClass;
+        railCarRandomizer.currentCarType = selectedCarType;
+        GameObject shell = railCarRandomizer.SpawnShell();
+        this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
         LoadTrainCarLayout();
         PlaceObjects();
         return railCarRandomizer.trainCar;
