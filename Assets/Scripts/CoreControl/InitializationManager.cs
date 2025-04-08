@@ -287,7 +287,7 @@ public class InitializationManager : MonoBehaviour
         Debug.Log("INITIALIZATION STEP 1: Waiting for LLM to start...");
         int waitCount = 0;
         float startTime = Time.realtimeSinceStartup;
-        const float LLM_STARTUP_TIMEOUT = 30f; // 30 seconds timeout
+        const float LLM_STARTUP_TIMEOUT = 120f; // 30 seconds timeout (changed from 30f to 120f)
         
         while (llm != null && !llm.started)
         {
@@ -395,7 +395,7 @@ public class InitializationManager : MonoBehaviour
     {
         Debug.Log("INITIALIZATION STEP 3: Character Manager initialization");
         float startTime = Time.realtimeSinceStartup;
-        const float CHARACTER_INIT_TIMEOUT = 30f; // 30 seconds timeout
+        const float CHARACTER_INIT_TIMEOUT = 120; // 30 seconds timeout (testing with 120 seconds timout)
         
         if (characterManager != null)
         {

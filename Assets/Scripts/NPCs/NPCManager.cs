@@ -39,11 +39,27 @@ public class NPCManager : MonoBehaviour
         Debug.Log("Starting NPCManager initialization...");
         isInitialized = false;
 
-        // Wait for CharacterManager
+        // Find CharacterManager
+        while (characterManager == null)
+        {
+            Debug.Log("CharacterManger not found on Initialize, attempting to link...");
+            // Actually try and find reference to the object, instead of waiting with no link check (was previously only checking on Awake)
+            characterManager = FindFirstObjectByType<CharacterManager>();
+            if (characterManager == null)
+            {
+                Debug.Log("CharacterManager still not found... waiting.");
+                await Task.Yield();
+            }
+        }
+
+        // Wait for CharacterManager to initialize
+        Debug.Log("CharacterManager found but not yet initialized...!");
         while (!characterManager.IsInitialized)
         {
+            //Debug.Log("CharacterManager found but not yet initialized...!"); // This method continues to print even after editor is stopped playing...
             await Task.Yield();
         }
+        Debug.Log("CharacterManager initialized!!!");
 
         // cache $$$
         string[] characterNames = characterManager.GetAvailableCharacters();

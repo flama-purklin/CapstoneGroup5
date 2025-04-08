@@ -131,18 +131,24 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator TwoPhaseInitialization()
     {
+        Debug.Log("CharacterManager's Initialization: TwoPhaseInitialization coroutine.");
         if (isInitialized || isInitializing) yield break;
         isInitializing = true;
 
         // Phase 1: Create Character Objects and Load Prompts
+        Debug.Log("CharacterManager's Initialization: Phase 1: Create Character Objects and Load Prompts...");
         yield return StartCoroutine(CreateCharacterObjects());
+        Debug.Log("CharacterManager's Initialization: Phase 1 complete!");
 
         // Phase 2: Initialize LLM and Warm Up Characters
+        Debug.Log("CharacterManager's Initialization: Phase 2: Initialize LLM and Warm Up Characters");
         yield return StartCoroutine(InitializeCharacters());
+        Debug.Log("CharacterManager's Initialization: Phase 2 complete!");
 
         isInitialized = true;
         isInitializing = false;
 
+        Debug.Log("CharacterManager's Initialization: Complete, invoking OnInitializationComplete!");
         OnInitializationComplete?.Invoke();
     }
 
@@ -233,7 +239,7 @@ public class CharacterManager : MonoBehaviour
 
         if (characterCache.Count == 0)
         {
-            Debug.LogError("No characters in cache to initialize!");
+            Debug.LogError("CharacterManager Phase 2: No characters in cache to initialize!");
             yield break;
         }
 
@@ -242,15 +248,18 @@ public class CharacterManager : MonoBehaviour
 
         foreach (var kvp in characterCache)
         {
+            Debug.Log($"[CharacterManager Init] Starting init for character: {kvp.Key}");
             yield return StartCoroutine(InitializeSingleCharacter(
                 kvp.Key,
                 kvp.Value,
                 charactersInitialized,
                 characterCache.Count
             ));
+            Debug.Log($"[CharacterManager Init] Finished init for character: {kvp.Key}");
 
             charactersInitialized++;
         }
+        Debug.Log("[CharacterManager Init] All characters initialized, assigning context.");
 
         // Only set context if we have characters
         if (characterCache.Count > 0)
@@ -269,17 +278,23 @@ public class CharacterManager : MonoBehaviour
         stateTransition.TryTransition(CharacterState.LoadingTemplate);
 
         // Load template
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Start LoadTemplate.");
         yield return StartCoroutine(LoadTemplateWithTimeout(character, characterName));
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Finished LoadTemplate.");
         if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
         {
+            Debug.LogWarning($"[CharacterManager InitSingleChar: {characterName}] Failed after LoadTemplate.");
             HandleCharacterFailure(characterName, character.gameObject);
             yield break;
         }
 
         // Warm up
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Start Warmup.");
         yield return StartCoroutine(WarmupWithRetries(character, characterName));
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Finished Warmup.");
         if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
         {
+            Debug.LogWarning($"[CharacterManager InitSingleChar: {characterName}] Failed after Warmup.");
             HandleCharacterFailure(characterName, character.gameObject);
             yield break;
         }
@@ -326,13 +341,14 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator WarmupWithRetries(LLMCharacter character, string characterName)
     {
-        Debug.Log($"Warming up {characterName}...");
+        Debug.Log($"[CharacterManager Warmup] Warming up {characterName}...");
 
         for (int attempt = 1; attempt <= maxWarmupAttempts; attempt++)
         {
             if (attempt > 1)
             {
                 float backoffDelay = Mathf.Pow(2, attempt - 1) * baseBackoffDelay;
+                Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Backing off for {backoffDelay} seconds.");
                 yield return new WaitForSeconds(backoffDelay);
             }
 
@@ -340,12 +356,14 @@ public class CharacterManager : MonoBehaviour
             try
             {
                 warmupTask = character.Warmup();
+                Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Warmup task started.");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Error starting warmup for {characterName} (attempt {attempt}): {e.Message}");
+                Debug.LogError($"[CharacterManager Warmup] Error starting warmup for {characterName} (attempt {attempt}): {e.Message}");
                 if (attempt == maxWarmupAttempts)
                 {
+                    Debug.LogError($"[CharacterManager Warmup] All attempts failed for {characterName}. Transitioning to Failed state.");
                     stateTransitions[characterName].TryTransition(CharacterState.Failed);
                     yield break;
                 }
@@ -362,23 +380,25 @@ public class CharacterManager : MonoBehaviour
                 timedOut = Time.time > timeoutTime;
                 if (!taskCompleted && !timedOut)
                 {
+                    Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Task not completed yet. Yielding next frame.");
                     yield return null;
                 }
             }
 
             if (!timedOut && !warmupTask.IsFaulted)
             {
+                Debug.LogWarning($"[CharacterManager Warmup] Attempt {attempt}: Timeout reached. Task did not complete in time.");
                 stateTransitions[characterName].TryTransition(CharacterState.Ready);
                 yield break;
             }
 
             if (attempt < maxWarmupAttempts)
             {
-                Debug.LogWarning($"{characterName} warmup attempt {attempt} failed, retrying...");
+                Debug.LogWarning($"[CharacterManager Warmup] {characterName} warmup attempt {attempt} failed, retrying...");
             }
             else
             {
-                Debug.LogError($"All warmup attempts failed for {characterName}");
+                Debug.LogError($"[CharacterManager Warmup] All warmup attempts failed for {characterName}");
                 stateTransitions[characterName].TryTransition(CharacterState.Failed);
             }
         }
