@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Collections;
-using UnityEditor;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
-using Newtonsoft.Json.Linq;
+using static TrainManager;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [System.Serializable]
 // Struct for storing data from Json
@@ -28,37 +30,59 @@ public class TrainCarLayout
 public class PrefabEntry
 {
     public string key;
+    public CarClass carClass; // Allows for palet swaps.
+    public CarType carType; // Allows different pallets for the Special cars.
     //public string theme;
     public GameObject prefab;
+}
+
+[System.Serializable]
+public class CarLoadConfig
+{
+    public TextAsset layoutJson;
+    public CarClass carClass;
+    public CarType carType;
 }
 
 public class TrainCarLoader : MonoBehaviour
 {
     [SerializeField] public TextAsset jsonFile; // Assign JSON in inspector
     [SerializeField] public RailCarRandomizer railCarRandomizer; // Assign RailCarRandomizer script
-    [SerializeField] public bool spawnOnStart = false; // Added for support with placement scene? Can be updated to remove. In fact I dont think its used.
+    [SerializeField] public bool spawnOnStart = false; // Added for support with placement scene?
     [SerializeField] private TrainCarLayout trainCarLayout;
     [SerializeField] public List<PrefabEntry> objectPrefabsList;
+    [SerializeField] public CarLoadConfig currentConfig; // To be set before each JSON is run.
     [SerializeField] public string prefabSavePath = "Assets/Scenes/JamesTest/Prefabs/";
+    [SerializeField] public CarClass selectedCarClass = CarClass.SecondClass;
+    [SerializeField] public CarType selectedCarType = CarType.Passenger;
 
     private List<GameObject> anchorPoints = null; // Stores all anchor points, instantiate at runtime after railCarRandomizer runs
                                                   // Above is of naming convention $"Anchor ({row}, {col})"
-    private Dictionary<string, GameObject> objectPrefabs; // Internal dictionary for internal use (dicts dont show in inspector)
+    //private Dictionary<string, GameObject> objectPrefabs; // Internal dictionary for internal use (dicts dont show in inspector)
 
     void Start()
     {
-        // Convert List to Dictionary
+        // Dictonary lookup not needed/not robust enough. Just querie the objectPrefabsList directly.
+/*        // Convert List to Dictionary
         objectPrefabs = new Dictionary<string, GameObject>();
         foreach (PrefabEntry entry in objectPrefabsList)
         {
             objectPrefabs[entry.key] = entry.prefab;
-        }
+        }*/
 
         // *NOte, unneded as method modified to just take in a reference to the train car shell object.
         // Wait for RailCarRandomizer to finish generating the train shell
         if (spawnOnStart == true)
         {
             StartCoroutine(WaitForTrainShell());
+        }
+
+        if (currentConfig == null)
+        {
+            currentConfig = new CarLoadConfig();
+            currentConfig.layoutJson = jsonFile;
+            currentConfig.carClass = selectedCarClass;
+            currentConfig.carType = selectedCarType;
         }
     }
 
@@ -101,6 +125,22 @@ public class TrainCarLoader : MonoBehaviour
         GameObject shell = railCarRandomizer.SpawnShell();
         this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
         this.jsonFile = json;
+        this.currentConfig.layoutJson = jsonFile;
+        LoadTrainCarLayout();
+        PlaceObjects();
+        return railCarRandomizer.trainCar;
+    }
+
+    // To be called outside of the class, uses previously spawned shell so RailCarRandomizer.SpawnShell() must be called first to set it up (allows easy changing of pallet between each run)
+    public GameObject PopulateTrain(CarLoadConfig config)
+    {
+        // Load shell, setup loader for placement, return finished object
+        GameObject shell = railCarRandomizer.SpawnShell();
+        this.anchorPoints = railCarRandomizer.anchorPoints; // Gets anchor points of current shell
+        this.jsonFile = config.layoutJson;
+        this.selectedCarClass = config.carClass;
+        this.selectedCarType = config.carType;
+        this.currentConfig = config; // Above should be redundent with this assignment but better safe than sorry
         LoadTrainCarLayout();
         PlaceObjects();
         return railCarRandomizer.trainCar;
@@ -110,7 +150,7 @@ public class TrainCarLoader : MonoBehaviour
     // This is anoying but doesnt effect refult.
     void PlaceObjects()
     {
-        if (trainCarLayout == null || railCarRandomizer == null || objectPrefabs == null)
+        if (trainCarLayout == null || railCarRandomizer == null || objectPrefabsList == null)
         {
             Debug.LogError("Missing references in TrainCarLoader!");
             return;
@@ -128,14 +168,19 @@ public class TrainCarLoader : MonoBehaviour
             float z = startZ + obj.position[0] * railCarRandomizer.cellSize;
             Vector3 position = new Vector3(x, y, z);
 
-            if (objectPrefabs.ContainsKey(obj.type))
+            // Use helper method to lookup the prefab to spawn based on currentConfig
+            GameObject prefab = GetMatchingPrefab(obj.type, currentConfig.carClass, currentConfig.carType);
+            if (prefab != null)
             {
-                //Debug.Log("objectPrefabs contain obj.type" + obj.type.ToString());
-                GameObject prefab = objectPrefabs[obj.type];
                 string anchorName = $"Anchor ({obj.position[0]}, {obj.position[1]})";
-                //Debug.Log("Anchor name = " + anchorName);
                 GameObject instance = Instantiate(prefab, position, Quaternion.Euler(0, obj.rotation, 0));
-                instance.transform.SetParent(anchorPoints.Find(obj => obj.name == anchorName).transform);
+                var anchor = anchorPoints.Find(a => a.name == anchorName); // Prevents null when anchor not found
+                if (anchor == null)
+                {
+                    Debug.LogWarning($"Anchor not found: {anchorName}");
+                    continue;
+                }
+                instance.transform.SetParent(anchor.transform);
                 instance.name = $"{obj.type} ({obj.position[0]}, {obj.position[1]})";
             }
         }
@@ -152,8 +197,35 @@ public class TrainCarLoader : MonoBehaviour
         NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
         navMeshSurface.collectObjects = CollectObjects.Children;
         navMeshSurface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
-        navMeshSurface.layerMask = LayerMask.GetMask("Default");
+        navMeshSurface.layerMask = ~0; // Was "LayerMask.GetMask("Default")", but since floor is on "TrainFloor" may have caused errors.
         navMeshSurface.BuildNavMesh();
+    }
+
+    private GameObject GetMatchingPrefab(string key, CarClass carClass, CarType carType)
+    {
+        // Try full match: key + class + type (basically used wehen type==special)
+        foreach (var entry in objectPrefabsList)
+        {
+            if (entry.key == key && entry.carClass == carClass && entry.carType == carType)
+                return entry.prefab;
+        }
+
+        // Fallback: match only on key + class
+        foreach (var entry in objectPrefabsList)
+        {
+            if (entry.key == key && entry.carClass == carClass)
+                return entry.prefab;
+        }
+
+        // Fallback: match only on key (good for generics like 'walkway')
+        foreach (var entry in objectPrefabsList)
+        {
+            if (entry.key == key)
+                return entry.prefab;
+        }
+
+        Debug.LogWarning($"No prefab found for key '{key}' with class '{carClass}' and type '{carType}'.");
+        return null;
     }
 
     // WARNING* "Debug.LogError("Prefab saving is only supported in the Unity Editor.");"
@@ -161,14 +233,15 @@ public class TrainCarLoader : MonoBehaviour
     public void SaveAsPrefab(GameObject runtimeObject)
     {
 #if UNITY_EDITOR
+        // Should use File.Exists(fullPath) to match file, not directory. This way overwrites existing prefabs, fine for now since still changing.
         // Ensure save path exists
         if (!System.IO.Directory.Exists(prefabSavePath))
         {
             System.IO.Directory.CreateDirectory(prefabSavePath);
         }
 
-        // Define full save path
-        string fullPath = prefabSavePath + runtimeObject.name + " (" + jsonFile.name + ").prefab";
+        // Define full save path (added class and type to name)
+        string fullPath = prefabSavePath + runtimeObject.name + $"_{currentConfig.carClass.ToString()}_{currentConfig.carType.ToString()}(" + jsonFile.name + ").prefab";
 
         // Ensure no duplicate exists
         if (System.IO.Directory.Exists(fullPath))
