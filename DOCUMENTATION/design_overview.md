@@ -284,11 +284,19 @@
     * The layout of the train where the mysteries will play out will follow a static template that provides a basic arrangement of different train-car types and the order in which they appear, giving all mysteries a shared spatial flow.  
     * The following is the current template for the train layout:   
       * storage \<-\> second\_class \<-\> second\_class \<-\> kitchen \<-\> business\_class \<-\> bar \<-\> business\_class \<-\> lounge \<-\> first\_class \<-\> engine\_room (player spawn)  
-    * In accordance to the black box design, a train’s layout is fundamentally fluid from game to game, and should be set up by the creator of the mystery.
+    * In accordance to the black box design, a train's layout is fundamentally fluid from game to game, and should be set up by the creator of the mystery.
 
   * ### Filling-In the Templates
 
     * Each car type will have multiple different visual iterations based on themes associated with them, being instantiated as a different iteration of itself on separate mysteries.
+    
+  * ### Car Prefab Structure
+
+    * Each train car prefab must include:
+      * A `RailCarFloor` element that contains a properly baked NavMesh for NPC navigation
+      * Multiple `Anchor` points organized in a grid-like pattern (e.g., "Anchor (3, 7)")
+      * Each Anchor must have a `walkway` child object positioned on or near the NavMesh
+      * This structure is essential for NPC spawning and navigation within the train cars
 
 * ## ***Generating Characters*** {#generating-characters}
 
@@ -304,7 +312,8 @@
         * Agenda  
         * Possible motive  
         * Leads  
-      * **MIND ENGINE:** This section will take care of the character’s personality, voice, and the steps they take to make decisions. This section will be mostly used by the language model for role-playing purposes, but it should also define the manner in which characters dance around important pieces of information, which directly affects gameplay.  
+        * **initial_location**: This field determines which train car the NPC will spawn in when the game starts. Uses the car name/key (e.g., "business_class_1") that exactly matches a key in `TrainLayoutManager.carInstanceMap`.
+      * **MIND ENGINE:** This section will take care of the character's personality, voice, and the steps they take to make decisions. This section will be mostly used by the language model for role-playing purposes, but it should also define the manner in which characters dance around important pieces of information, which directly affects gameplay.  
         * Speech patterns  
         * Identity  
         * State of Mind  

@@ -147,9 +147,11 @@ Characters are managed through multiple components:
 NPCs are managed through the following components:
 
 1. **NPCManager**:
-   - Creates NPC GameObjects
+   - Creates NPC GameObjects using the `NPC.prefab` template
    - Connects NPCs to LLMCharacters
-   - Handles NPC placement in the train environment
+   - Handles NPC placement in the train environment based on the character's `initial_location` field
+   - Contains `availableAnimContainers` array (must be assigned in Inspector) which holds references to the four `NPCAnimContainer` Scriptable Objects used for visual representation
+   - Assigns animations cyclically to NPCs based on character index
 
 2. **Character Component**:
    - Links NPC GameObject to LLMCharacter
@@ -159,10 +161,18 @@ NPCs are managed through the following components:
    - Controls NPC movement patterns
    - Manages state transitions (Idle ↔ Movement)
    - Detects player interaction and triggers dialogue
+   - Contains safety checks for NavMeshAgent operations
 
 4. **NPCAnimManager**:
    - Handles NPC animations
    - Syncs animations with movement and dialogue states
+   - Manages sprite flipping by modifying the child sprite's transform scale (not root)
+   - References the Animator component (which must be assigned in Inspector)
+
+5. **NPC Prefab Requirements**:
+   - Must have NavMeshAgent, Character, NPCMovement components
+   - Should include NPCAnimManager component with references assigned
+   - Should include an Animator component with "Apply Root Motion" turned OFF
 
 ### Dialogue System
 
@@ -249,14 +259,31 @@ The game initialization occurs entirely within the `SystemsTest` scene, managed 
     - Character files are validated.
     - Update LoadingOverlay status.
 
-4.  **Character Manager Initialization** (Step 3):
+4.  **Train Layout Building** (Step 2.5):
+    - `TrainLayoutManager` reads the `LayoutOrder` from the mystery JSON.
+    - Prepares car prefabs (or JSONs) and adds them to `TrainManager.carPrefabs` list.
+    - Calls `TrainManager.SpawnCars()` to instantiate the train cars.
+    - `TrainLayoutManager.NameCars()` populates a dictionary mapping car keys (e.g., "business_class_1") to train car GameObjects.
+    - Train cars must have the `RailCarFloor` → `Anchor (x, y)` → `walkway` hierarchical structure.
+    - Each floor must have a baked NavMesh surface for NPC navigation.
+
+5.  **Character Manager Initialization** (Step 3):
     - `CharacterManager` initializes.
     - Loads character data from files.
     - Creates and warms up `LLMCharacter` instances for each character.
-    - `NPCManager` initializes, spawning NPCs and linking them to their `LLMCharacter`.
-    - Update LoadingOverlay status.
+    - `NPCManager` initializes, caching LLM data.
 
-5.  **Transition to Gameplay** (Step 4):
+6.  **NPC Spawning** (Step 3.5):
+    - `InitializationManager.SpawnAllNPCs()` retrieves available character names.
+    - For each character:
+      - Calls `CharacterManager.GetCharacterStartingCar()` to get the car name from character JSON's `initial_location` field.
+      - Calls `TrainLayoutManager.GetCarTransform()` to find the corresponding car.
+      - Calls `TrainLayoutManager.GetSpawnPointInCar()` to find a valid NavMesh position in the car.
+      - The spawn point is selected by prioritizing central anchors (e.g., "Anchor (3, 7)"), then non-edge anchors, then first available.
+      - Uses `NavMesh.SamplePosition()` to find a valid NavMesh point near the walkway.
+      - Calls `NPCManager.SpawnNPCInCar()` to instantiate the NPC with appropriate animation appearance.
+
+7.  **Transition to Gameplay** (Step 4):
     - Once all steps are complete, `InitializationManager` signals completion.
     - `LoadingOverlay` fades out or is disabled.
     - Player input is enabled.
@@ -400,6 +427,7 @@ The project has the following key dependencies:
    - Spawns and manages NPCs
    - Links NPCs to LLM characters
    - Handles NPC placement in environment
+   - Assigns NPCAnimContainer visuals to NPCs
 
 2. **Character.cs**:
    - Links NPC GameObject to LLMCharacter
@@ -410,6 +438,42 @@ The project has the following key dependencies:
    - Controls NPC movement behavior
    - Manages idle and movement states
    - Detects player interaction for dialogue
+   - Ensures NavMeshAgent operations occur only when on NavMesh
+
+4. **NPCAnimManager.cs**:
+   - Manages NPC appearance and animations
+   - Applies animation state changes based on movement
+   - Handles sprite flipping by modifying child sprite scale
+   - Prevents NavMeshAgent issues by not modifying root transform scale
+
+5. **NPCAnimContainer.cs**:
+   - Scriptable Object that stores animation sprite arrays
+   - Defines idle and walk animations for different directions
+   - Assigned to NPCs by NPCManager during instantiation
+
+### Train System
+
+1. **TrainLayoutManager.cs**:
+   - Reads train car layout from mystery JSON
+   - Prepares car prefabs for instantiation
+   - Delegates actual car instantiation to TrainManager
+   - Maps car names to their GameObjects via NameCars()
+   - Provides methods to find cars and spawn points for NPCs
+   - Uses NavMesh sampling for valid NPC spawn positions
+
+2. **TrainManager.cs**:
+   - Handles actual instantiation of train cars
+   - Manages the physical layout and spacing of cars
+   - Maintains a list of instantiated car GameObjects
+
+### Initialization System
+
+1. **InitializationManager.cs**:
+   - Orchestrates the entire game initialization sequence
+   - Manages LoadingOverlay and initialization state
+   - Coordinates between systems: LLM, ParsingControl, TrainLayoutManager, etc.
+   - Handles NPC spawning through SpawnAllNPCs() method
+   - Ensures proper startup sequence and transition to gameplay
 
 ### Dialogue System
 

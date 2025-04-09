@@ -10,6 +10,7 @@ The Unity MCP Server provides a bidirectional communication channel between Unit
 
 - **Asset Management**: Create, import, and manipulate Unity assets programmatically.
 - **Scene Control**: Manage scenes, objects, and their properties.
+- **Material Editing**: Modify materials and their properties.
 - **Script Integration**: View, create, and update Unity scripts.
 - **Editor Automation**: Control Unity Editor functions like undo, redo, play, and build.
 
@@ -19,7 +20,7 @@ This project is perfect for developers who want to leverage LLMs to enhance thei
 
 To use the Unity MCP Package, ensure you have the following installed:
 
-- **Unity 2020.3 LTS or newer**
+- **Unity 2020.3 LTS or newer** (Works with any rendering pipeline)
 - **Python 3.12 or newer**
 - **uv package manager**
 
@@ -72,8 +73,10 @@ Once installed, the Unity MCP Package will be available in your Unity project. T
 - **Bidirectional Communication**: Seamlessly send and receive data between Unity and LLMs.
 - **Asset Management**: Import assets, instantiate prefabs, and create new prefabs programmatically.
 - **Scene Control**: Open, save, and modify scenes, plus create and manipulate game objects.
+- **Material Editing**: Apply and modify materials with ease across any rendering pipeline (Built-in, URP, HDRP).
 - **Script Integration**: Create, view, and update C# scripts within Unity.
 - **Editor Automation**: Automate Unity Editor tasks like building projects or entering play mode.
+- **Rendering Pipeline Agnostic**: Works with any rendering pipeline including Built-in, URP, and HDRP.
 
 ## Contributing
 
