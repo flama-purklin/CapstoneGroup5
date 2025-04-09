@@ -44,6 +44,8 @@ namespace LLMUnity
                 new LLama3ChatTemplate(),
                 new LLama2ChatTemplate(),
                 new LLama2Template(),
+                new Phi4MiniTemplate(),
+                new Phi4Template(),
                 new Phi3_5Template(),
                 new Phi3Template(),
                 new Phi2Template(),
@@ -390,12 +392,13 @@ namespace LLMUnity
         public override string GetName() { return "gemma"; }
         public override string GetDescription() { return "gemma"; }
         public override string[] GetNameMatches() { return new string[] {"gemma"}; }
+        public override string[] GetChatTemplateMatches() { return new string[] {"{{ bos_token }}{% if messages[0]['role'] == 'system' %}{{ raise_exception('System role not supported') }}{% endif %}{% for message in messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if (message['role'] == 'assistant') %}{% set role = 'model' %}{% else %}{% set role = message['role'] %}{% endif %}{{ '<start_of_turn>' + role + '\n' + message['content'] | trim + '<end_of_turn>\n' }}{% endfor %}{% if add_generation_prompt %}{{'<start_of_turn>model\n'}}{% endif %}"}; }
 
         protected override string RequestSuffix() { return "<end_of_turn>\n"; }
         protected override string PairSuffix() { return "<end_of_turn>\n"; }
 
-        protected override string PlayerPrefix(string playerName) { return "<start_of_turn>" + playerName + "\n"; }
-        protected override string AIPrefix(string AIName) { return "<start_of_turn>" + AIName + "\n"; }
+        protected override string PlayerPrefix(string playerName) { return "<start_of_turn>user\n"; }
+        protected override string AIPrefix(string AIName) { return "<start_of_turn>model\n"; }
 
         protected override bool SystemPromptSupported() { return false; }
 
@@ -629,6 +632,52 @@ namespace LLMUnity
         public override string[] GetStop(string playerName, string AIName)
         {
             return AddStopNewlines(new string[] { "<｜end▁of▁sentence｜>", "<｜User｜>", "<｜Assistant｜>", "</think>" });
+        }
+    }
+
+    /// @ingroup template
+    /// <summary>
+    /// Class implementing the Phi-4 template
+    /// </summary>
+    public class Phi4Template : ChatTemplate
+    {
+        public override string GetName() { return "phi-4"; }
+        public override string GetDescription() { return "phi-4"; }
+        public override string[] GetNameMatches() { return new string[] {"phi-4"}; }
+        
+        protected override string PlayerPrefix(string playerName) { return $"<|im_start|>user<|im_sep|>"; }
+        protected override string AIPrefix(string AIName) { return $"<|im_start|>assistant<|im_sep|>"; }
+        protected override string RequestSuffix() { return "<|im_end|>"; }
+        protected override string PairSuffix() { return "<|im_end|>"; }
+        protected override string SystemPrefix() { return "<|im_start|>system<|im_sep|>"; }
+        protected override string SystemSuffix() { return "<|im_end|>"; }
+
+        public override string[] GetStop(string playerName, string AIName)
+        {
+            return AddStopNewlines(new string[] { "<|im_start|>", "<|im_end|>", "<|im_sep|>" });
+        }
+    }
+
+    /// @ingroup template
+    /// <summary>
+    /// Class implementing the Phi-4 Mini template
+    /// </summary>
+    public class Phi4MiniTemplate : ChatTemplate
+    {
+        public override string GetName() { return "phi-4-mini"; }
+        public override string GetDescription() { return "phi-4-mini"; }
+        public override string[] GetNameMatches() { return new string[] {"phi-4-mini"}; }
+        
+        protected override string PlayerPrefix(string playerName) { return $"<|user|>"; }
+        protected override string AIPrefix(string AIName) { return $"<|assistant|>"; }
+        protected override string RequestSuffix() { return "<|end|>"; }
+        protected override string PairSuffix() { return "<|end|>"; }
+        protected override string SystemPrefix() { return "<|system|>"; }
+        protected override string SystemSuffix() { return "<|end|>"; }
+
+        public override string[] GetStop(string playerName, string AIName)
+        {
+            return AddStopNewlines(new string[] { "<|user|>", "<|assistant|>", "<|system|>", "<|end|>" });
         }
     }
 }

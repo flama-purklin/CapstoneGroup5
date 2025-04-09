@@ -36,7 +36,7 @@ LLM for Unity is built on top of the awesome [llama.cpp](https://github.com/gger
 </sub>
 
 ## At a glance
-- 💻 Cross-platform! Windows, Linux, macOS, iOS and Android
+- 💻 Cross-platform! Windows, Linux, macOS, iOS, Android and VisionOS
 - 🏠 Runs locally without internet access. No data ever leave the game!
 - ⚡ Blazing fast inference on CPU and GPU (Nvidia, AMD, Apple Metal)
 - 🤗 Supports all major LLM models
@@ -142,6 +142,9 @@ You can also:
 
 <details>
 <summary>Build a mobile app</summary>
+
+For mobile apps you can use models with up to 1-2 billion parameters ("Tiny models" in the LLM model manager).<br>
+Larger models will typically not work due to the limited mobile hardware.
 
 **iOS**
 iOS can be built with the default player settings.
@@ -343,7 +346,7 @@ To create the server:
 
 Alternatively you can use a server binary for easier deployment:
 - Run the above scene from the Editor and copy the command from the Debug messages (starting with "Server command:")
-- Download the [server binaries](https://github.com/undreamai/LlamaLib/releases/download/v1.2.1/undreamai-v1.2.1-server.zip) and [DLLs](https://github.com/undreamai/LlamaLib/releases/download/v1.2.1/undreamai-v1.2.1-llamacpp-full.zip) and extract them into the same folder
+- Download the [server binaries](https://github.com/undreamai/LlamaLib/releases/download/v1.2.4/undreamai-v1.2.4-server.zip) and [DLLs](https://github.com/undreamai/LlamaLib/releases/download/v1.2.4/undreamai-v1.2.4-llamacpp-full.zip) and extract them into the same folder
 - Find the architecture you are interested in from the folder above e.g. for Windows and CUDA use the `windows-cuda-cu12.2.0`.<br>You can also check the architecture that works for your system from the Debug messages (starting with "Using architecture").
 - From command line change directory to the architecture folder selected and start the server by running the command copied from above.
 

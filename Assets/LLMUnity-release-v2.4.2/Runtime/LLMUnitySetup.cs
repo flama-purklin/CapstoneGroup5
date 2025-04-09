@@ -101,9 +101,9 @@ namespace LLMUnity
     {
         // DON'T CHANGE! the version is autocompleted with a GitHub action
         /// <summary> LLM for Unity version </summary>
-        public static string Version = "v2.4.2";
+        public static string Version = "v2.5.0";
         /// <summary> LlamaLib version </summary>
-        public static string LlamaLibVersion = "v1.2.3";
+        public static string LlamaLibVersion = "v1.2.4";
         /// <summary> LlamaLib release url </summary>
         public static string LlamaLibReleaseURL = $"https://github.com/undreamai/LlamaLib/releases/download/{LlamaLibVersion}";
         /// <summary> LlamaLib name </summary>

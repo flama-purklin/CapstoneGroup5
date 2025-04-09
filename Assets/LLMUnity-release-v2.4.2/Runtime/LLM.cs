@@ -121,6 +121,9 @@ namespace LLMUnity
         string loraWeightsPre = "";
         public bool embeddingsOnly = false;
         public int embeddingLength = 0;
+        
+        /// <summary>The architecture used by the underlying LlamaLib</summary>
+        public string architecture => llmlib.architecture;
 
         // GPU Acceleration Options
         public enum GPUAccelerationMode
