@@ -39,97 +39,20 @@ public class InitializationManager : MonoBehaviour
             }
         }
 
-        // Find or create core components
+        // Find core components (assuming they exist in the scene now)
         if (!llm) llm = FindFirstObjectByType<LLM>();
-        
-        // Reference the scene's LLM object - this should be set up in the editor
-        if (llm == null)
-        {
-            // Try to find the LLM in the scene
-            llm = FindFirstObjectByType<LLM>();
-            
-            if (llm != null)
-            {
-                Debug.Log("Found existing LLM object in scene");
-            }
-            else
-            {
-                // Log a critical error - LLM must be set up in the scene
-                Debug.LogError("No LLM object found in scene! The LLM must be manually created and configured in the scene.");
-                Debug.LogError("Please add an 'LLM' GameObject with the LLM component and configure it with a valid model path.");
-            }
-        }
-        else
-        {
-            Debug.Log("Using LLM reference from inspector");
-        }
-        
         if (!npcManager) npcManager = FindFirstObjectByType<NPCManager>();
         if (!characterManager) characterManager = FindFirstObjectByType<CharacterManager>();
         if (!trainLayoutManager) trainLayoutManager = FindFirstObjectByType<TrainLayoutManager>(); // Find TrainLayoutManager
-        parsingControl = FindFirstObjectByType<ParsingControl>();
-        
-        // Create CharacterManager if not found
-        if (characterManager == null)
-        {
-            // Try to find it first
-            characterManager = FindFirstObjectByType<CharacterManager>();
-            
-            if (characterManager == null)
-            {
-                // Create a new one if not found
-                GameObject characterObj = new GameObject("CharacterManager");
-                characterManager = characterObj.AddComponent<CharacterManager>();
-                Debug.Log("Created CharacterManager");
-                
-                // Configure CharacterManager with the LLM reference
-                if (llm != null)
-                {
-                    characterManager.sharedLLM = llm;
-                    Debug.Log("Assigned LLM to new CharacterManager");
-                }
-                else
-                {
-                    Debug.LogError("Cannot assign LLM to CharacterManager as no LLM object was found");
-                }
-            }
-            else
-            {
-                Debug.Log("Found existing CharacterManager in scene");
-                
-                // Update its LLM reference if needed
-                if (llm != null && characterManager.sharedLLM == null)
-                {
-                    characterManager.sharedLLM = llm;
-                    Debug.Log("Updated existing CharacterManager with LLM reference");
-                }
-            }
-        }
-        
-        // Create ParsingControl if not found
-        if (parsingControl == null)
-        {
-            GameObject parsingObj = new GameObject("ParsingControl");
-            parsingControl = parsingObj.AddComponent<ParsingControl>();
-            Debug.Log("Created ParsingControl");
-        }
-        
-        // Create NPCManager if not found
-        if (npcManager == null)
-        {
-            GameObject npcObj = new GameObject("NPCManager");
-            npcManager = npcObj.AddComponent<NPCManager>();
-            Debug.Log("Created NPCManager");
-            
-            // Connect NPCManager to CharacterManager
-            if (characterManager != null)
-            {
-                // NPCManager should have a reference to the CharacterManager
-                // This connection logic varies based on your specific implementation
-                Debug.Log("Connected NPCManager to CharacterManager");
-            }
-        }
-        
+        parsingControl = FindFirstObjectByType<ParsingControl>(); // Now guaranteed to exist in scene
+
+        // Log errors if any essential components are missing
+        if (llm == null) Debug.LogError("LLM component not found in scene!");
+        if (npcManager == null) Debug.LogError("NPCManager component not found in scene!");
+        if (characterManager == null) Debug.LogError("CharacterManager component not found in scene!");
+        if (trainLayoutManager == null) Debug.LogError("TrainLayoutManager component not found in scene!");
+        if (parsingControl == null) Debug.LogError("ParsingControl component not found in scene!");
+
         // Ensure systems are properly organized
         // SetupCoreSystems(); // Commented out as CoreSystemsManager creation is redundant
     }
@@ -202,17 +125,32 @@ public class InitializationManager : MonoBehaviour
             // Step 1: Wait for LLM to start - this might timeout if LLM is not configured
             await WaitForLLMStartup();
             
-            // Step 2: Wait for mystery parsing and character extraction
+            // Step 2: Wait for mystery parsing
             await WaitForParsingComplete();
+
+            // --- Explicitly trigger CharacterManager initialization ---
+            if (characterManager != null)
+            {
+                 Debug.Log("Triggering CharacterManager initialization...");
+                 characterManager.Initialize();
+            }
+            else
+            {
+                 Debug.LogError("CharacterManager is null, cannot start its initialization!");
+            }
+            // ---------------------------------------------------------
             
             // Step 2.5: Build the train layout using the new manager
             BuildTrain();
 
-            // Step 3: Initialize Character Manager and NPC Manager (Caches LLM data)
-            await InitializeCharactersAndNPCs();
+            // Step 3: Wait for Character Manager to initialize (which is now triggered explicitly)
+            await WaitForCharacterManagerInitialization();
 
-            // Step 3.5: Spawn NPCs into the built train layout
-            await SpawnAllNPCs(); // New step to handle actual spawning
+            // Step 3.5: Initialize NPC Manager (Caches LLM data) - Separated from Character Init
+            await InitializeNPCManager();
+
+            // Step 3.75: Spawn NPCs into the built train layout
+            SpawnAllNPCs(); // Removed await, as SpawnAllNPCs is now void
 
             // Step 4: Complete initialization and hide loading overlay
             CompleteInitialization();
@@ -267,18 +205,6 @@ public class InitializationManager : MonoBehaviour
         }
     }
 
-    // /// <summary>
-    // /// Step 2.5 (Old): Find and initialize the Mystery Board UI - REMOVED as MysteryBoardControl was vestigial
-    // /// </summary>
-    // private void InitializeMysteryBoard()
-    // {
-    //     Debug.Log("INITIALIZATION STEP 2.5: Initializing Mystery Board UI...");
-    //     // Removed code that searched for and attempted to initialize using the now-deleted MysteryBoardControl GameObject.
-    //     // The actual Mystery Board UI initialization should be handled by the relevant UI controller (e.g., associated with MysteryCanvas/NodeControl).
-    //     Debug.LogWarning("Mystery Board UI initialization logic related to 'MysteryBoardControl' object removed. Ensure the correct UI controller handles initialization.");
-    // }
-
-
     /// <summary>
     /// Step 1: Wait for LLM to start with timeout
     /// </summary>
@@ -320,34 +246,26 @@ public class InitializationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Step 2: Wait for mystery parsing and character extraction with timeout
+    /// Step 2: Wait for mystery parsing with timeout
     /// </summary>
     private async Task WaitForParsingComplete()
     {
-        Debug.Log("INITIALIZATION STEP 2: Mystery parsing and character extraction");
-        bool parsingCompleted = false;
+        Debug.Log("INITIALIZATION STEP 2: Mystery parsing"); // Updated log message
+        // bool parsingCompleted = false; // No longer needed with flag check
         const float PARSING_TIMEOUT = 60f; // 60 seconds timeout
         
         if (parsingControl != null)
         {
-            // Register for completion event
-            void OnParsingComplete()
-            {
-                parsingCompleted = true;
-                Debug.Log("Received parsing completion event");
-            }
-            
-            // Subscribe to completion event
-            parsingControl.OnParsingComplete += OnParsingComplete;
+            // Removed event subscription logic
             
             // Start waiting
             float startTime = Time.realtimeSinceStartup;
             int waitCount = 0;
             
-            Debug.Log("Waiting for mystery parsing and character extraction to complete...");
+            Debug.Log("Waiting for mystery parsing to complete...");
             
-            // Wait for either the event, the IsParsingComplete flag, or timeout
-            while (!parsingCompleted && !parsingControl.IsParsingComplete)
+            // Wait for the IsParsingComplete flag or timeout
+            while (!parsingControl.IsParsingComplete) // Simplified loop condition
             {
                 // Check for timeout
                 float elapsedTime = Time.realtimeSinceStartup - startTime;
@@ -365,146 +283,181 @@ public class InitializationManager : MonoBehaviour
                 await Task.Yield();
             }
             
-            // Unsubscribe from event
-            parsingControl.OnParsingComplete -= OnParsingComplete;
+            // Removed event unsubscription logic
             
             float parsingTime = Time.realtimeSinceStartup - startTime;
             
-            if (parsingCompleted || parsingControl.IsParsingComplete)
+            if (parsingControl.IsParsingComplete) // Check flag directly
             {
-                Debug.Log($"Mystery parsing and character extraction complete in {parsingTime:F1} seconds");
+                Debug.Log($"Mystery parsing complete in {parsingTime:F1} seconds"); // Updated log message
             }
             else
             {
                 Debug.LogWarning($"Mystery parsing did not complete normally after {parsingTime:F1} seconds. Proceeding with limited functionality.");
             }
-            
-            // Verify character files - even if we timed out, there may be some valid files
-            VerifyCharacterFiles();
+            // Removed call to VerifyCharacterFiles();
         }
         else
         {
-            Debug.LogWarning("ParsingControl not found. Character files may not be properly extracted!");
+            Debug.LogError("ParsingControl not found! Cannot wait for parsing completion."); // Updated log message
         }
     }
 
     /// <summary>
-    /// Step 3: Initialize NPCs and Character Manager with timeout
+    /// Step 3: Wait for Character Manager initialization with timeout
     /// </summary>
-    private async Task InitializeCharactersAndNPCs()
+    private async Task WaitForCharacterManagerInitialization()
     {
-        Debug.Log("INITIALIZATION STEP 3: Character Manager initialization");
+        Debug.Log("INITIALIZATION STEP 3: Waiting for Character Manager initialization...");
+        if (characterManager == null)
+        {
+            Debug.LogError("CharacterManager not found! Cannot wait for initialization.");
+            return;
+        }
+
         float startTime = Time.realtimeSinceStartup;
-        const float CHARACTER_INIT_TIMEOUT = 240; // 30 seconds timeout (testing with 240 seconds timout for my laptop)
-        
-        if (characterManager != null)
+        const float CHARACTER_INIT_TIMEOUT = 240f; // Increased timeout
+        bool characterInitComplete = false;
+
+        // Define the event handler locally
+        void HandleCharacterInitComplete()
         {
-            // Ensure character manager is initialized
-            Debug.Log("Initializing character manager...");
-            
-            // Wait for character initialization to complete
-            if (npcManager != null)
+            Debug.Log("Received CharacterManager.OnInitializationComplete event.");
+            characterInitComplete = true;
+        }
+
+        // Subscribe to the event
+        characterManager.OnInitializationComplete += HandleCharacterInitComplete;
+
+        // Wait for the event or timeout
+        while (!characterInitComplete && !characterManager.IsInitialized) // Check both flag and event
+        {
+            float elapsedTime = Time.realtimeSinceStartup - startTime;
+            if (elapsedTime > CHARACTER_INIT_TIMEOUT)
             {
-                Debug.Log("Initializing NPCs with character data...");
-                try 
-                {
-                    // Create a task for NPC initialization
-                    Task initTask = npcManager.Initialize();
-                    
-                    // Start a timer for timeout
-                    int waitCount = 0;
-                    while (!initTask.IsCompleted)
-                    {
-                        // Check for timeout
-                        float elapsedTime = Time.realtimeSinceStartup - startTime;
-                        if (elapsedTime > CHARACTER_INIT_TIMEOUT)
-                        {
-                            Debug.LogWarning($"NPC initialization timed out after {CHARACTER_INIT_TIMEOUT} seconds. Proceeding with limited functionality.");
-                            break;
-                        }
-                        
-                        waitCount++;
-                        if (waitCount % 100 == 0)
-                        {
-                            Debug.Log($"Still waiting for NPC initialization... ({elapsedTime:F1} seconds elapsed)");
-                        }
-                        
-                        await Task.Yield();
-                    }
-                    
-                    if (initTask.IsCompleted && !initTask.IsFaulted)
-                    {
-                        Debug.Log("NPC initialization complete");
-                    }
-                    else if (initTask.IsFaulted)
-                    {
-                        Debug.LogError($"Error during NPC initialization: {initTask.Exception?.GetBaseException()?.Message}");
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError($"Error during NPC initialization: {ex.Message}");
-                    Debug.LogException(ex);
-                }
+                Debug.LogWarning($"Character Manager initialization timed out after {CHARACTER_INIT_TIMEOUT} seconds. Proceeding...");
+                break; // Exit loop on timeout
             }
-            else
-            {
-                Debug.LogWarning("NPCManager not found. NPCs will not be properly initialized.");
-            }
+            await Task.Yield(); // Wait for the next frame
+        }
+
+        // Unsubscribe from the event to prevent memory leaks
+        characterManager.OnInitializationComplete -= HandleCharacterInitComplete;
+
+        float initTime = Time.realtimeSinceStartup - startTime;
+        if (characterInitComplete || characterManager.IsInitialized)
+        {
+            Debug.Log($"Character Manager initialization confirmed complete in {initTime:F1} seconds.");
         }
         else
         {
-            Debug.LogWarning("CharacterManager not found. Character dialogue may not work properly.");
+             Debug.LogWarning($"Character Manager initialization did not complete normally after {initTime:F1} seconds.");
         }
-        
-        float npcInitTime = Time.realtimeSinceStartup - startTime;
-        Debug.Log($"Character/NPC Manager initialization complete in {npcInitTime:F1} seconds");
     }
 
     /// <summary>
-    /// Step 3.5: Spawn all NPCs into their designated cars
+    /// Step 3.5: Initialize NPC Manager (caching data) with timeout
     /// </summary>
-    private async Task SpawnAllNPCs()
+    private async Task InitializeNPCManager()
     {
-        Debug.Log("INITIALIZATION STEP 3.5: Spawning NPCs...");
-        if (characterManager == null || npcManager == null || trainLayoutManager == null)
+        Debug.Log("INITIALIZATION STEP 3.5: Initializing NPC Manager...");
+        if (npcManager == null)
         {
-            Debug.LogError("Cannot spawn NPCs: Missing manager references (Character, NPC, or TrainLayout).");
+            Debug.LogError("NPCManager not found! Cannot initialize.");
             return;
         }
 
-        // Ensure the container for NPC GameObjects exists
-        npcManager.PlaceNPCsInGameScene();
+        float startTime = Time.realtimeSinceStartup;
+        const float NPC_INIT_TIMEOUT = 60f; // Timeout for NPC Manager's internal setup
 
-        string[] characterNames = characterManager.GetAvailableCharacters();
-        if (characterNames == null || characterNames.Length == 0)
+        try
         {
-            Debug.LogWarning("No available characters found to spawn.");
+            Task initTask = npcManager.Initialize(); // Assuming NPCManager has an Initialize method
+            int waitCount = 0;
+
+            while (!initTask.IsCompleted)
+            {
+                float elapsedTime = Time.realtimeSinceStartup - startTime;
+                if (elapsedTime > NPC_INIT_TIMEOUT)
+                {
+                    Debug.LogWarning($"NPC Manager initialization timed out after {NPC_INIT_TIMEOUT} seconds.");
+                    break;
+                }
+
+                waitCount++;
+                if (waitCount % 100 == 0) // Log periodically
+                {
+                     Debug.Log($"Still waiting for NPC Manager initialization... ({elapsedTime:F1}s)");
+                }
+                await Task.Yield();
+            }
+
+             float initTime = Time.realtimeSinceStartup - startTime;
+            if (initTask.IsCompleted && !initTask.IsFaulted)
+            {
+                Debug.Log($"NPC Manager initialization complete in {initTime:F1} seconds.");
+            }
+            else if (initTask.IsFaulted)
+            {
+                 Debug.LogError($"Error during NPC Manager initialization: {initTask.Exception?.GetBaseException()?.Message}");
+            }
+        }
+        catch (System.Exception ex)
+        {
+             Debug.LogError($"Exception during NPC Manager initialization: {ex.Message}");
+             Debug.LogException(ex);
+        }
+    }
+
+    /// <summary>
+    /// Step 3.75: Spawn all NPCs into their designated cars
+    /// </summary>
+    private void SpawnAllNPCs() // Removed async Task, as nothing is awaited inside
+    {
+        Debug.Log("INITIALIZATION STEP 3.75: Spawning NPCs...");
+        // Add check for GameControl and coreMystery
+        if (characterManager == null || npcManager == null || trainLayoutManager == null || GameControl.GameController == null || GameControl.GameController.coreMystery == null)
+        {
+            Debug.LogError("Cannot spawn NPCs: Missing manager references (Character, NPC, TrainLayout) or GameControl/coreMystery data.");
             return;
         }
 
-        Debug.Log($"Attempting to spawn {characterNames.Length} NPCs...");
+        // Get characters directly from GameControl now
+        var characterData = GameControl.GameController.coreMystery.Characters;
+        if (characterData == null || characterData.Count == 0)
+        {
+            Debug.LogWarning("No character data found in GameControl.coreMystery to spawn NPCs.");
+            return;
+        }
+
+        Debug.Log($"Attempting to spawn {characterData.Count} NPCs...");
 
         // Reset anchor tracking before starting the spawn loop for this sequence - Cline: Removed obsolete call
         // trainLayoutManager.ResetUsedAnchorTracking();
 
-        for (int i = 0; i < characterNames.Length; i++)
+        int i = 0; // Index for assigning appearance
+        foreach (var kvp in characterData)
         {
-            string characterName = characterNames[i];
-            if (string.IsNullOrEmpty(characterName)) continue;
+            string characterName = kvp.Key;
+            MysteryCharacter charData = kvp.Value; // Get the character data object
+
+            if (string.IsNullOrEmpty(characterName) || charData == null)
+            {
+                 Debug.LogWarning($"Skipping invalid character entry (Name: {characterName}, Data: {charData != null})");
+                 continue;
+            }
 
             try
             {
-                // --- Get Spawn Location Data (Requires methods in other managers) ---
-                // TODO: Implement GetCharacterStartingCar in CharacterManager
-                string startCarName = characterManager.GetCharacterStartingCar(characterName);
+                // --- Get Spawn Location Data (Direct Access) ---
+                string startCarName = charData.InitialLocation; // Access directly from the object
                 if (string.IsNullOrEmpty(startCarName))
                 {
-                    Debug.LogWarning($"No starting car specified for character '{characterName}'. Skipping spawn.");
+                    Debug.LogWarning($"No initial_location specified for character '{characterName}'. Skipping spawn.");
                     continue;
                 }
 
-                // TODO: Implement GetCarTransform in TrainLayoutManager
+                // Get car transform
                 Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
                 if (carTransform == null)
                 {
@@ -512,9 +465,9 @@ public class InitializationManager : MonoBehaviour
                      continue;
                 }
 
-                // TODO: Implement GetSpawnPointInCar in TrainLayoutManager
+                // Get spawn point within the car
                 Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
-                // Optional: Add check if spawnPos is valid (e.g., not Vector3.zero if that indicates failure)
+                // Optional: Add check if spawnPos is valid
 
                 // --- Spawn the NPC ---
                 Debug.Log($"Spawning '{characterName}' in car '{startCarName}' at {spawnPos} (Index: {i})");
@@ -525,18 +478,18 @@ public class InitializationManager : MonoBehaviour
                      Debug.LogError($"Failed to spawn NPC for character '{characterName}'.");
                 }
 
-                // Optional: Add a small delay if spawning many NPCs causes performance hitches during loading
-                // await Task.Yield();
+                // Optional: Add a small delay if spawning many NPCs causes performance hitches
+                // yield return null; // If needed, change method return type to IEnumerator
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Error spawning NPC for character '{characterName}': {ex.Message}");
                 Debug.LogException(ex);
             }
+            i++; // Increment appearance index
         }
          Debug.Log("Finished NPC spawning loop.");
     }
-
 
     /// <summary>
     /// Step 4: Complete initialization and transition to gameplay
@@ -783,161 +736,5 @@ public class InitializationManager : MonoBehaviour
         target.SetActive(false);
     }
 
-    /// <summary>
-    /// Verifies character files for proper format and content
-    /// </summary>
-    private void VerifyCharacterFiles()
-    {
-        string charactersPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Characters");
-        
-        // If Characters directory doesn't exist, try to copy from backups
-        if (!System.IO.Directory.Exists(charactersPath))
-        {
-            Debug.LogError("Characters directory not found! Attempting to create it and restore from backups...");
-            
-            try
-            {
-                // Create the directory
-                System.IO.Directory.CreateDirectory(charactersPath);
-                
-                // Look for backup files
-                string backupsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "CharacterBackups");
-                
-                if (System.IO.Directory.Exists(backupsPath))
-                {
-                    var backupFiles = System.IO.Directory.GetFiles(backupsPath, "*.json");
-                    
-                    foreach (var file in backupFiles)
-                    {
-                        string fileName = System.IO.Path.GetFileName(file);
-                        string destPath = System.IO.Path.Combine(charactersPath, fileName);
-                        System.IO.File.Copy(file, destPath, true);
-                        Debug.Log($"Restored backup character file: {fileName}");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("No character backups found at: " + backupsPath);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Error restoring character files: {ex.Message}");
-            }
-            
-            // Check if the directory exists now
-            if (!System.IO.Directory.Exists(charactersPath))
-            {
-                Debug.LogError("Failed to create Characters directory. Character dialogue will not work correctly.");
-                return;
-            }
-        }
-        
-        string[] characterFiles = System.IO.Directory.GetFiles(charactersPath, "*.json");
-        Debug.Log($"Found {characterFiles.Length} character files:");
-        
-        int validFileCount = 0;
-        bool novaFileVerified = false;
-        
-        // If we have no character files, try copying from backups again
-        if (characterFiles.Length == 0)
-        {
-            Debug.LogWarning("No character files found in Characters directory. Attempting to restore from backups...");
-            
-            try
-            {
-                string backupsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "CharacterBackups");
-                
-                if (System.IO.Directory.Exists(backupsPath))
-                {
-                    var backupFiles = System.IO.Directory.GetFiles(backupsPath, "*.json");
-                    
-                    foreach (var file in backupFiles)
-                    {
-                        string fileName = System.IO.Path.GetFileName(file);
-                        string destPath = System.IO.Path.Combine(charactersPath, fileName);
-                        System.IO.File.Copy(file, destPath, true);
-                        Debug.Log($"Restored backup character file: {fileName}");
-                    }
-                    
-                    // Get the updated list of files
-                    characterFiles = System.IO.Directory.GetFiles(charactersPath, "*.json");
-                    Debug.Log($"After restoration, found {characterFiles.Length} character files");
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Error restoring character files: {ex.Message}");
-            }
-        }
-        
-        foreach (string file in characterFiles)
-        {
-            string fileName = System.IO.Path.GetFileName(file);
-            
-            try
-            {
-                // Load and verify the file structure
-                string fileContent = System.IO.File.ReadAllText(file);
-                
-                // Check if it has the required two-chamber structure
-                bool hasCoreSection = fileContent.Contains("\"core\":");
-                bool hasMindEngineSection = fileContent.Contains("\"mind_engine\":");
-                
-                if (hasCoreSection && hasMindEngineSection)
-                {
-                    validFileCount++;
-                    Debug.Log($"  ✓ {fileName} - Valid structure");
-                }
-                else
-                {
-                    Debug.LogWarning($"  ⚠ {fileName} - Missing required sections: " + 
-                        (hasCoreSection ? "" : "core, ") + 
-                        (hasMindEngineSection ? "" : "mind_engine"));
-                }
-                
-                // Special check for Nova's file
-                if (fileName.ToLower().Contains("nova"))
-                {
-                    // Verify Nova's file contains the important speech patterns
-                    bool hasMateTerm = fileContent.Contains("mate");
-                    bool hasLuvTerm = fileContent.Contains("luv");
-                    bool hasExpletives = fileContent.Contains("fuck") || fileContent.Contains("bloody");
-                    
-                    novaFileVerified = true;
-                    
-                    if (!hasMateTerm || !hasLuvTerm || (!hasExpletives))
-                    {
-                        Debug.LogWarning($"Nova's distinctive speech patterns may be missing from {fileName}!");
-                        Debug.LogWarning($"- Contains 'mate': {hasMateTerm}");
-                        Debug.LogWarning($"- Contains 'luv': {hasLuvTerm}");
-                        Debug.LogWarning($"- Contains expletives: {hasExpletives}");
-                    }
-                    else
-                    {
-                        Debug.Log($"Nova's distinctive speech patterns are preserved correctly in {fileName}.");
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Error verifying file {fileName}: {ex.Message}");
-            }
-        }
-        
-        // Log overall validation results
-        Debug.Log($"Character file validation: {validFileCount}/{characterFiles.Length} files have valid structure");
-        
-        if (!novaFileVerified)
-        {
-            Debug.LogWarning("Nova's character file was not found or could not be verified! This may impact dialogue quality.");
-            // Not treating this as an error since we want to continue even if Nova's file isn't perfect
-        }
-        
-        // Final warning if we still have no character files
-        if (characterFiles.Length == 0)
-        {
-            Debug.LogWarning("No character files found even after recovery attempts. This will cause dialogue system issues!");
-        }
-    }
+    // VerifyCharacterFiles method was removed.
 }

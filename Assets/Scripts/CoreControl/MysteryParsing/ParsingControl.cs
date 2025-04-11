@@ -3,67 +3,38 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections;
+// Duplicate using directives removed below
 using Newtonsoft.Json;
 using System;
-using CoreControl.MysteryParsing;
+// using CoreControl.MysteryParsing; // Removed as MysteryCharacterExtractor is no longer used
 
 /// <summary>
-/// Parses the mystery JSON into usable game objects and extracts character data.
-/// Integrates with MysteryCharacterExtractor to generate character files for LLM integration.
+/// Parses the mystery JSON into usable game objects.
 /// </summary>
 public class ParsingControl : MonoBehaviour
 {
     [Header("Configuration")]
     public string mysteryFiles = "MysteryStorage";
     [SerializeField] private bool _verboseLogging = false;
-    
-    [Header("References")]
-    [SerializeField] private MysteryCharacterExtractor _characterExtractor;
-    
+
+    // Removed _characterExtractor reference
+
     // Events
     public event Action<float> OnParsingProgress;
     public event Action<Mystery> OnMysteryParsed;
-    public event Action<int> OnCharactersExtracted;
-    public event Action OnParsingComplete;
-    
-    // Extraction status
+    // public event Action<int> OnCharactersExtracted; // Removed unused event
+    // public event Action OnParsingComplete; // Removed event
+
+    // Status
     private bool _parsingComplete = false;
     public bool IsParsingComplete => _parsingComplete;
-    
     private void Awake()
     {
-        // Find or create the character extractor if not assigned
-        if (_characterExtractor == null)
-        {
-            _characterExtractor = FindFirstObjectByType<MysteryCharacterExtractor>();
-            
-            if (_characterExtractor == null && GetComponent<MysteryCharacterExtractor>() == null)
-            {
-                _characterExtractor = gameObject.AddComponent<MysteryCharacterExtractor>();
-                Debug.Log("Added MysteryCharacterExtractor component as none was assigned");
-            }
-        }
-        
-        // Connect to character extractor events
-        if (_characterExtractor != null)
-        {
-            _characterExtractor.OnExtractionProgress += HandleExtractionProgress;
-            _characterExtractor.OnCharactersExtracted += HandleCharactersExtracted;
-        }
-        
         // Parse mystery
         ParseMystery();
     }
-    
-    private void OnDestroy()
-    {
-        // Disconnect from events
-        if (_characterExtractor != null)
-        {
-            _characterExtractor.OnExtractionProgress -= HandleExtractionProgress;
-            _characterExtractor.OnCharactersExtracted -= HandleCharactersExtracted;
-        }
-    }
+
+    // Removed OnDestroy method
 
     /// <summary>
     /// Parses the mystery JSON file and extracts character data
@@ -133,7 +104,7 @@ public class ParsingControl : MonoBehaviour
                 Debug.LogError("Failed to deserialize mystery JSON - Mystery object is null");
                 _parsingComplete = true;
                 OnParsingProgress?.Invoke(1.0f);
-                OnParsingComplete?.Invoke();
+                // OnParsingComplete?.Invoke(); // Removed event invocation
                 return;
             }
             
@@ -161,39 +132,15 @@ public class ParsingControl : MonoBehaviour
                 LogMysteryContents();
             }
             
-            // Report progress after validation
-            OnParsingProgress?.Invoke(0.5f);
-            
-            // Extract characters from the mystery
-            if (_characterExtractor != null)
-            {
-                try
-                {
-                    Debug.Log("Starting character extraction process");
-                    _characterExtractor.ExtractCharactersFromMystery(GameControl.GameController.coreMystery);
-                    
-                    // Note: Progress and completion callbacks are handled by event handlers
-                    
-                    // Add timeout check (will be used in InitializationManager)
-                    StartCoroutine(ExtractionTimeoutCheck());
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Error during character extraction: {ex.Message}");
-                    Debug.LogException(ex);
-                    // Signal completion even though extraction failed
-                    _parsingComplete = true;
-                    OnParsingProgress?.Invoke(1.0f);
-                    OnParsingComplete?.Invoke();
-                }
-            }
-            else
-            {
-                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
-                _parsingComplete = true;
-                OnParsingProgress?.Invoke(1.0f); // Complete progress without extraction
-                OnParsingComplete?.Invoke();
-            }
+            // Report progress after validation and fire completion event
+            OnParsingProgress?.Invoke(1.0f); // Parsing itself is now the whole process
+
+            // Signal that parsing is complete
+            _parsingComplete = true;
+            Debug.Log("Parsing complete - setting IsParsingComplete flag");
+            // OnParsingComplete?.Invoke(); // Removed event invocation
+
+            // Removed character extraction logic
         }
         catch (Exception ex)
         {
@@ -203,165 +150,15 @@ public class ParsingControl : MonoBehaviour
             // Signal completion even if parsing failed
             _parsingComplete = true;
             OnParsingProgress?.Invoke(1.0f);
-            OnParsingComplete?.Invoke();
+            // OnParsingComplete?.Invoke(); // Removed event invocation
         }
-    }
-    
-    /// <summary>
-    /// Asynchronously parses the mystery JSON file and extracts character data
-    /// </summary>
-    public async Task<Mystery> ParseMysteryAsync()
-    {
-        // Report initial progress
-        OnParsingProgress?.Invoke(0.0f);
-        
-        // Retrieve the mystery JSON from StreamingAssets
-        string mysteryPath = Path.Combine(Application.streamingAssetsPath, mysteryFiles);
-        if (!Directory.Exists(mysteryPath))
-        {
-            Debug.LogError($"Mystery folder not found at: {mysteryPath}");
-            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
-            return null;
-        }
-        
-        // Find mystery files
-        var foundMysteries = Directory.GetFiles(mysteryPath, "*.json").ToArray();
-        if (foundMysteries.Length == 0)
-        {
-            Debug.LogError($"No mystery JSON files found in {mysteryPath}");
-            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
-            return null;
-        }
+    } // Added missing closing brace for ParseMystery method
 
-        string firstMystery = foundMysteries[0];
-        Debug.Log("Found mystery file at: " + firstMystery);
+    // Removed ParseMysteryAsync method
+    // Removed HandleExtractionProgress method
+    // Removed HandleCharactersExtracted method
+    // Removed ExtractionTimeoutCheck coroutine
 
-        // Read JSON to a parsable string
-        string jsonContent = await File.ReadAllTextAsync(firstMystery);
-        
-        // Report progress after reading file
-        OnParsingProgress?.Invoke(0.1f);
-
-        try
-        {
-            // Create a core mystery object
-            Mystery mystery = JsonConvert.DeserializeObject<Mystery>(jsonContent);
-            
-            // Set in game controller
-            GameControl.GameController.coreMystery = mystery;
-            GameControl.GameController.coreConstellation = mystery.Constellation;
-            
-            // Report progress after deserializing
-            OnParsingProgress?.Invoke(0.3f);
-            
-            // Fire event for mystery parsed
-            OnMysteryParsed?.Invoke(mystery);
-            
-            if (_verboseLogging)
-            {
-                LogMysteryContents();
-            }
-            
-            // Report progress after validation
-            OnParsingProgress?.Invoke(0.5f);
-            
-            // Extract characters from the mystery asynchronously
-            if (_characterExtractor != null)
-            {
-                try
-                {
-                    Debug.Log("Starting asynchronous character extraction process");
-                    int count = await _characterExtractor.ExtractCharactersAsync(mystery);
-                    
-                    // Manually invoke handlers in case they didn't fire during async operation
-                    if (!_parsingComplete)
-                    {
-                        Debug.Log($"Async extraction completed with {count} characters");
-                        HandleCharactersExtracted(count);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Error during async character extraction: {ex.Message}");
-                    Debug.LogException(ex);
-                    // Signal completion even though extraction failed
-                    _parsingComplete = true;
-                    OnParsingProgress?.Invoke(1.0f);
-                    OnParsingComplete?.Invoke();
-                }
-            }
-            else
-            {
-                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
-                _parsingComplete = true;
-                OnParsingProgress?.Invoke(1.0f); // Complete progress without extraction
-                OnParsingComplete?.Invoke();
-            }
-            
-            return mystery;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error parsing mystery JSON: {ex.Message}");
-            OnParsingProgress?.Invoke(1.0f); // Complete progress even though failed
-            return null;
-        }
-    }
-    
-    /// <summary>
-    /// Handles progress updates from the character extractor
-    /// </summary>
-    private void HandleExtractionProgress(float progress)
-    {
-        // Scale extraction progress to 0.5-1.0 range (second half of overall process)
-        float overallProgress = 0.5f + (progress * 0.5f);
-        OnParsingProgress?.Invoke(overallProgress);
-        
-        if (_verboseLogging)
-        {
-            Debug.Log($"Character extraction progress: {progress:P0} (Overall: {overallProgress:P0})");
-        }
-    }
-    
-    /// <summary>
-    /// Handles completion of character extraction
-    /// </summary>
-    private void HandleCharactersExtracted(int count)
-    {
-        Debug.Log($"Character extraction complete. {count} characters processed.");
-        OnCharactersExtracted?.Invoke(count);
-        OnParsingProgress?.Invoke(1.0f); // Complete progress
-        
-        // Signal that parsing is complete
-        _parsingComplete = true;
-        Debug.Log("Parsing complete - firing OnParsingComplete event");
-        OnParsingComplete?.Invoke();
-    }
-    
-    /// <summary>
-    /// Timeout coroutine to ensure extraction doesn't hang indefinitely
-    /// </summary>
-    private IEnumerator ExtractionTimeoutCheck()
-    {
-        // Wait up to 60 seconds for extraction to complete
-        float startTime = Time.realtimeSinceStartup;
-        const float EXTRACTION_TIMEOUT = 60f;
-        
-        while (!_parsingComplete && Time.realtimeSinceStartup - startTime < EXTRACTION_TIMEOUT)
-        {
-            yield return new WaitForSeconds(1f);
-        }
-        
-        // If still not complete after timeout, force completion
-        if (!_parsingComplete)
-        {
-            Debug.LogWarning($"Character extraction timed out after {EXTRACTION_TIMEOUT} seconds. Forcing completion.");
-            _parsingComplete = true;
-            OnParsingProgress?.Invoke(1.0f);
-            OnParsingComplete?.Invoke();
-        }
-    }
-    
     /// <summary>
     /// Logs detailed mystery contents for debugging
     /// </summary>
@@ -383,7 +180,7 @@ public class ParsingControl : MonoBehaviour
             // Signal completion
             _parsingComplete = true;
             OnParsingProgress?.Invoke(1.0f);
-            OnParsingComplete?.Invoke();
+            // OnParsingComplete?.Invoke(); // Removed event invocation
             yield break;
         }
         
@@ -411,34 +208,15 @@ public class ParsingControl : MonoBehaviour
             
             OnParsingProgress?.Invoke(0.5f);
             
-            // Extract characters from the mystery
-            if (_characterExtractor != null)
-            {
-                try
-                {
-                    Debug.Log("Starting character extraction process");
-                    _characterExtractor.ExtractCharactersFromMystery(GameControl.GameController.coreMystery);
-                    
-                    StartCoroutine(ExtractionTimeoutCheck());
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Error during character extraction: {ex.Message}");
-                    Debug.LogException(ex);
-                    
-                    // Signal completion even though extraction failed
-                    _parsingComplete = true;
-                    OnParsingProgress?.Invoke(1.0f);
-                    OnParsingComplete?.Invoke();
-                }
-            }
-            else
-            {
-                Debug.LogWarning("No MysteryCharacterExtractor available. Character files will not be generated.");
-                _parsingComplete = true;
-                OnParsingProgress?.Invoke(1.0f);
-                OnParsingComplete?.Invoke();
-            }
+            // Report progress after validation and fire completion event
+            OnParsingProgress?.Invoke(1.0f); // Parsing itself is now the whole process
+
+            // Signal that parsing is complete
+            _parsingComplete = true;
+            Debug.Log("Delayed parsing complete - setting IsParsingComplete flag");
+            // OnParsingComplete?.Invoke(); // Removed event invocation
+
+            // Removed character extraction logic
         }
         catch (Exception ex)
         {
@@ -448,7 +226,7 @@ public class ParsingControl : MonoBehaviour
             // Signal completion even if parsing failed
             _parsingComplete = true;
             OnParsingProgress?.Invoke(1.0f);
-            OnParsingComplete?.Invoke();
+            // OnParsingComplete?.Invoke(); // Removed event invocation
         }
     }
 

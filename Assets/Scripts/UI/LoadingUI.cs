@@ -17,9 +17,9 @@ public class LoadingUI : MonoBehaviour
     private bool isInitialized = false;
     private float currentProgress = 0f;
     private bool llmWarmupStarted = false;
-    private bool extractionStarted = false;
-    private bool extractionCompleted = false;
-    
+    private bool parsingStarted = false; // Renamed from extractionStarted
+    // private bool parsingCompleted = false; // Flag no longer needed, will check ParsingControl directly
+
     private void Start()
     {
         llm = FindFirstObjectByType<LLM>();
@@ -29,8 +29,8 @@ public class LoadingUI : MonoBehaviour
         if (parsingControl != null)
         {
             parsingControl.OnParsingProgress += HandleParsingProgress;
-            parsingControl.OnCharactersExtracted += HandleCharactersExtracted;
-            parsingControl.OnParsingComplete += HandleParsingComplete;
+            // parsingControl.OnCharactersExtracted += HandleCharactersExtracted; // Removed subscription
+            // parsingControl.OnParsingComplete += HandleParsingComplete; // Removed subscription
         }
     }
     
@@ -39,27 +39,19 @@ public class LoadingUI : MonoBehaviour
         if (parsingControl != null)
         {
             parsingControl.OnParsingProgress -= HandleParsingProgress;
-            parsingControl.OnCharactersExtracted -= HandleCharactersExtracted;
-            parsingControl.OnParsingComplete -= HandleParsingComplete;
+            // parsingControl.OnCharactersExtracted -= HandleCharactersExtracted; // Removed unsubscription
+            // parsingControl.OnParsingComplete -= HandleParsingComplete; // Removed unsubscription
         }
     }
-    
     private void HandleParsingProgress(float progress)
     {
-        extractionStarted = true;
+        parsingStarted = true; // Use renamed flag
         currentProgress = progress;
     }
-    
-    private void HandleCharactersExtracted(int count)
-    {
-        // Handle character extraction
-    }
-    
-    private void HandleParsingComplete()
-    {
-        extractionCompleted = true;
-    }
-    
+
+    // Removed HandleCharactersExtracted method
+    // Removed HandleParsingComplete method
+
     private void Update()
     {
         if (progressBar != null)
@@ -80,18 +72,21 @@ public class LoadingUI : MonoBehaviour
             {
                 llmWarmupStarted = true;
             }
-            
+
+            // Check parsing status directly from ParsingControl
+            bool isParsingComplete = parsingControl != null && parsingControl.IsParsingComplete;
+
             if (!llmWarmupStarted)
             {
                 statusText.text = "Initializing language model...";
             }
-            else if (extractionStarted && !extractionCompleted)
+            else if (parsingStarted && !isParsingComplete) // Check flag directly
             {
-                statusText.text = "Extracting characters...";
+                statusText.text = "Parsing mystery data..."; // Updated text
             }
-            else if (npcManager != null && !npcManager.IsInitializationComplete)
+            else if (npcManager != null && !npcManager.IsInitializationComplete) // Assuming NPCManager still has this flag/property
             {
-                statusText.text = "Loading characters...";
+                statusText.text = "Initializing characters..."; // Updated text
             }
             else if (!isInitialized)
             {

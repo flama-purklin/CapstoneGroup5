@@ -47,9 +47,9 @@ The project is built around the following architectural components:
 ### Singleton Managers
 - **GameControl**: Main game state manager
 - **CoreSystemsManager**: Manages Unity systems (EventSystem, AudioListener)
-- **ParsingControl**: Handles mystery JSON parsing
-- **NPCManager**: Manages NPC creation and behavior
-- **CharacterManager**: Manages LLM character creation and interaction
+- **ParsingControl**: Handles mystery JSON parsing. (Component should exist in the scene from start).
+- **NPCManager**: Manages NPC creation and behavior. (Component should exist in the scene from start).
+- **CharacterManager**: Manages LLM character creation and interaction. (Component should exist in the scene from start).
 
 ### Data Model
 - **Mystery**: Core data model containing all mystery information
@@ -74,9 +74,10 @@ The project utilizes a **unified single-scene architecture**:
         - Main Camera
         - Player
         - GameController
-        - InitializationManager (manages startup)
+        - InitializationManager (manages startup sequence)
         - LoadingOverlay (displays progress, blocks view initially)
-        - LLM, CharacterManager, ParsingControl, NPCManager, etc.
+        - LLM (Must exist in scene)
+        - `GameController`, `ParsingControl`, `CharacterManager`, `NPCManager`, `TrainLayoutManager` GameObjects (with respective scripts attached)
         - Train environment, NPCs, UI elements (PauseMenu, DialogueControl, etc.)
 
 ## Game Systems
@@ -120,9 +121,9 @@ The system uses character JSON files to generate prompts that define character p
 The mystery system is built around a JSON-based data model:
 
 1. **Mystery Parsing**:
-   - `ParsingControl` loads and parses mystery JSON
-   - Mystery data is stored in `GameControl.coreMystery`
-   - Character data extracted for LLM integration
+   - `ParsingControl` script component (present in scene from start) loads and parses the main mystery JSON (`transformed-mystery.json`) in its `Awake` method.
+   - Mystery data is deserialized and stored directly in `GameControl.GameController.coreMystery`.
+   - No longer calls `MysteryCharacterExtractor` or generates individual files.
 
 2. **Mystery Structure**:
    - **Metadata**: Basic mystery information
@@ -140,28 +141,25 @@ The mystery system is built around a JSON-based data model:
 
 *Design Goal: Character data is structured to separate core, plot-relevant information (relationships, knowledge, agenda - the CORE section in design) from personality, voice, and decision-making traits used primarily by the LLM for role-playing (the MIND ENGINE section in design).*
 
-*(Refactoring Goal: The current character data handling needs improvement to address initialization order issues and redundant file usage. See Initialization Sequence section for details.)*
+*(Refactoring Complete: Initialization order issues and redundant file usage have been addressed. See Initialization Sequence section for the current flow.)*
 
 Characters are managed through multiple components:
 
-1.  **Character Data (As Implemented - Needs Refactor)**:
-    *   Data is extracted from the main mystery JSON by `ParsingControl` into `GameControl.coreMystery.Characters`.
-    *   Simultaneously, `MysteryCharacterExtractor` processes this data and **saves individual character JSON files** to `Assets/StreamingAssets/Characters/`.
-    *   `CharacterManager` then **reads these individual JSON files** to initialize `LLMCharacter` instances.
-    *   **Problem:** This creates unnecessary file I/O and potential synchronization issues (initialization race condition).
-    *   **Desired Future State:** Eliminate the creation/reading of individual character JSON files. `CharacterManager` should directly use the `GameControl.coreMystery.Characters` dictionary populated *synchronously* by `ParsingControl` during initialization.
+1.  **Character Data**:
+    *   Data is parsed directly from the main mystery JSON (`transformed-mystery.json`) into the `GameControl.GameController.coreMystery.Characters` dictionary by `ParsingControl` during its `Awake` phase.
+    *   Individual character JSON files are no longer created or used.
 
-2.  **Character Manager**:
-    *   **As Implemented:** Loads character data by reading individual JSON files.
-    *   **Desired Future State:** Read data directly from the `GameControl.coreMystery.Characters` dictionary *after* parsing is confirmed complete.
+2.  **Character Manager (`CharacterManager.cs`)**:
+    *   Script component exists in the scene from the start.
+    *   Initialization is explicitly triggered by `InitializationManager` via the `Initialize()` method *after* `ParsingControl` has finished.
+    *   Reads character data directly from the `GameControl.GameController.coreMystery.Characters` dictionary during its `CreateCharacterObjects` phase.
     *   Manages `LLMCharacter` instances and GameObjects.
-    *   Manages character states (Uninitialized → LoadingTemplate → WarmingUp → Ready).
+    *   Manages character states (Uninitialized → LoadingTemplate → WarmingUp → Ready → Failed).
     *   Handles character switching and context management.
 
-3.  **Character Prompt Generation**:
-    *   `CharacterPromptGenerator` (or `TempCharacterPromptGenerator`) creates system prompts for the LLM.
-    *   **As Implemented:** Likely reads data derived from the individual character files.
-    *   **Desired Future State:** Ensure the prompt generator takes the `MysteryCharacter` object directly from the in-memory dictionary as input.
+3.  **Character Prompt Generation (`CharacterPromptGenerator.cs`)**:
+    *   `CharacterPromptGenerator` creates system prompts for the LLM.
+    *   Takes the `MysteryCharacter` object (from the in-memory dictionary, serialized back to JSON temporarily by `CharacterManager`) as input to generate the prompt.
     *   Converts character data to structured prompts defining behavior and dialogue patterns.
 
 ### NPC System
@@ -169,11 +167,12 @@ Characters are managed through multiple components:
 NPCs are managed through the following components:
 
 1. **NPCManager**:
-   - Creates NPC GameObjects using the `NPC.prefab` template
-   - Connects NPCs to LLMCharacters
-   - Handles NPC placement in the train environment based on the character's `initial_location` field
-   - Contains `availableAnimContainers` array (must be assigned in Inspector) which holds references to the four `NPCAnimContainer` Scriptable Objects used for visual representation
-   - Assigns animations cyclically to NPCs based on character index
+   - Script component exists in the scene from the start.
+   - Creates NPC GameObjects using the `NPC.prefab` template.
+   - Connects NPCs to LLMCharacters (obtained via `CharacterManager`).
+   - Handles NPC placement in the train environment based on the character's `InitialLocation` field, read directly from the `GameControl.GameController.coreMystery.Characters` dictionary during the `InitializationManager.SpawnAllNPCs` step.
+   - Contains `availableAnimContainers` array (must be assigned in Inspector) which holds references to the four `NPCAnimContainer` Scriptable Objects used for visual representation.
+   - Assigns animations cyclically to NPCs based on character index.
 
 2. **Character Component**:
    - Links NPC GameObject to LLMCharacter
@@ -254,106 +253,65 @@ The project's data flow follows this pattern:
 
 1. **Mystery Parsing**:
    ```
-   Mystery JSON → ParsingControl → GameControl.coreMystery
+   Mystery JSON → ParsingControl (scene component) → GameControl.coreMystery
    ```
-   Mystery JSON → ParsingControl → GameControl.coreMystery
-   ```
+   *(Individual character file extraction step removed)*
 
-2. **Character Data Extraction (As Implemented - Needs Refactor)**:
+2. **Character Initialization**:
    ```
-   GameControl.coreMystery.Characters → MysteryCharacterExtractor → Character JSON Files (in StreamingAssets/Characters/)
+   GameControl.coreMystery.Characters → CharacterManager (Initialize() called by InitializationManager) → LLMCharacter GameObject & Component
    ```
-   * **Problem:** Redundant file I/O, potential race condition.
-   * **Goal:** Remove this step.
+   *(Reads directly from GameControl data after parsing is confirmed complete)*
 
-3. **Character Initialization (As Implemented - Needs Refactor)**:
+3. **NPC Creation**:
    ```
-   Character JSON Files → CharacterManager → LLMCharacter GameObject & Component
+   GameControl.coreMystery.Characters[name].InitialLocation → InitializationManager.SpawnAllNPCs → NPCManager → NPC GameObject
+   LLMCharacter (from CharacterManager) → NPCManager → NPC GameObject
    ```
-   * **Problem:** Depends on potentially unsynchronized file writing from step 2.
-   * **Goal:** `GameControl.coreMystery.Characters → CharacterManager → LLMCharacter GameObject & Component` (using data populated in step 1).
+   *(Relies on CharacterManager having initialized correctly; reads location data directly from GameControl)*
 
-4. **NPC Creation**:
-   ```
-   LLMCharacter → NPCManager → NPC GameObject
-   ```
-
-5. **Dialogue Flow**:
+4. **Dialogue Flow**:
    ```
    Player Input → DialogueControl → LLMDialogueManager → LLMCharacter → Response
    ```
 
 ## Initialization Sequence
 
-The game initialization occurs entirely within the `SystemsTest` scene, managed by the `InitializationManager` and visually represented by the `LoadingOverlay`:
+The game initialization occurs entirely within the `SystemsTest` scene, managed by the `InitializationManager` and visually represented by the `LoadingOverlay`. The sequence relies on components existing in the scene from the start.
 
-1.  **Scene Load**:
-    - `SystemsTest` scene loads.
-    - `LoadingOverlay` is active, blocking the game view. Player input is disabled.
-    - `InitializationManager` starts the sequence.
+1.  **Scene Load & `Awake` Phase**:
+    - `SystemsTest` scene loads. Core manager components (`ParsingControl`, `CharacterManager`, `NPCManager`, etc.) are already present on their GameObjects.
+    - `LoadingOverlay` is active.
+    - `GameControl.Awake()` sets up the singleton.
+    - `ParsingControl.Awake()` reads the main mystery JSON, populates `GameControl.coreMystery`, and sets its `IsParsingComplete` flag to true.
+    - `InitializationManager.Awake()` finds references to the existing manager components.
+    - Other components run their `Awake`.
 
-2.  **LLM Startup** (Step 1):
-    - Wait for the shared LLM service to start.
-    - Update LoadingOverlay status.
-
-3.  **Mystery Parsing & Character File Extraction (As Implemented - Needs Refactor)** (Step 2):
-    - `ParsingControl` parses the main mystery JSON, populating `GameControl.coreMystery`.
-    - `MysteryCharacterExtractor` is called (or runs independently) to create individual character JSON files in `StreamingAssets/Characters/`.
-    - **Problem:** This file extraction step is redundant. More importantly, its timing relative to Character Manager initialization (Step 5) is not strictly enforced, leading to race conditions where `CharacterManager` might try to read files before they are written, requiring a second run in the editor.
-    - **Desired Future State:** Remove the file extraction part entirely. `ParsingControl` should only parse the main JSON and populate `GameControl.coreMystery`. `InitializationManager` must explicitly wait for `ParsingControl` to finish *before* proceeding to Step 5.
-    - Update LoadingOverlay status.
-
-4.  **Train Layout Building** (Step 2.5):
-    - `TrainLayoutManager` reads the `LayoutOrder` from the mystery JSON.
-    - Prepares car prefabs (or JSONs) and adds them to `TrainManager.carPrefabs` list.
-    - Calls `TrainManager.SpawnCars()` to instantiate the train cars.
-    - `TrainLayoutManager.NameCars()` populates a dictionary mapping car keys (e.g., "business_class_1") to train car GameObjects.
-    - Train cars must have the `RailCarFloor` → `Anchor (x, y)` → `walkway` hierarchical structure.
-    - Each floor must have a baked NavMesh surface for NPC navigation.
-
-5.  **Character Manager Initialization (As Implemented - Needs Refactor)** (Step 3):
-    - `InitializationManager` calls `CharacterManager.Initialize()`.
-    - `CharacterManager` reads character data from the **individual JSON files** in `StreamingAssets/Characters/`.
-    - **Problem:** Depends on Step 3 (file extraction) completing first, which isn't guaranteed synchronously, causing the initialization race condition.
-    - **Desired Future State:** `CharacterManager` should read directly from the `GameControl.coreMystery.Characters` dictionary *after* `InitializationManager` has confirmed Step 3 (Parsing) is fully complete.
-    - Creates and warms up `LLMCharacter` instances and GameObjects for each character.
-    - `NPCManager` initializes, caching LLM data.
-
-6.  **NPC Spawning** (Step 3.5):
-    - `InitializationManager.SpawnAllNPCs()` retrieves available character names.
-    - For each character:
-      - Calls `CharacterManager.GetCharacterStartingCar()` to get the car name from character JSON's `initial_location` field.
-      - Calls `TrainLayoutManager.GetCarTransform()` to find the corresponding car.
-      - Calls `TrainLayoutManager.GetSpawnPointInCar()` to find a valid NavMesh position in the car.
-      - The spawn point is selected by prioritizing central anchors (e.g., "Anchor (3, 7)"), then non-edge anchors, then first available.
-      - Uses `NavMesh.SamplePosition()` to find a valid NavMesh point near the walkway.
-      - Calls `NPCManager.SpawnNPCInCar()` to instantiate the NPC with appropriate animation appearance.
-
-7.  **Transition to Gameplay** (Step 4):
-    - Once all steps are complete, `InitializationManager` signals completion.
-    - `LoadingOverlay` fades out or is disabled.
-    - Player input is enabled.
-    - Game state transitions to `DEFAULT`.
-    - Normal gameplay resumes.
+2.  **`Start` Phase & `InitializeGame` Sequence**:
+    - `InitializationManager.Start()` calls `InitializeGame()`.
+    - **(Step 1) Wait for LLM:** `InitializeGame` awaits `WaitForLLMStartup()`.
+    - **(Step 2) Wait for Parsing:** `InitializeGame` awaits `WaitForParsingComplete()`, which now quickly confirms `parsingControl.IsParsingComplete` is true.
+    - **(Step 2.1) Trigger Character Init:** `InitializeGame` explicitly calls `characterManager.Initialize()`.
+        - `CharacterManager` starts its `TwoPhaseInitialization` coroutine (creating LLMCharacters from `GameControl.coreMystery`, loading templates, warming up).
+    - **(Step 2.5) Build Train:** `InitializeGame` calls `BuildTrain()`. `TrainLayoutManager` builds the layout using data from `GameControl.coreMystery`.
+    - **(Step 3) Wait for Character Init:** `InitializeGame` awaits `WaitForCharacterManagerInitialization()`. This waits for `CharacterManager`'s `TwoPhaseInitialization` to complete (checking `IsInitialized` flag and `OnInitializationComplete` event).
+    - **(Step 3.5) Init NPC Manager:** `InitializeGame` awaits `InitializeNPCManager()`.
+    - **(Step 3.75) Spawn NPCs:** `InitializeGame` calls `SpawnAllNPCs()`. This reads `initial_location` directly from `GameControl.coreMystery` for each character and tells `NPCManager` where to spawn them.
+    - **(Step 4) Complete Init:** `InitializeGame` calls `CompleteInitialization()`, hiding the loading overlay and enabling gameplay.
 
 ## Event System
 
 The project uses C# events for communication between systems:
 
 1. **Parsing Events**:
-   - `ParsingControl.OnParsingProgress`: Reports parsing progress
-   - `ParsingControl.OnMysteryParsed`: Indicates mystery parsed
-   - `ParsingControl.OnCharactersExtracted`: Reports character extraction
-   - `ParsingControl.OnParsingComplete`: Signals parsing completion
+   - `ParsingControl.OnParsingProgress`: Reports parsing progress (0.0 to 1.0).
+   - `ParsingControl.OnMysteryParsed`: Indicates the main mystery object has been deserialized into `GameControl.coreMystery`.
+   - *(Removed `OnCharactersExtracted` and `OnParsingComplete` events)*
 
-2. **Character Extraction Events**:
-   - `MysteryCharacterExtractor.OnExtractionProgress`: Reports extraction progress
-   - `MysteryCharacterExtractor.OnCharactersExtracted`: Signals extraction completion
+2. **Character Manager Events**:
+   - `CharacterManager.OnInitializationComplete`: Signals `CharacterManager` has finished its internal setup (creating/warming up LLMCharacters). Triggered at the end of its `TwoPhaseInitialization` coroutine.
 
-3. **Character Manager Events**:
-   - `CharacterManager.OnInitializationComplete`: Signals character initialization complete
-
-4. **UI Events**:
+3. **UI Events**:
    - Standard Unity UI events (Button.onClick, InputField.onSubmit)
    - Used for dialogue interaction
 
@@ -401,8 +359,8 @@ The project's assets are organized as follows:
        - `Dialogue/LLM/`: LLM integration
 
 3. **StreamingAssets**:
-   - `StreamingAssets/MysteryStorage/`: Mystery JSON files
-   - `StreamingAssets/Characters/`: Character JSON files
+   - `StreamingAssets/MysteryStorage/`: Contains the main mystery JSON file (e.g., `transformed-mystery.json`).
+   - *(Removed `Characters` and `CharacterBackups` directories)*
 
 4. **LLM**:
    - `Assets/LLMUnity-release-v2.4.2/`: LLM integration package
@@ -430,10 +388,10 @@ The project has the following key dependencies:
    - LLMUnity: Integration with language models
 
 2. **Internal Dependencies**:
-   - GameControl → Mystery
-   - ParsingControl → MysteryCharacterExtractor
-   - CharacterManager → LLM
-   - NPCManager → CharacterManager
+   - InitializationManager → ParsingControl, CharacterManager, NPCManager, TrainLayoutManager, LLM, GameControl
+   - ParsingControl → GameControl
+   - CharacterManager → LLM, GameControl, CharacterPromptGenerator
+   - NPCManager → CharacterManager, TrainLayoutManager, GameControl (indirectly via InitializationManager for spawning)
    - DialogueControl → LLMDialogueManager
 
 ## Code Reference
@@ -455,23 +413,22 @@ The project has the following key dependencies:
    - Used by game systems for gameplay
 
 2. **ParsingControl.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
-   - Parses mystery JSON file loaded from `StreamingAssets`.
+   - Component exists in the scene from start.
+   - Parses the main mystery JSON file loaded from `StreamingAssets` in its `Awake` method.
    - Populates `GameControl.coreMystery` with the parsed data.
-   - Coordinates with `MysteryCharacterExtractor` to process character data from the `Mystery` object.
-   - Fires events (`OnParsingProgress`, `OnMysteryParsed`, `OnCharactersExtracted`, `OnParsingComplete`) to signal progress and completion, which `InitializationManager` waits for.
+   - Sets the `IsParsingComplete` flag when done.
+   - Fires `OnParsingProgress` and `OnMysteryParsed` events. (Does *not* coordinate with `MysteryCharacterExtractor` or fire `OnParsingComplete`).
 
-3. **MysteryCharacterExtractor.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
-   - Processes character data from the in-memory `Mystery` object provided by `ParsingControl`.
-   - *Note: No longer writes individual character files. Ensure any duplicate versions of this script are deleted.*
-   - Fires events (`OnExtractionProgress`, `OnCharactersExtracted`) related to processing progress and completion, which `ParsingControl` listens for.
+*(Removed MysteryCharacterExtractor.cs section)*
 
 ### Character System
 
-1. **CharacterManager.cs**:
-   - Reads character data from `GameControl.coreMystery.Characters`.
-   - Manages LLM character creation
-   - Handles character state transitions
-   - Provides access to character instances
+3. **CharacterManager.cs**:
+   - Component exists in the scene from start.
+   - Initialization is triggered explicitly by `InitializationManager` via the `Initialize()` method after parsing is complete.
+   - Reads character data directly from `GameControl.coreMystery.Characters`.
+   - Manages LLM character creation, state transitions, and provides access to instances.
+   - Fires `OnInitializationComplete` event when its internal setup is finished.
 
 2. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
    - Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
@@ -486,11 +443,12 @@ The project has the following key dependencies:
 
 ### NPC System
 
-1. **NPCManager.cs**:
-   - Spawns and manages NPCs
-   - Links NPCs to LLM characters
-   - Handles NPC placement in environment
-   - Assigns NPCAnimContainer visuals to NPCs
+5. **NPCManager.cs**:
+   - Component exists in the scene from start.
+   - Spawns and manages NPCs.
+   - Links NPCs to LLM characters (obtained from `CharacterManager`).
+   - NPC placement is handled by `InitializationManager.SpawnAllNPCs`, which reads `initial_location` directly from `GameControl.coreMystery`.
+   - Assigns NPCAnimContainer visuals to NPCs.
 
 2. **Character.cs**:
    - Links NPC GameObject to LLMCharacter
@@ -533,12 +491,12 @@ The project has the following key dependencies:
 
 ### Initialization System
 
-1. **InitializationManager.cs**:
-   - Orchestrates the entire game initialization sequence
-   - Manages LoadingOverlay and initialization state
-   - Coordinates between systems: LLM, ParsingControl, TrainLayoutManager, etc.
-   - Handles NPC spawning through SpawnAllNPCs() method
-   - Ensures proper startup sequence and transition to gameplay
+7. **InitializationManager.cs**:
+   - Orchestrates the game initialization sequence.
+   - Finds existing core components (`ParsingControl`, `CharacterManager`, `NPCManager`, etc.) in its `Awake` phase. (Does *not* add components dynamically).
+   - Manages LoadingOverlay and initialization state.
+   - Coordinates the startup sequence explicitly: Waits for LLM, waits for Parsing (flag), triggers CharacterManager init, waits for CharacterManager (event/flag), initializes NPCManager, spawns NPCs (reading data directly), completes initialization.
+   - Handles NPC spawning through `SpawnAllNPCs()` method, reading `initial_location` directly from `GameControl.coreMystery`.
 
 ### Dialogue System
 

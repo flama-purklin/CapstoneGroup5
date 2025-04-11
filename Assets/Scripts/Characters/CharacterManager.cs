@@ -7,7 +7,7 @@ using System.Collections;
 using LLMUnity;
 using System;
 using TMPro;
-// using System.IO; // Already included via other using statements or implicitly? Removing duplicate.
+using Newtonsoft.Json; // Added for serialization
 
 public class CharacterManager : MonoBehaviour
 {
@@ -21,6 +21,7 @@ public class CharacterManager : MonoBehaviour
     private bool isSwitchingCharacter = false;
     private Transform charactersContainer;
     private LLMCharacter currentCharacter;
+    // private ParsingControl parsingControl; // Removed reference
 
     public bool IsInitialized => isInitialized;
     public bool IsSwitchingCharacter => isSwitchingCharacter;
@@ -96,8 +97,27 @@ public class CharacterManager : MonoBehaviour
     {
         ValidateConfiguration();
         OrganizeHierarchy();
+        // Initialization is now triggered explicitly by InitializationManager
+    }
+
+    /// <summary>
+    /// Public method to start the character initialization process.
+    /// Should be called by InitializationManager after parsing is complete.
+    /// </summary>
+    public void Initialize()
+    {
+        if (isInitialized || isInitializing)
+        {
+            Debug.LogWarning("CharacterManager Initialize called but already initialized or initializing.");
+            return;
+        }
+        Debug.Log("CharacterManager Initialize() called. Starting TwoPhaseInitialization.");
         StartCoroutine(TwoPhaseInitialization());
     }
+
+    // Removed Start() method (event subscription)
+    // Removed OnDestroy() method (event unsubscription)
+    // Removed HandleParsingComplete() method (event handler)
 
     private void ValidateConfiguration()
     {
@@ -154,37 +174,49 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator CreateCharacterObjects()
     {
-        string characterPath = Path.Combine(Application.streamingAssetsPath, charactersFolder);
-        if (!Directory.Exists(characterPath))
+        // Check if GameController and mystery data are ready
+        if (GameControl.GameController == null || GameControl.GameController.coreMystery == null || GameControl.GameController.coreMystery.Characters == null)
         {
-            Debug.LogError($"Characters folder not found at: {characterPath}");
+            Debug.LogError("CharacterManager: GameControl or coreMystery data not ready for character creation!");
             yield break;
         }
 
-        var characterFiles = Directory.GetFiles(characterPath, "*.json")
-            .Select(path => Path.GetFileNameWithoutExtension(path))
-            .ToArray();
-
-        foreach (string characterName in characterFiles)
+        var charactersData = GameControl.GameController.coreMystery.Characters;
+        if (charactersData.Count == 0)
         {
-            yield return StartCoroutine(CreateSingleCharacterObject(characterName, characterPath));
+             Debug.LogWarning("CharacterManager: No characters found in coreMystery data.");
+             yield break;
+        }
+
+        Debug.Log($"CharacterManager: Found {charactersData.Count} characters in coreMystery. Creating objects...");
+
+        foreach (var kvp in charactersData)
+        {
+            string characterName = kvp.Key;
+            MysteryCharacter mysteryCharacterData = kvp.Value;
+
+            if (mysteryCharacterData == null)
+            {
+                Debug.LogWarning($"Character data for '{characterName}' is null. Skipping.");
+                continue;
+            }
+
+            yield return StartCoroutine(CreateSingleCharacterObject(characterName, mysteryCharacterData));
         }
 
         if (characterCache.Count == 0)
         {
-            Debug.LogError("No character objects created!");
+            Debug.LogError("CharacterManager: No character objects were successfully created!");
             yield break;
         }
 
-        Debug.Log($"Successfully created {characterCache.Count} character objects");
+        Debug.Log($"CharacterManager: Successfully created {characterCache.Count} character objects from coreMystery data.");
     }
 
-    private IEnumerator CreateSingleCharacterObject(string characterName, string characterPath)
+    private IEnumerator CreateSingleCharacterObject(string characterName, MysteryCharacter mysteryCharacterData)
     {
-        string jsonPath = Path.Combine(characterPath, $"{characterName}.json");
         try
         {
- 
             GameObject charObj = new GameObject($"{characterName}");
             charObj.transform.SetParent(charactersContainer, false);
 
@@ -193,7 +225,7 @@ public class CharacterManager : MonoBehaviour
             character.llm = sharedLLM;
             character.stream = true;
             character.saveCache = true;
-            character.save = characterName; 
+            character.save = characterName;
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
             character.temperature = temperature;
@@ -203,22 +235,24 @@ public class CharacterManager : MonoBehaviour
             character.presencePenalty = presencePenalty;
             character.frequencyPenalty = frequencyPenalty;
 
-            // Load and set the prompt
-            string jsonContent = File.ReadAllText(jsonPath);
+            // Serialize the MysteryCharacter object back to JSON for the prompt generator
+            string jsonContent = JsonConvert.SerializeObject(mysteryCharacterData, Formatting.Indented); // Use Newtonsoft.Json
+
+            // Generate and set the prompt
             string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent, character);
             if (string.IsNullOrEmpty(systemPrompt))
             {
                 Debug.LogError($"Failed to generate prompt for character: {characterName}");
                 Destroy(charObj);
-                yield break;
+                yield break; // Skip this character if prompt generation fails
             }
 
-            // Store  prompt in cache and set it in the character
+            // Store prompt in cache and set it in the character
             promptCache[charObj.name] = systemPrompt;
             character.SetPrompt(systemPrompt, true);
             Debug.Log($"Set prompt for {charObj.name}: {systemPrompt.Substring(0, Mathf.Min(100, systemPrompt.Length))}...");
 
-            // Store  character
+            // Store character
             characterCache[characterName] = character;
             stateTransitions[characterName] = new CharacterStateTransition(characterName, CharacterState.Uninitialized, charObj);
 
@@ -226,11 +260,12 @@ public class CharacterManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error creating character object {characterName}: {e.Message}");
+            Debug.LogError($"Error creating character object {characterName}: {e.Message}\nStack Trace: {e.StackTrace}");
         }
 
-        yield return null;
+        yield return null; // Yield even if there was an error to avoid blocking
     }
+
 
     private IEnumerator InitializeCharacters()
     {
@@ -494,15 +529,7 @@ public class CharacterManager : MonoBehaviour
         baseBackoffDelay = Mathf.Max(1f, baseBackoffDelay);
     }
 
-    private void OnDisable()
-    {
-        CleanupCharacters();
-    }
-
-    private void OnDestroy()
-    {
-        CleanupCharacters();
-    }
+    // OnDisable removed, cleanup moved to OnDestroy
 
     private void CleanupCharacters()
     {
@@ -700,63 +727,5 @@ public class CharacterManager : MonoBehaviour
         return stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready);
     }
 
-    // --- Helper class for JSON Parsing (Simplified) ---
-    // Only need the top-level field we care about for now
-    [System.Serializable]
-    private class CharacterLocationData
-    {
-        public string initial_location;
-        // We don't need to define 'core' or 'mind_engine' if we only parse 'initial_location'
-    }
-    // --- End Helper class ---
-
-
-    /// <summary>
-    /// Gets the starting car name for a given character from their JSON file.
-    /// Assumes JSON structure like {"core": {"initial_location": "CarName"}}
-    /// </summary>
-    /// <param name="characterName">The name of the character (without .json extension).</param>
-    /// <returns>The starting car name, or null if not found or an error occurs.</returns>
-    public string GetCharacterStartingCar(string characterName)
-    {
-        if (string.IsNullOrEmpty(characterName))
-        {
-            Debug.LogError("GetCharacterStartingCar: Provided characterName is null or empty.");
-            return null;
-        }
-
-        string characterFilePath = Path.Combine(Application.streamingAssetsPath, charactersFolder, $"{characterName}.json");
-
-        if (!File.Exists(characterFilePath))
-        {
-            Debug.LogError($"GetCharacterStartingCar: Character file not found at '{characterFilePath}' for character '{characterName}'.");
-            return null;
-        }
-
-        try
-        {
-            string jsonContent = File.ReadAllText(characterFilePath);
-
-            // Attempt to parse using JsonUtility and the simplified helper class
-            CharacterLocationData parsedData = JsonUtility.FromJson<CharacterLocationData>(jsonContent);
-
-            // Check the top-level field directly
-            if (parsedData != null && !string.IsNullOrEmpty(parsedData.initial_location))
-            {
-                 Debug.Log($"Found starting location '{parsedData.initial_location}' for character '{characterName}'."); // Re-enabled debug log
-                return parsedData.initial_location;
-            }
-            else
-            {
-                Debug.LogWarning($"GetCharacterStartingCar: Could not parse 'initial_location' (as a top-level field) from JSON file for character '{characterName}'. Check JSON structure and content.");
-                // Fallback or more robust parsing could be added here if needed (e.g., using Newtonsoft.Json for more flexibility)
-                return null;
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"GetCharacterStartingCar: Error reading or parsing JSON file for character '{characterName}' at '{characterFilePath}'. Exception: {ex.Message}");
-            return null;
-        }
-    }
+    // Removed GetCharacterStartingCar method and CharacterLocationData helper class
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using LLMUnity;
-using CoreControl.MysteryParsing;
+// using CoreControl.MysteryParsing; // Removed as MysteryCharacterExtractor is no longer used
 
 /// <summary>
 /// Editor tool to set up all the references needed for the unified scene approach
@@ -33,14 +33,7 @@ public class SetupInitializationReferences : Editor
             Debug.Log("Created NPCManager");
         }
 
-        // Create MysteryCharacterExtractor if needed
-        var parsingControl = FindFirstObjectByType<ParsingControl>();
-        if (parsingControl != null && FindFirstObjectByType<MysteryCharacterExtractor>() == null)
-        {
-            GameObject extractorObj = new GameObject("MysteryCharacterExtractor");
-            extractorObj.AddComponent<MysteryCharacterExtractor>();
-            Debug.Log("Created MysteryCharacterExtractor");
-        }
+        // Removed logic to create MysteryCharacterExtractor
 
         // Configure InitializationManager using SerializedObject
         SerializedObject serializedObject = new SerializedObject(initManager);
