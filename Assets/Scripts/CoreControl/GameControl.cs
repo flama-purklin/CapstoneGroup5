@@ -54,4 +54,13 @@ public class GameControl : MonoBehaviour
         Debug.Log("Final State Activated");
         currentState = GameState.FINAL;
     }
+
+    //call this to initialize all game start stuff (power system, etc)
+    public void StartGame()
+    {
+        currentState = GameState.DEFAULT;
+
+        //begin the power drain
+        GameObject.FindFirstObjectByType<PowerControl>().PowerInit();
+    }
 }

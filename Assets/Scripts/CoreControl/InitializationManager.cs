@@ -623,7 +623,7 @@ public class InitializationManager : MonoBehaviour
             // Change game state to DEFAULT
             if (GameControl.GameController != null)
             {
-                GameControl.GameController.currentState = GameState.DEFAULT;
+                GameControl.GameController.StartGame();
                 Debug.Log("Changed game state to DEFAULT");
             }
             else
