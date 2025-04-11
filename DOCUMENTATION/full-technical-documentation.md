@@ -22,9 +22,23 @@
 
 ## Project Overview
 
-This project is a mystery game built with Unity that leverages a "black-box" architecture. This approach enables any mystery, represented as a properly structured JSON file, to be loaded into the game engine. The engine parses this data into a playable experience with characters, events, and clues.
+This project is a **Social Deduction / Detective Mystery / Social-sim** game built with Unity. The player controls a customer service robot navigating a train, interacting with NPCs, finding clues, and solving mysteries. It leverages a "black-box" architecture, a core design principle enabling any mystery (represented as a properly structured JSON file) to be loaded into the game engine. This allows for mysteries from diverse sources (developer-created, procedural, user-generated) and varying gameplay scenarios.
 
-A key feature of the project is the integration of Large Language Models (LLM) for character dialogue, creating dynamic and responsive NPC interactions.
+A key feature differentiating the game is the integration of Large Language Models (LLM) for character dialogue. This aims to create dynamic, responsive NPC interactions that move beyond traditional dialogue trees, enhancing player agency and the social deduction experience by allowing free-form player input.
+
+## Technical Specifications
+
+### Target Platform
+- PC / Windows 10+ (64-bit)
+
+### System Requirement Goals
+- **RAM**: 16GB
+- **CPU**: 6 cores @ 2.3-2.69 GHz
+- **GPU**: NVIDIA GeForce RTX 3060 (12GB)
+
+### Performance Goals
+- **Framerate**: 30 fps target
+- **Resolution**: 1080p (16:9) primary display
 
 ## Core Architecture
 
@@ -89,6 +103,8 @@ State changes are managed directly by setting `GameControl.GameController.curren
 
 ### LLM Integration
 
+*Design Goal: To move beyond static dialogue trees and create dynamic, responsive NPC interactions that enhance player agency and support social deduction gameplay through free-form input.*
+
 The LLM integration is handled through the LLMUnity package:
 
 - **LLM**: Core language model interface
@@ -98,6 +114,8 @@ The LLM integration is handled through the LLMUnity package:
 The system uses character JSON files to generate prompts that define character personalities, knowledge, and behavior.
 
 ### Mystery System
+
+*Design Goal: The "black-box" JSON approach allows for flexibility in mystery sourcing (hand-crafted, procedural, user-generated) and promotes replayability. The node-based constellation structure encourages active player investigation rather than passive information gathering.*
 
 The mystery system is built around a JSON-based data model:
 
@@ -120,27 +138,31 @@ The mystery system is built around a JSON-based data model:
 
 ### Character System
 
+*Design Goal: Character data is structured to separate core, plot-relevant information (relationships, knowledge, agenda - the CORE section in design) from personality, voice, and decision-making traits used primarily by the LLM for role-playing (the MIND ENGINE section in design).*
+
+*(Refactoring Goal: The current character data handling needs improvement to address initialization order issues and redundant file usage. See Initialization Sequence section for details.)*
+
 Characters are managed through multiple components:
 
-1. **Character Data**:
-   - Extracted from mystery JSON
-   - Stored as individual JSON files
-   - Generated character files contain:
-     - Core identity information
-     - Personality traits
-     - Knowledge and memory
-     - Dialogue patterns
+1.  **Character Data (As Implemented - Needs Refactor)**:
+    *   Data is extracted from the main mystery JSON by `ParsingControl` into `GameControl.coreMystery.Characters`.
+    *   Simultaneously, `MysteryCharacterExtractor` processes this data and **saves individual character JSON files** to `Assets/StreamingAssets/Characters/`.
+    *   `CharacterManager` then **reads these individual JSON files** to initialize `LLMCharacter` instances.
+    *   **Problem:** This creates unnecessary file I/O and potential synchronization issues (initialization race condition).
+    *   **Desired Future State:** Eliminate the creation/reading of individual character JSON files. `CharacterManager` should directly use the `GameControl.coreMystery.Characters` dictionary populated *synchronously* by `ParsingControl` during initialization.
 
-2. **Character Manager**:
-   - Loads character data
-   - Creates LLMCharacter instances
-   - Manages character states (Uninitialized → LoadingTemplate → WarmingUp → Ready)
-   - Handles character switching and context management
+2.  **Character Manager**:
+    *   **As Implemented:** Loads character data by reading individual JSON files.
+    *   **Desired Future State:** Read data directly from the `GameControl.coreMystery.Characters` dictionary *after* parsing is confirmed complete.
+    *   Manages `LLMCharacter` instances and GameObjects.
+    *   Manages character states (Uninitialized → LoadingTemplate → WarmingUp → Ready).
+    *   Handles character switching and context management.
 
-3. **Character Prompt Generation**:
-   - `CharacterPromptGenerator` creates system prompts for LLM
-   - Converts character data to structured prompts
-   - Defines character behavior and dialogue patterns
+3.  **Character Prompt Generation**:
+    *   `CharacterPromptGenerator` (or `TempCharacterPromptGenerator`) creates system prompts for the LLM.
+    *   **As Implemented:** Likely reads data derived from the individual character files.
+    *   **Desired Future State:** Ensure the prompt generator takes the `MysteryCharacter` object directly from the in-memory dictionary as input.
+    *   Converts character data to structured prompts defining behavior and dialogue patterns.
 
 ### NPC System
 
@@ -175,6 +197,8 @@ NPCs are managed through the following components:
    - Should include an Animator component with "Apply Root Motion" turned OFF
 
 ### Dialogue System
+
+*Design Goal: To facilitate player expression and strategic social interaction. The system aims to simulate the push-and-pull of detective interviews, allowing players to extract information through intelligent conversation and social deduction rather than selecting from predefined options.*
 
 The dialogue system connects player interactions with the LLM system:
 
@@ -211,6 +235,19 @@ The player system handles player movement and interactions:
 3. **JorgePlayer/Player**:
    - Additional player functionality (not fully implemented)
 
+## Core Gameplay Concepts
+
+*Design concepts underpinning the player's interaction with the game world and mystery.*
+
+### Energy System
+*Design Goal: To create tension and forward gameplay momentum, replacing earlier concepts of a simple timer. Energy is envisioned to deplete slowly over time and be consumed actively by key player actions like running hunch simulations and potentially engaging in extended dialogue.*
+
+### Hunch System
+*Design Goal: To transform investigation into an interactive process. Players actively form theories by connecting clues on the mystery board, testing them via limited simulations. This encourages logical reasoning and rewards attention to detail, leveraging the protagonist's analytical nature.*
+
+### Evidence & Minigames
+*Design Goal: Environmental evidence objects and solvable minigames serve as progression gates. Interacting with or solving them unlocks new leads and nodes on the mystery board, making them necessary steps to unravel the case.*
+
 ## Data Flow
 
 The project's data flow follows this pattern:
@@ -219,16 +256,22 @@ The project's data flow follows this pattern:
    ```
    Mystery JSON → ParsingControl → GameControl.coreMystery
    ```
-
-2. **Character Extraction**:
-   ```
-   Mystery → MysteryCharacterExtractor → Character JSON Files
+   Mystery JSON → ParsingControl → GameControl.coreMystery
    ```
 
-3. **Character Initialization**:
+2. **Character Data Extraction (As Implemented - Needs Refactor)**:
    ```
-   Character JSON → CharacterManager → LLMCharacter
+   GameControl.coreMystery.Characters → MysteryCharacterExtractor → Character JSON Files (in StreamingAssets/Characters/)
    ```
+   * **Problem:** Redundant file I/O, potential race condition.
+   * **Goal:** Remove this step.
+
+3. **Character Initialization (As Implemented - Needs Refactor)**:
+   ```
+   Character JSON Files → CharacterManager → LLMCharacter GameObject & Component
+   ```
+   * **Problem:** Depends on potentially unsynchronized file writing from step 2.
+   * **Goal:** `GameControl.coreMystery.Characters → CharacterManager → LLMCharacter GameObject & Component` (using data populated in step 1).
 
 4. **NPC Creation**:
    ```
@@ -253,10 +296,11 @@ The game initialization occurs entirely within the `SystemsTest` scene, managed 
     - Wait for the shared LLM service to start.
     - Update LoadingOverlay status.
 
-3.  **Mystery Parsing & Character Extraction** (Step 2):
-    - `ParsingControl` parses the mystery JSON.
-    - `MysteryCharacterExtractor` extracts character data to files.
-    - Character files are validated.
+3.  **Mystery Parsing & Character File Extraction (As Implemented - Needs Refactor)** (Step 2):
+    - `ParsingControl` parses the main mystery JSON, populating `GameControl.coreMystery`.
+    - `MysteryCharacterExtractor` is called (or runs independently) to create individual character JSON files in `StreamingAssets/Characters/`.
+    - **Problem:** This file extraction step is redundant. More importantly, its timing relative to Character Manager initialization (Step 5) is not strictly enforced, leading to race conditions where `CharacterManager` might try to read files before they are written, requiring a second run in the editor.
+    - **Desired Future State:** Remove the file extraction part entirely. `ParsingControl` should only parse the main JSON and populate `GameControl.coreMystery`. `InitializationManager` must explicitly wait for `ParsingControl` to finish *before* proceeding to Step 5.
     - Update LoadingOverlay status.
 
 4.  **Train Layout Building** (Step 2.5):
@@ -267,10 +311,12 @@ The game initialization occurs entirely within the `SystemsTest` scene, managed 
     - Train cars must have the `RailCarFloor` → `Anchor (x, y)` → `walkway` hierarchical structure.
     - Each floor must have a baked NavMesh surface for NPC navigation.
 
-5.  **Character Manager Initialization** (Step 3):
-    - `CharacterManager` initializes.
-    - Loads character data from files.
-    - Creates and warms up `LLMCharacter` instances for each character.
+5.  **Character Manager Initialization (As Implemented - Needs Refactor)** (Step 3):
+    - `InitializationManager` calls `CharacterManager.Initialize()`.
+    - `CharacterManager` reads character data from the **individual JSON files** in `StreamingAssets/Characters/`.
+    - **Problem:** Depends on Step 3 (file extraction) completing first, which isn't guaranteed synchronously, causing the initialization race condition.
+    - **Desired Future State:** `CharacterManager` should read directly from the `GameControl.coreMystery.Characters` dictionary *after* `InitializationManager` has confirmed Step 3 (Parsing) is fully complete.
+    - Creates and warms up `LLMCharacter` instances and GameObjects for each character.
     - `NPCManager` initializes, caching LLM data.
 
 6.  **NPC Spawning** (Step 3.5):
@@ -361,6 +407,20 @@ The project's assets are organized as follows:
 4. **LLM**:
    - `Assets/LLMUnity-release-v2.4.2/`: LLM integration package
 
+## Art Direction
+
+*High-level visual goals influencing asset creation and presentation.*
+
+### Camera Setup
+- 2/3rd Top-Down perspective.
+
+### Art Style
+- Blend of 3D environments and 2D character sprites.
+- Requires lighting from the 3D environment to realistically affect 2D assets.
+
+### Aesthetics
+- Inspired by Mid-Century Futurism (e.g., Jetsons, Space Era illustrations) and Swinging Sixties styles (e.g., Deathloop, pop art).
+
 ## Dependencies
 
 The project has the following key dependencies:
@@ -394,27 +454,30 @@ The project has the following key dependencies:
    - Contains all mystery information
    - Used by game systems for gameplay
 
-2. **ParsingControl.cs**:
-   - Parses mystery JSON files
-   - Extracts character data
-   - Reports parsing progress
+2. **ParsingControl.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
+   - Parses mystery JSON file loaded from `StreamingAssets`.
+   - Populates `GameControl.coreMystery` with the parsed data.
+   - Coordinates with `MysteryCharacterExtractor` to process character data from the `Mystery` object.
+   - Fires events (`OnParsingProgress`, `OnMysteryParsed`, `OnCharactersExtracted`, `OnParsingComplete`) to signal progress and completion, which `InitializationManager` waits for.
 
-3. **MysteryCharacterExtractor.cs**:
-   - Extracts character data from mystery
-   - Creates individual character files
-   - Verifies character file structure
+3. **MysteryCharacterExtractor.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
+   - Processes character data from the in-memory `Mystery` object provided by `ParsingControl`.
+   - *Note: No longer writes individual character files. Ensure any duplicate versions of this script are deleted.*
+   - Fires events (`OnExtractionProgress`, `OnCharactersExtracted`) related to processing progress and completion, which `ParsingControl` listens for.
 
 ### Character System
 
 1. **CharacterManager.cs**:
+   - Reads character data from `GameControl.coreMystery.Characters`.
    - Manages LLM character creation
    - Handles character state transitions
    - Provides access to character instances
 
-2. **CharacterPromptGenerator.cs**:
-   - Generates LLM prompts from character data
-   - Handles different character data formats
-   - Structures prompts for optimal LLM behavior
+2. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
+   - Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
+   - Handles different character data formats.
+   - Structures prompts for optimal LLM behavior.
+   - *Note: A `TempCharacterPromptGenerator.cs` might exist; ensure the correct one is used/referenced.*
 
 3. **LLMCharacter.cs** (from LLMUnity):
    - Interfaces with LLM system
@@ -453,6 +516,8 @@ The project has the following key dependencies:
 
 ### Train System
 
+*Design Goal: Train layouts utilize a base template for consistent spatial flow across mysteries but allow mystery-specific variations in car types and their order. This supports the flexible "black-box" design, enabling diverse environments defined by the mystery JSON.*
+
 1. **TrainLayoutManager.cs**:
    - Reads train car layout from mystery JSON
    - Prepares car prefabs for instantiation
@@ -482,12 +547,14 @@ The project has the following key dependencies:
    - Activates dialogue with NPCs
    - Controls transitions to/from dialogue state
 
-2. **BaseDialogueManager.cs**:
-   - Abstract base class for dialogue management
-   - Handles LLM character interaction
-   - Manages dialogue flow and callbacks
+2. **BaseDialogueManager.cs** (`Assets/Mystery/Myst_Play/Dialogue/LLM/`):
+   - Abstract base class for dialogue management.
+   - *Note: Does not appear to be attached to any active GameObject in the `SystemsTest` scene.*
+   - Handles LLM character interaction.
+   - Manages dialogue flow and callbacks.
 
-3. **LLMDialogueManager.cs**:
-   - Implements concrete dialogue UI interface
-   - Handles player input and response display
-   - Controls dialogue UI state
+3. **LLMDialogueManager.cs** (`Assets/Mystery/Myst_Play/Dialogue/LLM/`):
+   - Implements concrete dialogue UI interface, inheriting from `BaseDialogueManager`.
+   - *Note: Does not appear to be attached to any active GameObject in the `SystemsTest` scene.*
+   - Handles player input and response display.
+   - Controls dialogue UI state.
