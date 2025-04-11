@@ -67,7 +67,7 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
         //zoom in handler
         if (mysteryCam.orthographicSize < maxZoom && zoomAmt < 0)
         {
-            Debug.Log("Zooming out");
+            // Debug.Log("Zooming out");
             //transform.localScale = currentScale + Vector3.one * zoomRate;
 
             mysteryCam.orthographicSize += zoomAmt + zoomRate;
@@ -81,7 +81,7 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
         //zoom out handler
         if (mysteryCam.orthographicSize > minZoom && zoomAmt > 0)
         {
-            Debug.Log("Zooming in");
+            // Debug.Log("Zooming in");
             //transform.localScale = currentScale - Vector3.one * zoomRate;
 
             mysteryCam.orthographicSize -= zoomAmt + zoomRate;
@@ -103,7 +103,7 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
 
             //check whether the motion is within the bounds of the rectTransform
             Rect background = RectTransformToScreenSpace(rectTransform, newPosition);
-            Debug.Log(background.min + " " + background.max);
+            
 
             tempRect.anchorMin = rectTransform.anchorMin;
             tempRect.anchorMax = rectTransform.anchorMax;
@@ -114,7 +114,7 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
             Vector2 topLeftPos = Camera.main.ViewportToScreenPoint(new Vector2(0, 0));
             Vector2 bottomRightPos = Camera.main.ViewportToScreenPoint(new Vector2(1, 1));
 
-            Debug.Log(topLeft + " " + bottomRight);
+            
 
             //if (topLeft && bottomRight)
                 rectTransform.anchoredPosition = newPosition;

@@ -21,7 +21,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
     public virtual void SetCharacter(LLMCharacter character)
     {
         llmCharacter = character;
-        Debug.Log($"Set LLMCharacter: {character.gameObject.name}");
+        
     }
 
     public virtual void InitializeDialogue()

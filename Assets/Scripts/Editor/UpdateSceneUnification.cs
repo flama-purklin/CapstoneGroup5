@@ -114,6 +114,6 @@ Spawns NPCs in the scene and connects them to the appropriate LLM characters for
 ";
         
         File.WriteAllText(mdPath, content);
-        Debug.Log($"Updated SCENE-UNIFICATION.md at {mdPath}");
+        
     }
 }

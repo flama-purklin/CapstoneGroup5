@@ -25,11 +25,9 @@ public class NPCMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        // --- Cline: Removed timestamped log ---
         player = GameObject.FindWithTag("Player");
         dialogueControl = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
 
-        // --- Cline: Add checks and adjustments ---
         if (agent == null) agent = GetComponent<NavMeshAgent>(); // Ensure agent is assigned
         if (agent != null)
         {
@@ -37,7 +35,7 @@ public class NPCMovement : MonoBehaviour
             agent.stoppingDistance = 0.1f; // Give a small buffer
             agent.angularSpeed = 120f;     // Allow smoother turning (adjust value as needed)
             agent.acceleration = 8f;       // Default Unity value, ensure it's reasonable
-            // agent.updatePosition = false; // Cline: Reverted this change
+            // agent.updatePosition = false;
             agent.enabled = true;          // Ensure agent is enabled
         }
         else
@@ -56,7 +54,6 @@ public class NPCMovement : MonoBehaviour
                 rb.isKinematic = true;
             }
         }
-        // --- End Cline changes ---
 
         //set the default value for movement vector
         movementVector = Random.insideUnitSphere; // This seems less useful now, movement is calculated differently
@@ -65,13 +62,11 @@ public class NPCMovement : MonoBehaviour
 
     private void OnEnable()
     {
-        // --- Cline: Removed timestamped log ---
         StartCoroutine(InitializeWhenReady());
     }
 
     private IEnumerator InitializeWhenReady()
     {
-        // Cline: Removed temporary compile error
         // Wait for all required components
         while (player == null || dialogueControl == null)
         {
@@ -82,7 +77,7 @@ public class NPCMovement : MonoBehaviour
 
         if (agent) agent.enabled = true;
         isInitialized = true;
-        yield return null; // Cline: Add a small delay before starting IdleState
+        yield return null; // Add a small delay before starting IdleState
         StartCoroutine(IdleState());
     }
 
@@ -113,14 +108,12 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator IdleState()
     {
-        // --- Cline: Removed timestamped log ---
-        // --- Cline: Log position at start of IdleState ---
-        if (agent != null) {
-             Debug.Log($"[NPCMovement Debug] NPC {gameObject.name} starting IdleState at position {agent.transform.position}. Is on NavMesh: {agent.isOnNavMesh}");
-        } else {
-             Debug.LogWarning($"[NPCMovement Debug] NPC {gameObject.name} starting IdleState but agent is null!");
-        }
-        // --- End Cline changes ---
+        // OPTIONAL NAVMESH CHARACTER IDLE-STATE DEBUGGING
+        //if (agent != null) {
+        //     Debug.Log($"[NPCMovement Debug] NPC {gameObject.name} starting IdleState at position {agent.transform.position}. Is on NavMesh: {agent.isOnNavMesh}");
+        //} else {
+        //     Debug.LogWarning($"[NPCMovement Debug] NPC {gameObject.name} starting IdleState but agent is null!");
+        //}
 
         //Debug.Log("Now Idling");
         //reset time variables, remove goal for navmesh agent
@@ -130,7 +123,7 @@ public class NPCMovement : MonoBehaviour
         // Ensure agent is valid and on NavMesh before stopping
         if (agent != null && agent.isOnNavMesh)
         {
-            agent.isStopped = true; // Cline: Restored this line
+            agent.isStopped = true;
         }
         else if (agent != null)
         {
@@ -173,21 +166,18 @@ public class NPCMovement : MonoBehaviour
 
     IEnumerator MovementState()
     {
-        // --- Cline: Log position at start of MovementState ---
-        if (agent != null) {
-             Debug.Log($"[NPCMovement Debug] NPC {gameObject.name} starting MovementState at position {agent.transform.position}. Is on NavMesh: {agent.isOnNavMesh}");
-        } else {
-             Debug.LogWarning($"[NPCMovement Debug] NPC {gameObject.name} starting MovementState but agent is null!");
-        }
-        // --- End Cline changes ---
+        // OPTIONAL NAVMESH CHARACTER MOVEMENT-STATE DEBUGGING
+        //if (agent != null) {
+        //     Debug.Log($"[NPCMovement Debug] NPC {gameObject.name} starting MovementState at position {agent.transform.position}. Is on NavMesh: {agent.isOnNavMesh}");
+        //} else {
+        //     Debug.LogWarning($"[NPCMovement Debug] NPC {gameObject.name} starting MovementState but agent is null!");
+        //}
 
         //Debug.Log("Now Moving");
-        // --- Cline: Improved destination finding ---
         Vector3 randomDirection = Random.insideUnitSphere * maxMovementDist;
         randomDirection += transform.position; // Get a random point *around* the current position
 
         NavMeshHit hit;
-        // --- Cline: Drastically increase sample radius for diagnostics ---
         float sampleRadius = 50f; // Use a very large radius to see if *any* point can be found
         // Try to find a valid point on the NavMesh near the random direction
         if (NavMesh.SamplePosition(randomDirection, out hit, sampleRadius, NavMesh.AllAreas))
@@ -213,18 +203,14 @@ public class NPCMovement : MonoBehaviour
             StartCoroutine(IdleState());
             yield break;
         }
-        // --- End Cline changes ---
 
 
         //update anim
-        // --- Cline: Restore animation calls ---
         if (animator != null) animator.SetBool("moving", true);
         if (animManager != null) animManager.ApplyAnim();
-        // --- End Cline changes ---
 
 
         // Check agent validity within the loop as well
-        // --- Cline: Added pathPending check for robustness ---
         while (agent != null && agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance > agent.stoppingDistance)
         {
             //break out if the player enters dialogue range
@@ -234,13 +220,11 @@ public class NPCMovement : MonoBehaviour
                 yield return new WaitForFixedUpdate(); // Wait for next physics update
         }
 
-        // --- Cline: Ensure agent is stopped properly before idling ---
         if (agent != null && agent.isOnNavMesh)
         {
             agent.isStopped = true;
-            // agent.ResetPath(); // Cline: Temporarily comment out to test if this causes position flip
+            // agent.ResetPath();
         }
-        // --- End Cline changes ---
 
         StartCoroutine(IdleState());
     }

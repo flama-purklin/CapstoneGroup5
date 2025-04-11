@@ -34,7 +34,7 @@ public class InitializationManager : MonoBehaviour
                 GameControl controller = controllerObj.GetComponent<GameControl>();
                 if (controller != null)
                 {
-                    Debug.Log("Found GameController in scene");
+                    
                 }
             }
         }
@@ -65,14 +65,14 @@ public class InitializationManager : MonoBehaviour
             loadingOverlay = GameObject.Find("LoadingOverlay");
             if (loadingOverlay != null)
             {
-                Debug.Log("Found LoadingOverlay in scene");
+                
                 
                 // Make sure the LoadingOverlay script is enabled
                 LoadingOverlay overlayScript = loadingOverlay.GetComponent<LoadingOverlay>();
                 if (overlayScript != null && !overlayScript.enabled)
                 {
                     overlayScript.enabled = true;
-                    Debug.Log("Enabled LoadingOverlay script");
+                    
                 }
             }
         }
@@ -81,7 +81,7 @@ public class InitializationManager : MonoBehaviour
         if (GameControl.GameController != null)
         {
             GameControl.GameController.currentState = GameState.LOADING;
-            Debug.Log("Set GameState to LOADING");
+            
         }
         else
         {
@@ -262,7 +262,7 @@ public class InitializationManager : MonoBehaviour
             float startTime = Time.realtimeSinceStartup;
             int waitCount = 0;
             
-            Debug.Log("Waiting for mystery parsing to complete...");
+            
             
             // Wait for the IsParsingComplete flag or timeout
             while (!parsingControl.IsParsingComplete) // Simplified loop condition
@@ -278,7 +278,7 @@ public class InitializationManager : MonoBehaviour
                 waitCount++;
                 if (waitCount % 100 == 0)
                 {
-                    Debug.Log($"Still waiting for parsing to complete... ({elapsedTime:F1} seconds elapsed)");
+                    
                 }
                 await Task.Yield();
             }
@@ -322,7 +322,7 @@ public class InitializationManager : MonoBehaviour
         // Define the event handler locally
         void HandleCharacterInitComplete()
         {
-            Debug.Log("Received CharacterManager.OnInitializationComplete event.");
+            
             characterInitComplete = true;
         }
 
@@ -387,7 +387,7 @@ public class InitializationManager : MonoBehaviour
                 waitCount++;
                 if (waitCount % 100 == 0) // Log periodically
                 {
-                     Debug.Log($"Still waiting for NPC Manager initialization... ({elapsedTime:F1}s)");
+                     
                 }
                 await Task.Yield();
             }
@@ -432,7 +432,7 @@ public class InitializationManager : MonoBehaviour
 
         Debug.Log($"Attempting to spawn {characterData.Count} NPCs...");
 
-        // Reset anchor tracking before starting the spawn loop for this sequence - Cline: Removed obsolete call
+        // Reset anchor tracking before starting the spawn loop for this sequence
         // trainLayoutManager.ResetUsedAnchorTracking();
 
         int i = 0; // Index for assigning appearance
@@ -504,7 +504,7 @@ public class InitializationManager : MonoBehaviour
             if (loadingOverlay == null)
             {
                 loadingOverlay = GameObject.Find("LoadingOverlay");
-                Debug.Log(loadingOverlay != null ? "Found LoadingOverlay" : "LoadingOverlay not found");
+                
             }
             
             // Hide the loading overlay
@@ -528,7 +528,7 @@ public class InitializationManager : MonoBehaviour
                         
                         // Trigger fade-out animation
                         animator.SetTrigger("FadeOut");
-                        Debug.Log("Triggered FadeOut animation on LoadingOverlay");
+                        
                         
                         // Set the overlay to deactivate after animation completes
                         // Use a wrapper to handle exceptions in the coroutine
@@ -546,7 +546,7 @@ public class InitializationManager : MonoBehaviour
                         {
                             // No canvas or animator, just deactivate
                             loadingOverlay.SetActive(false);
-                            Debug.Log("Deactivated LoadingOverlay (no animator or canvas found)");
+                            
                         }
                     }
                 }
@@ -557,7 +557,7 @@ public class InitializationManager : MonoBehaviour
                     try
                     {
                         loadingOverlay.SetActive(false);
-                        Debug.Log("Forcibly deactivated LoadingOverlay due to transition error");
+                        
                     }
                     catch
                     {
@@ -577,7 +577,7 @@ public class InitializationManager : MonoBehaviour
             if (GameControl.GameController != null)
             {
                 GameControl.GameController.currentState = GameState.DEFAULT;
-                Debug.Log("Changed game state to DEFAULT");
+                
             }
             else
             {
@@ -597,7 +597,7 @@ public class InitializationManager : MonoBehaviour
                 if (GameControl.GameController != null)
                 {
                     GameControl.GameController.currentState = GameState.DEFAULT;
-                    Debug.Log("Emergency state change to DEFAULT due to critical error");
+                    
                 }
             }
             catch
@@ -709,7 +709,7 @@ public class InitializationManager : MonoBehaviour
         {
             // Enable player movement
             playerMovement.enabled = true;
-            Debug.Log("Enabled PlayerMovement");
+            
         }
         else
         {

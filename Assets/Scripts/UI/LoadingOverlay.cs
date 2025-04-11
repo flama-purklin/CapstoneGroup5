@@ -28,7 +28,8 @@ public class LoadingOverlay : MonoBehaviour
         // Always try to setup even at runtime
         if (!setupComplete)
         {
-            SetupLoadingOverlay();
+            // --- DIAGNOSTIC LOGGING START ---
+            
         }
     }
     
@@ -240,6 +241,6 @@ public class LoadingOverlay : MonoBehaviour
         }
         
         setupComplete = true;
-        Debug.Log("LoadingOverlay setup complete!");
+        
     }
 }

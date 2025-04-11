@@ -111,7 +111,7 @@ public class CharacterManager : MonoBehaviour
             Debug.LogWarning("CharacterManager Initialize called but already initialized or initializing.");
             return;
         }
-        Debug.Log("CharacterManager Initialize() called. Starting TwoPhaseInitialization.");
+        
         StartCoroutine(TwoPhaseInitialization());
     }
 
@@ -151,7 +151,7 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator TwoPhaseInitialization()
     {
-        Debug.Log("CharacterManager's Initialization: TwoPhaseInitialization coroutine.");
+        
         if (isInitialized || isInitializing) yield break;
         isInitializing = true;
 
@@ -234,6 +234,8 @@ public class CharacterManager : MonoBehaviour
             character.repeatPenalty = repeatPenalty;
             character.presencePenalty = presencePenalty;
             character.frequencyPenalty = frequencyPenalty;
+            
+            // Debug.Log($"Assigning LLM {sharedLLM.name} to {character.GetType().FullName} {characterName}");
 
             // Serialize the MysteryCharacter object back to JSON for the prompt generator
             string jsonContent = JsonConvert.SerializeObject(mysteryCharacterData, Formatting.Indented); // Use Newtonsoft.Json
@@ -250,13 +252,13 @@ public class CharacterManager : MonoBehaviour
             // Store prompt in cache and set it in the character
             promptCache[charObj.name] = systemPrompt;
             character.SetPrompt(systemPrompt, true);
-            Debug.Log($"Set prompt for {charObj.name}: {systemPrompt.Substring(0, Mathf.Min(100, systemPrompt.Length))}...");
+            
 
             // Store character
             characterCache[characterName] = character;
             stateTransitions[characterName] = new CharacterStateTransition(characterName, CharacterState.Uninitialized, charObj);
 
-            Debug.Log($"Successfully created character object: {characterName}");
+            
         }
         catch (System.Exception e)
         {
@@ -283,14 +285,14 @@ public class CharacterManager : MonoBehaviour
 
         foreach (var kvp in characterCache)
         {
-            Debug.Log($"[CharacterManager Init] Starting init for character: {kvp.Key}");
+            
             yield return StartCoroutine(InitializeSingleCharacter(
                 kvp.Key,
                 kvp.Value,
                 charactersInitialized,
                 characterCache.Count
             ));
-            Debug.Log($"[CharacterManager Init] Finished init for character: {kvp.Key}");
+            
 
             charactersInitialized++;
         }
@@ -313,9 +315,9 @@ public class CharacterManager : MonoBehaviour
         stateTransition.TryTransition(CharacterState.LoadingTemplate);
 
         // Load template
-        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Start LoadTemplate.");
+        
         yield return StartCoroutine(LoadTemplateWithTimeout(character, characterName));
-        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Finished LoadTemplate.");
+        
         if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
         {
             Debug.LogWarning($"[CharacterManager InitSingleChar: {characterName}] Failed after LoadTemplate.");
@@ -324,9 +326,9 @@ public class CharacterManager : MonoBehaviour
         }
 
         // Warm up
-        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Start Warmup.");
+        
         yield return StartCoroutine(WarmupWithRetries(character, characterName));
-        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Finished Warmup.");
+        
         if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
         {
             Debug.LogWarning($"[CharacterManager InitSingleChar: {characterName}] Failed after Warmup.");
@@ -335,12 +337,12 @@ public class CharacterManager : MonoBehaviour
         }
 
         stateTransitions[characterName].TryTransition(CharacterState.Ready);
-        Debug.Log($"Successfully initialized {characterName}");
+        
     }
 
     private IEnumerator LoadTemplateWithTimeout(LLMCharacter character, string characterName)
     {
-        Debug.Log($"Loading template for {characterName}...");
+        
         Task templateTask = null;
         try
         {
@@ -376,14 +378,14 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator WarmupWithRetries(LLMCharacter character, string characterName)
     {
-        Debug.Log($"[CharacterManager Warmup] Warming up {characterName}...");
+        
 
         for (int attempt = 1; attempt <= maxWarmupAttempts; attempt++)
         {
             if (attempt > 1)
             {
                 float backoffDelay = Mathf.Pow(2, attempt - 1) * baseBackoffDelay;
-                Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Backing off for {backoffDelay} seconds.");
+                
                 yield return new WaitForSeconds(backoffDelay);
             }
 
@@ -391,7 +393,7 @@ public class CharacterManager : MonoBehaviour
             try
             {
                 warmupTask = character.Warmup();
-                Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Warmup task started.");
+                
             }
             catch (System.Exception e)
             {
@@ -415,14 +417,14 @@ public class CharacterManager : MonoBehaviour
                 timedOut = Time.time > timeoutTime;
                 if (!taskCompleted && !timedOut)
                 {
-                    Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Task not completed yet. Yielding next frame.");
+                    // Debug.Log($"[CharacterManager Warmup] Attempt {attempt}: Task not completed yet. Yielding next frame.");
                     yield return null;
                 }
             }
 
             if (!timedOut && !warmupTask.IsFaulted)
             {
-                Debug.LogWarning($"[CharacterManager Warmup] Attempt {attempt}: Timeout reached. Task did not complete in time.");
+                //Debug.LogWarning($"[CharacterManager Warmup] Attempt {attempt}: Timeout reached. Task did not complete in time.");
                 stateTransitions[characterName].TryTransition(CharacterState.Ready);
                 yield break;
             }
@@ -447,8 +449,7 @@ public class CharacterManager : MonoBehaviour
 
     public async Task<LLMCharacter> SwitchToCharacter(string characterName)
     {
-        Debug.Log($"Attempting to switch to: {characterName}");
-        Debug.Log($"Available characters: {string.Join(", ", characterCache.Keys)}");
+        
 
         if (!isInitialized || !characterCache.ContainsKey(characterName))
             return null;
@@ -470,7 +471,7 @@ public class CharacterManager : MonoBehaviour
                 await Task.Yield();
             }
 
-            LogResourceUtilization();
+            // LogResourceUtilization();
             currentCharacter = characterCache[characterName];
             return currentCharacter;
         }
@@ -534,14 +535,14 @@ public class CharacterManager : MonoBehaviour
     private void CleanupCharacters()
     {
         // --- DIAGNOSTIC LOGGING START ---
-        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Entering cleanup. sharedLLM is {(sharedLLM != null ? "NOT NULL" : "NULL")}. LLM started: {(sharedLLM != null ? sharedLLM.started.ToString() : "N/A")}");
+        
         // --- DIAGNOSTIC LOGGING END ---
 
         // Check if currentCharacter and its LLM are valid and started before cancelling
-        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Checking currentCharacter: {(currentCharacter != null ? currentCharacter.name : "NULL")}");
+        
         if (currentCharacter != null && currentCharacter.llm != null && currentCharacter.llm.started)
         {
-            Debug.Log($"Cleaning up current character: {currentCharacter.name}");
+            
             currentCharacter.CancelRequests();
         }
         else if (currentCharacter != null)
@@ -551,19 +552,19 @@ public class CharacterManager : MonoBehaviour
 
 
         // --- DIAGNOSTIC LOGGING START ---
-        Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Starting loop through characterCache ({characterCache.Count} items).");
+        
         // --- DIAGNOSTIC LOGGING END ---
         foreach (var character in characterCache.Values)
         {
             if (character != null)
             {
                 // --- DIAGNOSTIC LOGGING START ---
-                Debug.Log($"[CleanupCharacters @ {Time.frameCount}] Processing character: {character.name}. LLM ref: {(character.llm != null ? "OK" : "NULL")}. LLM started: {(character.llm != null ? character.llm.started.ToString() : "N/A")}");
+                
                 // --- DIAGNOSTIC LOGGING END ---
                  // Check if character and its LLM are valid and started before cancelling
                 if (character.llm != null && character.llm.started)
                 {
-                    Debug.Log($"Cleaning up character: {character.name}");
+                    
                     character.CancelRequests();
                 }
                 else
@@ -601,7 +602,7 @@ public class CharacterManager : MonoBehaviour
             if (promptCache.ContainsKey(characterName))
             {
                 string prompt = promptCache[characterName];
-                Debug.Log($"Resetting {characterName} with prompt: {prompt.Substring(0, Mathf.Min(100, prompt.Length))}...");
+                
                 character.SetPrompt(prompt, true);
             }
             else
@@ -626,11 +627,11 @@ public class CharacterManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Character State - Name: {characterName}");
-        Debug.Log($"- GameObject Active: {character.gameObject.activeInHierarchy}");
-        Debug.Log($"- LLM Reference Valid: {character.llm != null}");
-        Debug.Log($"- Parent: {character.transform.parent?.name}");
-        Debug.Log($"- Current State: {stateTransitions[characterName].CurrentState}");
+        
+        
+        
+        
+        
     }
 
     // FOR LATER USE, DO NOT DELETE
@@ -664,11 +665,11 @@ public class CharacterManager : MonoBehaviour
 
     private void LogResourceUtilization()
     {
-        foreach (var kvp in characterCache)
-        {
-            var character = kvp.Value;
-            Debug.Log($"Character {kvp.Key}: Slot {character.slot}, Context Used: {character.chat.Count}");
-        }
+        // foreach (var kvp in characterCache)
+        // {
+        //     var character = kvp.Value;
+        //     Debug.Log($"Character {kvp.Key}: Slot {character.slot}, Context Used: {character.chat.Count}");
+        // }
     }
 
     public string GetCharacterDebugInfo()
@@ -715,7 +716,7 @@ public class CharacterManager : MonoBehaviour
     {
         if (characterCache.TryGetValue(characterName, out LLMCharacter character))
         {
-            Debug.Log($"Found LLMCharacter in cache for {characterName}"); 
+            
             return character;
         }
         Debug.LogError($"No LLMCharacter found in cache for {characterName}");

@@ -29,7 +29,7 @@ public class LuggageControl : MinigameCanvasControl
     public void SetCombo(string newCombo)
     {
         //for debugging
-        Debug.Log("New Combination: " + newCombo);
+        // Debug.Log("New Combination: " + newCombo);
         solved = false;
         currentCombo = newCombo;
         GameControl.GameController.currentState = GameState.MINIGAME;
@@ -65,7 +65,7 @@ public class LuggageControl : MinigameCanvasControl
     public void CheckCombo()
     {
         string input = firstNum.currentIndex.ToString() + secondNum.currentIndex.ToString() + thirdNum.currentIndex.ToString();
-        Debug.Log("Testing combination: " + input);
+        // Debug.Log("Testing combination: " + input);
         if (!solved && input.Equals(currentCombo))
         {
             solved = true;
@@ -75,7 +75,7 @@ public class LuggageControl : MinigameCanvasControl
 
     IEnumerator Unlock()
     {
-        Debug.Log("Correct Combination!");
+        // Debug.Log("Correct Combination!");
 
         //fill in the canvas from the associated EvidenceData
         FillEvidence(assignedData);

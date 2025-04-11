@@ -119,7 +119,7 @@ public class CameraControl : MonoBehaviour
 
         //get the bounds from a renderer in the objects children
         //Vector3 size = newCar.GetComponentInChildren<Renderer>().bounds.size;
-        //Debug.Log(size);
+        
         //carBoundMin = carCenter - size.x / 2;
         //carBoundMax = carCenter + size.x / 2;
 

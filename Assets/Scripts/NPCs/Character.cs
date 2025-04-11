@@ -16,7 +16,7 @@ public class Character : MonoBehaviour
 
         if (isInitialized)
         {
-            Debug.Log($"Character {name} initialized successfully with LLMCharacter");
+            
         }
         else
         {

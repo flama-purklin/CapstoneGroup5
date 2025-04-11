@@ -30,7 +30,7 @@ public class SetupInitializationReferences : Editor
         {
             GameObject npcObj = new GameObject("NPCManager");
             npcManager = npcObj.AddComponent<NPCManager>();
-            Debug.Log("Created NPCManager");
+            
         }
 
         // Removed logic to create MysteryCharacterExtractor
@@ -61,7 +61,7 @@ public class SetupInitializationReferences : Editor
             charManagerObj.ApplyModifiedProperties();
         }
         
-        Debug.Log("Successfully configured scene references for unified scene approach");
+        
         EditorUtility.SetDirty(initManager);
         if (characterManager != null) EditorUtility.SetDirty(characterManager);
         if (npcManager != null) EditorUtility.SetDirty(npcManager);

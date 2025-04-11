@@ -52,7 +52,7 @@ public class GameInitializer : MonoBehaviour
         }
         
         string[] characterFiles = Directory.GetFiles(charactersPath, "*.json");
-        Debug.Log($"Found {characterFiles.Length} character files:");
+        
         
         int validFileCount = 0;
         bool novaFileVerified = false;
@@ -73,7 +73,7 @@ public class GameInitializer : MonoBehaviour
                 if (hasCoreSection && hasMindEngineSection)
                 {
                     validFileCount++;
-                    Debug.Log($"  ✓ {fileName} - Valid structure");
+                    
                 }
                 else
                 {
@@ -101,7 +101,7 @@ public class GameInitializer : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log($"Nova's distinctive speech patterns are preserved correctly in {fileName}.");
+                        
                     }
                 }
             }
@@ -112,7 +112,7 @@ public class GameInitializer : MonoBehaviour
         }
         
         // Log overall validation results
-        Debug.Log($"Character file validation: {validFileCount}/{characterFiles.Length} files have valid structure");
+        
         
         if (!novaFileVerified)
         {

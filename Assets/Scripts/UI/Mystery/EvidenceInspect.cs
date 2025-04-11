@@ -37,7 +37,7 @@ public class EvidenceInspect : MonoBehaviour
 
     public void ActivateInspect(MysteryNode node)
     {
-        Debug.Log("Activate Recieved");
+        
         currentNode = node;
         anim.SetTrigger("activate");
         anim.SetBool("active", true);

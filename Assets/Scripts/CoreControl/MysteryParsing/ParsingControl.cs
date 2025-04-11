@@ -241,39 +241,7 @@ public class ParsingControl : MonoBehaviour
             return;
         }
         
-        // Log node IDs
-        Debug.Log($"Mystery contains {GameControl.GameController.coreConstellation.Nodes.Count} nodes");
-        foreach (var node in GameControl.GameController.coreConstellation.Nodes)
-        {
-            Debug.Log("Node Id: " + node.Key);
-        }
-
+        // Log node IDs 
         // Log character details
-        Debug.Log($"Mystery contains {GameControl.GameController.coreMystery.Characters.Count} characters");
-        foreach (var character in GameControl.GameController.coreMystery.Characters)
-        {
-            Debug.Log($"Character: {character.Key} - {character.Value.MindEngine.Identity.Name}");
-            
-            // Log whereabouts
-            if (character.Value.Core.Whereabouts != null)
-            {
-                Debug.Log($"  Whereabouts: {character.Value.Core.Whereabouts.Count}");
-                foreach (var whereabout in character.Value.Core.Whereabouts)
-                {
-                    string value = whereabout.WhereaboutData.Circumstance ?? whereabout.WhereaboutData.Location;
-                    Debug.Log($"  - Whereabout {whereabout.Key}: {value}");
-                }
-            }
-
-            // Log relationships
-            if (character.Value.Core.Relationships != null)
-            {
-                Debug.Log($"  Relationships: {character.Value.Core.Relationships.Count}");
-                foreach (var relationship in character.Value.Core.Relationships)
-                {
-                    Debug.Log($"  - Relationship with: {relationship.CharName} ({relationship.RelationshipData.Attitude})");
-                }
-            }
-        }
     }
 }

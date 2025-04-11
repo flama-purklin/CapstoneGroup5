@@ -42,24 +42,24 @@ public class NPCManager : MonoBehaviour
         // Find CharacterManager
         while (characterManager == null)
         {
-            Debug.Log("CharacterManger not found on Initialize, attempting to link...");
+            
             // Actually try and find reference to the object, instead of waiting with no link check (was previously only checking on Awake)
             characterManager = FindFirstObjectByType<CharacterManager>();
             if (characterManager == null)
             {
-                Debug.Log("CharacterManager still not found... waiting.");
+                
                 await Task.Yield();
             }
         }
 
         // Wait for CharacterManager to initialize
-        Debug.Log("CharacterManager found but not yet initialized...!");
+        
         while (!characterManager.IsInitialized)
         {
             //Debug.Log("CharacterManager found but not yet initialized...!"); // This method continues to print even after editor is stopped playing...
             await Task.Yield();
         }
-        Debug.Log("CharacterManager initialized!!!");
+        
 
         // cache $$$
         string[] characterNames = characterManager.GetAvailableCharacters();
@@ -75,7 +75,7 @@ public class NPCManager : MonoBehaviour
             if (llmCharacter != null)
             {
                 characterCache[characterName] = llmCharacter;
-                Debug.Log($"Cached LLMCharacter for: {characterName}");
+                
             }
         }
 
@@ -101,6 +101,7 @@ public class NPCManager : MonoBehaviour
             llmObject.transform.SetParent(npcInstance.transform);
 
             LLMCharacter newLLMChar = llmObject.AddComponent<LLMCharacter>();
+            // Debug.Log($"Assigning LLM {newLLMChar.llm.name} to {newLLMChar.GetType().FullName} {newLLMChar.name} from scene {gameObject.scene.name}");
             CopyLLMCharacterProperties(characterCache[characterName], newLLMChar);
 
             // --- Assign Animation Container ---
@@ -123,7 +124,7 @@ public class NPCManager : MonoBehaviour
                     // Alternative: If NPCAnimManager can get its own reference in Awake/Start, this might not be needed,
                     // but the Update fix already added a GetComponent check there as a fallback.
                     // Let's log if we couldn't find the movement component here.
-                     Debug.Log($"NPCManager: Assigned NPCMovement reference to dynamically added NPCAnimManager on {npcInstance.name}.");
+                     
                 }
                 else
                 {
@@ -177,13 +178,10 @@ public class NPCManager : MonoBehaviour
                 var agent = movement.GetComponent<NavMeshAgent>();
                 if (agent)
                 {
-                    // +++ Cline: Try alternative placement method +++
                     agent.enabled = false; // Disable agent
                     npcInstance.transform.position = position; // Set position directly
                     agent.enabled = true; // Re-enable agent
-                    // --- End Cline changes ---
 
-                    // --- Cline: Verify NavMesh placement after setting position ---
                     if (!agent.isOnNavMesh)
                     {
                         Debug.LogWarning($"NPC {characterName} placed at {position} but is not on NavMesh after re-enabling agent. Attempting to find nearest valid point.");
@@ -204,21 +202,18 @@ public class NPCManager : MonoBehaviour
                             Debug.LogError($"NPC {characterName} could not find ANY valid NavMesh point near {position} after initial placement failed!");
                         }
                      }
-                     // --- Cline: Log position immediately after placement ---
                      if (agent.isOnNavMesh) {
-                         Debug.Log($"[NPCManager Debug] NPC {characterName} IS on NavMesh immediately after placement at {agent.transform.position}.");
+                         
                      } else {
                          // Use position variable here since hit might not be assigned if SamplePosition failed
                           Debug.LogWarning($"[NPCManager Debug] NPC {characterName} IS NOT on NavMesh immediately after warp attempt to {agent.transform.position} (intended: {position}).");
                       }
-                      // --- Cline: Removed timestamped log ---
-                     // --- End Cline changes ---
                  }
             }
 
             npcInstance.SetActive(true);
             activeNPCs[characterName] = npcInstance;
-            Debug.Log($"Successfully spawned NPC {characterName} at position {position}");
+            
             return npcInstance;
         }
         catch (System.Exception e)
@@ -237,7 +232,7 @@ public class NPCManager : MonoBehaviour
         SceneManager.MoveGameObjectToScene(containerObj, currentScene);
         characterContainer = containerObj.transform;
 
-        Debug.Log($"Created Characters container in {currentScene.name}");
+        
     }
 
     private void CopyLLMCharacterProperties(LLMCharacter source, LLMCharacter destination)

@@ -21,7 +21,7 @@ public class CoreSystemsManager : MonoBehaviour
             // Initial cleanup on start
             CleanupDuplicateSystems();
             
-            Debug.Log("CoreSystemsManager initialized (simplified for unified scene)");
+            
         }
         else
         {
@@ -54,7 +54,7 @@ public class CoreSystemsManager : MonoBehaviour
         {
             if (eventSystem != managedEventSystem && eventSystem != null)
             {
-                Debug.Log("Removing duplicate EventSystem");
+                
                 Destroy(eventSystem.gameObject);
             }
         }
@@ -65,7 +65,7 @@ public class CoreSystemsManager : MonoBehaviour
         {
             if (listener != managedAudioListener && listener != null)
             {
-                Debug.Log("Removing duplicate AudioListener");
+                
                 Destroy(listener);
             }
         }

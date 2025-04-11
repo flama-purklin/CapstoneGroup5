@@ -75,7 +75,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     protected virtual void UpdateInformation()
     {
-        Debug.Log("Visual Node " + nodeKey + " Updated");
+        // Debug.Log("Visual Node " + nodeKey + " Updated");
         if (!currentNode.Discovered)
             gameObject.SetActive(false);
     }

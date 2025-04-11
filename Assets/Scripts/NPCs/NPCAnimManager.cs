@@ -21,7 +21,6 @@ public class NPCAnimManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        // --- Cline: Removed automatic reference finding. References should be set in the prefab inspector. ---
         // We still need the player reference.
         player = GameObject.FindWithTag("Player");
 
@@ -29,7 +28,6 @@ public class NPCAnimManager : MonoBehaviour
         if (sprite == null) Debug.LogError($"NPCAnimManager on {gameObject.name}: SpriteRenderer reference is not assigned in the prefab inspector!");
         if (animator == null) Debug.LogError($"NPCAnimManager on {gameObject.name}: Animator reference is not assigned in the prefab inspector!");
         if (movementControl == null) Debug.LogError($"NPCAnimManager on {gameObject.name}: NPCMovement reference is not assigned in the prefab inspector!");
-        // --- End Cline changes ---
 
 
         // Removed call to AnimContainerAssign()
@@ -45,7 +43,6 @@ public class NPCAnimManager : MonoBehaviour
             Debug.LogWarning($"NPCAnimManager on {gameObject.name} Awake: 'anims' or 'anims.idleFront' is null.");
         }
 
-        // +++ Cline: Get original scale from sprite transform +++
         if (sprite != null)
         {
             originalScale = sprite.transform.localScale;
@@ -55,7 +52,6 @@ public class NPCAnimManager : MonoBehaviour
             originalScale = Vector3.one; // Fallback if sprite is missing
             Debug.LogError($"NPCAnimManager on {gameObject.name} Awake: Cannot get originalScale because sprite reference is null!");
         }
-        // --- End Cline changes ---
         // transform.root.localScale = originalScale; // Don't set root scale here
         //Debug.Log(originalScale);
     }
@@ -65,13 +61,11 @@ public class NPCAnimManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // --- Cline: Removed redundant movementControl check, rely on Awake check and external assignment if needed ---
         // Ensure movementControl is valid before using it.
         if (movementControl == null) return; // Exit if movement control is missing
 
         if (movementControl.inDialogueRange)
             DirectionOverride();
-        // --- End Cline changes ---
     }
 
     public void ApplyAnim()
@@ -82,7 +76,6 @@ public class NPCAnimManager : MonoBehaviour
             return; // Can't apply anims if container is missing
         }
 
-        // --- Cline: Add null checks before accessing animator and movementControl ---
         if (animator == null)
         {
             Debug.LogError($"NPCAnimManager on {gameObject.name} ApplyAnim: Animator reference is null!");
@@ -93,7 +86,6 @@ public class NPCAnimManager : MonoBehaviour
              Debug.LogError($"NPCAnimManager on {gameObject.name} ApplyAnim: NPCMovement reference is null!");
              return;
         }
-        // --- End Cline changes ---
 
 
         if (animator.GetBool("moving"))
@@ -117,20 +109,17 @@ public class NPCAnimManager : MonoBehaviour
     public void UpdateDirection()
     {
         //first apply whether the sprite should face backward or not
-        // --- Cline: Add null check ---
         if (movementControl == null)
         {
              Debug.LogError($"NPCAnimManager on {gameObject.name} UpdateDirection: NPCMovement reference is null!");
              return;
         }
-        // --- End Cline changes ---
         if (movementControl.movementVector.z > 0)
             backward = true;
         else
             backward = false;
 
     //then flip anim based on last movement vector
-    // +++ Cline: Apply scale flip to sprite transform, not root +++
     if (sprite != null) // Add null check for safety
     {
         if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
@@ -138,7 +127,6 @@ public class NPCAnimManager : MonoBehaviour
         else
             sprite.transform.localScale = originalScale;
     }
-    // --- End Cline changes ---
 }
 
     //called whenever the player is in range to initiate dialogue - the npc will turn to face them
@@ -157,7 +145,6 @@ public class NPCAnimManager : MonoBehaviour
 
         Vector3 playerDir = player.transform.position - transform.position;
 
-        // +++ Cline: Apply scale flip to sprite transform, not root +++
         if (sprite != null) // Add null check for safety
         {
             if (playerDir.x < 0)
@@ -165,7 +152,6 @@ public class NPCAnimManager : MonoBehaviour
             else
                 sprite.transform.localScale = originalScale;
         }
-        // --- End Cline changes ---
     }
 
     public void Animate(int currentSprite)
@@ -199,7 +185,7 @@ public class NPCAnimManager : MonoBehaviour
                  currentAnim = null; // Or handle default/error state
                  Debug.LogWarning($"NPCAnimManager on {gameObject.name} SetAnimContainer: Assigned container '{container.name}' lacks 'idleFront'.");
             }
-            Debug.Log($"NPCAnimManager on {gameObject.name}: Assigned AnimContainer '{container.name}'.");
+            // Debug.Log($"NPCAnimManager on {gameObject.name}: Assigned AnimContainer '{container.name}'.");
         }
         else
         {

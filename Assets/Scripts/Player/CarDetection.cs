@@ -38,14 +38,14 @@ public class CarDetection : MonoBehaviour
             if (newCar != null && newCar != currentCar)
             {
                 // --- DIAGNOSTIC LOGGING START ---
-                Debug.Log($"[CarDetection OnTriggerEnter @ {Time.frameCount}] Player entered trigger for NEW car: {newCar.gameObject.name}");
+                
                 // --- DIAGNOSTIC LOGGING END ---
                 UpdateCurrentCar(newCar);
             }
             else if (newCar != null && newCar == currentCar)
             {
                  // --- DIAGNOSTIC LOGGING START ---
-                 Debug.Log($"[CarDetection OnTriggerEnter @ {Time.frameCount}] Player entered trigger for SAME car: {newCar.gameObject.name}");
+                 
                  // --- DIAGNOSTIC LOGGING END ---
             }
         }
@@ -72,7 +72,7 @@ public class CarDetection : MonoBehaviour
             if (newCar && newCar != currentCar)
             {
                 // --- DIAGNOSTIC LOGGING START ---
-                Debug.Log($"[CarDetection DetectCar @ {Time.frameCount}] Raycast detected NEW car below player: {newCar.gameObject.name}");
+                // Debug.Log($"[CarDetection DetectCar @ {Time.frameCount}] Raycast detected NEW car below player: {newCar.gameObject.name}");
                 // --- DIAGNOSTIC LOGGING END ---
                 SwitchToCar(newCar);
             }

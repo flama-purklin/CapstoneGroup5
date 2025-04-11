@@ -118,7 +118,7 @@ public class DialogueControl : MonoBehaviour
         anim.Update(0f);
         anim.Play("DialogueDeactivate");
         
-        Debug.Log(anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        
 
         // Wait for animation to complete
         while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)

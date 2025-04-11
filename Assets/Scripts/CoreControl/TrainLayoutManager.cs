@@ -46,7 +46,6 @@ public class TrainLayoutManager : MonoBehaviour
             Debug.LogWarning("TrainLayoutManager: Spawn Point is not assigned in the Inspector. Using this object's position as default.", this);
             spawnPoint = transform;
         }
-        // --- Cline: Ensure TrainManager reference is found ---
         if (trainManager == null)
         {
             trainManager = FindFirstObjectByType<TrainManager>();
@@ -56,7 +55,6 @@ public class TrainLayoutManager : MonoBehaviour
                  setupComplete = false; // Prevent building if TrainManager is missing
             }
         }
-        // --- End Cline changes ---
     }
 
     /// <summary>
@@ -120,9 +118,8 @@ public class TrainLayoutManager : MonoBehaviour
             Debug.LogWarning("TrainLayoutManager: Layout order in mystery JSON is empty. No train cars will be spawned.", this);
             return;
         }
-        else { Debug.Log("Parsed Train Layout: " + layoutOrder.ToString()); }
+        
 
-        // --- Cline: Clear TrainManager lists before populating ---
         if (trainManager != null)
         {
             trainManager.carPrefabs.Clear();
@@ -134,7 +131,6 @@ public class TrainLayoutManager : MonoBehaviour
              Debug.LogError("TrainLayoutManager: TrainManager reference is null in BuildTrainLayout. Cannot proceed.", this);
              return; // Cannot proceed without TrainManager
         }
-        // --- End Cline changes ---
 
 
         // Initialize spawning position and rotation
@@ -258,13 +254,11 @@ public class TrainLayoutManager : MonoBehaviour
         List<string> layoutOrder = GameControl.GameController.coreMystery.Environment.LayoutOrder;
         Dictionary<string, int> carTypeCounts = new Dictionary<string, int>(); // To track counts for suffixes
 
-        // --- Cline: Ensure TrainManager list is populated before naming ---
         if (trainManager == null || trainManager.trainCarList == null || trainManager.trainCarList.Count != layoutOrder.Count)
         {
              Debug.LogError($"NameCars: TrainManager list is null or count ({trainManager?.trainCarList?.Count ?? -1}) doesn't match layout order ({layoutOrder.Count}). Cannot name cars.");
              return;
         }
-        // --- End Cline changes ---
 
 
         for (int i = 0; i < layoutOrder.Count; i++)
@@ -300,14 +294,14 @@ public class TrainLayoutManager : MonoBehaviour
 
                 // Populate the map using the potentially suffixed key
                 carInstanceMap[finalCarKey] = currentCarInstance;
-                 Debug.Log($"NameCars: Mapped key '{finalCarKey}' to GameObject '{currentCarInstance.name}'");
+                 
             }
             else
             {
                 Debug.LogWarning($"NameCars: GameObject at index {i} in trainManager.trainCarList is null. Cannot rename or map key '{finalCarKey}'.");
             }
         }
-         Debug.Log($"NameCars: Final carInstanceMap contains {carInstanceMap.Count} entries.");
+         
     }
 
     /// <summary>
@@ -317,7 +311,6 @@ public class TrainLayoutManager : MonoBehaviour
     /// <returns>The Transform of the car GameObject, or null if not found.</returns>
     public Transform GetCarTransform(string carNameKey)
     {
-        // --- Cline: Restored check for trainManager ---
         if (trainManager == null || trainManager.trainCarList == null)
         {
             Debug.LogError("GetCarTransform: TrainManager or its trainCarList is not available.");
@@ -360,7 +353,6 @@ public class TrainLayoutManager : MonoBehaviour
             return Vector3.zero; // Indicate failure
         }
 
-        // --- Cline: Modified Anchor Selection Logic ---
         Transform chosenAnchor = null;
         Transform floorTransform = carTransform.Find("RailCarFloor");
 
@@ -409,9 +401,7 @@ public class TrainLayoutManager : MonoBehaviour
         // Proceed if we found an anchor
         if (chosenAnchor != null)
         {
-             // --- Cline: Add detailed logging ---
-             Debug.Log($"[GetSpawnPoint Debug] Chosen Anchor for '{carNameKey}': {chosenAnchor.name}");
-             // --- End Cline changes ---
+             // Debug.Log($"[GetSpawnPoint Debug] Chosen Anchor for '{carNameKey}': {chosenAnchor.name}");
 
              // Find the "walkway" child of the chosen anchor
              Transform walkwayChild = chosenAnchor.Find("walkway"); // Assuming name is exactly "walkway"
@@ -431,17 +421,13 @@ public class TrainLayoutManager : MonoBehaviour
              if (walkwayChild != null)
              {
                  Vector3 targetPos = walkwayChild.position;
-                 // --- Cline: Add detailed logging ---
-                 Debug.Log($"[GetSpawnPoint Debug] Found walkway '{walkwayChild.name}' under '{chosenAnchor.name}'. Target Position: {targetPos}");
-                 // --- End Cline changes ---
+                 // Debug.Log($"[GetSpawnPoint Debug] Found walkway '{walkwayChild.name}' under '{chosenAnchor.name}'. Target Position: {targetPos}");
                  // Debug.Log($"GetSpawnPointInCar: Targeting anchor '{chosenAnchor.name}', walkway '{walkwayChild.name}' at world position {targetPos} in '{carNameKey}'."); // Redundant log removed
 
                  // Find the closest point on the NavMesh to the walkway position
                  if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 5.0f, NavMesh.AllAreas))
                  {
-                     // --- Cline: Add detailed logging ---
-                     Debug.Log($"[GetSpawnPoint Debug] NavMesh.SamplePosition SUCCESS near walkway. Returning validated point: {hit.position}");
-                     // --- End Cline changes ---
+                     // Debug.Log($"[GetSpawnPoint Debug] NavMesh.SamplePosition SUCCESS near walkway. Returning validated point: {hit.position}");
                      // Debug.Log($"GetSpawnPointInCar: Found valid NavMesh point {hit.position} near walkway '{walkwayChild.name}'."); // Redundant log removed
                      // Removed anchor tracking: usedInThisCar.Add(chosenAnchor);
                      return hit.position; // Return the valid NavMesh point
@@ -456,7 +442,6 @@ public class TrainLayoutManager : MonoBehaviour
                  Debug.LogWarning($"GetSpawnPointInCar: Could not find 'walkway' child under chosen anchor '{chosenAnchor.name}' in '{carNameKey}'. Trying car center fallback.");
              }
         }
-        // --- End Cline changes ---
 
 
         // Fallback: Sample NavMesh near the car's center position

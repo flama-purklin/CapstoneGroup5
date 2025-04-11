@@ -66,7 +66,7 @@ public class MainMenu : MonoBehaviour
     }
 
     public void Quit(){
-        Debug.Log("THE HAS JUST QUIT!!!");
+        
         Application.Quit();
     }
 

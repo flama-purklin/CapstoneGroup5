@@ -41,6 +41,6 @@ public class MinigameObj : MonoBehaviour
         {
             //spawn node unlock popup here to indicate to the player a new node has opened on the mystery board
         }
-        Debug.Log("Interact Called on " + name);
+        // Debug.Log("Interact Called on " + name);
     }
 }
