@@ -113,6 +113,7 @@ The LLM integration is handled through the LLMUnity package:
 - **LLMDialogueManager**: Manages dialogue flow with characters
 
 The system uses character JSON files to generate prompts that define character personalities, knowledge, and behavior.
+Character activity and resource allocation (number of parallel LLM processes) are intended to be managed dynamically based on player proximity, configured via the `LLM` component's `parallelPrompts` setting in the Inspector and the `SimpleProximityWarmup` component.
 
 ### Mystery System
 
@@ -154,7 +155,7 @@ Characters are managed through multiple components:
     *   Initialization is explicitly triggered by `InitializationManager` via the `Initialize()` method *after* `ParsingControl` has finished.
     *   Reads character data directly from the `GameControl.GameController.coreMystery.Characters` dictionary during its `CreateCharacterObjects` phase.
     *   Manages `LLMCharacter` instances and GameObjects.
-    *   Manages character states (Uninitialized → LoadingTemplate → WarmingUp → Ready → Failed).
+    *   Manages character states (`LoadingTemplate`, `WarmingUp`, `Ready`) track whether a character's template is loaded and if it's actively warmed up for interaction, managed by `CharacterManager` and triggered by the proximity system (`SimpleProximityWarmup`).
     *   Handles character switching and context management.
 
 3.  **Character Prompt Generation (`CharacterPromptGenerator.cs`)**:
@@ -217,6 +218,7 @@ The dialogue system connects player interactions with the LLM system:
    - Player inputs text through the dialogue system
    - LLMCharacter processes input and generates responses
    - LLMDialogueManager displays streaming responses
+   - Conversation history is intended to persist between dialogue sessions using LLMUnity's save/load functionality, triggered during dialogue activation and deactivation.
 
 ### Player System
 

@@ -2,13 +2,19 @@
 
 ## Project Overview
 
-This Unity project implements a mystery game built around a modular "black box" design that processes mystery JSON files to create unique gameplay experiences. The game leverages an LLM (Large Language Model) integration for dynamic character interactions and dialogue./clea
+This Unity project implements a mystery game built around a modular "black box" design that processes mystery JSON files to create unique gameplay experiences. The game leverages an LLM (Large Language Model) integration for dynamic character interactions and dialogue on a train setting where players solve a mystery through conversations with NPCs.
 
 ## Unity Project Commands
 - **Run Game**: Open project in Unity Editor and press Play button
 - **Build**: File > Build Settings > Build (Windows/Mac/Linux)
 - **Test Scene**: Open specific scene and use Play button to test
 - **Clean Project**: Delete Library/ and Temp/ folders, reopen Unity
+
+## Unity MCP Setup
+- **Connect Claude Code to Unity MCP**: Use the following command:
+  ```bash
+  claude mcp add unity-mcp -- python3 /mnt/c/Users/charl/AppData/Local/Programs/UnityMCP/UnityMcpServer/src/server.py
+  ```
 
 ## Code Style Guidelines
 - **Naming**: PascalCase for classes/public methods, camelCase for variables
@@ -19,10 +25,56 @@ This Unity project implements a mystery game built around a modular "black box" 
 - **Imports**: Group Unity imports first, then system imports, then project imports
 - **LLM Integration**: Use LLMUnity for character dialogue, follow pattern in existing NPCs
 
-## Architecture
-- Follow MVC pattern where possible (Models in data classes, Views in UI scripts)
-- Use ScriptableObjects for configuration and shared data
-- Prefer composition over inheritance with component-based design
+## Core Architecture
+- **Unified Scene**: The game uses a single scene architecture (SystemsTest) with all core systems initialized there
+- **Singleton Managers**:
+  - **GameControl**: Main game state and mystery data manager
+  - **CoreSystemsManager**: Manages Unity systems
+  - **ParsingControl**: Handles mystery JSON parsing 
+  - **NPCManager**: Manages NPC creation and behavior
+  - **CharacterManager**: Manages LLM character creation and interaction
+  - **InitializationManager**: Orchestrates the startup sequence
+- **Game State Machine**:
+  - States: DEFAULT, DIALOGUE, PAUSE, FINAL, WIN, LOSE, MINIGAME, MYSTERY
+  - Changed via `GameControl.GameController.currentState`
+
+## LLM Integration & Character System
+- Uses LLMUnity package for character dialogue
+- Characters have state transitions: LoadingTemplate → WarmingUp → Ready
+- **Proximity-Based Warmup System**: Only keeps nearby characters "warm" (active in memory)
+- **Conversation History**: Persists between interactions
+- **IMPORTANT**: LLM's `parallelPrompts` setting in Inspector controls how many characters can be processed simultaneously
+- Character data comes from parsed mystery JSON in `GameControl.coreMystery.Characters`
+
+## NPC System
+- NPCs linked to LLMCharacters via Character component 
+- Contains NavMeshAgent for movement
+- NPCMovement handles state transitions (Idle ↔ Movement)
+- NPCAnimManager manages animations and sprite flipping
+- Spawn locations determined by character's InitialLocation field
+
+## Dialogue System
+- Player enters dialogue range, presses interaction key
+- DialogueControl activates UI
+- LLMDialogueManager handles player input and LLM responses
+- Conversation history should persist between dialogues
+
+## Initialization Sequence
+1. Scene loads, managers awake (ParsingControl reads mystery JSON into GameControl)
+2. InitializationManager coordinates startup:
+   - Waits for LLM startup
+   - Confirms parsing complete
+   - Triggers CharacterManager initialization
+   - Builds train layout
+   - Waits for character initialization
+   - Initializes NPCManager
+   - Spawns NPCs based on location data
+   - Completes initialization, enabling gameplay
+
+## Asset Structure
+- **Scripts**: `Assets/Scripts/` (CoreControl/, NPCs/, Player/, Train/, UI/)
+- **Mystery**: `Assets/Mystery/` (Myst_Gen/, Myst_Play/)
+- **StreamingAssets**: `StreamingAssets/MysteryStorage/` for mystery JSON
 
 ## Unity MCP Server Tools and Best Practices—Use whenever accessing or changing Unity-related elements like scenes, objects, components, and editor scripts:
 

@@ -9,6 +9,12 @@ public abstract class BaseDialogueManager : MonoBehaviour
     protected bool isProcessingResponse = false;
     protected StringBuilder currentResponse;
     protected string lastReply = "";
+    
+    /// <summary>
+    /// Provides access to the current LLMCharacter being used for dialogue
+    /// Used by DialogueControl for saving conversation state
+    /// </summary>
+    public LLMCharacter CurrentCharacter => llmCharacter;
 
     protected virtual void Start()
     {

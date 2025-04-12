@@ -40,8 +40,8 @@ public class NotebookManager : MonoBehaviour
 
     void Update()
     {
-        // Open/Close notebook instantly with "N"
-        if (Input.GetKeyDown(KeyCode.N))
+        // Open/Close notebook with "N" but only if not typing in a dialogue field
+        if (Input.GetKeyDown(KeyCode.N) && !IsTypingInDialogue())
         {
             ToggleNotebook();
         }
@@ -131,5 +131,28 @@ public class NotebookManager : MonoBehaviour
         {
             Debug.LogWarning("Invalid index: " + index);
         }
+    }
+    
+    private bool IsTypingInDialogue()
+    {
+        // Check if an input field is currently selected/focused
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            TMP_InputField inputField = EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
+            if (inputField != null && inputField.isFocused)
+            {
+                return true;
+            }
+            
+            // Also check for legacy InputField if used
+            InputField legacyInput = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
+            if (legacyInput != null && legacyInput.isFocused)
+            {
+                return true;
+            }
+        }
+        
+        // Check if we're in dialogue state
+        return GameControl.GameController.currentState == GameState.DIALOGUE;
     }
 }

@@ -42,45 +42,46 @@ public class NPCManager : MonoBehaviour
         // Find CharacterManager
         while (characterManager == null)
         {
-            
             // Actually try and find reference to the object, instead of waiting with no link check (was previously only checking on Awake)
             characterManager = FindFirstObjectByType<CharacterManager>();
             if (characterManager == null)
             {
-                
                 await Task.Yield();
             }
         }
 
         // Wait for CharacterManager to initialize
-        
         while (!characterManager.IsInitialized)
         {
-            //Debug.Log("CharacterManager found but not yet initialized...!"); // This method continues to print even after editor is stopped playing...
             await Task.Yield();
         }
         
-
-        // cache $$$
+        // FIXED: No longer waiting for characters to be in Ready state
+        // Instead directly getting references from CharacterManager regardless of their state
+        
+        // cache character references
         string[] characterNames = characterManager.GetAvailableCharacters();
+        Debug.Log($"Found {characterNames.Length} characters to cache in NPCManager");
+        
         foreach (string characterName in characterNames)
         {
-            while (!characterManager.IsCharacterReady(characterName))
+            // Get character reference directly without waiting for Ready state
+            LLMCharacter llmCharacterRef = characterManager.GetCharacterByName(characterName);
+            
+            if (llmCharacterRef != null)
             {
-                await Task.Yield();
+                // Populate NPCManager's local cache
+                characterCache[characterName] = llmCharacterRef;
+                Debug.Log($"Cached reference for {characterName} in NPCManager");
             }
-
-            // cache preferences
-            LLMCharacter llmCharacter = await characterManager.SwitchToCharacter(characterName);
-            if (llmCharacter != null)
+            else
             {
-                characterCache[characterName] = llmCharacter;
-                
+                Debug.LogWarning($"Could not get reference for {characterName} from CharacterManager");
             }
         }
 
         isInitialized = true;
-        Debug.Log("NPCManager initialization complete");
+        Debug.Log($"NPCManager initialization complete - cached {characterCache.Count} characters");
     }
 
     // Modified signature to accept characterIndex for animation assignment

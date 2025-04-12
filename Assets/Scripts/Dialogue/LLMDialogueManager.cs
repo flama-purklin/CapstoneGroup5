@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using System;
 
 
 public class LLMDialogueManager : BaseDialogueManager

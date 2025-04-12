@@ -67,6 +67,10 @@ public class DialogueControl : MonoBehaviour
             return;
         }
 
+        // Load previous conversation state for this character
+        _ = llmCharacter.Load(llmCharacter.save);
+        Debug.Log($"Loading conversation state for {llmCharacter.save}");
+
         llmDialogueManager.SetCharacter(llmCharacter);
         GameControl.GameController.currentState = GameState.DIALOGUE;
 
@@ -112,6 +116,26 @@ public class DialogueControl : MonoBehaviour
         while (!resetTask.IsCompleted)
         {
             yield return null;
+        }
+        
+        // Save conversation state for this character
+        LLMCharacter activeLLMChar = llmDialogueManager.CurrentCharacter;
+        if (activeLLMChar != null)
+        {
+            Debug.Log($"Saving conversation state for {activeLLMChar.save}");
+            // Use LLMUnity's built-in save. The 'save' field should already hold the character name.
+            _ = activeLLMChar.Save(activeLLMChar.save);
+            
+            // Optionally also update CharacterManager's state
+            CharacterManager characterManager = FindFirstObjectByType<CharacterManager>();
+            if (characterManager != null)
+            {
+                characterManager.SaveCharacterConversation(activeLLMChar.save);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Could not get active LLMCharacter reference to save conversation.");
         }
 
         anim.Rebind();

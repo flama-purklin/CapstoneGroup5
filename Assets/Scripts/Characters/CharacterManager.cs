@@ -78,7 +78,8 @@ public class CharacterManager : MonoBehaviour
                     if (newState != CharacterState.Ready && newState != CharacterState.Failed) return false;
                     break;
                 case CharacterState.Ready:
-                    if (newState != CharacterState.Failed) return false;
+                    // Allow transitions from Ready to LoadingTemplate for cooldown
+                    if (newState != CharacterState.Failed && newState != CharacterState.LoadingTemplate) return false;
                     break;
                 case CharacterState.Failed:
                     if (newState != CharacterState.LoadingTemplate) return false;
@@ -301,7 +302,11 @@ public class CharacterManager : MonoBehaviour
         // Only set context if we have characters
         if (characterCache.Count > 0)
         {
-            int contextPerCharacter = sharedLLM.contextSize / characterCache.Count;
+            // Allocate context based on the number of parallel prompts (active characters),
+            // not the total number of characters
+            int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
+            Debug.Log($"Allocating {contextPerCharacter} context tokens per active character (total: {sharedLLM.contextSize}, active slots: {sharedLLM.parallelPrompts})");
+            
             foreach (var character in characterCache.Values)
             {
                 character.nKeep = contextPerCharacter;
@@ -314,8 +319,7 @@ public class CharacterManager : MonoBehaviour
         var stateTransition = stateTransitions[characterName];
         stateTransition.TryTransition(CharacterState.LoadingTemplate);
 
-        // Load template
-        
+        // Load template only
         yield return StartCoroutine(LoadTemplateWithTimeout(character, characterName));
         
         if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
@@ -325,19 +329,10 @@ public class CharacterManager : MonoBehaviour
             yield break;
         }
 
-        // Warm up
-        
-        yield return StartCoroutine(WarmupWithRetries(character, characterName));
-        
-        if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
-        {
-            Debug.LogWarning($"[CharacterManager InitSingleChar: {characterName}] Failed after Warmup.");
-            HandleCharacterFailure(characterName, character.gameObject);
-            yield break;
-        }
-
-        stateTransitions[characterName].TryTransition(CharacterState.Ready);
-        
+        // We don't automatically warm up characters on initialization anymore
+        // Characters will be warmed up selectively by the proximity system
+        // stateTransitions stays in LoadingTemplate state until explicitly warmed up
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Template loaded successfully. Ready for warmup.");
     }
 
     private IEnumerator LoadTemplateWithTimeout(LLMCharacter character, string characterName)
@@ -726,6 +721,145 @@ public class CharacterManager : MonoBehaviour
     public int GetReadyCharacterCount()
     {
         return stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready);
+    }
+
+    // Methods for proximity-based warmup management
+    
+    /// <summary>
+    /// Warms up a character that is in the LoadingTemplate state
+    /// Called by the proximity system when a character should be activated
+    /// </summary>
+    public IEnumerator WarmupCharacter(string characterName)
+    {
+        if (!isInitialized)
+        {
+            Debug.LogError($"Cannot warm up character '{characterName}' - CharacterManager not initialized yet");
+            yield break;
+        }
+        
+        if (!characterCache.ContainsKey(characterName))
+        {
+            Debug.LogError($"Cannot warm up non-existent character: {characterName}");
+            yield break;
+        }
+        
+        if (!stateTransitions.ContainsKey(characterName))
+        {
+            Debug.LogError($"No state transition found for character: {characterName}");
+            yield break;
+        }
+        
+        // Only warm up characters in LoadingTemplate state
+        if (stateTransitions[characterName].CurrentState != CharacterState.LoadingTemplate)
+        {
+            if (stateTransitions[characterName].CurrentState == CharacterState.Ready)
+            {
+                Debug.Log($"Character '{characterName}' is already warm (Ready state)");
+            }
+            else
+            {
+                Debug.Log($"Cannot warm up character '{characterName}' in state: {stateTransitions[characterName].CurrentState}");
+            }
+            yield break;
+        }
+        
+        var character = characterCache[characterName];
+        
+        // Set the state to warming up
+        stateTransitions[characterName].TryTransition(CharacterState.WarmingUp);
+        Debug.Log($"Warming up character: {characterName}");
+        
+        // Proceed with warmup
+        yield return StartCoroutine(WarmupWithRetries(character, characterName));
+        
+        if (stateTransitions[characterName].CurrentState == CharacterState.Failed)
+        {
+            Debug.LogError($"Failed to warm up character: {characterName}");
+            // Don't destroy the object, just leave it in Failed state
+        }
+        else
+        {
+            Debug.Log($"Character '{characterName}' successfully warmed up");
+        }
+    }
+    
+    /// <summary>
+    /// Cools down a character that is in the Ready state
+    /// Called by the proximity system when a character should be deactivated
+    /// </summary>
+    public void CooldownCharacter(string characterName)
+    {
+        if (!isInitialized)
+        {
+            Debug.LogWarning($"Cannot cool down character '{characterName}' - CharacterManager not initialized yet");
+            return;
+        }
+        
+        if (!characterCache.ContainsKey(characterName))
+        {
+            Debug.LogError($"Cannot cool down non-existent character: {characterName}");
+            return;
+        }
+        
+        if (!stateTransitions.ContainsKey(characterName))
+        {
+            Debug.LogError($"No state transition found for character: {characterName}");
+            return;
+        }
+        
+        // Only cool down characters in Ready state
+        if (stateTransitions[characterName].CurrentState != CharacterState.Ready)
+        {
+            Debug.Log($"Character '{characterName}' is not in Ready state, cannot cool down");
+            return;
+        }
+        
+        // Get the character
+        var character = characterCache[characterName];
+        
+        // Cancel any ongoing requests
+        character.CancelRequests();
+        
+        // Set state back to LoadingTemplate to indicate it needs warming up again
+        if (stateTransitions[characterName].TryTransition(CharacterState.LoadingTemplate))
+        {
+            Debug.Log($"Cooled down character: {characterName}");
+        }
+        else
+        {
+            Debug.LogError($"Failed to transition character '{characterName}' from Ready to LoadingTemplate");
+        }
+    }
+
+    /// <summary>
+    /// Saves the conversation history for a specific character
+    /// Called when a dialogue with the character ends
+    /// </summary>
+    public void SaveCharacterConversation(string characterName)
+    {
+        if (!characterCache.ContainsKey(characterName))
+        {
+            Debug.LogError($"Cannot save conversation for non-existent character: {characterName}");
+            return;
+        }
+        
+        var character = characterCache[characterName];
+        if (character == null)
+        {
+            Debug.LogError($"Character {characterName} is null!");
+            return;
+        }
+        
+        // Save using LLMUnity's built-in Save method
+        _ = character.Save(character.save);
+        
+        // Track last interaction in state snapshot
+        if (!characterSnapshots.ContainsKey(characterName))
+            characterSnapshots[characterName] = new CharacterStateSnapshot();
+            
+        characterSnapshots[characterName].LastInteractionTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        
+        Debug.Log($"Saved conversation state for {characterName}");
     }
 
     // Removed GetCharacterStartingCar method and CharacterLocationData helper class
