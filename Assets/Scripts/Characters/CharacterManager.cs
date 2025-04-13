@@ -14,6 +14,8 @@ public class CharacterManager : MonoBehaviour
     [Header("Configuration")]
     public string charactersFolder = "Characters";
     public LLM sharedLLM;
+    [Tooltip("Enable saving/loading of LLM cache state? Improves re-warmup speed but currently causes JobTempAlloc warnings after conversations.")]
+    public bool enableLLMCache = true; // Default to true for testing performance
     private Dictionary<string, LLMCharacter> characterCache = new Dictionary<string, LLMCharacter>();
     private Dictionary<string, string> promptCache = new Dictionary<string, string>();
     private bool isInitialized = false;
@@ -225,9 +227,8 @@ public class CharacterManager : MonoBehaviour
             LLMCharacter character = charObj.AddComponent<LLMCharacter>();
             character.llm = sharedLLM;
             character.stream = true;
-            character.saveCache = true;
             character.save = characterName;
-            character.saveCache = false; // Explicitly disable cache saving to prevent crashes
+            character.saveCache = enableLLMCache; // Use configurable field
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
             character.temperature = temperature;
@@ -904,8 +905,6 @@ public class CharacterManager : MonoBehaviour
     private void OnDestroy()
     {
         Debug.Log("[CharacterManager OnDestroy] Cleaning up character save files...");
-        // CleanupCharacters(); // Call existing cleanup for in-memory objects
-
         // Delete persistent save files
         if (characterCache != null && characterCache.Count > 0)
         {
@@ -922,10 +921,16 @@ public class CharacterManager : MonoBehaviour
                         File.Delete(saveFilePath);
                         Debug.Log($"[CharacterManager OnDestroy] Deleted save file: {saveFilePath}");
                     }
-                    // Optionally delete .cache file too if saveCache were ever enabled
-                    // string cacheFilePath = Path.Combine(Application.persistentDataPath, characterName + ".cache");
-                    // if (File.Exists(cacheFilePath)) File.Delete(cacheFilePath);
-
+                    // Also delete .cache file if it exists and caching was enabled for this session
+                    if (enableLLMCache) 
+                    {
+                        string cacheFilePath = Path.Combine(Application.persistentDataPath, characterName + ".cache");
+                        if (File.Exists(cacheFilePath)) 
+                        {
+                            File.Delete(cacheFilePath);
+                            Debug.Log($"[CharacterManager OnDestroy] Deleted cache file: {cacheFilePath}");
+                        }
+                    }
                 }
                 catch (Exception e)
                 {

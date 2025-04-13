@@ -2311,6 +2311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charactersFolder: Characters
   sharedLLM: {fileID: 1286452019}
+  enableLLMCache: 0
   characterInitDelay: 2
   templateTimeout: 15
   warmupTimeout: 30

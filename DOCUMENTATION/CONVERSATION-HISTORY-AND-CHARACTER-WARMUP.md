@@ -241,34 +241,3 @@ public class SimpleProximityWarmup : MonoBehaviour
                 StartCoroutine(characterManager.WarmupCharacter(name));
             } 
             else if (!shouldBeWarm && currentState == CharacterManager.CharacterState.Ready) 
-            {
-                // Trigger cooldown via CharacterManager
-                characterManager.CooldownCharacter(name);
-            }
-        }
-    }
-
-    private void RefreshNPCCache()
-    {
-        // Finds active NPC GameObjects via Character components using FindObjectsByType
-    }
-}
-```
-
-## Current Status & Known Issues (As of 2025-04-11)
-
-*   **Stability:** The game now loads successfully, and NPCs are spawned correctly. The initialization deadlock has been resolved.
-*   **Proximity Warmup:** The `SimpleProximityWarmup` system appears to be functioning based on logs, triggering warmup/cooldown based on distance to NPCs.
-*   **ISSUE: Conversation Amnesia:** Characters do not retain conversation history. While saving is triggered (`.Save()`), the history is **not being loaded back** when initiating a new conversation.
-*   **ISSUE: Incorrect Parallel Prompts:** The LLM server consistently starts with `parallelPrompts = 1` (seen in logs), despite `SimpleProximityWarmup` attempting to set it later. This severely limits concurrent processing and likely causes gibberish responses when multiple characters should be active. The value **must be set in the LLM component Inspector** before starting the game.
-*   **ISSUE: Potential Insufficient Context (`nKeep`):** `CharacterManager` currently allocates context based on the *total* number of characters (9), not the number of *active* (warm) characters (intended to be 3). This likely starves active characters of needed context space, contributing to poor responses.
-*   **ISSUE: Memory Leak Warnings:** Unity reports `JobTempAlloc` warnings during gameplay, potentially related to LLM operations or resource management. Needs monitoring after other fixes are applied.
-
-## Next Steps & Potential Fixes
-
-1.  **Fix Parallel Prompts (Manual Action Required):** The `LLM.parallelPrompts` value **must be set manually in the Unity Inspector** on the `LLM` GameObject to match the desired `maxWarmCharacters` (e.g., 3). The attempt to set it via script in `SimpleProximityWarmup.Start()` is too late and should be removed.
-2.  **Implement Conversation Loading:** Modify `DialogueControl.Activate()` to call `activeLLMChar.Load(activeLLMChar.save)` *before* `llmDialogueManager.SetCharacter()`. This requires getting the `LLMCharacter` reference from the `Character` component on the `npcObject`.
-3.  **Adjust Context Allocation:** Modify `CharacterManager.InitializeCharacters()` to calculate `nKeep` based on `sharedLLM.parallelPrompts` (read from the Inspector-set value) instead of `characterCache.Count`.
-4.  **Monitor Memory Leaks:** After addressing the above, observe if the memory leak warnings persist. Further investigation might be needed, potentially involving profiling or examining LLMUnity internals if the issue isn't resolved by fixing the load/prompt/context logic.
-
-*(This documentation leaves room for alternative approaches if these fixes prove insufficient, particularly regarding context management or memory leaks. The core goal is functional persistence and proximity-based resource management.)*
