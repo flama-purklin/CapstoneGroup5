@@ -2309,15 +2309,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a37c62490e3de8a49905a1ec6d9fdb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charactersFolder: Characters
   sharedLLM: {fileID: 1286452019}
-  enableLLMCache: 0
-  characterInitDelay: 2
+  enableLLMCache: 1
   templateTimeout: 15
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
-  temperature: 0.15
+  temperature: 0.3
   topK: 55
   topP: 0.95
   repeatPenalty: 1
@@ -2458,7 +2456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcPrefab: {fileID: 7441357142540035523, guid: 247f87585d4ef344b97284d8b035006b, type: 3}
-  spawnPoints: []
   characterManager: {fileID: 377154506}
   availableAnimContainers:
   - {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
@@ -5676,37 +5673,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &852158353
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 852158354}
-  m_Layer: 0
-  m_Name: MysteryCharacterExtractor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &852158354
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 852158353}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &853370183
 GameObject:
   m_ObjectHideFlags: 0
@@ -7841,7 +7807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: Mistral-Nemo-12B-Instruct-2407-Q4_K_M.gguf
+      value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
@@ -7853,7 +7819,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
-      value: 5120
+      value: 4096
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
@@ -7861,7 +7827,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
-      value: 1024000
+      value: 32768
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: dontDestroyOnLoad
@@ -12142,7 +12108,7 @@ PrefabInstance:
     - target: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: railCarRandomizer
       value: 
-      objectReference: {fileID: 2072095369}
+      objectReference: {fileID: 0}
     - target: {fileID: 9091059255953728102, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.2
@@ -12183,7 +12149,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12200,17 +12167,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2072095369 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
-  m_PrefabInstance: {fileID: 2072095367}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 641991968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64c9e4e32fd4b9446850b7061a5f9339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &2072095370 stripped
@@ -13010,7 +12966,6 @@ SceneRoots:
   - {fileID: 2114658577}
   - {fileID: 1286452018}
   - {fileID: 377154507}
-  - {fileID: 852158354}
   - {fileID: 525054777}
   - {fileID: 393672615}
   - {fileID: 1221452152}
