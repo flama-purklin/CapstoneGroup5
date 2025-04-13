@@ -478,14 +478,17 @@ namespace LLMUnity
                 await chatLock.WaitAsync();
                 try
                 {
+                    Debug.Log($"[LLMCharacter.Chat - {save}] Before Add: chat.Count = {chat.Count}");
                     AddPlayerMessage(query);
                     AddAIMessage(result);
+                    Debug.Log($"[LLMCharacter.Chat - {save}] After Add: chat.Count = {chat.Count}");
                 }
                 finally
                 {
-                    chatLock.Release();
+                chatLock.Release();
                 }
-                if (save != "") _ = Save(save);
+                // Removed the automatic save from here. Saving should be handled explicitly when dialogue ends.
+                // if (save != "") _ = Save(save); 
             }
 
             completionCallback?.Invoke();
@@ -595,10 +598,19 @@ namespace LLMUnity
             string json = JsonUtility.ToJson(new ChatListWrapper { chat = chat.GetRange(1, chat.Count - 1) });
             File.WriteAllText(filepath, json);
 
-            string cachepath = GetCacheSavePath(filename);
-            if (remote || !saveCache) return null;
-            string result = await Slot(cachepath, "save");
-            return result;
+            // Only save cache if saveCache is true and not remote
+            if (!remote && saveCache)
+            {
+                string cachepath = GetCacheSavePath(filename);
+                Debug.Log($"Attempting to save native cache to {cachepath}");
+                string result = await Slot(cachepath, "save");
+                return result;
+            }
+            else
+            {
+                Debug.Log($"Skipping native cache save for {filename} (saveCache={saveCache}, remote={remote})");
+                return null;
+            }
         }
 
         /// <summary>
@@ -616,14 +628,32 @@ namespace LLMUnity
             }
             string json = File.ReadAllText(filepath);
             List<ChatMessage> chatHistory = JsonUtility.FromJson<ChatListWrapper>(json).chat;
-            ClearChat();
-            chat.AddRange(chatHistory);
-            LLMUnitySetup.Log($"Loaded {filepath}");
+            ClearChat(); // Adds system prompt
+            chat.AddRange(chatHistory); // Adds loaded history
+            Debug.Log($"[LLMCharacter.Load - {save}] After AddRange: chat.Count = {chat.Count}"); // Log count AFTER adding loaded history
+            LLMUnitySetup.Log($"Loaded JSON history from {filepath}");
 
-            string cachepath = GetCacheSavePath(filename);
-            if (remote || !saveCache || !File.Exists(GetSavePath(cachepath))) return null;
-            string result = await Slot(cachepath, "restore");
-            return result;
+            // Only load cache if saveCache is true, not remote, and file exists
+            if (!remote && saveCache)
+            {
+                string cachepath = GetCacheSavePath(filename);
+                if (File.Exists(GetSavePath(cachepath)))
+                {
+                    Debug.Log($"Attempting to restore native cache from {cachepath}");
+                    string result = await Slot(cachepath, "restore");
+                    return result;
+                }
+                else
+                {
+                     Debug.LogWarning($"Native cache file not found at {cachepath}, skipping restore.");
+                     return null;
+                }
+            }
+            else
+            {
+                Debug.Log($"Skipping native cache restore for {filename} (saveCache={saveCache}, remote={remote})");
+                return null;
+            }
         }
 
         protected override async Task<Ret> PostRequestLocal<Res, Ret>(string json, string endpoint, ContentCallback<Res, Ret> getContent, Callback<Ret> callback = null)

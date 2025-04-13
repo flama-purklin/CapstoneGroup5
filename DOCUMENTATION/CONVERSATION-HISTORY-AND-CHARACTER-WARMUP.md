@@ -1,4 +1,4 @@
-# Proximity-Based Character Warmup & Conversation Persistence (Updated)
+# Proximity-Based Character Warmup & Conversation Persistence (Working)
 
 ## High-Level Design Overview
 
@@ -29,13 +29,14 @@ The implementation leverages existing infrastructure from both the game and the 
 
 1.  **`SimpleProximityWarmup`** - New MonoBehaviour managing which characters stay warm based on player distance to NPC GameObjects.
 2.  **`CharacterManager` Modifications** - Initialization changed to only load templates; added explicit `WarmupCharacter` and `CooldownCharacter` methods; state transitions updated.
-3.  **`DialogueControl` Modifications** - Triggers conversation state saving on dialogue exit. **(Needs modification to trigger loading on activation)**.
+3.  **`DialogueControl` Modifications** - Triggers conversation state loading on activation and saving on dialogue exit.
 4.  **`BaseDialogueManager` Modifications** - Added `CurrentCharacter` property.
-5.  **`NPCManager` Modifications** - Initialization fixed to cache references without waiting for `Ready` state, resolving the previous deadlock.
+5.  **`NPCManager` Modifications** - Initialization fixed to cache references without waiting for `Ready` state.
+6.  **`LLMCharacter` Modifications** - Removed automatic save call from `Chat()` method; Added `OnDestroy` logic to clear save files.
 
-## Implementation Details (Reflecting Current Code as of 2025-04-11)
+## Implementation Details (Reflecting Current Code as of 2025-04-12)
 
-*(Note: These snippets reflect the code after the initialization fix and addition of warmup/cooldown logic, but before implementing conversation loading or context allocation adjustments)*
+*(Note: These snippets reflect the code after fixing history persistence and warmup/cooldown logic)*
 
 ```csharp
 // In CharacterManager.cs
@@ -57,10 +58,10 @@ private IEnumerator InitializeSingleCharacter(string characterName, LLMCharacter
         yield break;
     }
 
-    // We don't automatically warm up characters on initialization anymore
-    // Characters will be warmed up selectively by the proximity system
-    // stateTransitions stays in LoadingTemplate state until explicitly warmed up
-    Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Template loaded successfully. Ready for warmup.");
+    // We don't automatically warm up characters on initialization anymore.
+    // Characters will be warmed up selectively by the proximity system.
+    // State remains LoadingTemplate until explicitly warmed up.
+    Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Template loaded successfully. State remains LoadingTemplate.");
 }
 
 // ... (LoadTemplateWithTimeout and WarmupWithRetries remain the same) ...
@@ -79,11 +80,18 @@ public void CooldownCharacter(string characterName)
 
 public void SaveCharacterConversation(string characterName)
 {
-    // ... (Implementation as added previously, called by DialogueControl) ...
-    // Saves using character.Save(character.save) and updates snapshot time
+    // ... (Null checks) ...
+    // NOTE: The actual character.Save() call was removed from here as it was redundant.
+    // DialogueControl now handles the single save call before notifying this manager.
+    // This method now primarily updates the snapshot time.
+    if (!characterSnapshots.ContainsKey(characterName))
+        characterSnapshots[characterName] = new CharacterStateSnapshot();
+        
+    characterSnapshots[characterName].LastInteractionTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    Debug.Log($"Saved conversation state for {characterName}"); // Log remains for tracking
 }
 
-// Context allocation (CURRENTLY FLAWED - needs update)
+// Context allocation (FIXED)
 private IEnumerator InitializeCharacters()
 {
     // ... (Loop calling InitializeSingleCharacter) ...
@@ -93,13 +101,38 @@ private IEnumerator InitializeCharacters()
     // Only set context if we have characters
     if (characterCache.Count > 0)
     {
-        // ISSUE: This divides by TOTAL characters, not ACTIVE ones
-        int contextPerCharacter = sharedLLM.contextSize / characterCache.Count; 
+        // FIXED: Now correctly divides by parallelPrompts (set in Inspector)
+        int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts; 
+        Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens per active character (total: {sharedLLM.contextSize}, active slots: {sharedLLM.parallelPrompts})");
         foreach (var character in characterCache.Values)
         {
             character.nKeep = contextPerCharacter;
+            Debug.Log($"Set nKeep={contextPerCharacter} for character '{character.name}'");
         }
     }
+}
+
+// Added OnDestroy to clear save files
+private void OnDestroy()
+{
+    Debug.Log("[CharacterManager OnDestroy] Cleaning up character save files...");
+    if (characterCache != null && characterCache.Count > 0)
+    {
+        var characterNames = new List<string>(characterCache.Keys); 
+        foreach (string characterName in characterNames)
+        {
+            string saveFilePath = Path.Combine(Application.persistentDataPath, characterName + ".json");
+            try {
+                if (File.Exists(saveFilePath)) {
+                    File.Delete(saveFilePath);
+                    Debug.Log($"[CharacterManager OnDestroy] Deleted save file: {saveFilePath}");
+                }
+            } catch (Exception e) {
+                Debug.LogError($"[CharacterManager OnDestroy] Error deleting save file for {characterName}: {e.Message}");
+            }
+        }
+    }
+    CleanupCharacters(); // Also cleanup in-memory objects
 }
 ```
 
@@ -166,7 +199,7 @@ private IEnumerator DeactivateDialogue()
     // ... (Rest of deactivate logic) ...
 }
 
-// MISSING: Logic in Activate() to Load conversation state
+// FIXED: Logic in Activate() now correctly loads conversation state
 ```
 
 ```csharp
@@ -179,10 +212,8 @@ public class SimpleProximityWarmup : MonoBehaviour
     {
         // ... (Get references) ...
         
-        // ISSUE: Setting parallelPrompts here is ineffective as server already started
-        // llmInstance.parallelPrompts = maxWarmCharacters; 
-        // Debug.Log($"Set LLM parallelPrompts to {maxWarmCharacters}"); 
-        // INSTEAD: Value must be set manually in LLM component Inspector before Play
+        // REMOVED: Attempt to set parallelPrompts via script was ineffective.
+        // Must be set manually in LLM component Inspector before Play.
 
         // ... (Rest of Start) ...
     }
@@ -219,7 +250,7 @@ public class SimpleProximityWarmup : MonoBehaviour
 
     private void RefreshNPCCache()
     {
-        // ... (Finds active NPC GameObjects via Character components) ...
+        // Finds active NPC GameObjects via Character components using FindObjectsByType
     }
 }
 ```

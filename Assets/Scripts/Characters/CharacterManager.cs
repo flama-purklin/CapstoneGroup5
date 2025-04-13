@@ -227,6 +227,7 @@ public class CharacterManager : MonoBehaviour
             character.stream = true;
             character.saveCache = true;
             character.save = characterName;
+            character.saveCache = false; // Explicitly disable cache saving to prevent crashes
             character.setNKeepToPrompt = true;
             character.numPredict = -1;
             character.temperature = temperature;
@@ -302,14 +303,40 @@ public class CharacterManager : MonoBehaviour
         // Only set context if we have characters
         if (characterCache.Count > 0)
         {
-            // Allocate context based on the number of parallel prompts (active characters),
-            // not the total number of characters
-            int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
-            Debug.Log($"Allocating {contextPerCharacter} context tokens per active character (total: {sharedLLM.contextSize}, active slots: {sharedLLM.parallelPrompts})");
-            
-            foreach (var character in characterCache.Values)
+            try
             {
-                character.nKeep = contextPerCharacter;
+                // Log critical LLM values for debugging
+                Debug.Log($"[VERBOSE] LLM Details - contextSize: {sharedLLM.contextSize}, parallelPrompts: {sharedLLM.parallelPrompts}, started: {sharedLLM.started}");
+                
+                if (sharedLLM.parallelPrompts <= 0)
+                {
+                    Debug.LogError($"CRITICAL: parallelPrompts value is invalid: {sharedLLM.parallelPrompts}. Using hard-coded fallback of 3.");
+                    sharedLLM.parallelPrompts = 3;
+                }
+                
+                // Allocate context based on the number of parallel prompts (active characters),
+                // not the total number of characters
+                int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
+                Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens per active character (total: {sharedLLM.contextSize}, active slots: {sharedLLM.parallelPrompts})");
+                Debug.Log($"For comparison: Using characterCache.Count would give {sharedLLM.contextSize / characterCache.Count} tokens per character");
+                
+                foreach (var character in characterCache.Values)
+                {
+                    try
+                    {
+                        character.nKeep = contextPerCharacter;
+                        Debug.Log($"Set nKeep={contextPerCharacter} for character '{character.name}'");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"Failed to set nKeep for character '{character.name}': {e.Message}");
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"CRITICAL ERROR during context allocation: {e.Message}");
+                Debug.LogError($"Stack trace: {e.StackTrace}");
             }
         }
     }
@@ -329,10 +356,10 @@ public class CharacterManager : MonoBehaviour
             yield break;
         }
 
-        // We don't automatically warm up characters on initialization anymore
-        // Characters will be warmed up selectively by the proximity system
-        // stateTransitions stays in LoadingTemplate state until explicitly warmed up
-        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Template loaded successfully. Ready for warmup.");
+        // We don't automatically warm up characters on initialization anymore.
+        // Characters will be warmed up selectively by the proximity system.
+        // State remains LoadingTemplate until explicitly warmed up.
+        Debug.Log($"[CharacterManager InitSingleChar: {characterName}] Template loaded successfully. State remains LoadingTemplate.");
     }
 
     private IEnumerator LoadTemplateWithTimeout(LLMCharacter character, string characterName)
@@ -367,8 +394,9 @@ public class CharacterManager : MonoBehaviour
             yield break;
         }
 
-        stateTransitions[characterName].TryTransition(CharacterState.WarmingUp);
-        yield return new WaitForSeconds(0.5f);
+        // State should remain LoadingTemplate here. WarmupCharacter will transition it to WarmingUp.
+        // stateTransitions[characterName].TryTransition(CharacterState.WarmingUp); 
+        yield return new WaitForSeconds(0.5f); // Keep delay for safety? Or remove? Let's keep for now.
     }
 
     private IEnumerator WarmupWithRetries(LLMCharacter character, string characterName)
@@ -765,9 +793,13 @@ public class CharacterManager : MonoBehaviour
         
         var character = characterCache[characterName];
         
-        // Set the state to warming up
-        stateTransitions[characterName].TryTransition(CharacterState.WarmingUp);
-        Debug.Log($"Warming up character: {characterName}");
+        // Set the state to warming up BEFORE starting the coroutine
+        if (!stateTransitions[characterName].TryTransition(CharacterState.WarmingUp))
+        {
+            Debug.LogError($"[CharacterManager Warmup] Failed to transition {characterName} from LoadingTemplate to WarmingUp state!");
+            yield break;
+        }
+        Debug.Log($"[CharacterManager Warmup] Transitioned {characterName} to WarmingUp state. Starting warmup coroutine...");
         
         // Proceed with warmup
         yield return StartCoroutine(WarmupWithRetries(character, characterName));
@@ -777,9 +809,13 @@ public class CharacterManager : MonoBehaviour
             Debug.LogError($"Failed to warm up character: {characterName}");
             // Don't destroy the object, just leave it in Failed state
         }
+        else if (stateTransitions[characterName].CurrentState == CharacterState.Ready) // Check if it actually became Ready
+        {
+            Debug.Log($"[CharacterManager Warmup] SUCCESS: Character '{characterName}' successfully warmed up and is now in Ready state.");
+        }
         else
         {
-            Debug.Log($"Character '{characterName}' successfully warmed up");
+             Debug.LogWarning($"[CharacterManager Warmup] UNEXPECTED: Character '{characterName}' finished warmup coroutine but is in state {stateTransitions[characterName].CurrentState}, not Ready.");
         }
     }
     
@@ -827,7 +863,8 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Failed to transition character '{characterName}' from Ready to LoadingTemplate");
+            // This case should ideally not happen if the initial check passes, but log just in case.
+            Debug.LogError($"[CharacterManager Cooldown] FAILED to transition character '{characterName}' from Ready to LoadingTemplate. Current state: {stateTransitions[characterName].CurrentState}");
         }
     }
 
@@ -851,7 +888,7 @@ public class CharacterManager : MonoBehaviour
         }
         
         // Save using LLMUnity's built-in Save method
-        _ = character.Save(character.save);
+        // _ = character.Save(character.save); // Removed: Save is already called by DialogueControl.DeactivateDialogue
         
         // Track last interaction in state snapshot
         if (!characterSnapshots.ContainsKey(characterName))
@@ -863,4 +900,45 @@ public class CharacterManager : MonoBehaviour
     }
 
     // Removed GetCharacterStartingCar method and CharacterLocationData helper class
+
+    private void OnDestroy()
+    {
+        Debug.Log("[CharacterManager OnDestroy] Cleaning up character save files...");
+        // CleanupCharacters(); // Call existing cleanup for in-memory objects
+
+        // Delete persistent save files
+        if (characterCache != null && characterCache.Count > 0)
+        {
+            // Need a copy of keys because cache might be modified during cleanup? Unlikely here, but safer.
+            var characterNames = new List<string>(characterCache.Keys); 
+            foreach (string characterName in characterNames)
+            {
+                // Construct the path similar to how LLMCharacter does it
+                string saveFilePath = Path.Combine(Application.persistentDataPath, characterName + ".json");
+                try
+                {
+                    if (File.Exists(saveFilePath))
+                    {
+                        File.Delete(saveFilePath);
+                        Debug.Log($"[CharacterManager OnDestroy] Deleted save file: {saveFilePath}");
+                    }
+                    // Optionally delete .cache file too if saveCache were ever enabled
+                    // string cacheFilePath = Path.Combine(Application.persistentDataPath, characterName + ".cache");
+                    // if (File.Exists(cacheFilePath)) File.Delete(cacheFilePath);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[CharacterManager OnDestroy] Error deleting save file for {characterName} at {saveFilePath}: {e.Message}");
+                }
+            }
+        }
+        else
+        {
+             Debug.Log("[CharacterManager OnDestroy] Character cache is empty or null, no save files to delete based on cache keys.");
+        }
+        
+        // Ensure in-memory cleanup also happens if not already called
+        CleanupCharacters(); 
+    }
 }

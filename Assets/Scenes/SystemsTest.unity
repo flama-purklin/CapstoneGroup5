@@ -2316,7 +2316,7 @@ MonoBehaviour:
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
-  temperature: 0.45
+  temperature: 0.15
   topK: 55
   topP: 0.95
   repeatPenalty: 1
@@ -7755,6 +7755,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1251519877}
   - component: {fileID: 1251519876}
+  - component: {fileID: 1251519878}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -7790,6 +7791,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1251519878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251519875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebcf110752fadbd4ea8eea40a235450f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterManager: {fileID: 377154506}
+  npcManager: {fileID: 393672616}
+  player: {fileID: 46893853370859958}
+  llmInstance: {fileID: 1286452019}
+  maxWarmCharacters: 3
+  checkInterval: 5
+  significantMovementThreshold: 5
 --- !u!1001 &1286452018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7804,7 +7824,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: Ministral-3b-instruct.Q4_K_M.gguf
+      value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
+      objectReference: {fileID: 0}
+    - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
+      propertyPath: contextSize
+      value: 12000
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
@@ -7820,7 +7844,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
-      value: 131072
+      value: 32768
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: dontDestroyOnLoad
@@ -10968,7 +10992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_Pivot.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_AnchorMax.x
@@ -10976,7 +11000,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_AnchorMin.x
@@ -10984,7 +11008,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_SizeDelta.x
@@ -11000,7 +11024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1634229521509558506, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -400
+      value: 36.69998
       objectReference: {fileID: 0}
     - target: {fileID: 1766223814134031060, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_IsActive
@@ -11156,7 +11180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6552968255215982372, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_text
-      value: kjbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhbhb
+      value: '[RESPONSE HERE]'
       objectReference: {fileID: 0}
     - target: {fileID: 6552968255215982372, guid: efcf5b0acc6749148a6a96bd54a0403e, type: 3}
       propertyPath: m_fontSize
@@ -12569,6 +12593,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+--- !u!4 &46893853370859958 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1420150803019551755, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+  m_PrefabInstance: {fileID: 46893853370859957}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4965531277768336160
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -101,7 +101,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         currentResponse.Clear();
         lastReply = "";
 
-        llmCharacter.ClearChat();
+        // llmCharacter.ClearChat(); // Removed: History should persist until explicitly cleared elsewhere or loaded.
         await Task.Yield();
 
         DisableInput();
