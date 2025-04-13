@@ -9,7 +9,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
     protected bool isProcessingResponse = false;
     protected StringBuilder currentResponse;
     protected string lastReply = "";
-    
+
     /// <summary>
     /// Provides access to the current LLMCharacter being used for dialogue
     /// Used by DialogueControl for saving conversation state
@@ -27,7 +27,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
     public virtual void SetCharacter(LLMCharacter character)
     {
         llmCharacter = character;
-        
+        //Debug.Log($"Set LLMCharacter: {character.gameObject.name}");
     }
 
     public virtual void InitializeDialogue()
@@ -62,7 +62,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 lastReply = reply;
             }
 
-            UpdateDialogueDisplay(currentResponse.ToString());
+            //UpdateDialogueDisplay(currentResponse.ToString());
         }
         catch (System.Exception e)
         {
@@ -73,8 +73,10 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
     protected virtual void OnReplyComplete()
     {
+        if (!isProcessingResponse) return;
         isProcessingResponse = false;
         EnableInput();
+        UpdateDialogueDisplay(currentResponse.ToString());
     }
 
     protected virtual void OnError()

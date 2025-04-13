@@ -7,6 +7,9 @@ using System;
 
 public class BeepSpeak : MonoBehaviour
 {
+    private float sfxCooldown = 0.08f; // minimum seconds between SFX
+    private float lastSfxTime = 0f;
+
     [System.Serializable]
     public class VoiceSettings
     {
@@ -88,6 +91,40 @@ public class BeepSpeak : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void UpdateVoice(int vid = 100000, int vtimbre = 1, float pitch = 1.0f, float volume = 1.0f)
+    {
+        npcVoice.voiceID = vid;
+        npcVoice.basePitch = pitch;
+        npcVoice.baseVolume = volume;
+
+        string[] filenames;
+        if (vtimbre == 0)
+        {
+            filenames = new string[] { "DialogueSFX/v0_flat" };
+        }
+        else if (vtimbre == 1)
+        {
+            filenames = new string[] { "DialogueSFX/v1_flat" };
+        }
+        else
+        {
+            filenames = new string[] { "DialogueSFX/v0_flat" };
+            Debug.LogError("Yo what voice you tryna load?");
+        }
+
+        AudioClip[] loadedClips = new AudioClip[filenames.Length];
+        for (int i = 0; i < filenames.Length; i++)
+        {
+            loadedClips[i] = Resources.Load<AudioClip>(filenames[i]);
+            if (loadedClips[i] == null)
+            {
+                Debug.LogWarning($"Failed to load {filenames[i]}. Make sure it's in a Resources folder.");
+            }
+        }
+
+        npcVoice.timbre = loadedClips;
     }
 
     public void StartDialogue(List<DialogueEntry> dialogueEntries)
@@ -233,6 +270,11 @@ public class BeepSpeak : MonoBehaviour
 
     private void PlayVoice()
     {
+        //Only play if enough time has passed since the last sound.
+        if (Time.time - lastSfxTime < sfxCooldown)
+            return;
+        lastSfxTime = Time.time;
+
         if (npcVoice.timbre.Length == 0) return; //no audio file to play
 
         //Predictable Random
@@ -270,8 +312,7 @@ public class BeepSpeak : MonoBehaviour
 
         audioSource.pitch = npcVoice.basePitch + pitchModifier + randomPitch;
         audioSource.volume = npcVoice.baseVolume + volumeModifier + randomVolume;
-        //Debug.Log($"Random Pitch {randomPitch}");
-        //Not all audio is playing???
+        //Debug.Log($"Playing syllable {currentSyllable.text}");
         audioSource.PlayOneShot(clip);
     }
 

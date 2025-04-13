@@ -16,6 +16,10 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] Image characterProf;
     [SerializeField] TMP_Text characterName;
 
+    [Header("BeepSpeak Integration")]
+    [SerializeField] private BeepSpeak beepSpeak;
+    [SerializeField] private TMPro.TextMeshProUGUI npcDialogueText;
+
     [SerializeField] private Animator anim;
 
     private bool isTransitioning = false;
@@ -45,6 +49,23 @@ public class DialogueControl : MonoBehaviour
         }
 
         dialogueCanvas.SetActive(false);
+    }
+
+    public void DisplayNPCDialogue(string dialogue)
+    {
+        if (beepSpeak != null)
+        {
+            var dialogueEntries = new System.Collections.Generic.List<BeepSpeak.DialogueEntry>
+            {
+                new BeepSpeak.DialogueEntry { text = dialogue, speaker = beepSpeak }
+            };
+            beepSpeak.StartDialogue(dialogueEntries);
+        }
+        else
+        {
+            //Fallback: update the dialogue text directly if no BeepSpeak is assigned
+            npcDialogueText.text = dialogue;
+        }
     }
 
     public void Activate(GameObject npcObject)

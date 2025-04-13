@@ -57,7 +57,18 @@ public class LLMDialogueManager : BaseDialogueManager
 
     protected override void UpdateDialogueDisplay(string text)
     {
+        /* Old implementation
         if (npcDialogueText)
+        {
+            npcDialogueText.text = text;
+        }
+        */
+        DialogueControl dialogueControl = FindAnyObjectByType<DialogueControl>();
+        if (dialogueControl != null)
+        {
+            dialogueControl.DisplayNPCDialogue(text);
+        }
+        else if (npcDialogueText != null)
         {
             npcDialogueText.text = text;
         }
