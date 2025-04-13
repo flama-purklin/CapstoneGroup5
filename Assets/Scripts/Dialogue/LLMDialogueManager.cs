@@ -13,6 +13,7 @@ public class LLMDialogueManager : BaseDialogueManager
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private GameObject inputBox;
     [SerializeField] private Button submitButton;
+    [SerializeField] private DialogueControl dialogueControl;
 
     protected override void SetupInputHandlers()
     {
@@ -32,6 +33,11 @@ public class LLMDialogueManager : BaseDialogueManager
                 }
             });
         }
+    }
+
+    public void RegisterDialogueControl(DialogueControl control)
+    {
+        this.dialogueControl = control;
     }
 
     private void OnSubmitClicked()
@@ -63,10 +69,9 @@ public class LLMDialogueManager : BaseDialogueManager
             npcDialogueText.text = text;
         }
         */
-        DialogueControl dialogueControl = FindAnyObjectByType<DialogueControl>();
         if (dialogueControl != null)
         {
-            dialogueControl.DisplayNPCDialogue(text);
+            dialogueControl.DisplayNPCDialogueStreaming(text);
         }
         else if (npcDialogueText != null)
         {

@@ -62,7 +62,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 lastReply = reply;
             }
 
-            //UpdateDialogueDisplay(currentResponse.ToString());
+            UpdateDialogueDisplay(currentResponse.ToString());
         }
         catch (System.Exception e)
         {

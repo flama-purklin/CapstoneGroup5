@@ -65,32 +65,14 @@ public class BeepSpeak : MonoBehaviour
     private int maxDialogueEntry = 100;
     private int currentDialogueEntry = -1;
 
+    private string lastProcessedText = "";
+    private string lastProcessedWord = "";
+    private string targetText = "";
+    private string currentDisplayedText = "";
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            if (isTyping)
-            {
-                // Instantly finish displaying text
-                StopCoroutine(typingCoroutine);
-                dialogueText.text = dialogueQueue.Peek().text;
-                isTyping = false;
-            }
-            else
-            {
-                // Check if there is more dialogue in the queue
-                if (dialogueQueue.Count > 0)
-                {
-                    // Move to the next dialogue entry
-                    DisplayNextDialogue();
-                }
-                else if (!isTyping && currentDialogueEntry == maxDialogueEntry - 1)
-                {
-                    // No more dialogue, clear the text
-                    dialogueText.text = "";
-                }
-            }
-        }
+
     }
 
     public void UpdateVoice(int vid = 100000, int vtimbre = 1, float pitch = 1.0f, float volume = 1.0f)
@@ -136,6 +118,113 @@ public class BeepSpeak : MonoBehaviour
         }
         maxDialogueEntry = dialogueQueue.Count;
         DisplayNextDialogue();
+    }
+
+    // Called every time there is a new update from the LLM.
+    public void UpdateStreamingText(string cumulativeText)
+    {
+        // If the new cumulative text is shorter than our previous target, assume this is a new response.
+        if (cumulativeText.Length < targetText.Length)
+        {
+            // Clear previous state so new text can be displayed correctly.
+            currentDisplayedText = "";
+            lastProcessedText = "";
+            lastProcessedWord = "";
+            // Also clear the visible dialogue text.
+            if (dialogueText != null)
+                dialogueText.text = "";
+        }
+
+        targetText = cumulativeText;
+        if(typingCoroutine == null) { typingCoroutine = StartCoroutine(ProcessTyping()); }
+    }
+    private IEnumerator ProcessTyping()
+    {
+        // Continue until typed all characters in targetText
+        while (currentDisplayedText.Length < targetText.Length)
+        {
+            // Get the next character from the target
+            char nextChar = targetText[currentDisplayedText.Length];
+            currentDisplayedText += nextChar;
+
+            // Update the UI text
+            if (dialogueText != null)
+            {
+                dialogueText.text = currentDisplayedText;
+            }
+
+            // Check for a word boundary: space or common punctuation
+            if (nextChar == ' ' || nextChar == '.' || nextChar == ',' || nextChar == '!' || nextChar == '?')
+            {
+                string lastWord = GetLastWord(currentDisplayedText);
+                // Only process the word if it has changed since the last processed one
+                if (!string.IsNullOrEmpty(lastWord) && lastWord != lastProcessedWord)
+                {
+                    lastProcessedWord = lastWord;
+                    ProcessWordForBeep(lastWord);
+                }
+            }
+
+            // Wait for the duration defined by baseSpeed and speedVariance
+            yield return new WaitForSeconds(npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance));
+        }
+
+        // clear the coroutine reference so that new updates can trigger it
+        typingCoroutine = null;
+    }
+
+    private bool EndsWithWordBoundary(string text)
+    {
+        return text.EndsWith(" ") || text.EndsWith(".") || text.EndsWith(",") || text.EndsWith("!") || text.EndsWith("?");
+    }
+
+    private string GetLastWord(string text)
+    {
+        string[] words = text.Split(' ');
+        if (words.Length == 0)
+            return "";
+
+        string last = words[words.Length - 1].Trim();
+        if (string.IsNullOrEmpty(last) && words.Length > 1)
+            last = words[words.Length - 2].Trim();
+        return last;
+    }
+
+    private void ProcessWordForBeep(string word)
+    {
+        bool playedSfx = false;
+        for (int i = 0; i < word.Length; i++)
+        {
+            if (IsSyllable(word, i))
+            {
+                PlayVoiceForSyllable(word, i);
+                playedSfx = true;
+            }
+        }
+        if (!playedSfx)
+        {
+            PlayVoiceForSyllable(word, 0);
+        }
+    }
+
+    private void PlayVoiceForSyllable(string word, int index)
+    {
+        if (npcVoice.timbre.Length == 0) return;
+
+        int randomSeed = npcVoice.voiceID;
+        foreach (char c in word.ToUpper())
+        {
+            randomSeed += c;
+        }
+        randomSeed += index;
+
+        AudioClip clip = npcVoice.timbre[randomSeed % npcVoice.timbre.Length];
+
+        // Apply modifiers
+        float randomPitch = (randomSeed % (int)(npcVoice.pitchVariance * 200f) - (npcVoice.pitchVariance * 100f)) / 100f;
+        audioSource.pitch = npcVoice.basePitch + randomPitch;
+        audioSource.volume = npcVoice.baseVolume;
+        audioSource.PlayOneShot(clip);
     }
 
     private PrecomputedDialogue PrecomputeText(string text)
@@ -215,6 +304,10 @@ public class BeepSpeak : MonoBehaviour
     public void StartTyping(string text)
     {
         dialogueText.text = "";
+        currentDisplayedText = "";
+        targetText = "";
+        lastProcessedText = "";
+        lastProcessedWord = "";
 
         if (typingCoroutine != null)
         {
