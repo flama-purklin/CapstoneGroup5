@@ -69,6 +69,8 @@ public class BeepSpeak : MonoBehaviour
     private string lastProcessedWord = "";
     private string targetText = "";
     private string currentDisplayedText = "";
+    private float lastTargetUpdateTime = 0f;
+    private float stabilityDelay = 0.05f;
 
     void Update()
     {
@@ -126,51 +128,96 @@ public class BeepSpeak : MonoBehaviour
         // If the new cumulative text is shorter than our previous target, assume this is a new response.
         if (cumulativeText.Length < targetText.Length)
         {
-            // Clear previous state so new text can be displayed correctly.
             currentDisplayedText = "";
             lastProcessedText = "";
             lastProcessedWord = "";
-            // Also clear the visible dialogue text.
             if (dialogueText != null)
                 dialogueText.text = "";
         }
 
         targetText = cumulativeText;
-        if(typingCoroutine == null) { typingCoroutine = StartCoroutine(ProcessTyping()); }
+        lastTargetUpdateTime = Time.time;
+        if (typingCoroutine == null) { typingCoroutine = StartCoroutine(ProcessTyping()); }
     }
     private IEnumerator ProcessTyping()
     {
-        // Continue until typed all characters in targetText
+        // Continue until all characters in targetText have been typed
         while (currentDisplayedText.Length < targetText.Length)
         {
-            // Get the next character from the target
-            char nextChar = targetText[currentDisplayedText.Length];
-            currentDisplayedText += nextChar;
-
-            // Update the UI text
-            if (dialogueText != null)
+            // Wait until the targetText has not updated for at least stabilityDelay seconds.
+            if (Time.time - lastTargetUpdateTime < stabilityDelay)
             {
-                dialogueText.text = currentDisplayedText;
+                yield return new WaitForSeconds(0.03f);
+                continue;
             }
 
-            // Check for a word boundary: space or common punctuation
-            if (nextChar == ' ' || nextChar == '.' || nextChar == ',' || nextChar == '!' || nextChar == '?')
+            // Get what remains to be typed.
+            string remaining = targetText.Substring(currentDisplayedText.Length);
+
+            // If there is no space or punctuation immediately, wait until a complete word is available
+            int boundaryIndex = FindWordBoundary(remaining);
+            // If no boundary is found, we simply wait a short period and try again
+            if (boundaryIndex == -1)
             {
-                string lastWord = GetLastWord(currentDisplayedText);
-                // Only process the word if it has changed since the last processed one
-                if (!string.IsNullOrEmpty(lastWord) && lastWord != lastProcessedWord)
+                yield return new WaitForSeconds(0.03f);
+                continue;
+            }
+
+            // Extract the complete next word plus the boundary character
+            string nextChunk = remaining.Substring(0, boundaryIndex + 1);
+
+            // Type the word letter-by-letter.
+            for (int i = 0; i < nextChunk.Length; i++)
+            {
+                char letter = nextChunk[i];
+                currentDisplayedText += letter;
+                if (dialogueText != null) dialogueText.text = currentDisplayedText;
+
+                // assume a word ends at the first space or punctuation
+                string word = ExtractCurrentWord(currentDisplayedText);
+                if (!string.IsNullOrEmpty(word))
                 {
-                    lastProcessedWord = lastWord;
-                    ProcessWordForBeep(lastWord);
+                    int letterIndexInWord = word.Length - 1; // index of the just-typed letter within the current word
+                    if (IsSyllable(word, letterIndexInWord))
+                    {
+                        PlayVoiceForSyllable(word, letterIndexInWord);
+                    }
                 }
+                yield return new WaitForSeconds(npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance));
             }
-
-            // Wait for the duration defined by baseSpeed and speedVariance
-            yield return new WaitForSeconds(npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance));
+            
         }
-
-        // clear the coroutine reference so that new updates can trigger it
+        // Finished typing; clear the coroutine reference
         typingCoroutine = null;
+    }
+    private int FindWordBoundary(string text)
+    {
+        int space = text.IndexOf(' ');
+        int period = text.IndexOf('.');
+        int comma = text.IndexOf(',');
+        int exclaim = text.IndexOf('!');
+        int question = text.IndexOf('?');
+
+        // Find the smallest non-negative index.
+        int[] indices = new int[] { space, period, comma, exclaim, question };
+        int boundary = -1;
+        foreach (int idx in indices)
+        {
+            if (idx >= 0)
+            {
+                if (boundary == -1 || idx < boundary)
+                    boundary = idx;
+            }
+        }
+        return boundary;
+    }
+    private string ExtractCurrentWord(string text)
+    {
+        int lastSpace = text.LastIndexOf(' ');
+        if (lastSpace == -1)
+            return text.Trim();
+        else
+            return text.Substring(lastSpace + 1).Trim();
     }
 
     private bool EndsWithWordBoundary(string text)
@@ -212,9 +259,9 @@ public class BeepSpeak : MonoBehaviour
         if (npcVoice.timbre.Length == 0) return;
 
         int randomSeed = npcVoice.voiceID;
-        foreach (char c in word.ToUpper())
+        for (int i = index; i < word.Length; i++)
         {
-            randomSeed += c;
+            randomSeed += char.ToUpper(word[i]);
         }
         randomSeed += index;
 
