@@ -3619,7 +3619,7 @@ MonoBehaviour:
   jsonFolderPath: TrainJsons
   shellCarJsonName: shell_car
   spawnPoint: {fileID: 1339278003}
-  carSpacing: 16.5
+  carSpacing: 15.25
   trainParent: {fileID: 2072095370}
   trainManager: {fileID: 2072095371}
   spawnFromPrefab: 1
@@ -4707,7 +4707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9424b4a73851c4dad503f4e44dd33c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carBufferAmt: 2
+  carBufferAmt: 3.5
   transitionTime: 0.5
 --- !u!1 &710428223
 GameObject:
@@ -12020,10 +12020,10 @@ PrefabInstance:
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: loader
       value: 
-      objectReference: {fileID: 2072095368}
+      objectReference: {fileID: 0}
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: carSpacing
-      value: 16.5
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: spawnPoint
@@ -12037,6 +12037,10 @@ PrefabInstance:
       propertyPath: playerPrefab
       value: 
       objectReference: {fileID: 114889852}
+    - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+      propertyPath: spawnOnStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3219961570550194799, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
       propertyPath: spawnWithJsons
       value: 0
@@ -12151,6 +12155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3667271546179679522, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
+    - {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12158,17 +12163,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 641991973}
   m_SourcePrefab: {fileID: 100100000, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
---- !u!114 &2072095368 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6656308374510975501, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
-  m_PrefabInstance: {fileID: 2072095367}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 641991968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2072095370 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8547632229619857845, guid: 590d7a06919d40a419ec830f472f4deb, type: 3}
