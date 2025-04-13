@@ -35,6 +35,7 @@ public class DialogueControl : MonoBehaviour
         if (!dialogueCanvas) { Debug.LogError("DialogueCanvas reference not set!"); enabled = false; return; }
         if (!anim) { Debug.LogError("Animator reference not set!"); enabled = false; return; }
         dialogueCanvas.SetActive(false);
+        llmDialogueManager.RegisterDialogueControl(this);
     }
 
     public void DisplayNPCDialogue(string dialogue)
@@ -43,6 +44,20 @@ public class DialogueControl : MonoBehaviour
             var dialogueEntries = new List<BeepSpeak.DialogueEntry> { new BeepSpeak.DialogueEntry { text = dialogue, speaker = beepSpeak } };
             beepSpeak.StartDialogue(dialogueEntries);
         } else {
+            npcDialogueText.text = dialogue;
+        }
+    }
+
+    public void DisplayNPCDialogueStreaming(string dialogue)
+    {
+        // Forward the text update to BeepSpeak if available
+        if (beepSpeak != null)
+        {
+            beepSpeak.UpdateStreamingText(dialogue);
+        }
+        else if (npcDialogueText != null)
+        {
+            // Fallback: update the text immediately if no BeepSpeak is assigned
             npcDialogueText.text = dialogue;
         }
     }
