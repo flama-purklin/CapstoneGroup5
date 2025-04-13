@@ -173,6 +173,12 @@ public class BeepSpeak : MonoBehaviour
                 currentDisplayedText += letter;
                 if (dialogueText != null) dialogueText.text = currentDisplayedText;
 
+                // Determine the delay for this character.
+                float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
+                if (letter == '.' || letter == '!' || letter == '?') { delay += 0.5f; }
+                else if(letter == ';' || letter == ':' || letter == ',') { delay += 0.35f; }
+                else if(letter == '…') { delay += 1f; }
+
                 // assume a word ends at the first space or punctuation
                 string word = ExtractCurrentWord(currentDisplayedText);
                 if (!string.IsNullOrEmpty(word))
@@ -183,7 +189,7 @@ public class BeepSpeak : MonoBehaviour
                         PlayVoiceForSyllable(word, letterIndexInWord);
                     }
                 }
-                yield return new WaitForSeconds(npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance));
+                yield return new WaitForSeconds(delay);
             }
             
         }
@@ -214,10 +220,15 @@ public class BeepSpeak : MonoBehaviour
     private string ExtractCurrentWord(string text)
     {
         int lastSpace = text.LastIndexOf(' ');
+        string word = lastSpace == -1 ? text : text.Substring(lastSpace + 1);
+        return word;
+        /*
+        int lastSpace = text.LastIndexOf(' ');
         if (lastSpace == -1)
             return text.Trim();
         else
             return text.Substring(lastSpace + 1).Trim();
+        */
     }
 
     private bool EndsWithWordBoundary(string text)
@@ -263,14 +274,31 @@ public class BeepSpeak : MonoBehaviour
         {
             randomSeed += char.ToUpper(word[i]);
         }
-        randomSeed += index;
+
+        float punctuationPitchModifier = 0f;
+        float punctuationVolumeModifier = 0f;
+        if (word.EndsWith("."))
+        {
+            punctuationPitchModifier = -0.1f;
+            punctuationVolumeModifier = -0.05f;
+        }
+        else if (word.EndsWith("?"))
+        {
+            punctuationPitchModifier = 0.05f;
+            punctuationVolumeModifier = 0f;
+        }
+        else if (word.EndsWith("!"))
+        {
+            punctuationPitchModifier = 0.02f;
+            punctuationVolumeModifier = 0.1f;
+        }
 
         AudioClip clip = npcVoice.timbre[randomSeed % npcVoice.timbre.Length];
 
         // Apply modifiers
         float randomPitch = (randomSeed % (int)(npcVoice.pitchVariance * 200f) - (npcVoice.pitchVariance * 100f)) / 100f;
-        audioSource.pitch = npcVoice.basePitch + randomPitch;
-        audioSource.volume = npcVoice.baseVolume;
+        audioSource.pitch = npcVoice.basePitch + punctuationPitchModifier + randomPitch;
+        audioSource.volume = npcVoice.baseVolume + punctuationVolumeModifier;
         audioSource.PlayOneShot(clip);
     }
 
