@@ -135,7 +135,7 @@ public class SimpleProximityWarmup : MonoBehaviour
         var charactersToWarm = new List<string>();
         var charactersToCool = new List<string>();
 
-        Debug.Log($"[ProximityWarmup] Updating states. MaxWarm={maxWarmCharacters}. PlayerPos={player.position}. Found {characterDistances.Count} characters with distance.");
+        // Debug.Log($"[ProximityWarmup] Updating states. MaxWarm={maxWarmCharacters}. PlayerPos={player.position}. Found {characterDistances.Count} characters with distance.");
 
         // Determine who needs warming/cooling
         for (int i = 0; i < characterDistances.Count; i++)
@@ -145,7 +145,7 @@ public class SimpleProximityWarmup : MonoBehaviour
             bool shouldBeWarm = i < maxWarmCharacters;
             var currentState = characterManager.GetCharacterState(name);
 
-            Debug.Log($"[ProximityWarmup] Checking {name}: Distance={distance:F1}, ShouldBeWarm={shouldBeWarm}, CurrentState={currentState}");
+            // Debug.Log($"[ProximityWarmup] Checking {name}: Distance={distance:F1}, ShouldBeWarm={shouldBeWarm}, CurrentState={currentState}");
 
             if (shouldBeWarm && currentState == CharacterManager.CharacterState.LoadingTemplate)
             {
@@ -160,14 +160,14 @@ public class SimpleProximityWarmup : MonoBehaviour
         // Execute cooling first
         foreach (string name in charactersToCool)
         {
-            Debug.Log($"[ProximityWarmup] ACTION: Cooling down distant character: {name}");
+            // Debug.Log($"[ProximityWarmup] ACTION: Cooling down distant character: {name}");
             characterManager.CooldownCharacter(name);
         }
 
         // Execute warming
         foreach (string name in charactersToWarm)
         {
-            Debug.Log($"[ProximityWarmup] ACTION: Warming up nearby character: {name}");
+            // Debug.Log($"[ProximityWarmup] ACTION: Warming up nearby character: {name}");
             StartCoroutine(characterManager.WarmupCharacter(name));
         }
     }
@@ -195,7 +195,7 @@ public class SimpleProximityWarmup : MonoBehaviour
         }
 
         // Log count AFTER attempting to populate
-        Debug.Log($"[ProximityWarmup RefreshNPCCache] Finished refresh. Found {cachedNPCs.Count} active NPCs via FindObjectsByType<Character>.");
+        // Debug.Log($"[ProximityWarmup RefreshNPCCache] Finished refresh. Found {cachedNPCs.Count} active NPCs via FindObjectsByType<Character>.");
         if (cachedNPCs.Count == 0 && characterManager.GetAvailableCharacters().Length > 0)
         {
             Debug.LogWarning("[ProximityWarmup RefreshNPCCache] Found 0 NPC GameObjects despite CharacterManager having characters. NPC spawning might be delayed or failing.");

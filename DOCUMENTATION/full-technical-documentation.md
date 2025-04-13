@@ -49,7 +49,8 @@ The project is built around the following architectural components:
 - **CoreSystemsManager**: Manages Unity systems (EventSystem, AudioListener)
 - **ParsingControl**: Handles mystery JSON parsing. (Component should exist in the scene from start).
 - **NPCManager**: Manages NPC creation and behavior. (Component should exist in the scene from start).
-- **CharacterManager**: Manages LLM character creation and interaction. (Component should exist in the scene from start).
+- **CharacterManager**: Manages LLM character creation, state, and interaction. (Component should exist in the scene from start).
+- **SimpleProximityWarmup**: Manages LLM character warmup/cooldown based on proximity. (Component should exist in the scene from start).
 
 ### Data Model
 - **Mystery**: Core data model containing all mystery information
@@ -77,7 +78,7 @@ The project utilizes a **unified single-scene architecture**:
         - InitializationManager (manages startup sequence)
         - LoadingOverlay (displays progress, blocks view initially)
         - LLM (Must exist in scene)
-        - `GameController`, `ParsingControl`, `CharacterManager`, `NPCManager`, `TrainLayoutManager` GameObjects (with respective scripts attached)
+        - `GameController`, `ParsingControl`, `CharacterManager`, `NPCManager`, `TrainLayoutManager`, `SimpleProximityWarmup` GameObjects (with respective scripts attached)
         - Train environment, NPCs, UI elements (PauseMenu, DialogueControl, etc.)
 
 ## Game Systems
@@ -106,14 +107,20 @@ State changes are managed directly by setting `GameControl.GameController.curren
 
 *Design Goal: To move beyond static dialogue trees and create dynamic, responsive NPC interactions that enhance player agency and support social deduction gameplay through free-form input.*
 
-The LLM integration is handled through the LLMUnity package:
+The LLM integration is handled through the LLMUnity package and custom management scripts:
 
-- **LLM**: Core language model interface
-- **LLMCharacter**: Character-specific LLM instance
-- **LLMDialogueManager**: Manages dialogue flow with characters
+- **LLM**: Core language model interface (LLMUnity component).
+- **LLMCharacter**: Character-specific LLM instance (LLMUnity component), handles saving/loading history and cache state.
+- **CharacterManager**: Custom script managing `LLMCharacter` instances, states, context allocation, and cache settings.
+- **SimpleProximityWarmup**: Custom script managing which characters are "warm" (Ready state) based on player proximity.
+- **LLMDialogueManager**: Custom script managing dialogue flow with characters.
 
-The system uses character JSON files to generate prompts that define character personalities, knowledge, and behavior.
-Character activity and resource allocation (number of parallel LLM processes) are intended to be managed dynamically based on player proximity, configured via the `LLM` component's `parallelPrompts` setting in the Inspector and the `SimpleProximityWarmup` component.
+The system uses character data parsed from the main mystery JSON to generate system prompts defining personality and knowledge.
+Character activity and resource allocation are managed dynamically:
+- **Parallel Prompts:** The number of concurrent LLM processes is set by `LLM.parallelPrompts` (must be configured in Inspector).
+- **Context Allocation:** `CharacterManager` allocates context (`nKeep`) based on `LLM.parallelPrompts`.
+- **Warmup/Cooldown:** `SimpleProximityWarmup` monitors player distance to NPCs and tells `CharacterManager` to `WarmupCharacter` (transition to Ready state) or `CooldownCharacter` (transition back to LoadingTemplate state) to manage active LLM instances up to the `parallelPrompts` limit.
+- **Caching:** `CharacterManager` has a public `enableLLMCache` flag (Inspector toggle, default false) that controls whether `LLMCharacter` uses `.cache` files for faster re-warming. *Note: Enabling cache may currently cause `JobTempAlloc` warnings.*
 
 ### Mystery System
 
@@ -152,16 +159,23 @@ Characters are managed through multiple components:
 
 2.  **Character Manager (`CharacterManager.cs`)**:
     *   Script component exists in the scene from the start.
-    *   Initialization is explicitly triggered by `InitializationManager` via the `Initialize()` method *after* `ParsingControl` has finished.
-    *   Reads character data directly from the `GameControl.GameController.coreMystery.Characters` dictionary during its `CreateCharacterObjects` phase.
-    *   Manages `LLMCharacter` instances and GameObjects.
-    *   Manages character states (`LoadingTemplate`, `WarmingUp`, `Ready`) track whether a character's template is loaded and if it's actively warmed up for interaction, managed by `CharacterManager` and triggered by the proximity system (`SimpleProximityWarmup`).
-    *   Handles character switching and context management.
+    *   Initialization is explicitly triggered by `InitializationManager` via `Initialize()` after parsing.
+    *   Reads character data from `GameControl.coreMystery.Characters`.
+    *   Creates `LLMCharacter` GameObjects/components. Sets `saveCache` based on the public `enableLLMCache` field. Initializes characters only to `LoadingTemplate` state.
+    *   Provides `WarmupCharacter()` and `CooldownCharacter()` methods called by `SimpleProximityWarmup` to manage transitions between `LoadingTemplate` and `Ready` states.
+    *   Allocates context (`nKeep`) based on `LLM.parallelPrompts`.
+    *   Handles `OnDestroy` cleanup, deleting `.json` history files and optionally `.cache` files based on `enableLLMCache`.
 
 3.  **Character Prompt Generation (`CharacterPromptGenerator.cs`)**:
-    *   `CharacterPromptGenerator` creates system prompts for the LLM.
+    *   Static class used by `CharacterManager` to generate system prompts for the LLM based on character data (passed as serialized JSON).
     *   Takes the `MysteryCharacter` object (from the in-memory dictionary, serialized back to JSON temporarily by `CharacterManager`) as input to generate the prompt.
     *   Converts character data to structured prompts defining behavior and dialogue patterns.
+
+4.  **Simple Proximity Warmup (`SimpleProximityWarmup.cs`)**:
+    *   Monitors player distance to active NPCs.
+    *   Determines the closest `maxWarmCharacters` NPCs.
+    *   Calls `CharacterManager.WarmupCharacter()` for nearby characters in `LoadingTemplate` state.
+    *   Calls `CharacterManager.CooldownCharacter()` for distant characters in `Ready` state.
 
 ### NPC System
 
@@ -203,22 +217,31 @@ NPCs are managed through the following components:
 The dialogue system connects player interactions with the LLM system:
 
 1. **DialogueControl**:
-   - Manages dialogue UI activation/deactivation
-   - Controls state transitions to/from dialogue
-   - Connects NPCs to the dialogue system
+   - Manages dialogue UI activation/deactivation.
+   - Controls state transitions to/from dialogue.
+   - Connects NPCs to the dialogue system.
+   - On activation, calls `LLMCharacter.Load()` to load history/cache.
+   - On deactivation, calls `LLMCharacter.Save()` to save history/cache and notifies `CharacterManager`.
 
 2. **LLMDialogueManager**:
-   - Inherits from BaseDialogueManager
-   - Handles player input and LLM responses
-   - Manages dialogue flow and UI updates
+   - Inherits from BaseDialogueManager.
+   - Handles player input and LLM responses.
+   - Manages dialogue flow and UI updates.
 
 3. **Dialogue Flow**:
-   - Player enters dialogue range and presses E
-   - DialogueControl activates dialogue UI
-   - Player inputs text through the dialogue system
-   - LLMCharacter processes input and generates responses
-   - LLMDialogueManager displays streaming responses
-   - Conversation history is intended to persist between dialogue sessions using LLMUnity's save/load functionality, triggered during dialogue activation and deactivation.
+   - Player enters dialogue range and presses E.
+   - `DialogueControl.ActivateDialogue()` is called.
+   - `LLMCharacter.Load()` is called for the target character.
+   - Dialogue UI is activated.
+   - Player inputs text.
+   - `LLMDialogueManager` sends input to `LLMCharacter.Chat()`.
+   - `LLMCharacter` processes input and generates responses.
+   - `LLMDialogueManager` displays streaming responses.
+   - Player exits dialogue.
+   - `DialogueControl.DeactivateDialogue()` is called.
+   - `LLMCharacter.Save()` is called for the target character.
+   - `CharacterManager.SaveCharacterConversation()` is called (updates snapshot time).
+   - History persists only within a single game session; `CharacterManager.OnDestroy()` clears saved files on game stop.
 
 ### Player System
 
@@ -261,7 +284,7 @@ The project's data flow follows this pattern:
 
 2. **Character Initialization**:
    ```
-   GameControl.coreMystery.Characters → CharacterManager (Initialize() called by InitializationManager) → LLMCharacter GameObject & Component
+   GameControl.coreMystery.Characters → CharacterManager (Initialize() called by InitializationManager) → LLMCharacter GameObject & Component (in LoadingTemplate state)
    ```
    *(Reads directly from GameControl data after parsing is confirmed complete)*
 
@@ -275,6 +298,16 @@ The project's data flow follows this pattern:
 4. **Dialogue Flow**:
    ```
    Player Input → DialogueControl → LLMDialogueManager → LLMCharacter → Response
+   ```
+5. **Warmup/Cooldown Flow**:
+   ```
+   Player Position → SimpleProximityWarmup → CharacterManager.Warmup/CooldownCharacter → LLMCharacter State Change
+   ```
+6. **Save/Load Flow**:
+   ```
+   DialogueControl.Activate → LLMCharacter.Load()
+   DialogueControl.Deactivate → LLMCharacter.Save()
+   Game Stop → CharacterManager.OnDestroy() → File.Delete()
    ```
 
 ## Initialization Sequence
@@ -294,12 +327,12 @@ The game initialization occurs entirely within the `SystemsTest` scene, managed 
     - **(Step 1) Wait for LLM:** `InitializeGame` awaits `WaitForLLMStartup()`.
     - **(Step 2) Wait for Parsing:** `InitializeGame` awaits `WaitForParsingComplete()`, which now quickly confirms `parsingControl.IsParsingComplete` is true.
     - **(Step 2.1) Trigger Character Init:** `InitializeGame` explicitly calls `characterManager.Initialize()`.
-        - `CharacterManager` starts its `TwoPhaseInitialization` coroutine (creating LLMCharacters from `GameControl.coreMystery`, loading templates, warming up).
+        - `CharacterManager` starts its `TwoPhaseInitialization` coroutine (creating `LLMCharacter` instances, loading templates - characters remain in `LoadingTemplate` state).
     - **(Step 2.5) Build Train:** `InitializeGame` calls `BuildTrain()`. `TrainLayoutManager` builds the layout using data from `GameControl.coreMystery`.
     - **(Step 3) Wait for Character Init:** `InitializeGame` awaits `WaitForCharacterManagerInitialization()`. This waits for `CharacterManager`'s `TwoPhaseInitialization` to complete (checking `IsInitialized` flag and `OnInitializationComplete` event).
     - **(Step 3.5) Init NPC Manager:** `InitializeGame` awaits `InitializeNPCManager()`.
     - **(Step 3.75) Spawn NPCs:** `InitializeGame` calls `SpawnAllNPCs()`. This reads `initial_location` directly from `GameControl.coreMystery` for each character and tells `NPCManager` where to spawn them.
-    - **(Step 4) Complete Init:** `InitializeGame` calls `CompleteInitialization()`, hiding the loading overlay and enabling gameplay.
+    - **(Step 4) Complete Init:** `InitializeGame` calls `CompleteInitialization()`, hiding the loading overlay and enabling gameplay. (Proximity warmup starts managing character states).
 
 ## Event System
 
@@ -311,7 +344,7 @@ The project uses C# events for communication between systems:
    - *(Removed `OnCharactersExtracted` and `OnParsingComplete` events)*
 
 2. **Character Manager Events**:
-   - `CharacterManager.OnInitializationComplete`: Signals `CharacterManager` has finished its internal setup (creating/warming up LLMCharacters). Triggered at the end of its `TwoPhaseInitialization` coroutine.
+   - `CharacterManager.OnInitializationComplete`: Signals `CharacterManager` has finished its internal setup (creating LLMCharacters and loading templates). Triggered at the end of its `TwoPhaseInitialization` coroutine.
 
 3. **UI Events**:
    - Standard Unity UI events (Button.onClick, InputField.onSubmit)
@@ -330,7 +363,7 @@ The project implements several state machines:
    - Managed through `CharacterManager.CharacterState` enum
    - Uses `CharacterStateTransition` class for validation
    - States: Uninitialized, LoadingTemplate, WarmingUp, Ready, Failed
-   - Enforces valid transitions between states
+   - Enforces valid transitions between states (e.g., `LoadingTemplate` -> `WarmingUp`, `Ready` -> `LoadingTemplate`).
 
 3. **NPC Behavior State Machine**:
    - Implemented through coroutines in `NPCMovement`
@@ -348,17 +381,18 @@ The project's assets are organized as follows:
 
 1. **Scripts**:
    - `Assets/Scripts/`: Main script directory
-     - `CoreControl/`: Core game management
-     - `NPCs/`: NPC behavior
+     - `CoreControl/`: Core game management (`InitializationManager`, `ParsingControl`, etc.)
+     - `Characters/`: Character-related logic (`CharacterManager`, `CharacterPromptGenerator`, `SimpleProximityWarmup`)
+     - `NPCs/`: NPC behavior (`NPCManager`, `NPCMovement`, `NPCAnimManager`, `DialogueControl`)
      - `Player/`: Player movement and interaction
-     - `Train/`: Train environment
+     - `Train/`: Train environment (`TrainLayoutManager`, `TrainManager`)
      - `UI/`: User interfaces
 
 2. **Mystery**:
-   - `Assets/Mystery/`: Mystery system
+   - `Assets/Mystery/`: Mystery system (potentially deprecated/refactored parts)
      - `Myst_Gen/`: Mystery generation
      - `Myst_Play/`: Mystery gameplay
-       - `Dialogue/LLM/`: LLM integration
+       - `Dialogue/LLM/`: LLM integration (`BaseDialogueManager`, `LLMDialogueManager`)
 
 3. **StreamingAssets**:
    - `StreamingAssets/MysteryStorage/`: Contains the main mystery JSON file (e.g., `transformed-mystery.json`).
@@ -394,7 +428,8 @@ The project has the following key dependencies:
    - ParsingControl → GameControl
    - CharacterManager → LLM, GameControl, CharacterPromptGenerator
    - NPCManager → CharacterManager, TrainLayoutManager, GameControl (indirectly via InitializationManager for spawning)
-   - DialogueControl → LLMDialogueManager
+   - DialogueControl → LLMDialogueManager, CharacterManager
+   - SimpleProximityWarmup → CharacterManager, NPCManager, Player Transform
 
 ## Code Reference
 
@@ -402,8 +437,8 @@ The project has the following key dependencies:
 
 1. **GameControl.cs**:
    - Manages game state
-   - Stores mystery data
-   - Singleton access via GameControl.GameController
+   - Stores mystery data (`coreMystery`)
+   - Singleton access via `GameControl.GameController`
 
 *(Note: PersistentSystemsManager.cs and GameInitializer.cs removed as they are deprecated or superseded by InitializationManager in the unified scene)*
 
@@ -419,33 +454,41 @@ The project has the following key dependencies:
    - Parses the main mystery JSON file loaded from `StreamingAssets` in its `Awake` method.
    - Populates `GameControl.coreMystery` with the parsed data.
    - Sets the `IsParsingComplete` flag when done.
-   - Fires `OnParsingProgress` and `OnMysteryParsed` events. (Does *not* coordinate with `MysteryCharacterExtractor` or fire `OnParsingComplete`).
+   - Fires `OnParsingProgress` and `OnMysteryParsed` events.
 
 *(Removed MysteryCharacterExtractor.cs section)*
 
 ### Character System
 
-3. **CharacterManager.cs**:
+1. **CharacterManager.cs** (`Assets/Scripts/Characters/`):
    - Component exists in the scene from start.
-   - Initialization is triggered explicitly by `InitializationManager` via the `Initialize()` method after parsing is complete.
-   - Reads character data directly from `GameControl.coreMystery.Characters`.
-   - Manages LLM character creation, state transitions, and provides access to instances.
-   - Fires `OnInitializationComplete` event when its internal setup is finished.
+   - Manages the lifecycle and state (`LoadingTemplate`, `WarmingUp`, `Ready`, `Failed`) of `LLMCharacter` instances.
+   - Creates `LLMCharacter` components based on data from `GameControl.coreMystery`.
+   - Handles context allocation (`nKeep`) based on `LLM.parallelPrompts`.
+   - Provides `WarmupCharacter` and `CooldownCharacter` methods for `SimpleProximityWarmup`.
+   - Includes `enableLLMCache` public bool to control LLMUnity caching (default `false`).
+   - Cleans up saved `.json` (and `.cache` if enabled) files in `OnDestroy`.
+   - Fires `OnInitializationComplete` event.
 
-2. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
+2. **SimpleProximityWarmup.cs** (`Assets/Scripts/Characters/`):
+   - Component exists in the scene from start.
+   - Periodically checks player distance to NPCs.
+   - Calls `CharacterManager.WarmupCharacter` or `CooldownCharacter` to maintain `maxWarmCharacters` in the `Ready` state.
+
+3. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
    - Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
    - Handles different character data formats.
    - Structures prompts for optimal LLM behavior.
-   - *Note: A `TempCharacterPromptGenerator.cs` might exist; ensure the correct one is used/referenced.*
 
-3. **LLMCharacter.cs** (from LLMUnity):
-   - Interfaces with LLM system
-   - Manages character dialogue and responses
-   - Handles prompt and context management
+4. **LLMCharacter.cs** (from LLMUnity):
+   - Interfaces with LLM system.
+   - Manages character dialogue and responses.
+   - Handles prompt and context management.
+   - Provides `Save()` and `Load()` methods for history persistence and optional caching (controlled by `saveCache` property, set via `CharacterManager.enableLLMCache`).
 
 ### NPC System
 
-5. **NPCManager.cs**:
+1. **NPCManager.cs**:
    - Component exists in the scene from start.
    - Spawns and manages NPCs.
    - Links NPCs to LLM characters (obtained from `CharacterManager`).
@@ -493,25 +536,27 @@ The project has the following key dependencies:
 
 ### Initialization System
 
-7. **InitializationManager.cs**:
+1. **InitializationManager.cs**:
    - Orchestrates the game initialization sequence.
    - Finds existing core components (`ParsingControl`, `CharacterManager`, `NPCManager`, etc.) in its `Awake` phase. (Does *not* add components dynamically).
    - Manages LoadingOverlay and initialization state.
-   - Coordinates the startup sequence explicitly: Waits for LLM, waits for Parsing (flag), triggers CharacterManager init, waits for CharacterManager (event/flag), initializes NPCManager, spawns NPCs (reading data directly), completes initialization.
+   - Coordinates the startup sequence explicitly: Waits for LLM, waits for Parsing (flag), triggers CharacterManager init (template loading only), waits for CharacterManager (event/flag), initializes NPCManager, spawns NPCs (reading data directly), completes initialization (proximity warmup starts).
    - Handles NPC spawning through `SpawnAllNPCs()` method, reading `initial_location` directly from `GameControl.coreMystery`.
 
 ### Dialogue System
 
-1. **DialogueControl.cs**:
-   - Manages dialogue UI and state
-   - Activates dialogue with NPCs
-   - Controls transitions to/from dialogue state
+1. **DialogueControl.cs** (`Assets/Scripts/NPCs/`):
+   - Manages dialogue UI and state transitions.
+   - Activates dialogue with NPCs.
+   - Calls `LLMCharacter.Load()` on activation.
+   - Calls `LLMCharacter.Save()` and `CharacterManager.SaveCharacterConversation()` on deactivation.
 
 2. **BaseDialogueManager.cs** (`Assets/Mystery/Myst_Play/Dialogue/LLM/`):
    - Abstract base class for dialogue management.
    - *Note: Does not appear to be attached to any active GameObject in the `SystemsTest` scene.*
    - Handles LLM character interaction.
    - Manages dialogue flow and callbacks.
+   - Provides `CurrentCharacter` property.
 
 3. **LLMDialogueManager.cs** (`Assets/Mystery/Myst_Play/Dialogue/LLM/`):
    - Implements concrete dialogue UI interface, inheriting from `BaseDialogueManager`.

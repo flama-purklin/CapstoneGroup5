@@ -5,45 +5,38 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     private string characterName;
-    private LLMCharacter llmCharacter;
-    private bool isInitialized = false;
+    private LLMCharacter llmCharacter; // This reference MUST be set by Initialize
+    private bool isInitialized = false; // Tracks if Initialize was called successfully
 
-    public void Initialize(string name, LLMCharacter character)
+    // Initialize is called by InitializationManager after NPC spawn and CharacterManager init
+    public void Initialize(string name, LLMCharacter characterRef)
     {
         characterName = name;
-        llmCharacter = character;
-        isInitialized = character != null;
-
-        if (isInitialized)
-        {
-            
-        }
-        else
-        {
-            Debug.LogError($"Failed to initialize Character {name} - LLMCharacter is null");
-        }
-    }
-
-    public  LLMCharacter GetLLMCharacter()
-    {
-        if (!llmCharacter)
-        {
-            // Try to find in children first
-            llmCharacter = GetComponentInChildren<LLMCharacter>();
-            isInitialized = llmCharacter != null;
-        }
+        llmCharacter = characterRef; // Store the reference passed from CharacterManager
+        isInitialized = llmCharacter != null;
 
         if (!isInitialized)
         {
-            Debug.LogError($"Character {characterName} not properly initialized!");
-            return null;
+            Debug.LogError($"Character '{name}': Failed to initialize - Provided LLMCharacter reference was null!");
         }
+    }
 
+    // Returns the externally set LLMCharacter reference.
+    public LLMCharacter GetLLMCharacter()
+    {
+        if (!isInitialized || llmCharacter == null)
+        {
+            // This should not happen if InitializationManager works correctly.
+            Debug.LogError($"Character '{GetCharacterName()}': LLMCharacter reference not set or null! Was Initialize called correctly?");
+            // Returning null here will cause errors downstream (like in DialogueControl), highlighting the initialization issue.
+            // DO NOT use GetComponentInChildren as a fallback - it hides the real problem.
+            return null; 
+        }
         return llmCharacter;
     }
 
     public string GetCharacterName()
     {
-        return characterName ?? "Unnamed Character";
+        return characterName ?? gameObject.name ?? "Unnamed Character"; 
     }
 }

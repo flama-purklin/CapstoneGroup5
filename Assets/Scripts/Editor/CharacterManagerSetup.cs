@@ -1,83 +1,86 @@
-using UnityEngine;
+using UnityEngine; 
 using UnityEditor;
 using LLMUnity;
 
+// This script provides a menu item to automatically link essential manager components
+// and set some default values on CharacterManager.
 public class CharacterManagerSetup : EditorWindow
 {
-    [MenuItem("Tools/Setup Character Manager")]
+    [MenuItem("Tools/Setup Scene References & Defaults")] 
     static void Init()
     {
-        // Find the objects
-        LLM llm = GameObject.Find("LLM")?.GetComponent<LLM>();
-        CharacterManager characterManager = GameObject.Find("CharacterManager")?.GetComponent<CharacterManager>();
-        InitializationManager initManager = GameObject.Find("InitializationManager")?.GetComponent<InitializationManager>();
-        GameObject loadingOverlay = GameObject.Find("LoadingOverlay");
+        // Find the core manager objects in the scene
+        LLM llm = FindFirstObjectByType<LLM>(); 
+        CharacterManager characterManager = FindFirstObjectByType<CharacterManager>();
+        InitializationManager initManager = FindFirstObjectByType<InitializationManager>();
+        GameObject loadingOverlay = GameObject.Find("LoadingOverlay"); 
         NPCManager npcManager = FindFirstObjectByType<NPCManager>();
-        
+        TrainLayoutManager trainLayoutManager = FindFirstObjectByType<TrainLayoutManager>(); 
+        // SimpleProximityWarmup proximityWarmup = FindFirstObjectByType<SimpleProximityWarmup>(); // Removed due to persistent compile errors
+
         // Validate objects exist
-        if (llm == null)
-        {
-            Debug.LogError("LLM object not found in scene. Please add an LLM object first.");
-            return;
+        bool errorFound = false;
+        if (llm == null) { Debug.LogError("LLM object not found in scene."); errorFound = true; }
+        if (characterManager == null) { Debug.LogError("CharacterManager object not found in scene."); errorFound = true; }
+        if (initManager == null) { Debug.LogError("InitializationManager object not found in scene."); errorFound = true; }
+        if (loadingOverlay == null) { Debug.LogError("LoadingOverlay object not found in scene."); errorFound = true; }
+        if (npcManager == null) { Debug.LogError("NPCManager object not found in scene."); errorFound = true; }
+        if (trainLayoutManager == null) { Debug.LogError("TrainLayoutManager object not found in scene."); errorFound = true; }
+        // if (proximityWarmup == null) { Debug.LogError("SimpleProximityWarmup component not found in scene."); errorFound = true; } // Removed check
+
+
+        if (errorFound) {
+             Debug.LogError("Setup failed: One or more required objects not found. Please ensure they exist in the scene with expected names/components.");
+             return;
         }
         
-        if (characterManager == null)
-        {
-            Debug.LogError("CharacterManager not found in scene. Please add a CharacterManager object first.");
-            return;
-        }
+        // --- Configure CharacterManager ---
+        SerializedObject serializedCharManager = new SerializedObject(characterManager);
+        serializedCharManager.FindProperty("sharedLLM").objectReferenceValue = llm;
+        serializedCharManager.FindProperty("npcManager").objectReferenceValue = npcManager; 
+        serializedCharManager.FindProperty("templateTimeout").floatValue = 15f;
+        serializedCharManager.FindProperty("warmupTimeout").floatValue = 30f;
+        serializedCharManager.FindProperty("maxWarmupAttempts").intValue = 3;
+        serializedCharManager.FindProperty("baseBackoffDelay").floatValue = 1f;
+        serializedCharManager.FindProperty("temperature").floatValue = 0.45f; 
+        serializedCharManager.FindProperty("topK").intValue = 55;
+        serializedCharManager.FindProperty("topP").floatValue = 0.95f;
+        serializedCharManager.FindProperty("repeatPenalty").floatValue = 1f;
+        serializedCharManager.FindProperty("presencePenalty").floatValue = 0f;
+        serializedCharManager.FindProperty("frequencyPenalty").floatValue = 1f;
+        serializedCharManager.ApplyModifiedProperties();
+        Debug.Log("CharacterManager successfully configured with references and default parameters.");
         
-        if (initManager == null)
-        {
-            Debug.LogError("InitializationManager not found in scene.");
-            return;
-        }
-        
-        if (loadingOverlay == null)
-        {
-            Debug.LogError("LoadingOverlay not found in scene.");
-            return;
-        }
-        
-        // Configure the CharacterManager
-        characterManager.charactersFolder = "Characters";
-        characterManager.sharedLLM = llm;
-        characterManager.characterInitDelay = 2f;
-        characterManager.templateTimeout = 15f;
-        characterManager.warmupTimeout = 30f;
-        characterManager.maxWarmupAttempts = 3;
-        characterManager.baseBackoffDelay = 1f;
-        characterManager.temperature = 0.45f;
-        characterManager.topK = 55;
-        characterManager.topP = 0.95f;
-        characterManager.repeatPenalty = 1f;
-        characterManager.presencePenalty = 0f;
-        characterManager.frequencyPenalty = 1f;
-        
-        Debug.Log("CharacterManager successfully configured with LLM reference.");
-        
-        // Configure InitializationManager using SerializedObject
-        SerializedObject serializedObject = new SerializedObject(initManager);
-        
-        // Set the references using SerializedProperty
-        SerializedProperty llmProp = serializedObject.FindProperty("llm");
-        SerializedProperty characterManagerProp = serializedObject.FindProperty("characterManager");
-        SerializedProperty npcManagerProp = serializedObject.FindProperty("npcManager");
-        SerializedProperty loadingOverlayProp = serializedObject.FindProperty("loadingOverlay");
-        
-        if (llmProp != null) llmProp.objectReferenceValue = llm;
-        if (characterManagerProp != null) characterManagerProp.objectReferenceValue = characterManager;
-        if (npcManagerProp != null) npcManagerProp.objectReferenceValue = npcManager;
-        if (loadingOverlayProp != null) loadingOverlayProp.objectReferenceValue = loadingOverlay;
-        
-        // Apply changes
-        serializedObject.ApplyModifiedProperties();
-        
+        // --- Configure InitializationManager ---
+        SerializedObject serializedInitManager = new SerializedObject(initManager);
+        serializedInitManager.FindProperty("llm").objectReferenceValue = llm;
+        serializedInitManager.FindProperty("characterManager").objectReferenceValue = characterManager;
+        serializedInitManager.FindProperty("npcManager").objectReferenceValue = npcManager;
+        serializedInitManager.FindProperty("loadingOverlay").objectReferenceValue = loadingOverlay;
+        serializedInitManager.FindProperty("trainLayoutManager").objectReferenceValue = trainLayoutManager; 
+        serializedInitManager.ApplyModifiedProperties();
         Debug.Log("InitializationManager successfully configured with references.");
-        
-        // Save the scene
+
+        // --- Configure NPCManager ---
+        SerializedObject serializedNPCManager = new SerializedObject(npcManager);
+        serializedNPCManager.FindProperty("characterManager").objectReferenceValue = characterManager; 
+        serializedNPCManager.ApplyModifiedProperties();
+        Debug.Log("NPCManager successfully configured with CharacterManager reference.");
+
+         // --- Configure SimpleProximityWarmup --- REMOVED ---
+        // SerializedObject serializedProximity = new SerializedObject(proximityWarmup); 
+        // serializedProximity.FindProperty("characterManager").objectReferenceValue = characterManager;
+        // serializedProximity.FindProperty("npcManager").objectReferenceValue = npcManager;
+        // serializedProximity.FindProperty("llmInstance").objectReferenceValue = llm;
+        // serializedProximity.ApplyModifiedProperties();
+        // Debug.Log("SimpleProximityWarmup successfully configured with references.");
+        Debug.LogWarning("SimpleProximityWarmup configuration removed from setup script due to compile issues. Please assign its references manually in the Inspector.");
+
+
+        // Mark scene dirty and save
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         UnityEditor.SceneManagement.EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         
-        Debug.Log("Scene setup complete! All references configured.");
+        Debug.Log("Scene setup complete! References configured (except SimpleProximityWarmup) and scene saved.");
     }
 }
