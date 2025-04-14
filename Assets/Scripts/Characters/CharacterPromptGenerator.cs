@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq; // Added for OrderBy
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,10 +48,22 @@ namespace LLMUnity
                 prompt.AppendLine($"You are {characterName}, a {type} {occupation}.");
                 prompt.AppendLine($"{role}.");
 
-                // Mystery attributes
+                // Mystery attributes (Updated to handle List<MysteryAttribute>)
                 if (characterData.Core.Involvement.MysteryAttributes != null && characterData.Core.Involvement.MysteryAttributes.Count > 0)
                 {
-                    prompt.AppendLine($"Mystery Attributes: {string.Join(", ", characterData.Core.Involvement.MysteryAttributes)}");
+                    // Extract just the trait strings for the prompt (Task 1 scope)
+                    List<string> traitStrings = new List<string>();
+                    foreach (MysteryAttribute attr in characterData.Core.Involvement.MysteryAttributes)
+                    {
+                        if (!string.IsNullOrEmpty(attr?.Trait))
+                        {
+                            traitStrings.Add(attr.Trait);
+                        }
+                    }
+                    if (traitStrings.Count > 0)
+                    {
+                        prompt.AppendLine($"Mystery Attributes: {string.Join(", ", traitStrings)}");
+                    }
                 }
                 prompt.AppendLine();
 
@@ -144,17 +157,20 @@ namespace LLMUnity
                     prompt.AppendLine();
                 }
 
-                // 6. Whereabouts (Memory)
+                // 6. Whereabouts (Memory) (Updated to iterate over Dictionary)
                 if (characterData.Core.Whereabouts != null && characterData.Core.Whereabouts.Count > 0)
                 {
                     prompt.AppendLine("YOUR MEMORY (WHEREABOUTS):");
-                    foreach (Whereabouts whereaboutEntry in characterData.Core.Whereabouts)
-                    {
-                        if (whereaboutEntry?.WhereaboutData != null)
-                        {
-                            string key = whereaboutEntry.Key ?? "Unknown";
-                            WhereaboutData value = whereaboutEntry.WhereaboutData;
+                    // Sort by key (assuming keys are numeric strings representing order)
+                    var sortedWhereabouts = characterData.Core.Whereabouts.OrderBy(kvp => int.TryParse(kvp.Key, out int k) ? k : int.MaxValue);
 
+                    foreach (var kvp in sortedWhereabouts)
+                    {
+                        string key = kvp.Key ?? "Unknown";
+                        WhereaboutData value = kvp.Value;
+
+                        if (value != null)
+                        {
                             string location = value.Location; // Uses nullable string
                             string circumstance = value.Circumstance; // Uses nullable string
                             string action = value.Action ?? ""; // Uses null-coalescing for safety
@@ -183,19 +199,24 @@ namespace LLMUnity
                     prompt.AppendLine();
                 }
 
-                // 7. Relationships
+                // 7. Relationships (Updated to iterate over Dictionary)
                 if (characterData.Core.Relationships != null && characterData.Core.Relationships.Count > 0)
                 {
                     prompt.AppendLine("YOUR RELATIONSHIPS:");
-                    foreach (Relationship relationshipEntry in characterData.Core.Relationships)
+                    foreach (var kvp in characterData.Core.Relationships)
                     {
-                        if (relationshipEntry?.RelationshipData != null && !string.IsNullOrEmpty(relationshipEntry.CharName))
+                        string personId = kvp.Key; // This is now the character ID, e.g., "gregory_crowe"
+                        RelationshipData value = kvp.Value;
+
+                        if (value != null && !string.IsNullOrEmpty(personId))
                         {
-                            string person = relationshipEntry.CharName;
-                            RelationshipData value = relationshipEntry.RelationshipData;
+                            // We might need a way to get the actual name from the ID if needed for the prompt,
+                            // but for now, let's use the ID or try to infer name if possible.
+                            // Assuming the ID is descriptive enough for now, or we'll adjust in Task 2.
+                            string personName = personId.Replace("_", " ").ToUpperInvariant(); // Simple conversion for now
 
                             string attitude = value.Attitude ?? "Neutral"; // Default if null
-                            prompt.AppendLine($"- Relationship with {person}: {attitude}");
+                            prompt.AppendLine($"- Relationship with {personName}: {attitude}");
 
                             // History
                             if (value.History != null && value.History.Count > 0)
@@ -219,21 +240,9 @@ namespace LLMUnity
                     prompt.AppendLine();
                 }
 
-                // 8. Key Testimonies
-                if (characterData.KeyTestimonies != null && characterData.KeyTestimonies.Count > 0)
-                {
-                    prompt.AppendLine("YOUR KEY TESTIMONIES (what you'll say when questioned about specific topics):");
-                    foreach (var testimonyPair in characterData.KeyTestimonies)
-                    {
-                        string topic = testimonyPair.Key;
-                        Testimony details = testimonyPair.Value;
-                        if (details != null && !string.IsNullOrEmpty(topic) && !string.IsNullOrEmpty(details.Content))
-                        {
-                            prompt.AppendLine($"- About {topic}: \"{details.Content}\"");
-                        }
-                    }
-                    prompt.AppendLine();
-                }
+                // 8. Key Testimonies (Section Removed for Task 1)
+                // The logic for KeyTestimonies has been removed as the property no longer exists
+                // and Revelations integration is deferred to Task 2.
 
                 // 9. Immutable Character Rules & Additional Guidelines
                 prompt.AppendLine("IMMUTABLE CHARACTER RULES:");

@@ -12,27 +12,45 @@ public class MysteryCharacter
     [JsonProperty("mind_engine")]
     public MindEngine MindEngine { get; set; }
 
-    [JsonProperty("initial_location")]
+    [JsonProperty("initial_location")] // Moved back to top level
     public string InitialLocation { get; set; }
 
-    [JsonProperty("key_testimonies")]
-    public Dictionary<string, Testimony> KeyTestimonies { get; set; }
+    // KeyTestimonies removed from here
 }
 
 public class CharacterCore
 {
+    // InitialLocation removed from here
+
     [JsonProperty("involvement")]
     public Involvement Involvement { get; set; }
 
     [JsonProperty("whereabouts")]
-    public List<Whereabouts> Whereabouts { get; set; }
+    public Dictionary<string, WhereaboutData> Whereabouts { get; set; } // Changed from List<Whereabouts>
 
     [JsonProperty("relationships")]
-    public List<Relationship> Relationships { get; set; }
+    public Dictionary<string, RelationshipData> Relationships { get; set; } // Changed from List<Relationship>
 
     [JsonProperty("agenda")]
     public Agenda Agenda { get; set; }
+
+    [JsonProperty("appearance")] // Added
+    public Appearance Appearance { get; set; }
+
+    [JsonProperty("voice")] // Added
+    public Voice Voice { get; set; }
 }
+
+// New MysteryAttribute class definition
+public class MysteryAttribute
+{
+    [JsonProperty("trait")]
+    public string Trait { get; set; }
+
+    [JsonProperty("evidence_id")]
+    public string EvidenceId { get; set; }
+}
+
 
 public class Involvement
 {
@@ -43,20 +61,10 @@ public class Involvement
     public string Type { get; set; }
 
     [JsonProperty("mystery_attributes")]
-    public List<string> MysteryAttributes { get; set; }
+    public List<MysteryAttribute> MysteryAttributes { get; set; } // Changed from List<string>
 }
 
-//this should be restructured in the json, would be better to have each key be a reference to the character object
-//Ex. Dictionary<string, Whereabout> where string is "second_class_car_1" rather than arbitrary index
-//items should be added chronologically anyways, so the index is unnecessary
-public class Whereabouts
-{
-    [JsonProperty("key")]
-    public string Key { get; set; }
-
-    [JsonProperty("value")]
-    public WhereaboutData WhereaboutData { get; set; }
-}
+// Whereabouts wrapper class removed
 
 public class WhereaboutData
 {
@@ -76,16 +84,7 @@ public class WhereaboutData
     public List<string> Events { get; set; }
 }
 
-//this should be restructured in the json, would be better to have each key be a reference to the character object
-//Ex. Dictionary<string, Relationship> where string is "penelope_valor" rather than the full character name
-public class Relationship
-{
-    [JsonProperty("key")]
-    public string CharName { get; set; }
-
-    [JsonProperty("value")]
-    public RelationshipData RelationshipData { get; set; }
-}
+// Relationship wrapper class removed
 
 //May need to be another layer deeper if the key isn't getting stored
 public class RelationshipData
@@ -99,6 +98,51 @@ public class RelationshipData
     [JsonProperty("known_secrets")]
     public List<string> KnownSecrets { get; set; }
 }
+
+// New Appearance class definition
+public class Appearance
+{
+    [JsonProperty("base")]
+    public string Base { get; set; }
+
+    [JsonProperty("skin_color")]
+    public string SkinColor { get; set; }
+
+    [JsonProperty("hair")]
+    public string Hair { get; set; }
+
+    [JsonProperty("outfit")]
+    public string Outfit { get; set; }
+
+    [JsonProperty("shoes")]
+    public string Shoes { get; set; }
+
+    [JsonProperty("eyes")]
+    public string Eyes { get; set; }
+
+    [JsonProperty("nose")]
+    public string Nose { get; set; }
+
+    [JsonProperty("mouth")]
+    public string Mouth { get; set; }
+}
+
+// New Voice class definition
+public class Voice
+{
+    [JsonProperty("voice_ID")]
+    public int VoiceID { get; set; }
+
+    [JsonProperty("timbre")]
+    public string Timbre { get; set; }
+
+    [JsonProperty("pitch")]
+    public float Pitch { get; set; }
+
+    [JsonProperty("volume")]
+    public float Volume { get; set; }
+}
+
 
 public class Agenda
 {
@@ -171,22 +215,4 @@ public class SpeechPatterns
     public List<string> CommonPhrases { get; set; }
 }
 
-
-public class Testimony
-{
-    [JsonProperty("content")]
-    public string Content { get; set; }
-
-    [JsonProperty("reveals")]
-    public string Reveals { get; set; }
-
-    [JsonProperty("requires")]
-    public List<string> Requires {  get; set; }
-
-    [JsonProperty("state")]
-    public string State { get; set; }
-
-    [JsonProperty("methods")]
-    public List<string> Methods { get; set; }
-}
-
+// Testimony class removed

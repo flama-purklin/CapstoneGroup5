@@ -165,11 +165,11 @@ public class InitializationManager : MonoBehaviour
         int i = 0; 
         foreach (var kvp in characterData) {
             string characterName = kvp.Key;
-            MysteryCharacter charData = kvp.Value; 
-            if (string.IsNullOrEmpty(characterName) || charData == null) { Debug.LogWarning($"Skipping invalid character entry"); continue; }
+            MysteryCharacter charData = kvp.Value;
+            if (string.IsNullOrEmpty(characterName) || charData == null) { Debug.LogWarning($"Skipping invalid character entry for {characterName}"); continue; } // Reverted Core null check
             try {
-                string startCarName = charData.InitialLocation; 
-                if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location for '{characterName}'. Skipping."); continue; }
+                string startCarName = charData.InitialLocation; // Access InitialLocation directly again
+                if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location found for '{characterName}'. Skipping."); continue; }
                 Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
                 if (carTransform == null) { Debug.LogWarning($"Could not find car transform '{startCarName}' for '{characterName}'. Skipping."); continue; }
                 Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);

@@ -13,7 +13,7 @@ public class Mystery
     public MysteryCore Core { get; set; }
 
     //character data
-    [JsonProperty("characters")]
+    [JsonProperty("character_profiles")] // Updated JSON property name
     public Dictionary<string, MysteryCharacter> Characters { get; set; }
 
     //environmental data

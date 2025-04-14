@@ -1,115 +1,3 @@
-# Character Profile Integration Report
-
-## Problem Statement
-The mystery data model structure is being updated with significant changes to the character profiles section. This task focuses on implementing the **structural changes** to the JSON and C# code to ensure compatibility, allowing teammates to work with the new format. The integration of the new `revelations` field and a holistic prompt redesign (including function calling) will be handled in a **separate, subsequent task**.
-
----
-
-## Current State
-
-### JSON Structure
-- **characters**: A top-level object containing each character.
-  - **core**: Contains character gameplay data.
-  - **mind_engine**: Holds AI personality data.
-  - **initial_location**: A top-level property (currently outside **core**).
-- **key_testimonies**: Contains gameplay dialogue triggers (To be removed in Task 2).
-- Collections like **whereabouts** and **relationships** are arrays of key-value pairs.
-- **mystery_attributes**: Currently an array of strings (To be replaced in Task 2).
-
-### Parsing Implementation
-- **ParsingControl.cs** reads the JSON file and deserializes it into a `Mystery` object:
-  ```csharp
-  JsonConvert.DeserializeObject<Mystery>()
-  ```
-- Deserialized class definitions are found in:
-  - `CoreControl/MysteryParsing/Mystery.cs`
-  - `CoreControl/MysteryParsing/Characters/MysteryCharacter.cs` and related classes
-
-### Data Usage
-- `GameControl.GameController.coreMystery.Characters`: A dictionary used throughout the game.
-- **CharacterManager.cs**: Creates LLM AI characters using the data, passing `MysteryCharacter` objects to the prompt generator.
-- **InitializationManager.cs**: Uses `InitialLocation` to spawn NPCs.
-- **CharacterPromptGenerator.cs**: Receives `MysteryCharacter` objects and accesses their properties (`MysteryAttributes`, `Whereabouts`, `Relationships`, `KeyTestimonies`, etc.) to generate AI prompts. (Will be updated for structural changes in this task, but `KeyTestimonies` logic will be removed and `MysteryAttributes` logic kept temporarily).
-
----
-
-## Desired State
-
-### JSON Structure Changes (Task 1 Scope)
-1. Rename **characters** to **character_profiles**.
-2. Move **initial_location** inside the **core** object.
-3. Convert array-based collections (`whereabouts`, `relationships`) to dictionaries.
-4. Add new (currently unused) properties **appearance** and **voice**.
-5. Change **mystery_attributes** from an array of strings to an array of objects (`{"trait": "...", "evidence_id": "..."}`). *(Note: This field will be kept for Task 1, but replaced by `revelations` in Task 2)*.
-6. **Defer** introduction of `revelations` field (Handled in Task 2).
-
-### Implementation Strategy
-
-#### Parsing Changes
-1. **Update `Mystery.cs`:**
-   ```csharp
-   [JsonProperty("character_profiles")]
-   public Dictionary<string, MysteryCharacter> Characters { get; set; }
-   ```
-2. **Update `MysteryCharacter.cs`:**
-   - Move `InitialLocation` property into `CharacterCore`.
-   - Remove top-level `KeyTestimonies` property (logic to be removed from prompt generator in this task).
-   - Convert `Whereabouts` and `Relationships` properties in `CharacterCore` from `List<WrapperClass>` to `Dictionary<string, DataClass>`.
-   - Introduce new (empty) classes for `Appearance` and `Voice` and add corresponding properties to `CharacterCore`.
-   - Introduce new `MysteryAttribute` class (`trait`, `evidence_id`).
-3. **Update `Involvement` class (within `MysteryCharacter.cs`):**
-   - Change `MysteryAttributes` property type from `List<string>` to `List<MysteryAttribute>`.
-4. **Defer** creation of `Revelation` class (Handled in Task 2).
-
-#### Downstream Compatibility Checks
-- **CharacterManager.cs**: Passes `MysteryCharacter` objects directly to the prompt generator. No longer serializes intermediate JSON for this purpose. Still needs access to the `MysteryCharacter` objects from `GameControl`.
-- **InitializationManager.cs**:
-  - Relies on `charData.InitialLocation`. Needs update to `charData.Core.InitialLocation`.
-- **CharacterPromptGenerator.cs**:
-  - Must be updated to iterate over the new `Dictionary` structures for `Whereabouts` and `Relationships`.
-  - Must be updated to handle the new `MysteryAttribute` object structure (`List<MysteryAttribute>`) instead of `List<string>`. (The prompt logic using these attributes will remain for Task 1).
-  - The section generating prompt content from `KeyTestimonies` must be removed.
-  - **Defer** adding logic for `Revelations` (Handled in Task 2).
-
----
-
-## Key Differences Between JSON Files
-
-| Feature              | Current Structure                        | New Structure                                            |
-|----------------------|------------------------------------------|----------------------------------------------------------|
-| **Top-level**        | `"characters": {}`                       | `"character_profiles": {}`                               |
-| **initial_location** | `"initial_location": "value"`            | Inside `"core": {"initial_location": "value"}`           |
-| **whereabouts**      | `[{ "key": "1", "value": {} }]`          | `{"1": {}}`                                              |
-| **relationships**    | `[{ "key": "Name", "value": {} }]`       | `{"name_id": {}}`                                        |
-| **key_testimonies**  | Top-level object                         | *Removed* (Replaced by `revelations` in Task 2)          |
-| **mystery_attributes** | `["trait1"]`                          | `[{"trait": "trait1", "evidence_id": "id1"}]` (Kept for Task 1, replaced in Task 2) |
-| **revelations**      | *N/A*                                    | *Deferred to Task 2*                                     |
-| **appearance**       | *N/A*                                    | Added to `core` (empty object)                           |
-| **voice**            | *N/A*                                    | Added to `core` (empty object)                           |
-
----
-
-## Implementation Approach (Task 1 - Structural Adaptation)
-
-1.  **Update C# Data Models:** Modify classes in `Mystery.cs` and `MysteryCharacter.cs` (and define `MysteryAttribute`, `Appearance`, `Voice`) to match the new structure, *excluding* `Revelations`. Ensure `JsonProperty` attributes are correct.
-2.  **Update `InitializationManager.cs`:** Change `charData.InitialLocation` to `charData.Core.InitialLocation`.
-3.  **Update `CharacterPromptGenerator.cs`:**
-    *   Modify loops for `Whereabouts` and `Relationships` to work with `Dictionary`.
-    *   Update logic processing `MysteryAttributes` to handle `List<MysteryAttribute>` (extracting the `trait` string).
-    *   Remove the code block that processes `KeyTestimonies`.
-4.  **Replace JSON Data:** Overwrite the `characters` section in `Assets/StreamingAssets/MysteryStorage/transformed-mystery.json` with the new `character_profiles` section provided below (which excludes `revelations`).
-5.  **Testing:** Verify the game initializes without errors, NPCs spawn correctly, and basic dialogue can be initiated (even if prompt content isn't perfect yet). Ensure no exceptions occur during parsing or initialization related to the structural changes.
-
-*(Note: The holistic prompt redesign, integration of `revelations`, removal of `mystery_attributes` logic, and function calling will be handled in Task 2).*
-
----
-
-**Conclusion (Task 1)**
-This task focuses on adapting the C# code and JSON structure for compatibility. Completing these steps will provide a stable base for teammates and prepare for the subsequent prompt re-engineering task (Task 2).
-
-# Updated Character Section (Task 1 Scope - To Be Integrated Into transformed-mystery.json):
-*(Note: `revelations` field removed, `mystery_attributes` kept)*
-```json
 {
   "character_profiles": {
     "maxwell_porter": {
@@ -132,6 +20,22 @@ This task focuses on adapting the C# code and JSON structure for compatibility. 
               "evidence_id": "lead-maxwell-paranoia"
             }
           ]
+        },
+        "revelations": {
+          "maxwell_paranoia": {
+            "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
+            "reveals": "lead-maxwell-paranoia",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "victoria_investigation",
+            "accessibility": "medium"
+          },
+          "maxwell_sedative": {
+            "content": "Artists like me... we need steady hands. Special techniques, special... tools. Gregory understands.",
+            "reveals": "evidence-sedative",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "art_tools",
+            "accessibility": "hard"
+          }
         },
         "whereabouts": {
           "1": {
@@ -1670,5 +1574,4 @@ This task focuses on adapting the C# code and JSON structure for compatibility. 
       }
     }
   }
-} 
-```
+}
