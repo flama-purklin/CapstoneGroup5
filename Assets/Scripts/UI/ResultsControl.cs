@@ -1,9 +1,11 @@
+using TMPro;
 using UnityEngine;
 
 public class ResultsControl : MonoBehaviour
 {
     [SerializeField] GameObject winHolder;
     [SerializeField] GameObject lossHolder;
+    [SerializeField] TMP_Text confidenceScore;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,6 +21,9 @@ public class ResultsControl : MonoBehaviour
             winHolder.SetActive(false);
             lossHolder.SetActive(true);
         }
+
+        //set the confidence score
+        confidenceScore.text = GameControl.GameController.coreConstellation.ConfidenceScore().ToString("P");
     }
 
     // Update is called once per frame

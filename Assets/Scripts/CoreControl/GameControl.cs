@@ -25,6 +25,9 @@ public class GameControl : MonoBehaviour
     public Mystery coreMystery;
     public MysteryConstellation coreConstellation;
 
+    //PowerControl Ref
+    public PowerControl powerControl;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -61,6 +64,7 @@ public class GameControl : MonoBehaviour
         currentState = GameState.DEFAULT;
 
         //begin the power drain
-        GameObject.FindFirstObjectByType<PowerControl>().PowerInit();
+        powerControl = GameObject.FindFirstObjectByType<PowerControl>();
+        powerControl.PowerInit();
     }
 }
