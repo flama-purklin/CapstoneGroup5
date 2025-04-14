@@ -39,6 +39,28 @@ public class CharacterCore
 
     [JsonProperty("voice")] // Added
     public Voice Voice { get; set; }
+
+    [JsonProperty("revelations")] // Added for Task 2 Prep
+    public Dictionary<string, Revelation> Revelations { get; set; } 
+}
+
+// New Revelation class definition (Task 2 Prep)
+public class Revelation
+{
+    [JsonProperty("content")]
+    public string Content { get; set; }
+
+    [JsonProperty("reveals")]
+    public string Reveals { get; set; }
+
+    [JsonProperty("trigger_type")]
+    public string TriggerType { get; set; }
+
+    [JsonProperty("trigger_value")]
+    public string TriggerValue { get; set; }
+
+    [JsonProperty("accessibility")]
+    public string Accessibility { get; set; }
 }
 
 // New MysteryAttribute class definition
