@@ -14,4 +14,7 @@ public class MysteryMetadata
 
     [JsonProperty("title")]
     public string Title { get; set; }
+
+    [JsonProperty("context")]
+    public string Context { get; set; }
 }

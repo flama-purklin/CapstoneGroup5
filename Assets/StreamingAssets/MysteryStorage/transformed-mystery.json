@@ -3,7 +3,8 @@
     "id": "art_forgery_murder",
     "version": "1.1",
     "last_updated": "2025-04-05 04:43:00", 
-    "title": "Art Fraud on the Fashion Express"
+    "title": "Murder On The Fashion Express",
+    "context": "Victoria Blackwood was found DEAD in the lounge room bathroom! The Montreu Fashion Week has just wrapped up, and Blackwood, along with several other big names in the art and fashion industry, embarked on the secretive #MRT line, leaving Station No. 5 in the Montreu metropolitan area, on her way back to Meidell where she operated her magazine from. But, now she's hanging by her neck from the tubes passing through the ceiling of the small cublicle, the sink still running. With Victoria picking up fights across the entire industry, foul play is NOT out of the question..." 
   },
   
   "core": {
@@ -31,19 +32,33 @@
           "type": "Paranoid killer manipulated by another"
         },
         "revelations": {
-          "maxwell_paranoia": {
-            "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
-            "reveals": "lead-maxwell-paranoia",
+          "maxwell_deflects_gideon_topic": {
+            "content": "That man? Marsh? Just... observing. Makes one uneasy... when people watch so intently.",
+            "reveals": "lead-investigator-purpose",
             "trigger_type": "conversation_topic",
-            "trigger_value": "victoria_investigation",
+            "trigger_value": "Asking about Gideon Marsh or being watched",
             "accessibility": "medium"
           },
-          "maxwell_sedative": {
-            "content": "Artists like me... we need steady hands. Special techniques, special... tools. Gregory understands.",
-            "reveals": "evidence-sedative",
+          "maxwell_hints_sedative_knowledge": {
+            "content": "Steady hands... critical for detail. Certain... substances... artists discuss them. Theoretical aids for precision.",
+            "reveals": "testimony-sedative-art-use", 
             "trigger_type": "evidence_presentation",
-            "trigger_value": "art_tools",
+            "trigger_value": "evidence-sedative", 
             "accessibility": "hard"
+          },
+          "maxwell_downplays_gregory_meeting": {
+            "content": "Mr. Crowe? We spoke briefly. About art, naturally. The Pylsian masters... Nothing significant.",
+            "reveals": "lead-two-men", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about his meeting with Gregory before the murder",
+            "accessibility": "medium"
+          },
+          "maxwell_redirects_disposal_query": {
+            "content": "Waste? The train staff handles all that. Kitchen car, I suppose. They have procedures.",
+            "reveals": "lead-check-incinerator", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about medical waste or syringe disposal",
+            "accessibility": "medium"
           }
         },
         "whereabouts": {
@@ -77,18 +92,32 @@
           "role": "Manipulator", "type": "Mastermind who influenced the murderer"
         },
         "revelations": {
-          "gregory_alibi": {
-            "content": "At the time in question, I was in the dining car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
-            "reveals": "lead-gregory-alibi",
+          "gregory_establishes_alibi_via_expertise": {
+            "content": "Tragic. Fortuitously, I was preoccupied discussing Pylsian authentication – binding agents! – in the dining car during the critical time. Colleagues can attest.",
+            "reveals": "testimony-gregory-forgery-interest", 
             "trigger_type": "conversation_topic",
-            "trigger_value": "murder_time",
+            "trigger_value": "Asking about his whereabouts during the murder",
+            "accessibility": "easy"
+          },
+          "gregory_critiques_note_as_expert": {
+            "content": "Hmm, it *mimics* Victoria's style, but perhaps *too* neat? Genuine distress often affects penmanship. Interesting.",
+            "reveals": "lead-suicide-question", 
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "evidence-suicide-note",
             "accessibility": "medium"
           },
-          "gregory_forgery_knowledge": {
-            "content": "In my extensive work on forgery detection, I've found that the key is in the binding agents. Modern forgers never get the chemical composition quite right.",
-            "reveals": "lead-forgery-techniques",
-            "trigger_type": "evidence_presentation",
-            "trigger_value": "art_authentication",
+          "gregory_dismisses_maxwell_reliability": {
+            "content": "Maxwell? Brilliant artist, undeniably. But his nerves... his perceptions can be somewhat... heightened. I wouldn't rely solely on his account.",
+            "reveals": "deduction-maxwell-paranoia", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Mentioning Maxwell acting strangely or accusingly",
+            "accessibility": "medium"
+          },
+          "gregory_denies_specific_manipulation": {
+            "content": "Me, mention photos? Good heavens, no. A misunderstanding on his part. I merely noted Victoria speaking with Mr. Marsh. Maxwell does get easily flustered.",
+            "reveals": "deduction-maxwell-paranoia", 
+            "trigger_type": "conversation_topic", 
+            "trigger_value": "Accusing Gregory of manipulating Maxwell about photos",
             "accessibility": "hard"
           }
         },
@@ -122,7 +151,7 @@
         "involvement": {
           "role": "Victim", "type": "Murder victim staged as suicide"
         },
-        "revelations": {},
+        "revelations": {}, 
         "whereabouts": {
           "1": { "circumstance": "first_class_car", "action": "boarding and settling in", "events": ["Making final calls about upcoming magazine features"] },
           "2": { "circumstance": "first_class_car", "action": "reviewing magazine layouts", "events": ["Preparing notes for confrontation with Penelope"] },
@@ -153,12 +182,33 @@
           "role": "Red Herring", "type": "Former authenticator with damaged reputation"
         },
         "revelations": {
-          "eleanor_maxwell_skills": {
-            "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",
+          "eleanor_confirms_maxwell_artistic_skill": {
+            "content": "Maxwell Porter's skill is... undeniable. His mimicry of Pylsian brushwork is remarkable. Unsettlingly precise.",
             "reveals": "testimony-maxwell-artistic-ability",
             "trigger_type": "conversation_topic",
-            "trigger_value": "maxwell_introduction",
+            "trigger_value": "Asking about Maxwell Porter's art or skills",
             "accessibility": "medium"
+          },
+          "eleanor_reveals_gregory_forgery_interest": {
+            "content": "Mr. Crowe has taken a keen interest in forgery detection since I joined. We discuss authentication weaknesses often. He has... deep understanding.",
+            "reveals": "testimony-gregory-forgery-interest",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about Gregory Crowe or art forgery",
+            "accessibility": "medium"
+          },
+          "eleanor_analyzes_note_quality": {
+            "content": "This is very close to Victoria's hand. But the consistency... under duress, one expects variation. This feels... studied. Almost *too* perfect.",
+            "reveals": "deduction-forged-note",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "evidence-suicide-note",
+            "accessibility": "hard"
+          },
+          "eleanor_expresses_mixed_feelings": {
+            "content": "Victoria... didn't deserve this. She distanced herself after the scandal... understandable. Working for Gregory now feels... complicated.",
+            "reveals": "lead-forgery-connection", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about her relationship with Victoria or Gregory",
+            "accessibility": "easy"
           }
         },
         "whereabouts": {
@@ -192,12 +242,26 @@
           "role": "Witness", "type": "Uninterested participant who observed key moments"
         },
         "revelations": {
-          "nova_sighting": {
-            "content": "Yeah, I saw two blokes enter the lounge car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.",
+          "nova_describes_two_men_sighting": {
+            "content": "Yeah, saw two blokes head into the lounge car right before... well, before. Crowe, the dealer. And some twitchy artist type. Got deadlines, didn't care.",
             "reveals": "testimony-two-men",
             "trigger_type": "conversation_topic",
-            "trigger_value": "murder_scene",
+            "trigger_value": "Asking about observations near the lounge car before the incident",
             "accessibility": "medium"
+          },
+          "nova_confirms_victoria_threat_dismissively": {
+            "content": "That old hag? Yeah, threatened rubbish about me and Pen-- Ms. Valor. Headlines. Anything for attention. Bloody desperate.",
+            "reveals": "testimony-victoria-threats",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "evidence-financial-records",
+            "accessibility": "medium"
+          },
+          "nova_reacts_to_relationship_leverage_aggressively": {
+            "content": "Fuck off, mate. Ours is none of your bloody business. Trying blackmail? Piss off.",
+            "reveals": "testimony-victoria-threats", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Accusing or directly mentioning her relationship with Penelope",
+            "accessibility": "hard"
           }
         },
         "whereabouts": {
@@ -231,19 +295,26 @@
           "role": "Suspect", "type": "Rival with strong motive"
         },
         "revelations": {
-          "penelope_argument": {
-            "content": "Yes, Victoria and I had words in the lounge car. It was a professional disagreement about designer exclusivity contracts, nothing more.",
+          "penelope_downplays_argument": {
+            "content": "Victoria and I had words. Industry tension about designers. Nothing more, darling.",
             "reveals": "testimony-victoria-penelope-argument",
             "trigger_type": "conversation_topic",
-            "trigger_value": "victoria_argument",
+            "trigger_value": "Asking about her argument with Victoria",
             "accessibility": "easy"
           },
-          "penelope_relationship": {
-            "content": "Victoria threatened to expose my relationship with Nova as some kind of industry scandal. She was desperate for attention, trying to save her failing magazine.",
+          "penelope_reveals_victoria_threat_defensively": {
+            "content": "Victoria was spiraling. Threatened personal attacks... about my team, about Nova. Lashing out because Couture was sinking.",
             "reveals": "testimony-victoria-threats",
             "trigger_type": "evidence_presentation",
-            "trigger_value": "nova_relationship_hint",
+            "trigger_value": "evidence-financial-records",
             "accessibility": "hard"
+          },
+          "penelope_asserts_victoria_not_suicidal": {
+            "content": "Suicide? Victoria? Absolutely not. She was a fighter. Cornered, yes. Desperate, perhaps. But never that.",
+            "reveals": "lead-suicide-question",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking if Victoria seemed suicidal",
+            "accessibility": "medium"
           }
         },
         "whereabouts": {
@@ -277,12 +348,26 @@
           "role": "Investigator", "type": "Private detective with key information"
         },
         "revelations": {
-          "gideon_investigation": {
-            "content": "I was hired to investigate Victoria's connections to art fraud, but not by her. Mr. Seol engaged my services without Ms. Valor's knowledge.",
-            "reveals": "testimony-gideon-hired",
+          "gideon_states_official_purpose": {
+            "content": "My purpose is professional. Investigating potential art fraud connections related to Ms. Blackwood's circle.",
+            "reveals": "testimony-gideon-role",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about his purpose on the train",
+            "accessibility": "easy"
+          },
+          "gideon_reveals_client_when_pressed": {
+            "content": "My client requires discretion. However... It was Mr. Timmy Seol, acting independently.",
+            "reveals": "testimony-timmy-hired-gideon", 
             "trigger_type": "evidence_presentation",
-            "trigger_value": "timmy_connection",
+            "trigger_value": "testimony-timmy-hired-gideon", 
             "accessibility": "hard"
+          },
+          "gideon_shares_observation_maxwell_fear": {
+            "content": "Mr. Porter reacted... strongly when our paths crossed. Visible apprehension. Unusual.",
+            "reveals": "lead-maxwell-paranoia",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about Maxwell Porter's behavior",
+            "accessibility": "medium"
           }
         },
         "whereabouts": {
@@ -316,11 +401,18 @@
           "role": "Witness", "type": "Opportunistic observer with evidence"
         },
         "revelations": {
-          "mira_photos": {
-            "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",
-            "reveals": "barrier-camera",
+          "mira_offers_photos_for_info": {
+            "content": "Photos? Oh, I have *plenty*. Caught the argument, faces near the lounge... But info isn't free. What exclusive can *you* offer *me*?",
+            "reveals": "barrier-camera", 
             "trigger_type": "conversation_topic",
-            "trigger_value": "murder_evidence",
+            "trigger_value": "Asking about photos or evidence she might have",
+            "accessibility": "easy"
+          },
+          "mira_testifies_photo_content": {
+            "content": "Okay, look - timestamped. Vicky/Penny arguing. Then, Crowe and the twitchy artist heading into the lounge pre-scream. And *this*... blurry figure leaving.",
+            "reveals": "testimony-mira-photos-confirm-two-men", 
+            "trigger_type": "evidence_presentation", 
+            "trigger_value": "barrier-camera", 
             "accessibility": "medium"
           }
         },
@@ -355,12 +447,26 @@
           "role": "Catalyst", "type": "Unwitting instigator of events"
         },
         "revelations": {
-          "timmy_hired_gideon": {
-            "content": "Please don't tell Penelope, but I hired Mr. Marsh to investigate Victoria! I thought if we could prove she was involved in those art forgeries, it would protect Penelope's magazine from Victoria's threats.",
+          "timmy_confesses_hiring_gideon": {
+            "content": "*Whispering* Please don't tell Ms. Valor! Yes, I hired Mr. Marsh. Victoria was threatening her... I thought if he could find dirt on Victoria... about forgery... it would protect Penelope!",
             "reveals": "testimony-timmy-hired-gideon",
             "trigger_type": "evidence_presentation",
-            "trigger_value": "gideon_role",
+            "trigger_value": "testimony-gideon-role", 
             "accessibility": "medium"
+          },
+          "timmy_gossips_about_penelope_nova_threat": {
+            "content": "Ms. Valor and Nova? Oh, incredibly close! Penelope is *so* protective. Victoria was horrid, threatening them personally...",
+            "reveals": "testimony-victoria-threats",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about Penelope and Nova's relationship",
+            "accessibility": "medium"
+          },
+          "timmy_reports_seeing_syringe": {
+            "content": "Oh gosh, earlier I bumped into Mr. Porter! Spilled coffee... he seemed so jumpy. And I'm almost sure I saw something shiny... like a syringe needle... in his pocket! Maybe?",
+            "reveals": "testimony-timmy-saw-syringe", 
+            "trigger_type": "conversation_topic",
+            "trigger_value": "Asking about Maxwell Porter or seeing anything unusual",
+            "accessibility": "hard"
           }
         },
         "whereabouts": {
@@ -742,6 +848,63 @@
         "content": "Maxwell killed Victoria due to paranoia deliberately stoked by Gregory",
         "discovered": false,
         "characters": ["maxwell_porter", "gregory_crowe", "victoria_blackwood"]
+      },
+      "testimony-sedative-art-use": {
+        "type": "TESTIMONY",
+        "category": "MAIN_MYSTERY",
+        "content": "Maxwell hinted that artists might use sedatives for precision/steady hands",
+        "discovered": false,
+        "characters": ["maxwell_porter"]
+      },
+      "lead-check-incinerator": {
+        "type": "LEAD",
+        "category": "MAIN_MYSTERY",
+        "content": "Should the kitchen incinerator be checked for disposed medical items?",
+        "discovered": false,
+        "location": "kitchen_car", 
+        "characters": ["maxwell_porter"]
+      },
+      "testimony-gregory-manipulation-photos": {
+        "type": "TESTIMONY",
+        "category": "MAIN_MYSTERY",
+        "content": "Maxwell claims Gregory told him Victoria was showing art photos to the investigator",
+        "discovered": false,
+        "characters": ["maxwell_porter", "gregory_crowe"]
+      },
+       "testimony-timmy-saw-syringe": {
+        "type": "TESTIMONY",
+        "category": "MAIN_MYSTERY",
+        "content": "Timmy thinks he saw something like a syringe needle in Maxwell's pocket after spilling coffee on him",
+        "discovered": false,
+        "characters": ["timmy_seol", "maxwell_porter"]
+      },
+      "testimony-mira-photos-confirm-two-men": {
+        "type": "TESTIMONY",
+        "category": "MAIN_MYSTERY",
+        "content": "Mira's photos confirm Gregory and Maxwell entered the lounge car together shortly before the murder was discovered",
+        "discovered": false,
+        "characters": ["mira_sanchez", "gregory_crowe", "maxwell_porter"]
+      },
+      "lead-maxwell-paranoia": {
+          "type": "LEAD",
+          "category": "MAIN_MYSTERY",
+          "content": "Does Maxwell have reason to be paranoid, or is he misinterpreting events?",
+          "discovered": false,
+          "characters": ["maxwell_porter", "gideon_marsh", "gregory_crowe"]
+      },
+      "lead-gregory-downplays-maxwell": {
+          "type": "LEAD",
+          "category": "MAIN_MYSTERY",
+          "content": "Is Gregory telling the truth about Maxwell's instability, or is he trying to discredit him?",
+          "discovered": false,
+          "characters": ["gregory_crowe", "maxwell_porter"]
+      },
+      "testimony-gregory-claims-maxwell-unstable": {
+          "type": "TESTIMONY",
+          "category": "MAIN_MYSTERY",
+          "content": "Gregory claims Maxwell is unstable and prone to misinterpreting things",
+          "discovered": false,
+          "characters": ["gregory_crowe", "maxwell_porter"]
       }
     },
     
@@ -860,6 +1023,51 @@
         "source": "deduction-maxwell-paranoia",
         "target": "revelation-murder-solution",
         "type": "CONFIRMS"
+      },
+      {
+        "source": "evidence-sedative", 
+        "target": "testimony-sedative-art-use", 
+        "type": "IMPLIES" 
+      },
+       { 
+        "source": "testimony-sedative-art-use", 
+        "target": "lead-forgery-connection", 
+        "type": "SUGGESTS" 
+      },
+      { 
+        "source": "lead-check-incinerator", 
+        "target": "evidence-incinerator-ash", 
+        "type": "REVEALS" 
+      },
+       { 
+        "source": "testimony-gregory-manipulation-photos", 
+        "target": "deduction-maxwell-paranoia", 
+        "type": "SUPPORTS" 
+      },
+       { 
+        "source": "testimony-timmy-saw-syringe", 
+        "target": "evidence-sedative", 
+        "type": "SUGGESTS" 
+      },
+       { 
+        "source": "testimony-mira-photos-confirm-two-men", 
+        "target": "testimony-two-men", 
+        "type": "CONFIRMS" 
+      },
+      {
+        "source": "testimony-gregory-claims-maxwell-unstable",
+        "target": "deduction-maxwell-paranoia",
+        "type": "CONFIRMS" 
+      },
+      {
+        "source": "lead-gregory-downplays-maxwell",
+        "target": "lead-forgery-connection",
+        "type": "SUGGESTS" 
+      },
+      {
+          "source": "gideon_shares_observation_maxwell_fear", 
+          "target": "lead-maxwell-paranoia",
+          "type": "SUPPORTS"
       }
     ],
     

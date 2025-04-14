@@ -137,8 +137,10 @@ public class CharacterManager : MonoBehaviour
             character.presencePenalty = presencePenalty;
             character.frequencyPenalty = frequencyPenalty;
             // string jsonContent = JsonConvert.SerializeObject(mysteryCharacterData, Formatting.Indented); // Removed intermediate serialization
-            // Pass the object directly
-            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(mysteryCharacterData, character); 
+            // Pass the object directly with mystery context and title
+            string mysteryContext = GameControl.GameController.coreMystery.Metadata?.Context ?? "Unknown context";
+            string mysteryTitle = GameControl.GameController.coreMystery.Metadata?.Title ?? "Unknown mystery";
+            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(mysteryCharacterData, character, mysteryContext, mysteryTitle); 
             if (string.IsNullOrEmpty(systemPrompt)) { Debug.LogError($"Failed prompt gen for {characterName}"); Destroy(charObj); yield break; }
             promptCache[characterName] = systemPrompt; 
             character.SetPrompt(systemPrompt, true); 

@@ -2947,7 +2947,7 @@ MonoBehaviour:
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
-  temperature: 0.3
+  temperature: 0.4
   topK: 55
   topP: 0.95
   repeatPenalty: 1
@@ -4484,7 +4484,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 7.5
+  near clip plane: 6.8
   far clip plane: 1000
   field of view: 30
   orthographic: 0
@@ -8005,6 +8005,10 @@ PrefabInstance:
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
       value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
+      objectReference: {fileID: 0}
+    - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
+      propertyPath: batchSize
+      value: 2048
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
