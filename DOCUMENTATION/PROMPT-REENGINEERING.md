@@ -8,9 +8,9 @@ This task focuses on evolving the character interaction system by:
 4.  Incorporating function calling capabilities into the prompt structure, enabling characters to call `end_conversation` and `announce_evidence_revelation` as defined in `FUNCTION-CALLING.md`.
 
 ## Context
-- The core JSON structure (`character_profiles`, dictionaries for whereabouts/relationships, `initial_location` placement) and C# code were previously updated for compatibility.
-- `mystery_attributes` will now be fully replaced by `revelations`.
-- The prompt generation logic requires significant updates to leverage `revelations` and support function calls.
+- The core JSON structure (`character_profiles`, dictionaries for whereabouts/relationships, `initial_location` placement) and C# code have been updated for compatibility.
+- The `revelations` field and corresponding C# classes/properties have been added to the data models and JSON file, alongside the existing `mystery_attributes`.
+- This task focuses on removing `mystery_attributes` and redesigning the prompt generation logic to leverage `revelations` and support function calls.
 
 ## `revelations` Data Structure
 This field should be added inside the `core` object for each character profile in `transformed-mystery.json`. The `mystery_attributes` field should be removed concurrently.
@@ -168,14 +168,13 @@ Refer to `DOCUMENTATION/FUNCTION-CALLING.md` for the specific function definitio
 
 ## Implementation Steps
 
-1.  **Update JSON:** Add the `revelations` field (using the data above) to each character profile within `character_profiles` in `Assets/StreamingAssets/MysteryStorage/transformed-mystery.json`. Remove the `mystery_attributes` field from each character's `involvement` object.
+1.  **Update JSON:** Remove the `mystery_attributes` field from each character's `involvement` object within `Assets/StreamingAssets/MysteryStorage/transformed-mystery.json`. (The `revelations` field was added at the end of the previous task).
 2.  **Update C# Data Models:**
-    *   Define a `Revelation` class (and any nested classes needed for triggers, etc.) in `MysteryCharacter.cs`.
-    *   Add a `public Dictionary<string, Revelation> Revelations { get; set; }` property to the `CharacterCore` class.
-    *   Remove the `MysteryAttributes` property from the `Involvement` class. Remove the `MysteryAttribute` class definition.
+    *   Remove the `MysteryAttributes` property from the `Involvement` class in `Assets/Scripts/CoreControl/MysteryParsing/Characters/MysteryCharacter.cs`.
+    *   Remove the `MysteryAttribute` class definition from `Assets/Scripts/CoreControl/MysteryParsing/Characters/MysteryCharacter.cs`.
 3.  **Redesign Prompt Generation (`CharacterPromptGenerator.cs`):**
     *   Remove the logic that processes `mystery_attributes`.
-    *   Collaboratively design and implement new logic to incorporate `revelations` data meaningfully into the system prompt. Consider how trigger types, accessibility, and revealed nodes should influence the prompt.
+    *   Collaboratively design (interactive brainstorming) and implement new logic to incorporate `revelations` data meaningfully into the system prompt. Consider how trigger types, accessibility, and revealed nodes should influence the prompt.
     *   Integrate the function calling definitions from `FUNCTION-CALLING.md` into the prompt structure.
     *   Perform a holistic review and refinement of the entire prompt generation process based on the new data and function calling requirements.
 4.  **Update Function Calling Handler (If necessary):** Ensure the system receiving function calls (likely within LLMUnity or related scripts) can handle `end_conversation` and `announce_evidence_revelation`. *(This might be outside the scope of prompt generation but needs consideration)*.

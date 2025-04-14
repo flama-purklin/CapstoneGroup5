@@ -35,6 +35,22 @@
             { "trait": "Suffering from paranoid mental illness", "evidence_id": "lead-maxwell-paranoia" }
           ]
         },
+        "revelations": {
+          "maxwell_paranoia": {
+            "content": "I can feel them watching me... Victoria hired them. That investigator taking notes... they're closing in.",
+            "reveals": "lead-maxwell-paranoia",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "victoria_investigation",
+            "accessibility": "medium"
+          },
+          "maxwell_sedative": {
+            "content": "Artists like me... we need steady hands. Special techniques, special... tools. Gregory understands.",
+            "reveals": "evidence-sedative",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "art_tools",
+            "accessibility": "hard"
+          }
+        },
         "whereabouts": {
           "1": { "circumstance": "second_class_car_1", "action": "nervously organizing art supplies", "events": ["Spoke briefly with Gregory who mentioned 'Victoria's investigator'"] },
           "2": { "circumstance": "business_class_car_1", "action": "observing passengers while sketching", "events": ["Noticed Gideon taking notes and watching Victoria"] },
@@ -69,6 +85,22 @@
             { "trait": "Maintains public anti-fraud persona", "evidence_id": "testimony-gregory-forgery-interest" },
             { "trait": "Indirectly manipulated Maxwell to kill Victoria", "evidence_id": "deduction-maxwell-paranoia" }
           ]
+        },
+        "revelations": {
+          "gregory_alibi": {
+            "content": "At the time in question, I was in the dining car discussing authentication techniques with some colleagues. Several passengers can confirm my whereabouts.",
+            "reveals": "lead-gregory-alibi",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "murder_time",
+            "accessibility": "medium"
+          },
+          "gregory_forgery_knowledge": {
+            "content": "In my extensive work on forgery detection, I've found that the key is in the binding agents. Modern forgers never get the chemical composition quite right.",
+            "reveals": "lead-forgery-techniques",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "art_authentication",
+            "accessibility": "hard"
+          }
         },
         "whereabouts": {
           "1": { "circumstance": "first_class_car", "action": "networking with art collectors", "events": ["Noticed Gideon observing Victoria", "Planted seeds of paranoia with Maxwell"] },
@@ -105,6 +137,7 @@
             { "trait": "Threatened to expose Penelope and Nova's relationship", "evidence_id": "testimony-victoria-threats" }
           ]
         },
+        "revelations": {},
         "whereabouts": {
           "1": { "circumstance": "first_class_car", "action": "boarding and settling in", "events": ["Making final calls about upcoming magazine features"] },
           "2": { "circumstance": "first_class_car", "action": "reviewing magazine layouts", "events": ["Preparing notes for confrontation with Penelope"] },
@@ -138,6 +171,15 @@
             { "trait": "Currently works for Gregory's gallery", "evidence_id": "testimony-gregory-forgery-interest" },
             { "trait": "Can identify Maxwell's artistic style", "evidence_id": "testimony-maxwell-artistic-ability" }
           ]
+        },
+        "revelations": {
+          "eleanor_maxwell_skills": {
+            "content": "Maxwell has an extraordinary eye for detail and technical skill. His ability to mimic artistic styles is... well, it's remarkable. I've seen him perfectly recreate a Monet brushstroke technique during a demonstration at Gregory's gallery.",
+            "reveals": "testimony-maxwell-artistic-ability",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "maxwell_introduction",
+            "accessibility": "medium"
+          }
         },
         "whereabouts": {
           "1": { "circumstance": "platform", "action": "reviewing art catalog from Montreu exhibition", "events": ["Briefly acknowledged Victoria with professional courtesy"] },
@@ -174,6 +216,15 @@
             { "trait": "In a secret relationship with Penelope that Victoria threatened to expose", "evidence_id": "testimony-victoria-threats" }
           ]
         },
+        "revelations": {
+          "nova_sighting": {
+            "content": "Yeah, I saw two blokes enter the lounge car right before I found the blood. One was that art dealer with the ridiculous pocket square, the other was some jumpy artist type. Didn't think much of it at the time.",
+            "reveals": "testimony-two-men",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "murder_scene",
+            "accessibility": "medium"
+          }
+        },
         "whereabouts": {
           "1": { "circumstance": "first_class_car", "action": "working on fashion article", "events": ["Reviewing Montreu Fashion Week notes"] },
           "2": { "circumstance": "first_class_car", "action": "working on fashion article", "events": ["Continued reviewing Montreu Fashion Week notes"] },
@@ -208,6 +259,22 @@
             { "trait": "Victoria was threatening to expose her relationship with Nova", "evidence_id": "testimony-victoria-threats" },
             { "trait": "Last person to publicly interact with victim", "evidence_id": "testimony-victoria-penelope-argument" }
           ]
+        },
+        "revelations": {
+          "penelope_argument": {
+            "content": "Yes, Victoria and I had words in the lounge car. It was a professional disagreement about designer exclusivity contracts, nothing more.",
+            "reveals": "testimony-victoria-penelope-argument",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "victoria_argument",
+            "accessibility": "easy"
+          },
+          "penelope_relationship": {
+            "content": "Victoria threatened to expose my relationship with Nova as some kind of industry scandal. She was desperate for attention, trying to save her failing magazine.",
+            "reveals": "testimony-victoria-threats",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "nova_relationship_hint",
+            "accessibility": "hard"
+          }
         },
         "whereabouts": {
           "1": { "circumstance": "platform", "action": "finalizing calls about designer contracts", "events": ["Noticed Victoria watching her interactions"] },
@@ -244,6 +311,15 @@
             { "trait": "Has gathered evidence connecting Gregory to forgeries", "evidence_id": "testimony-gideon-role" }
           ]
         },
+        "revelations": {
+          "gideon_investigation": {
+            "content": "I was hired to investigate Victoria's connections to art fraud, but not by her. Mr. Seol engaged my services without Ms. Valor's knowledge.",
+            "reveals": "testimony-gideon-hired",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "timmy_connection",
+            "accessibility": "hard"
+          }
+        },
         "whereabouts": {
           "1": { "circumstance": "platform", "action": "observing passengers boarding", "events": ["Noted Victoria and Gregory's brief interaction", "Received final instructions from Timmy"] },
           "2": { "circumstance": "first_class_car", "action": "shadowing Victoria discreetly", "events": ["Observed Timmy's nervous behavior around Penelope"] },
@@ -279,6 +355,15 @@
             { "trait": "Seeking sensational story rather than truth", "evidence_id": "barrier-camera" }
           ]
         },
+        "revelations": {
+          "mira_photos": {
+            "content": "I might have some... relevant photos on my camera. But this is exclusive material for my story. What's it worth to you?",
+            "reveals": "barrier-camera",
+            "trigger_type": "conversation_topic",
+            "trigger_value": "murder_evidence",
+            "accessibility": "medium"
+          }
+        },
         "whereabouts": {
           "1": { "circumstance": "platform", "action": "taking pictures of passengers and train", "events": ["Captured Victoria and Gregory having a tense conversation"] },
           "2": { "circumstance": "various train cars", "action": "collecting ambient footage and photos", "events": ["Nearly collided with Timmy who was rushing to Penelope"] },
@@ -313,6 +398,15 @@
             { "trait": "Created the misunderstanding that led to murder", "evidence_id": "deduction-maxwell-paranoia" },
             { "trait": "Collects gossip that reveals key relationships", "evidence_id": "nova_relationship_hint" }
           ]
+        },
+        "revelations": {
+          "timmy_hired_gideon": {
+            "content": "Please don't tell Penelope, but I hired Mr. Marsh to investigate Victoria! I thought if we could prove she was involved in those art forgeries, it would protect Penelope's magazine from Victoria's threats.",
+            "reveals": "testimony-timmy-hired-gideon",
+            "trigger_type": "evidence_presentation",
+            "trigger_value": "gideon_role",
+            "accessibility": "medium"
+          }
         },
         "whereabouts": {
           "1": { "circumstance": "platform", "action": "fumbling with Penelope's paperwork", "events": ["Briefly spoke with Gideon to confirm investigation plans"] },
