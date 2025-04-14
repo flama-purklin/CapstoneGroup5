@@ -13,7 +13,7 @@ public class LLMDialogueManager : BaseDialogueManager
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private GameObject inputBox;
     [SerializeField] private Button submitButton;
-    [SerializeField] private new DialogueControl dialogueControl;
+    [SerializeField] private DialogueControl dialogueControlRef;
 
     protected override void SetupInputHandlers()
     {
@@ -37,7 +37,7 @@ public class LLMDialogueManager : BaseDialogueManager
 
     public void RegisterDialogueControl(DialogueControl control)
     {
-        this.dialogueControl = control;
+        this.dialogueControlRef = control;
         base.dialogueControl = control; // Also set it in the base class
     }
 
@@ -70,9 +70,9 @@ public class LLMDialogueManager : BaseDialogueManager
             npcDialogueText.text = text;
         }
         */
-        if (dialogueControl != null)
+        if (dialogueControlRef != null)
         {
-            dialogueControl.DisplayNPCDialogueStreaming(text);
+            dialogueControlRef.DisplayNPCDialogueStreaming(text);
         }
         else if (npcDialogueText != null)
         {
@@ -82,11 +82,11 @@ public class LLMDialogueManager : BaseDialogueManager
     
     protected override void ProcessFunctionCall(string functionCall)
     {
-        // Use our direct reference to dialogueControl if available, otherwise fall back to base implementation
-        if (functionCall.StartsWith("stop_conversation") && dialogueControl != null)
+        // Use our direct reference to dialogueControlRef if available, otherwise fall back to base implementation
+        if (functionCall.StartsWith("stop_conversation") && dialogueControlRef != null)
         {
             Debug.Log("Character requested to end conversation (using direct reference)");
-            dialogueControl.Deactivate();
+            dialogueControlRef.Deactivate();
         }
         else
         {
