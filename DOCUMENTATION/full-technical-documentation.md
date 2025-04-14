@@ -167,9 +167,9 @@ Characters are managed through multiple components:
     *   Handles `OnDestroy` cleanup, deleting `.json` history files and optionally `.cache` files based on `enableLLMCache`.
 
 3.  **Character Prompt Generation (`CharacterPromptGenerator.cs`)**:
-    *   Static class used by `CharacterManager` to generate system prompts for the LLM based on character data (passed as serialized JSON).
-    *   Takes the `MysteryCharacter` object (from the in-memory dictionary, serialized back to JSON temporarily by `CharacterManager`) as input to generate the prompt.
-    *   Converts character data to structured prompts defining behavior and dialogue patterns.
+    *   Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
+    *   Takes the `MysteryCharacter` object (retrieved by `CharacterManager` from the `GameControl.coreMystery` dictionary) directly as input to generate the prompt. (Intermediate JSON serialization step removed).
+    *   Converts character data properties to structured prompts defining behavior and dialogue patterns.
 
 4.  **Simple Proximity Warmup (`SimpleProximityWarmup.cs`)**:
     *   Monitors player distance to active NPCs.
@@ -274,7 +274,13 @@ The player system handles player movement and interactions:
 
 ## Data Flow
 
-The project's data flow follows this pattern:
+The game utilizes a centralized "black-box" approach for mystery data. At initialization, `ParsingControl.cs` reads the single `transformed-mystery.json` file. This JSON is deserialized using `Newtonsoft.Json` into a structured C# object instance of the `Mystery` class, which acts as the central blueprint. This `Mystery` object, containing nested specialized classes (e.g., `MysteryCharacter`, `MysteryEnvironment`, `MysteryConstellation`) representing the data "layers", is stored in the `GameControl.GameController.coreMystery` singleton variable. Subsequent systems access this single object instance: `InitializationManager` orchestrates setup, `CharacterManager` reads character data to configure `LLMCharacter` components (using `CharacterPromptGenerator` which now reads object properties directly), `TrainLayoutManager` reads environment data to build the scene, and gameplay systems like Minigames interact with the `MysteryConstellation` (via `GameControl.coreConstellation`) to update the investigation state. This ensures data consistency after the initial parse.
+
+**Current Gaps & Areas for Improvement:**
+*   **Unused JSON Data:** Sections like `Mystery.Core` (victim, perpetrator details) and `Mystery.Metadata` appear to be parsed but are not currently used by downstream systems. Fields within `MysteryCharacter` like potential `Appearance` or `Voice` data are also likely unused.
+*   **Hardcoded Elements:** Some gameplay elements, such as the placement and specific node linkage of `EvidenceObj` and `LuggageObj` prefabs in the scene, seem to be configured manually in the editor rather than being fully defined and instantiated based on data within the `Mystery.Environment` or `Mystery.Constellation` sections of the JSON. Integrating these definitions into the JSON would enhance the black-box flexibility.
+
+The project's specific data flow follows this pattern:
 
 1. **Mystery Parsing**:
    ```
@@ -477,8 +483,9 @@ The project has the following key dependencies:
 
 3. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
    - Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
-   - Handles different character data formats.
-   - Structures prompts for optimal LLM behavior.
+   - Takes `MysteryCharacter` objects directly as input (no intermediate JSON).
+   - Accesses properties of the `MysteryCharacter` object model to structure prompts for optimal LLM behavior.
+   - (Handles only the current object format, logic for older formats removed).
 
 4. **LLMCharacter.cs** (from LLMUnity):
    - Interfaces with LLM system.

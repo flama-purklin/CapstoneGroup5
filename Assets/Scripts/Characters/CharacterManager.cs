@@ -136,8 +136,9 @@ public class CharacterManager : MonoBehaviour
             character.repeatPenalty = repeatPenalty;
             character.presencePenalty = presencePenalty;
             character.frequencyPenalty = frequencyPenalty;
-            string jsonContent = JsonConvert.SerializeObject(mysteryCharacterData, Formatting.Indented);
-            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(jsonContent, character); 
+            // string jsonContent = JsonConvert.SerializeObject(mysteryCharacterData, Formatting.Indented); // Removed intermediate serialization
+            // Pass the object directly
+            string systemPrompt = CharacterPromptGenerator.GenerateSystemPrompt(mysteryCharacterData, character); 
             if (string.IsNullOrEmpty(systemPrompt)) { Debug.LogError($"Failed prompt gen for {characterName}"); Destroy(charObj); yield break; }
             promptCache[characterName] = systemPrompt; 
             character.SetPrompt(systemPrompt, true); 
