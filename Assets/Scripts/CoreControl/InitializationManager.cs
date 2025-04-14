@@ -217,7 +217,7 @@ public class InitializationManager : MonoBehaviour
                 }
             } else { Debug.LogWarning("No LoadingOverlay found to hide"); }
             EnablePlayerInput();
-            if (GameControl.GameController != null) GameControl.GameController.currentState = GameState.DEFAULT;
+            if (GameControl.GameController != null) GameControl.GameController.StartGame();
             else Debug.LogError("GameControl.GameController is null in CompleteInitialization.");
             Debug.Log("Initialization sequence complete!");
         } catch (Exception ex) {
