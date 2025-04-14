@@ -28,12 +28,7 @@
       "core": {
         "involvement": {
           "role": "Murderer",
-          "type": "Paranoid killer manipulated by another",
-          "mystery_attributes": [
-            { "trait": "Master forger for Gregory's operation", "evidence_id": "evidence-forgery-techniques" },
-            { "trait": "Killed Victoria believing she would expose him", "evidence_id": "deduction-maxwell-paranoia" },
-            { "trait": "Suffering from paranoid mental illness", "evidence_id": "lead-maxwell-paranoia" }
-          ]
+          "type": "Paranoid killer manipulated by another"
         },
         "revelations": {
           "maxwell_paranoia": {
@@ -79,12 +74,7 @@
       "initial_location": "first_class",
       "core": {
         "involvement": {
-          "role": "Manipulator", "type": "Mastermind who influenced the murderer",
-          "mystery_attributes": [
-            { "trait": "Leader of the art forgery ring", "evidence_id": "revelation-forgery-ring" },
-            { "trait": "Maintains public anti-fraud persona", "evidence_id": "testimony-gregory-forgery-interest" },
-            { "trait": "Indirectly manipulated Maxwell to kill Victoria", "evidence_id": "deduction-maxwell-paranoia" }
-          ]
+          "role": "Manipulator", "type": "Mastermind who influenced the murderer"
         },
         "revelations": {
           "gregory_alibi": {
@@ -130,12 +120,7 @@
       "initial_location": "first_class",
       "core": {
         "involvement": {
-          "role": "Victim", "type": "Murder victim staged as suicide",
-          "mystery_attributes": [
-            { "trait": "Unwittingly featured forged artwork in her magazine", "evidence_id": "fact-forgery-ring" },
-            { "trait": "Was creating industry scandals out of desperation", "evidence_id": "revelation-victoria-desperate" },
-            { "trait": "Threatened to expose Penelope and Nova's relationship", "evidence_id": "testimony-victoria-threats" }
-          ]
+          "role": "Victim", "type": "Murder victim staged as suicide"
         },
         "revelations": {},
         "whereabouts": {
@@ -165,12 +150,7 @@
       "initial_location": "business_class_1",
       "core": {
         "involvement": {
-          "role": "Red Herring", "type": "Former authenticator with damaged reputation",
-          "mystery_attributes": [
-            { "trait": "Unknowingly authenticated forged artworks for Victoria", "evidence_id": "fact-forgery-ring" },
-            { "trait": "Currently works for Gregory's gallery", "evidence_id": "testimony-gregory-forgery-interest" },
-            { "trait": "Can identify Maxwell's artistic style", "evidence_id": "testimony-maxwell-artistic-ability" }
-          ]
+          "role": "Red Herring", "type": "Former authenticator with damaged reputation"
         },
         "revelations": {
           "eleanor_maxwell_skills": {
@@ -209,12 +189,7 @@
       "initial_location": "first_class",
       "core": {
         "involvement": {
-          "role": "Witness", "type": "Uninterested participant who observed key moments",
-          "mystery_attributes": [
-            { "trait": "Saw Gregory and Maxwell entering the lounge car shortly before the murder", "evidence_id": "testimony-two-men" },
-            { "trait": "Discovered blood flowing from the bathroom door", "evidence_id": "fact-murder" },
-            { "trait": "In a secret relationship with Penelope that Victoria threatened to expose", "evidence_id": "testimony-victoria-threats" }
-          ]
+          "role": "Witness", "type": "Uninterested participant who observed key moments"
         },
         "revelations": {
           "nova_sighting": {
@@ -253,12 +228,7 @@
       "initial_location": "first_class",
       "core": {
         "involvement": {
-          "role": "Suspect", "type": "Rival with strong motive",
-          "mystery_attributes": [
-            { "trait": "Had heated argument with Victoria before her death", "evidence_id": "testimony-victoria-penelope-argument" },
-            { "trait": "Victoria was threatening to expose her relationship with Nova", "evidence_id": "testimony-victoria-threats" },
-            { "trait": "Last person to publicly interact with victim", "evidence_id": "testimony-victoria-penelope-argument" }
-          ]
+          "role": "Suspect", "type": "Rival with strong motive"
         },
         "revelations": {
           "penelope_argument": {
@@ -304,12 +274,7 @@
       "initial_location": "dining_car",
       "core": {
         "involvement": {
-          "role": "Investigator", "type": "Private detective with key information",
-          "mystery_attributes": [
-            { "trait": "Hired by Timmy to investigate Victoria's art fraud connections", "evidence_id": "testimony-timmy-hired-gideon" },
-            { "trait": "Mistakenly believed by Gregory to be working for Victoria", "evidence_id": "deduction-maxwell-paranoia" },
-            { "trait": "Has gathered evidence connecting Gregory to forgeries", "evidence_id": "testimony-gideon-role" }
-          ]
+          "role": "Investigator", "type": "Private detective with key information"
         },
         "revelations": {
           "gideon_investigation": {
@@ -348,12 +313,7 @@
       "initial_location": "business_class_1",
       "core": {
         "involvement": {
-          "role": "Witness", "type": "Opportunistic observer with evidence",
-          "mystery_attributes": [
-            { "trait": "Has photos of Maxwell before and after the murder", "evidence_id": "evidence-mira-photos" },
-            { "trait": "Documented Victoria's confrontations throughout the train journey", "evidence_id": "testimony-victoria-penelope-argument" },
-            { "trait": "Seeking sensational story rather than truth", "evidence_id": "barrier-camera" }
-          ]
+          "role": "Witness", "type": "Opportunistic observer with evidence"
         },
         "revelations": {
           "mira_photos": {
@@ -392,12 +352,7 @@
       "initial_location": "first_class",
       "core": {
         "involvement": {
-          "role": "Catalyst", "type": "Unwitting instigator of events",
-          "mystery_attributes": [
-            { "trait": "Secretly hired Gideon to investigate Victoria", "evidence_id": "testimony-timmy-hired-gideon" },
-            { "trait": "Created the misunderstanding that led to murder", "evidence_id": "deduction-maxwell-paranoia" },
-            { "trait": "Collects gossip that reveals key relationships", "evidence_id": "nova_relationship_hint" }
-          ]
+          "role": "Catalyst", "type": "Unwitting instigator of events"
         },
         "revelations": {
           "timmy_hired_gideon": {
