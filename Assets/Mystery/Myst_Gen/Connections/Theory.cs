@@ -91,13 +91,20 @@ public class Theory : Connection, IPointerDownHandler
             //correct animation
             Debug.Log("A real connection was found, theory correct!");
             animControl.SetTrigger("confirm");
-            
+
+            //do the things that a correct reveal should do here
+
+            //increment the currentmysterycount
+            GameControl.GameController.coreConstellation.currentMysteryCount++;
+
         }
         else
         {
             //incorrect animation
             Debug.Log("This theory was a bust");
             animControl.SetTrigger("bust");
+
+            //do the things that an incorrect reveal should do here
         }
     }
 

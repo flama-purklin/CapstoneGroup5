@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using Mono.Cecil;
 
 public class FinalSubmission : MonoBehaviour
 {
@@ -46,19 +48,20 @@ public class FinalSubmission : MonoBehaviour
         //retrieve all instances of LLMChar
         GameObject[] allChars = GameObject.FindGameObjectsWithTag("Character");
 
-        foreach (var character in allChars)
+        foreach (var character in GameControl.GameController.coreMystery.Characters)
         {
-            //get the characterllm component
+            /*//get the characterllm component
             LLMCharacter llmChar = character.GetComponentInChildren<LLMCharacter>();
+            */
 
             GameObject newButton = Instantiate(buttonPrefab);
             newButton.transform.SetParent(buttonHolder.transform, false);
 
             //set char text to be the name of the character
-            newButton.GetComponentInChildren<TMP_Text>().text = llmChar.AIName;
+            newButton.GetComponentInChildren<TMP_Text>().text = character.Value.MindEngine.Identity.Name;
 
             //attach a listener to each button
-            newButton.GetComponent<Button>().onClick.AddListener(FinishGame);
+            newButton.GetComponent<Button>().onClick.AddListener(() => FinishGame(character.Key));
         }
 
 
@@ -67,13 +70,11 @@ public class FinalSubmission : MonoBehaviour
 
 
     //This function will check whether the player has chosen correctly and won or not
-    public void FinishGame()
+    public void FinishGame(string charTag)
     {
         //TODO - replace the rng with actual mechanics for checking the game win state (requires the elements of mystery gen as objects that can be called upon)
 
-        //for now, just randomly select either win or loss on submission press
-        int selectedState = Random.Range(0, 2);
-        if (selectedState == 0)
+        if (charTag != GameControl.GameController.coreMystery.Core.Culprit)
             GameControl.GameController.currentState = GameState.LOSE;
         else
             GameControl.GameController.currentState = GameState.WIN;
