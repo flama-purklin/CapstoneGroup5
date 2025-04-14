@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,10 +19,6 @@ public class MysteryConstellation
     [JsonProperty("scripted-events")]
     public Dictionary<string, MysteryEvent> ScriptedEvents { get; set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
-    [Header("MysteryCompletion")]
-    public int completeMysteryCount = 0;
-    public int currentMysteryCount = 0;
     
     public MysteryNode DiscoverNode(string nodeKey)
     {
@@ -59,19 +54,6 @@ public class MysteryConstellation
 
         
             
-    }
-
-    public void CompleteMysteryCalc()
-    {
-        completeMysteryCount = Connections.Count + Nodes.Count;
-
-        //current count starts at one because of the initial node
-        currentMysteryCount = 1;
-    }
-
-    public float ConfidenceScore()
-    {
-        return (float)currentMysteryCount / completeMysteryCount;
     }
 }
 

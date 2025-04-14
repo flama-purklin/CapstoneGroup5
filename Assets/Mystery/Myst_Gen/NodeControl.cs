@@ -38,7 +38,6 @@ public class NodeControl : MonoBehaviour
     [SerializeField] Button removeTheoryButton;
     [SerializeField] Button simButton;
     [SerializeField] TMP_Text theoryNotif;
-    [SerializeField] TMP_Text confidenceScore;
 
 
     [SerializeField] float scrollSpeed = 2000f;
@@ -82,11 +81,6 @@ public class NodeControl : MonoBehaviour
             {
                 TheoryRemove();
             }
-        }
-
-        if (confidenceScore.isActiveAndEnabled)
-        {
-            confidenceScore.text = (GameControl.GameController.coreConstellation.ConfidenceScore()).ToString("P");
         }
     }
 
@@ -199,8 +193,6 @@ public class NodeControl : MonoBehaviour
             visualNodes[parsedConnection.Source].GetComponent<VisualNode>().connections.Add(newConn);
             visualNodes[parsedConnection.Target].GetComponent<VisualNode>().connections.Add(newConn);
         }
-
-        GameControl.GameController.coreConstellation.CompleteMysteryCalc();
     }
 
     public void UnlockVisualNode(string nodeKey)
@@ -208,9 +200,6 @@ public class NodeControl : MonoBehaviour
         GameObject unlockedNode = visualNodes[nodeKey];
         unlockedNode.SetActive(true);
         unlockedNode.GetComponent<VisualNode>().DiscoverNode();
-
-        //increment the currentmysterycount
-        GameControl.GameController.coreConstellation.currentMysteryCount++;
     }
 
     /*public void CreateVisualNode(Node node)
