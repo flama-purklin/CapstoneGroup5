@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
 
 public class MainMenuMusic : MonoBehaviour
 {
@@ -36,7 +37,12 @@ public class MainMenuMusic : MonoBehaviour
 
     public void OnButtonClick()
     {
-        StartCoroutine(FadeOutMusic());
+        //Debug.Log("MMM click");
+        GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
+        if (clickedButton.name == "Start Button")
+        {
+            StartCoroutine(FadeOutMusic());
+        }
     }
 
     IEnumerator FadeOutMusic()

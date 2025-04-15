@@ -15,6 +15,12 @@ public class MainMenu : MonoBehaviour
     public AudioMixer audioMixer;
     public TMP_Dropdown resolutionDropdown;
 
+    public AudioSource uiAudioSource;
+    public AudioClip hoverSound;
+    public AudioClip clickSound;
+    private float lastHoverTime = -1f;
+    private float hoverCooldown = 0.1f;
+
     Resolution[] resolutions;
 
     void Start()
@@ -52,7 +58,22 @@ public class MainMenu : MonoBehaviour
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public void PlayHoverSound()
+    {
+        if (hoverSound != null && uiAudioSource != null && Time.time - lastHoverTime > hoverCooldown)
+        {
+            uiAudioSource.PlayOneShot(hoverSound);
+            lastHoverTime = Time.time;
+        }
+    }
+
+    public void PlayClickSound()
+    {
+        if (clickSound != null && uiAudioSource != null)
+        {
+            uiAudioSource.PlayOneShot(clickSound);
+        }
+    }
     public void PlayGame()
     {
         FadeToLevel("SystemsTest");  
