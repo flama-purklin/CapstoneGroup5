@@ -57,7 +57,10 @@ public class BeepSpeak : MonoBehaviour
 
     private Queue<DialogueEntry> dialogueQueue = new Queue<DialogueEntry>();
     private Coroutine typingCoroutine;
-    private bool isTyping = false;
+    // private bool isTyping = false; // Replaced by checking typingCoroutine != null
+
+    // Public property to check if BeepSpeak is currently typing/playing audio
+    public bool IsPlaying => typingCoroutine != null;
 
     private PrecomputedSentence currentSentence;
     private PrecomputedWord currentWord;
@@ -177,7 +180,7 @@ public class BeepSpeak : MonoBehaviour
                 float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
                 if (letter == '.' || letter == '!' || letter == '?') { delay += 0.5f; }
                 else if(letter == ';' || letter == ':' || letter == ',') { delay += 0.35f; }
-                else if(letter == '…') { delay += 1f; }
+                else if(letter == 'ï¿½') { delay += 1f; }
 
                 // assume a word ends at the first space or punctuation
                 string word = ExtractCurrentWord(currentDisplayedText);
@@ -305,7 +308,7 @@ public class BeepSpeak : MonoBehaviour
     private PrecomputedDialogue PrecomputeText(string text)
     {
         PrecomputedDialogue precomputed = new PrecomputedDialogue { sentences = new List<PrecomputedSentence>() };
-        string[] sentenceParts = Regex.Split(text, @"(?<=[.?!…])\s+"); // Split by punctuation + space
+        string[] sentenceParts = Regex.Split(text, @"(?<=[.?!ï¿½])\s+"); // Split by punctuation + space
 
         foreach (string originalText in sentenceParts)
         {
@@ -318,7 +321,7 @@ public class BeepSpeak : MonoBehaviour
 
             // Identify the last punctuation mark
             char lastChar = sentenceText[sentenceText.Length - 1];
-            if (".?!…".Contains(lastChar))
+            if (".?!ï¿½".Contains(lastChar))
             {
                 sentence.sentenceEnd = lastChar;
                 sentenceText = sentenceText.Substring(0, sentenceText.Length);
@@ -396,7 +399,7 @@ public class BeepSpeak : MonoBehaviour
 
     private IEnumerator TypeText(PrecomputedDialogue dialogue)
     {
-        isTyping = true;
+        // isTyping = true; // Removed, state is tracked by typingCoroutine != null
         //Debug.Log($"Sentences: {dialogue.sentences.Count}");
         foreach (var sentence in dialogue.sentences)
         {
@@ -429,11 +432,12 @@ public class BeepSpeak : MonoBehaviour
 
             // Pause for punctuation
             float pauseTime = sentence.sentenceEnd == '.' || sentence.sentenceEnd == '?' || sentence.sentenceEnd == '!' ? 0.5f :
-                              sentence.sentenceEnd == '…' ? 1f : 0.35f; // Short pause for commas
+                              sentence.sentenceEnd == 'ï¿½' ? 1f : 0.35f; // Short pause for commas
             yield return new WaitForSeconds(pauseTime);
         }
 
-        isTyping = false;
+        // isTyping = false; // Removed, state is tracked by typingCoroutine != null
+        typingCoroutine = null; // Ensure coroutine reference is cleared here as well
     }
 
     private void PlayVoice()

@@ -107,9 +107,11 @@ public class LoadingUI : MonoBehaviour
             }
         }
         
-        if (!isInitialized && spinnerImage)
+        // Rotate the spinner as long as this component is active and the image exists
+        // The rotation will stop when InitializationManager deactivates the LoadingOverlay GameObject.
+        if (spinnerImage) 
         {
-            spinnerImage.transform.Rotate(0, 0, -180f * Time.deltaTime);
+            spinnerImage.transform.Rotate(0, 0, -180f * Time.deltaTime); // Use Time.deltaTime as we are not pausing the game
         }
     }
     

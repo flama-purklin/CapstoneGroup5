@@ -113,9 +113,25 @@ public class CharacterManager : MonoBehaviour
         if (GameControl.GameController == null || GameControl.GameController.coreMystery == null || GameControl.GameController.coreMystery.Characters == null) { Debug.LogError("CharacterManager: GameControl or coreMystery data not ready!"); yield break; }
         var charactersData = GameControl.GameController.coreMystery.Characters;
         if (charactersData.Count == 0) { Debug.LogWarning("CharacterManager: No characters found in coreMystery data."); yield break; }
-        Debug.Log($"CharacterManager: Found {charactersData.Count} characters. Creating LLMCharacter objects...");
-        foreach (var kvp in charactersData) { yield return StartCoroutine(CreateSingleCharacterObject(kvp.Key, kvp.Value)); }
-        if (characterCache.Count == 0) Debug.LogError("CharacterManager: No character objects were successfully created!");
+        int processedCount = 0;
+        Debug.Log($"CharacterManager: Found {charactersData.Count} characters. Processing...");
+        foreach (var kvp in charactersData) 
+        {
+            // --- Victim Check ---
+            string role = kvp.Value?.Core?.Involvement?.Role;
+            if (!string.IsNullOrEmpty(role) && role.Equals("victim", StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Log($"CharacterManager: Skipping character '{kvp.Key}' because their role is 'victim'.");
+                continue; // Skip this character
+            }
+            // --- End Victim Check ---
+
+            yield return StartCoroutine(CreateSingleCharacterObject(kvp.Key, kvp.Value)); 
+            processedCount++;
+        }
+        Debug.Log($"CharacterManager: Finished processing. Attempted to create {processedCount} non-victim LLMCharacter objects.");
+        if (characterCache.Count == 0 && processedCount > 0) Debug.LogError("CharacterManager: No character objects were successfully created despite processing non-victims!");
+        else if (characterCache.Count == 0 && processedCount == 0) Debug.LogWarning("CharacterManager: No non-victim characters found to create.");
     }
 
     private IEnumerator CreateSingleCharacterObject(string characterName, MysteryCharacter mysteryCharacterData) {

@@ -55,6 +55,7 @@ public class InitializationManager : MonoBehaviour
     private async void InitializeGame()
     {
         Debug.Log("Starting game initialization sequence...");
+        float initializationStartTime = Time.realtimeSinceStartup; // Record start time
         
         try
         {
@@ -83,11 +84,28 @@ public class InitializationManager : MonoBehaviour
             if (npcManager != null) { npcManager.SpawningComplete = true; Debug.Log($"NPC Spawning Complete. Flag set on NPCManager."); } 
             else { Debug.LogError("NPCManager is null, cannot set SpawningComplete flag!"); }
 
+            // --- Minimum Loading Time Check ---
+            float elapsedTime = Time.realtimeSinceStartup - initializationStartTime;
+            float minLoadingTime = 10.0f; // Minimum 10 seconds
+            if (elapsedTime < minLoadingTime)
+            {
+                float waitTime = minLoadingTime - elapsedTime;
+                Debug.Log($"Initialization finished in {elapsedTime:F1}s. Waiting an additional {waitTime:F1}s for minimum loading screen display time (game will not pause).");
+                
+                // Wait for the remaining time without pausing the game
+                await Task.Delay(TimeSpan.FromSeconds(waitTime)); 
+                
+                Debug.Log("Minimum loading display time reached.");
+            }
+            // --- End Minimum Loading Time Check ---
+
             // Step 6: Complete initialization and hide loading overlay
             Debug.Log("--- INIT STEP 6: Complete Initialization ---");
-            CompleteInitialization();
+            CompleteInitialization(); // Now call CompleteInitialization after potential delay
         }
         catch (Exception ex) {
+            // Ensure timescale is reset if an error occurs during the try block
+            if (Time.timeScale == 0f) Time.timeScale = 1f; 
             Debug.LogError($"Critical error during game initialization: {ex.Message}");
             Debug.LogException(ex);
             try { CompleteInitialization(); } 
@@ -162,14 +180,32 @@ public class InitializationManager : MonoBehaviour
             return;
         }
         Debug.Log($"Attempting to spawn and link {characterData.Count} NPCs...");
-        int i = 0; 
+        int i = 0;
+        int spawnedCount = 0; 
         foreach (var kvp in characterData) {
             string characterName = kvp.Key;
             MysteryCharacter charData = kvp.Value;
-            if (string.IsNullOrEmpty(characterName) || charData == null) { Debug.LogWarning($"Skipping invalid character entry for {characterName}"); continue; } // Reverted Core null check
+            if (string.IsNullOrEmpty(characterName) || charData == null) { Debug.LogWarning($"Skipping invalid character entry for {characterName}"); continue; } 
+
+            // --- Victim Check ---
+            string role = charData?.Core?.Involvement?.Role;
+            if (!string.IsNullOrEmpty(role) && role.Equals("victim", StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Log($"InitializationManager: Skipping NPC spawn for '{characterName}' because their role is 'victim'.");
+                continue; // Skip spawning this NPC
+            }
+            // --- End Victim Check ---
+
             try {
-                string startCarName = charData.InitialLocation; // Access InitialLocation directly again
-                if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location found for '{characterName}'. Skipping."); continue; }
+                // Ensure LLMCharacter was actually created (CharacterManager might have skipped victim)
+                LLMCharacter llmCharacterRefCheck = characterManager.GetCharacterByName(characterName);
+                if (llmCharacterRefCheck == null) {
+                    Debug.LogWarning($"InitializationManager: Skipping NPC spawn for '{characterName}' as no corresponding LLMCharacter was found (likely skipped by CharacterManager).");
+                    continue;
+                }
+
+                string startCarName = charData.InitialLocation; 
+                if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location found for '{characterName}'. Skipping NPC spawn."); continue; }
                 Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
                 if (carTransform == null) { Debug.LogWarning($"Could not find car transform '{startCarName}' for '{characterName}'. Skipping."); continue; }
                 Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
@@ -181,13 +217,14 @@ public class InitializationManager : MonoBehaviour
                         characterComponent.Initialize(characterName, llmCharacterRef); 
                     } else {
                         if (characterComponent == null) Debug.LogError($"Failed to get Character component on spawned NPC {characterName}.");
-                        if (llmCharacterRef == null) Debug.LogError($"Failed to get LLMCharacter reference from CharacterManager for {characterName}.");
+                        if (llmCharacterRef == null) Debug.LogError($"Failed to get LLMCharacter reference from CharacterManager for {characterName}."); // Should not happen due to check above, but keep for safety
                     }
+                    spawnedCount++; // Increment count only if spawn was successful
                 } else { Debug.LogError($"Failed to spawn NPC for character '{characterName}'."); }
             } catch (Exception ex) { Debug.LogError($"Error spawning/linking NPC for character '{characterName}': {ex.Message}"); Debug.LogException(ex); }
-            i++; 
+            i++; // Increment index regardless of spawn success for animation container assignment consistency
         }
-         Debug.Log("Finished NPC spawning and linking loop.");
+         Debug.Log($"Finished NPC spawning and linking loop. Spawned {spawnedCount} non-victim NPCs.");
          if (npcManager != null) npcManager.SpawningComplete = true; 
          else Debug.LogError("npcManager became null before SpawningComplete could be set!");
     }

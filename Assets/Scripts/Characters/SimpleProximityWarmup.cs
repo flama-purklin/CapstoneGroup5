@@ -70,8 +70,8 @@ public class SimpleProximityWarmup : MonoBehaviour
 
     private void Update()
     {
-        // Only run if initialization is complete
-        if (!characterManager.IsInitialized || !npcManager.IsInitializationComplete) // Assuming NPCManager has similar flag
+        // Only run if initialization is complete and NPCs are spawned
+        if (!characterManager.IsInitialized || !npcManager.IsInitializationComplete || !npcManager.SpawningComplete) // Added check for SpawningComplete
             return;
 
         bool shouldCheck = false;
@@ -97,7 +97,8 @@ public class SimpleProximityWarmup : MonoBehaviour
 
     private void UpdateWarmupState()
     {
-        if (!characterManager.IsInitialized || !npcManager.IsInitializationComplete)
+        // Ensure managers are ready and NPCs are spawned before proceeding
+        if (!characterManager.IsInitialized || !npcManager.IsInitializationComplete || !npcManager.SpawningComplete) // Added check for SpawningComplete
             return;
 
         // Get all NPC references from NPCManager

@@ -262,7 +262,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1654910762349676038}
@@ -284,6 +284,7 @@ MonoBehaviour:
   playerAnim: {fileID: 8662918361551714388}
   rb: {fileID: 884967809646904070}
   speedMod: 5
+  closestInteractable: {fileID: 0}
 --- !u!54 &884967809646904070
 Rigidbody:
   m_ObjectHideFlags: 0
