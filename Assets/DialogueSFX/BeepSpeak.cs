@@ -180,7 +180,12 @@ public class BeepSpeak : MonoBehaviour
                 float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
                 if (letter == '.' || letter == '!' || letter == '?') { delay += 0.5f; }
                 else if(letter == ';' || letter == ':' || letter == ',') { delay += 0.35f; }
-                else if(letter == '�') { delay += 1f; }
+
+                //ellipses shenanigans
+                if (letter == '.' && currentDisplayedText.Length < targetText.Length && targetText[currentDisplayedText.Length] == '.')
+                {
+                    delay -= 0.4f;
+                }
 
                 // assume a word ends at the first space or punctuation
                 string word = ExtractCurrentWord(currentDisplayedText);
