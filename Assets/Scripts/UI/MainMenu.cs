@@ -15,6 +15,8 @@ public class MainMenu : MonoBehaviour
     public AudioMixer audioMixer;
     public TMP_Dropdown resolutionDropdown;
 
+    public MysterySelectMenu mysteryMenu; 
+
     Resolution[] resolutions;
 
     void Start()
@@ -53,8 +55,20 @@ public class MainMenu : MonoBehaviour
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    //THIS FUNCTION GOES TO THE MYSTERYMENU AND NOT THE GAME!!!
     public void PlayGame()
     {
+        mainMenu.SetActive(false);
+        optionsMenu.SetActive(false);
+        //FadeToLevel("SystemsTest");  
+        mysteryMenu.ShowMenu();
+    }
+
+    public void PlayGame2()
+    {
+        mainMenu.SetActive(true);
+        optionsMenu.SetActive(true);
         FadeToLevel("SystemsTest");  
     }
 

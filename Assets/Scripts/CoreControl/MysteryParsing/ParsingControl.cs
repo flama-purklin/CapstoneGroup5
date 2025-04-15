@@ -13,6 +13,8 @@ using System;
 /// </summary>
 public class ParsingControl : MonoBehaviour
 {
+    public Action OnParseComplete;
+
     [Header("Configuration")]
     public string mysteryFiles = "MysteryStorage";
     [SerializeField] private bool _verboseLogging = false;
@@ -22,6 +24,7 @@ public class ParsingControl : MonoBehaviour
     // Events
     public event Action<float> OnParsingProgress;
     public event Action<Mystery> OnMysteryParsed;
+    
     // public event Action<int> OnCharactersExtracted; // Removed unused event
     // public event Action OnParsingComplete; // Removed event
 
@@ -138,6 +141,7 @@ public class ParsingControl : MonoBehaviour
             // Signal that parsing is complete
             _parsingComplete = true;
             Debug.Log("Parsing complete - setting IsParsingComplete flag");
+            OnParseComplete?.Invoke(); // <- THIS triggers the scene load
             // OnParsingComplete?.Invoke(); // Removed event invocation
 
             // Removed character extraction logic
@@ -153,6 +157,21 @@ public class ParsingControl : MonoBehaviour
             // OnParsingComplete?.Invoke(); // Removed event invocation
         }
     } // Added missing closing brace for ParseMystery method
+
+
+public void ParseMystery(string mysteryPath)
+{
+    if (!File.Exists(mysteryPath))
+    {
+        Debug.LogError($"Mystery JSON not found at: {mysteryPath}");
+        return;
+    }
+
+    string jsonContent = File.ReadAllText(mysteryPath);
+
+    StartCoroutine(DelayedParsing(jsonContent));
+    // Rest of the parsing stays exactly the same
+}
 
     // Removed ParseMysteryAsync method
     // Removed HandleExtractionProgress method
@@ -180,6 +199,8 @@ public class ParsingControl : MonoBehaviour
             // Signal completion
             _parsingComplete = true;
             OnParsingProgress?.Invoke(1.0f);
+            OnParseComplete?.Invoke();
+
             // OnParsingComplete?.Invoke(); // Removed event invocation
             yield break;
         }
@@ -214,7 +235,7 @@ public class ParsingControl : MonoBehaviour
             // Signal that parsing is complete
             _parsingComplete = true;
             Debug.Log("Delayed parsing complete - setting IsParsingComplete flag");
-            // OnParsingComplete?.Invoke(); // Removed event invocation
+            OnParseComplete?.Invoke();
 
             // Removed character extraction logic
         }
@@ -225,7 +246,9 @@ public class ParsingControl : MonoBehaviour
             
             // Signal completion even if parsing failed
             _parsingComplete = true;
-            OnParsingProgress?.Invoke(1.0f);
+OnParsingProgress?.Invoke(1.0f);
+OnParseComplete?.Invoke();
+Debug.Log("🔥 OnParseComplete() called");
             // OnParsingComplete?.Invoke(); // Removed event invocation
         }
     }
