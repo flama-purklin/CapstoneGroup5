@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a846630d60843c24eaf331f0b2761ef7, type: 3}
   m_Name: suicideNote
   m_EditorClassIdentifier: 
-  evidenceArt: {fileID: 21300000, guid: 5ab19e4a5efbe654e93bba974bcb9c8a, type: 3}
+  evidenceArt: {fileID: 21300000, guid: a7375750e2f02b646927cd8c6607748c, type: 3}
   evidenceTitle: Suicide Note
   evidenceDescription: A handwritten note on Victoria's personal stationery
   nodeKey: evidence-suicide-note

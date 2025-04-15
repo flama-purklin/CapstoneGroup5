@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
-  m_Name: Winchester3
+  m_Name: FullWoman3
   m_EditorClassIdentifier: 
+  profile: {fileID: 21300498, guid: 95d22684aba5646d79a26b3287a692b6, type: 3}
   walkFront:
   - {fileID: -2013612805, guid: 2f9aff5523346bf4fbc3bd1a036f3f1a, type: 3}
   - {fileID: -479089410, guid: 2f9aff5523346bf4fbc3bd1a036f3f1a, type: 3}

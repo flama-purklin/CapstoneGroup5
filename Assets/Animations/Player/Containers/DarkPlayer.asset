@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: DarkPlayer
+  m_EditorClassIdentifier: 
+  walkFront:
+  - {fileID: 96653567, guid: 6ad9e40c571e1fb4595cb8a7766df18d, type: 3}
+  - {fileID: -1951164444, guid: 6ad9e40c571e1fb4595cb8a7766df18d, type: 3}
+  - {fileID: -314479990, guid: 6ad9e40c571e1fb4595cb8a7766df18d, type: 3}
+  - {fileID: 1456615518, guid: 6ad9e40c571e1fb4595cb8a7766df18d, type: 3}
+  walkBack:
+  - {fileID: 29487103, guid: 6bc6da50b27abe442a0b49f0c9fea76a, type: 3}
+  - {fileID: -439299850, guid: 6bc6da50b27abe442a0b49f0c9fea76a, type: 3}
+  - {fileID: 2113788979, guid: 6bc6da50b27abe442a0b49f0c9fea76a, type: 3}
+  - {fileID: -344206948, guid: 6bc6da50b27abe442a0b49f0c9fea76a, type: 3}
+  idleFront:
+  - {fileID: 1204221771, guid: 0ceb4d7c008f6c143a8aa7f9d8f52f95, type: 3}
+  - {fileID: 1369635188, guid: 0ceb4d7c008f6c143a8aa7f9d8f52f95, type: 3}
+  idleBack:
+  - {fileID: 725938124, guid: 4183e5588c877554e8c0452bb1fe0090, type: 3}
+  - {fileID: 328902737, guid: 4183e5588c877554e8c0452bb1fe0090, type: 3}

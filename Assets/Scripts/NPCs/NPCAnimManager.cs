@@ -6,7 +6,7 @@ public class NPCAnimManager : MonoBehaviour
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] Animator animator;
     [SerializeField] NPCMovement movementControl;
-    [SerializeField] NPCAnimContainer anims; // This will be assigned externally now
+    [SerializeField] public NPCAnimContainer anims; // This will be assigned externally now
     GameObject player;
 
     // Removed allAnims array - no longer needed
@@ -90,7 +90,7 @@ public class NPCAnimManager : MonoBehaviour
 
         if (animator.GetBool("moving"))
         {
-            if (movementControl.movementVector.z > 0)
+            if (backward)
                 currentAnim = anims.walkBack; // Assumes walkBack exists in NPCAnimContainer
             else
                 currentAnim = anims.walkFront; // Assumes walkFront exists
@@ -116,16 +116,16 @@ public class NPCAnimManager : MonoBehaviour
         }
         if (movementControl.movementVector.z > 0)
             backward = true;
-        else
+        else if (movementControl.movementVector.z < 0)
             backward = false;
 
     //then flip anim based on last movement vector
     if (sprite != null) // Add null check for safety
     {
-        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
+        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x > 0 && backward))
             sprite.transform.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
-        else
-            sprite.transform.localScale = originalScale;
+        else if ((movementControl.movementVector.x > 0 && !backward) || (movementControl.movementVector.x < 0 && backward))
+                sprite.transform.localScale = originalScale;
     }
 }
 
@@ -174,11 +174,12 @@ public class NPCAnimManager : MonoBehaviour
     {
         if (container != null)
         {
-            this.anims = container;
+            anims = container;
             // Initialize currentAnim based on the new container
-            if (this.anims.idleFront != null) // Default to idleFront
+            if (anims.idleFront != null) // Default to idleFront
             {
-                currentAnim = this.anims.idleFront;
+                currentAnim = anims.idleFront;
+                Debug.Log(container + " successfully added to " + gameObject.name);
             }
             else
             {
@@ -190,7 +191,7 @@ public class NPCAnimManager : MonoBehaviour
         else
         {
             Debug.LogError($"NPCAnimManager on {gameObject.name}: Attempted to assign a null NPCAnimContainer.");
-            this.anims = null;
+            anims = null;
             currentAnim = null;
         }
     }
