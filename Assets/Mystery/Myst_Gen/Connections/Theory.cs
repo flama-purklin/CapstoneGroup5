@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class Theory : Connection, IPointerDownHandler
 {
@@ -64,14 +65,17 @@ public class Theory : Connection, IPointerDownHandler
             control.TheoryPlaced();
 
             //check whether the theory has a real connection associated with it
-            StartCoroutine(TheoryEvaluate());
             Debug.Log("endObj chosen");
+            StartCoroutine(TheoryEvaluate());
+            
         }
     }
 
     IEnumerator TheoryEvaluate()
     {
         List<GameObject> allConnects = startObj.GetComponent<VisualNode>().connections;
+        Debug.Log("Checking " + allConnects.Count + " connections");
+
         for (int i = 0; i < allConnects.Count; i++)
         {
             GameObject tempStart = allConnects[i].GetComponent<Connection>().startObj;
@@ -80,6 +84,8 @@ public class Theory : Connection, IPointerDownHandler
             if ((tempStart == startObj || tempStart == endObj) && (tempEnd == startObj || tempEnd == endObj))
                 realConn = allConnects[i].GetComponent<Connection>();
         }
+
+        Debug.Log("Real Connection exists: " + (realConn != null));
 
         yield return null;
     }

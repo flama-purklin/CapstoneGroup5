@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MinigameObj : MonoBehaviour
+public class MinigameObj : MonoBehaviour, IInteractable
 {
     [SerializeField] float interactionRadius;
     [SerializeField] GameObject indicator;
@@ -16,6 +16,7 @@ public class MinigameObj : MonoBehaviour
     protected virtual void Awake()
     {
         player = GameObject.FindWithTag("Player");
+        InteractableManager.allInteractables.Add(gameObject);
     }
 
     // Update is called once per frame
@@ -25,7 +26,9 @@ public class MinigameObj : MonoBehaviour
 
         indicator.SetActive(inRange);
 
-        if (GameControl.GameController.currentState == GameState.DEFAULT && inRange && Input.GetKeyDown(KeyCode.E))
+        if (GameControl.GameController.currentState == GameState.DEFAULT && 
+            inRange && Input.GetKeyDown(KeyCode.E) &&
+            player.GetComponent<PlayerMovement>().closestInteractable == gameObject)
         {
             Interact();
         }

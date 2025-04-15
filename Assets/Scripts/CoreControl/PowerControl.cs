@@ -41,7 +41,7 @@ public class PowerControl : MonoBehaviour
                 StopAllCoroutines();
                 GameOver();
             }
-            powerPercent.text = ((float)currentPower / powerTotal).ToString("P");
+            powerPercent.text = Mathf.CeilToInt((float)currentPower / powerTotal * 100f) + "%";
         }
         else
             powerPercent.text = string.Empty;

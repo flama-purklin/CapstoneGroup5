@@ -26,9 +26,10 @@ public class NodeControl : MonoBehaviour
     public Dictionary<string, GameObject> visualNodes;
 
     [Header("Prefabs")]
-    [SerializeField] GameObject infoPrefab;
-    [SerializeField] GameObject evidencePrefab;
+    //[SerializeField] GameObject infoPrefab;
+    //[SerializeField] GameObject evidencePrefab;
     [SerializeField] GameObject connectionPrefab;
+    [SerializeField] GameObject nodePrefab;
     [SerializeField] GameObject theoryPrefab;
 
     [Header("UI Elements")]
@@ -173,11 +174,13 @@ public class NodeControl : MonoBehaviour
     {
         visualNodes = new Dictionary<string, GameObject>();
 
+        GameControl.GameController.coreConstellation.CompleteMysteryCalc();
+
         //create a node object for every parsed node in the constellation
         foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
         {
             //create the node
-            GameObject newNode = InstantiateNode(nodePair.Value);
+            GameObject newNode = Instantiate(nodePrefab, contentPanel);
 
             //assign data to the node
             newNode.GetComponent<VisualNode>().AssignNode(nodePair.Key, nodePair.Value);
@@ -189,18 +192,19 @@ public class NodeControl : MonoBehaviour
         Debug.Log(visualNodes.Count + " visual nodes created");
 
         //create a connection for each parsed connection in the constellation
-        foreach (var parsedConnection in GameControl.GameController.coreConstellation.Connections)
+        List<MysteryConnection> connections = GameControl.GameController.coreConstellation.Connections;
+        for (int i = 0; i < connections.Count; i++)
         {
             //create a connection object
             GameObject newConn = Instantiate(connectionPrefab, contentPanel);
-            newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[parsedConnection.Source], visualNodes[parsedConnection.Target], parsedConnection);
+            newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[connections[i].Source], visualNodes[connections[i].Target], connections[i]);
 
             //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
-            visualNodes[parsedConnection.Source].GetComponent<VisualNode>().connections.Add(newConn);
-            visualNodes[parsedConnection.Target].GetComponent<VisualNode>().connections.Add(newConn);
+            visualNodes[connections[i].Source].GetComponent<VisualNode>().connections.Add(newConn);
+            visualNodes[connections[i].Target].GetComponent<VisualNode>().connections.Add(newConn);
         }
 
-        GameControl.GameController.coreConstellation.CompleteMysteryCalc();
+        Debug.Log(GameControl.GameController.coreConstellation.Connections.Count + " connections have been parsed");
     }
 
     public void UnlockVisualNode(string nodeKey)
@@ -292,7 +296,7 @@ public class NodeControl : MonoBehaviour
         }
     }*/
 
-    public GameObject InstantiateNode(MysteryNode mystNode)
+    /*public GameObject InstantiateNode(MysteryNode mystNode)
     {
         GameObject createdNode;
         //TODO - MORE NODE TYPES HERE
@@ -308,7 +312,7 @@ public class NodeControl : MonoBehaviour
 
 
         return createdNode;
-    }
+    }*/
 
     //all button handlers here
 

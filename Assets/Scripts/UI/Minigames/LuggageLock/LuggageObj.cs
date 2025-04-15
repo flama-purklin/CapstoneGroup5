@@ -19,6 +19,10 @@ public class LuggageObj : MinigameObj
 
     public void NewCombination()
     {
-        combination = Random.Range(0, 10).ToString() + Random.Range(0, 10).ToString() + Random.Range(0, 10).ToString();
+        //random
+        //combination = Random.Range(0, 10).ToString() + Random.Range(0, 10).ToString() + Random.Range(0, 10).ToString();
+
+        //hardset for demo
+        combination = "451";
     }
 }

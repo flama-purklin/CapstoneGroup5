@@ -1,4 +1,8 @@
+using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speedMod;
     float xDelta;
     float yDelta;
+
+    public GameObject closestInteractable;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -49,5 +55,23 @@ public class PlayerMovement : MonoBehaviour
         {
             playerAnim.enabled = false;
         }
+
+        StartCoroutine(ClosestInteractUpdate());
+    }
+
+    IEnumerator ClosestInteractUpdate()
+    {
+        IEnumerable<GameObject> interactables = InteractableManager.FindAllInteractablesinRange(transform.position, 2f);
+        float shortestDist = 10000f;
+        foreach (GameObject interactable in interactables)
+        {
+            float dist = Vector3.Magnitude(transform.position - interactable.transform.position);
+            if (dist < shortestDist)
+            {
+                shortestDist = dist;
+                closestInteractable = interactable;
+            }
+        }
+        yield return null;
     }
 }

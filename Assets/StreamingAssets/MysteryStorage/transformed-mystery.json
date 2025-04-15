@@ -1063,11 +1063,6 @@
         "source": "lead-gregory-downplays-maxwell",
         "target": "lead-forgery-connection",
         "type": "SUGGESTS" 
-      },
-      {
-          "source": "gideon_shares_observation_maxwell_fear", 
-          "target": "lead-maxwell-paranoia",
-          "type": "SUPPORTS"
       }
     ],
     

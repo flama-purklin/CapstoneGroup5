@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionRadius: 2
   indicator: {fileID: 8157021112078414085}
+  nodeKey: 
 --- !u!1 &8157021112078414085
 GameObject:
   m_ObjectHideFlags: 0

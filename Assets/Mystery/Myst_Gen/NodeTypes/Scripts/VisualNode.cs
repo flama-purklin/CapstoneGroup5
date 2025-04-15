@@ -34,9 +34,9 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        connections = new List<GameObject>();
+        //connections = new List<GameObject>();
         
     }
 
@@ -48,6 +48,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void AssignNode(string newKey, MysteryNode associatedNode)
     {
+        connections = new List<GameObject>();
         control = GameObject.FindFirstObjectByType<NodeControl>();
         currentNode = associatedNode;
         nodeKey = newKey;
@@ -76,6 +77,11 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     protected virtual void UpdateInformation()
     {
         // Debug.Log("Visual Node " + nodeKey + " Updated");
+
+        //fill in the information stored in the currentNode
+        header.text = currentNode.Type;
+        otherInfo.text = currentNode.Content;
+
         if (!currentNode.Discovered)
             gameObject.SetActive(false);
     }

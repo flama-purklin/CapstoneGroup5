@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NPCMovement : MonoBehaviour
+public class NPCMovement : MonoBehaviour, IInteractable
 {
     GameObject player;
     [SerializeField] NavMeshAgent agent;
@@ -25,6 +25,7 @@ public class NPCMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        InteractableManager.allInteractables.Add(gameObject);
         player = GameObject.FindWithTag("Player");
         dialogueControl = GameObject.FindWithTag("DialogueControl").GetComponent<DialogueControl>();
 
@@ -89,10 +90,18 @@ public class NPCMovement : MonoBehaviour
         inDialogueRange = Vector3.Distance(player.transform.position, transform.position) < dialogueDist;
         speechBubble.SetActive(inDialogueRange);
 
-        if (inDialogueRange && Input.GetKeyDown(KeyCode.E) && GameControl.GameController.currentState != GameState.DIALOGUE)
+        if (inDialogueRange && Input.GetKeyDown(KeyCode.E) && 
+            GameControl.GameController.currentState == GameState.DEFAULT &&
+            player.GetComponent<PlayerMovement>().closestInteractable == gameObject)
         {
-            StartCoroutine(DialogueActivate());
+            Interact();
         }
+    }
+
+    //required for the goddamn interface
+    public void Interact()
+    {
+        StartCoroutine(DialogueActivate());
     }
 
     //may be necessary with expanded state functionality

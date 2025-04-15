@@ -119,15 +119,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualNodeStorage: []
-  infoPrefab: {fileID: 4263868681427586989, guid: aa8b9776d8e1e8c4bb80cfa327c7e9dc, type: 3}
-  evidencePrefab: {fileID: 4217250957802299677, guid: 1c6fbc347a8946f419478ec7e34f2016, type: 3}
   connectionPrefab: {fileID: 2293038674493858465, guid: d40ebbcfa1e01774fa6c4ce915efccd0, type: 3}
+  nodePrefab: {fileID: 4263868681427586989, guid: 4c8b00c0a51aa6143908b4cffb091504, type: 3}
   theoryPrefab: {fileID: 2293038674493858465, guid: 9c267abfa2be6034296b672cceb5d271, type: 3}
   contentPanel: {fileID: 2812402277828391468}
   instructions: {fileID: 0}
   addTheoryButton: {fileID: 0}
   removeTheoryButton: {fileID: 0}
   simButton: {fileID: 0}
+  theoryNotif: {fileID: 0}
+  confidenceScore: {fileID: 0}
   scrollSpeed: 50000
   minY: -2000
   maxY: 2000
