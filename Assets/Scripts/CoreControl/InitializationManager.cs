@@ -20,6 +20,8 @@ public class InitializationManager : MonoBehaviour
     [SerializeField] private CharacterManager characterManager;
     [SerializeField] private GameObject loadingOverlay;
     [SerializeField] private TrainLayoutManager trainLayoutManager; 
+
+    [SerializeField] private float minLoadingTime = 20.0f; // Minimum seconds
     
     private ParsingControl parsingControl;
 
@@ -86,7 +88,6 @@ public class InitializationManager : MonoBehaviour
 
             // --- Minimum Loading Time Check ---
             float elapsedTime = Time.realtimeSinceStartup - initializationStartTime;
-            float minLoadingTime = 10.0f; // Minimum 10 seconds
             if (elapsedTime < minLoadingTime)
             {
                 float waitTime = minLoadingTime - elapsedTime;

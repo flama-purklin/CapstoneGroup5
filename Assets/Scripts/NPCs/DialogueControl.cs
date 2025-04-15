@@ -30,6 +30,7 @@ public class DialogueControl : MonoBehaviour
 
     private bool isTransitioning = false;
     private bool shutdown = false;
+    private Coroutine deactivationCoroutine = null; // Track the deactivation coroutine
 
     // Public property to check if the dialogue UI is currently active
     public bool IsDialogueCanvasActive => dialogueCanvas != null && dialogueCanvas.activeInHierarchy;
@@ -129,60 +130,72 @@ public class DialogueControl : MonoBehaviour
     private IEnumerator DeactivateDialogue()
     {
         Debug.Log("[DialogueControl] DeactivateDialogue Coroutine Started.");
-        isTransitioning = true;
+        try
+        {
+            isTransitioning = true;
 
-        // --- RESET/CANCEL FIRST ---
-        Debug.Log("[DialogueControl.Deactivate] Calling llmDialogueManager.ResetDialogue() (which should call CancelRequests)...");
-        Task resetTask = llmDialogueManager.ResetDialogue();
-        yield return StartCoroutine(WaitForTask(resetTask)); // Wait for the async ResetDialogue task to complete
-        Debug.Log("[DialogueControl.Deactivate] AFTER WaitForTask(resetTask). ResetDialogue() finished."); // ADDED LOG
+            // --- RESET/CANCEL FIRST ---
+            Debug.Log("[DialogueControl.Deactivate] Calling llmDialogueManager.ResetDialogue() (which should call CancelRequests)...");
+            Task resetTask = llmDialogueManager.ResetDialogue();
+            yield return StartCoroutine(WaitForTask(resetTask)); // Wait for the async ResetDialogue task to complete
+            Debug.Log("[DialogueControl.Deactivate] AFTER WaitForTask(resetTask). ResetDialogue() finished."); // ADDED LOG
 
-        // --- THEN SAVE ---
-        LLMCharacter characterToSave = llmDialogueManager.CurrentCharacter; 
-        Task saveTask = null; 
+            // --- THEN SAVE ---
+            LLMCharacter characterToSave = llmDialogueManager.CurrentCharacter; 
+            Task saveTask = null; 
 
-        if (characterToSave != null) {
-            Debug.Log($"[DialogueControl.Deactivate] Character to save: {characterToSave.save}, Current chat count: {characterToSave.chat.Count}");
-            if (!string.IsNullOrEmpty(characterToSave.save)) {
-                try {
-                    Debug.Log($"ATTEMPTING to save conversation state for '{characterToSave.save}'");
-                    saveTask = characterToSave.Save(characterToSave.save); 
-                } catch (Exception e) {
-                    Debug.LogError($"CRITICAL ERROR starting save for '{characterToSave.save}': {e.Message}\nStack trace: {e.StackTrace}");
-                    saveTask = null; 
+            if (characterToSave != null) {
+                Debug.Log($"[DialogueControl.Deactivate] Character to save: {characterToSave.save}, Current chat count: {characterToSave.chat.Count}");
+                if (!string.IsNullOrEmpty(characterToSave.save)) {
+                    try {
+                        Debug.Log($"ATTEMPTING to save conversation state for '{characterToSave.save}'");
+                        saveTask = characterToSave.Save(characterToSave.save); 
+                    } catch (Exception e) {
+                        Debug.LogError($"CRITICAL ERROR starting save for '{characterToSave.save}': {e.Message}\nStack trace: {e.StackTrace}");
+                        saveTask = null; 
+                    }
+                } else { Debug.LogWarning($"Character has empty 'save' property. Cannot save conversation state."); }
+            } else { Debug.LogWarning("Could not get active LLMCharacter reference to save conversation."); }
+
+            // Wait for the save task to complete (if it was started) AFTER the try-catch block
+            if (saveTask != null) {
+                Debug.Log($"[DialogueControl.Deactivate] Waiting for save task for '{characterToSave?.save ?? "Unknown"}'...");
+                yield return StartCoroutine(WaitForTask(saveTask));
+                Debug.Log($"[DialogueControl.Deactivate] AFTER WaitForTask(saveTask) for '{characterToSave?.save ?? "Unknown"}'."); // ADDED LOG
+                if (!saveTask.IsFaulted) {
+                     Debug.Log($"[DialogueControl.Deactivate] Successfully completed save for conversation state: '{characterToSave?.save ?? "Unknown"}'");
+                } else {
+                     Debug.LogError($"[DialogueControl.Deactivate] Save task FAILED for '{characterToSave?.save ?? "Unknown"}': {saveTask.Exception}");
                 }
-            } else { Debug.LogWarning($"Character has empty 'save' property. Cannot save conversation state."); }
-        } else { Debug.LogWarning("Could not get active LLMCharacter reference to save conversation."); }
-
-        // Wait for the save task to complete (if it was started) AFTER the try-catch block
-        if (saveTask != null) {
-            Debug.Log($"[DialogueControl.Deactivate] Waiting for save task for '{characterToSave?.save ?? "Unknown"}'...");
-            yield return StartCoroutine(WaitForTask(saveTask));
-            Debug.Log($"[DialogueControl.Deactivate] AFTER WaitForTask(saveTask) for '{characterToSave?.save ?? "Unknown"}'."); // ADDED LOG
-            if (!saveTask.IsFaulted) {
-                 Debug.Log($"[DialogueControl.Deactivate] Successfully completed save for conversation state: '{characterToSave?.save ?? "Unknown"}'");
             } else {
-                 Debug.LogError($"[DialogueControl.Deactivate] Save task FAILED for '{characterToSave?.save ?? "Unknown"}': {saveTask.Exception}");
+                 Debug.Log("[DialogueControl.Deactivate] No save task was started (character null or save name empty).");
             }
-        } else {
-             Debug.Log("[DialogueControl.Deactivate] No save task was started (character null or save name empty).");
-        }
-        
-        // --- THEN ANIMATE ---
-        Debug.Log("[DialogueControl.Deactivate] Starting UI deactivation animation...");
-        anim.Rebind();
-        anim.Update(0f);
-        anim.Play("DialogueDeactivate");
-        yield return null; 
-        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) yield return null; 
+            
+            // --- ADD 2 SECOND DELAY BEFORE ANIMATION ---
+            Debug.Log("[DialogueControl.Deactivate] Waiting 2 seconds before UI animation to allow reading final dialogue...");
+            yield return new WaitForSeconds(2.0f);
+            
+            // --- THEN ANIMATE ---
+            Debug.Log("[DialogueControl.Deactivate] Starting UI deactivation animation...");
+            anim.Rebind();
+            anim.Update(0f);
+            anim.Play("DialogueDeactivate");
+            yield return null; 
+            while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) yield return null; 
 
-        dialogueCanvas.SetActive(false);
-        if (GameControl.GameController.currentState == GameState.DIALOGUE) {
-            if(defaultHud) defaultHud.SetActive(true);
-            GameControl.GameController.currentState = GameState.DEFAULT;
+            dialogueCanvas.SetActive(false);
+            if (GameControl.GameController.currentState == GameState.DIALOGUE) {
+                if(defaultHud) defaultHud.SetActive(true);
+                GameControl.GameController.currentState = GameState.DEFAULT;
+            }
         }
-        isTransitioning = false;
-        Debug.Log("[DialogueControl] DeactivateDialogue Coroutine Finished.");
+        finally
+        {
+            // Ensure flags are reset even if the coroutine is stopped or errors
+            isTransitioning = false;
+            deactivationCoroutine = null;
+            Debug.Log("[DialogueControl] DeactivateDialogue Coroutine Finished.");
+        }
     }
 
     // Helper coroutine to wait for an async Task
@@ -210,7 +223,19 @@ public class DialogueControl : MonoBehaviour
 
     public void Deactivate()
     {
-        if (isTransitioning || !dialogueCanvas.activeInHierarchy) return;
-        StartCoroutine(DeactivateDialogue());
+        if (!dialogueCanvas.activeInHierarchy) {
+            Debug.LogWarning("[Deactivate] Called but canvas is not active. Returning.");
+            return;
+        }
+
+        // If a deactivation is already running, stop it first to prevent overlap
+        if (deactivationCoroutine != null) {
+            Debug.LogWarning("[Deactivate] Stopping existing deactivation coroutine.");
+            StopCoroutine(deactivationCoroutine);
+            isTransitioning = false; // Reset the transitioning flag
+        }
+
+        Debug.Log("[Deactivate] Starting DeactivateDialogue coroutine.");
+        deactivationCoroutine = StartCoroutine(DeactivateDialogue());
     }
 }

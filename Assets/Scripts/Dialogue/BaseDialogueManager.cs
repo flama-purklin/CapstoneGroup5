@@ -11,6 +11,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
     protected string lastReply = "";
     protected DialogueControl dialogueControl;
     protected string bufferedFunctionCall = null; // Buffer for detected function calls
+    private bool actionFoundInCurrentStream = false; // Flag to track if action has been found in current stream
 
     /// <summary>
     /// Provides access to the current LLMCharacter being used for dialogue
@@ -54,6 +55,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         currentResponse.Clear();
         lastReply = "";
         bufferedFunctionCall = null; // Clear buffer on init
+        actionFoundInCurrentStream = false; // Reset action flag
 
         EnableInput();
     }
@@ -67,42 +69,78 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
         try
         {
-            string processedReply = reply; // Use original reply for initial processing
-            int actionIndex = reply.IndexOf("\nACTION: ");
-            // --- DEBUG: Log action index ---
-            // Debug.Log($"[HandleReply] Action Index for '\\nACTION: ': {actionIndex}");
+            // If an action has already been found in this stream, do nothing further
+            // This prevents displaying any text the LLM might send after the ACTION delimiter
+            if (actionFoundInCurrentStream)
+            {
+                Debug.Log($"[HandleReply] Action already found in stream, ignoring additional text: '{reply}'");
+                return;
+            }
+
+            // Always append the new chunk to the accumulated response
+            if (reply.Length > lastReply.Length && reply.StartsWith(lastReply))
+            {
+                // Extract only the new content to avoid duplication
+                string newContent = reply.Substring(lastReply.Length);
+                currentResponse.Append(newContent);
+                lastReply = reply;
+            }
+            else
+            {
+                // Handle cases where the stream might reset or change significantly
+                currentResponse.Append(reply);
+                lastReply = reply;
+            }
+
+            // Get the accumulated text so far
+            string accumulatedText = currentResponse.ToString();
+
+            // Check for both the original and new action delimiter formats
+            int actionIndex = accumulatedText.IndexOf("[/ACTION]:");
+            if (actionIndex == -1)
+            {
+                // Also check for the original format as a fallback
+                actionIndex = accumulatedText.IndexOf("\nACTION:");
+            }
 
             if (actionIndex != -1)
             {
-                // Action detected
-                processedReply = reply.Substring(0, actionIndex).Trim(); // Update processedReply to be ONLY the dialogue part
-                string functionCall = reply.Substring(actionIndex + 9).Trim();
-                Debug.Log($"[HandleReply] Split Dialogue: '{processedReply}'");
-                Debug.Log($"[HandleReply] Split Function Call: '{functionCall}'");
-                bufferedFunctionCall = functionCall;
-
-                // Set the final display text immediately
-                UpdateDialogueDisplay(processedReply);
+                // Action delimiter found!
+                actionFoundInCurrentStream = true; // Set the flag for this stream
+                
+                // Extract the dialogue part (text before the delimiter)
+                string dialoguePart = accumulatedText.Substring(0, actionIndex).Trim();
+                
+                // Determine which delimiter was found to calculate the correct offset
+                int delimiterLength;
+                if (accumulatedText.IndexOf("[/ACTION]:") == actionIndex)
+                {
+                    delimiterLength = "[/ACTION]:".Length;
+                }
+                else
+                {
+                    delimiterLength = "\nACTION:".Length;
+                }
+                
+                // Extract the function call part (text after the delimiter)
+                string functionCallPart = accumulatedText.Substring(actionIndex + delimiterLength).Trim();
+                
+                Debug.Log($"[HandleReply] Action detected. Delimiter index: {actionIndex}");
+                Debug.Log($"[HandleReply] Split Dialogue: '{dialoguePart}'");
+                Debug.Log($"[HandleReply] Split Function Call: '{functionCallPart}'");
+                
+                // Buffer the function call for processing after stream completes
+                bufferedFunctionCall = functionCallPart;
+                
+                // Update the display with ONLY the dialogue part
+                UpdateDialogueDisplay(dialoguePart);
             }
-            else // No action detected
+            else
             {
-                // Use the *original* reply (which is stored in processedReply initially) for streaming logic
-                if (processedReply.Length > lastReply.Length && processedReply.StartsWith(lastReply))
-                {
-                    string newContent = processedReply.Substring(lastReply.Length);
-                    currentResponse.Append(newContent);
-                    lastReply = processedReply; // Update lastReply with the full cumulative text received so far
-                }
-                else if (processedReply.Length > lastReply.Length) // Handle cases where the stream might reset or change significantly
-                {
-                    currentResponse.Clear();
-                    currentResponse.Append(processedReply);
-                    lastReply = processedReply;
-                }
-                // Update display with the accumulating response
-                UpdateDialogueDisplay(currentResponse.ToString());
+                // No action delimiter found yet, update the display with the accumulated text
+                UpdateDialogueDisplay(accumulatedText);
             }
-        } // End of try block
+        }
         catch (System.Exception e)
         {
             Debug.LogError($"Error in HandleReply: {e}");
@@ -252,6 +290,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         currentResponse.Clear();
         lastReply = "";
         bufferedFunctionCall = null; // Clear buffer on reset too
+        actionFoundInCurrentStream = false; // Reset action flag
 
         // llmCharacter.ClearChat(); // Removed: History should persist until explicitly cleared elsewhere or loaded.
         await Task.Yield();

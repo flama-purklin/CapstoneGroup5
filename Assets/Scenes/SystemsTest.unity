@@ -3152,10 +3152,10 @@ MonoBehaviour:
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
-  temperature: 0.28
-  topK: 55
-  topP: 0.95
-  repeatPenalty: 1
+  temperature: 0.35
+  topK: 40
+  topP: 0.85
+  repeatPenalty: 1.025
   presencePenalty: 0
   frequencyPenalty: 1
 --- !u!4 &377154507
@@ -3952,7 +3952,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 54.15
+  m_fontSize: 54.1
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5901,7 +5901,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 96.7
+  m_fontSize: 96.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -6373,6 +6373,7 @@ MonoBehaviour:
   characterManager: {fileID: 377154506}
   loadingOverlay: {fileID: 0}
   trainLayoutManager: {fileID: 641991973}
+  minLoadingTime: 20
 --- !u!4 &1011721226
 Transform:
   m_ObjectHideFlags: 0
@@ -8028,9 +8029,9 @@ MonoBehaviour:
   npcManager: {fileID: 393672616}
   player: {fileID: 46893853370859958}
   llmInstance: {fileID: 1286452019}
-  maxWarmCharacters: 3
-  checkInterval: 5
-  significantMovementThreshold: 5
+  maxWarmCharacters: 1
+  checkInterval: 10
+  significantMovementThreshold: 10
 --- !u!1001 &1286452018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8053,7 +8054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
-      value: 12000
+      value: 4000
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
@@ -8065,7 +8066,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
@@ -11687,7 +11688,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.3
+  m_fontSize: 28.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
