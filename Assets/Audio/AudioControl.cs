@@ -23,6 +23,7 @@ public class AudioControl : MonoBehaviour
 
     private void RandomizePitch()
     {
+        audioSource.volume = 0.65f + Random.Range(0f, 0.05f);
         audioSource.pitch = 0.95f + Random.Range(0f, 0.1f);
     }
     public void PlaySFX_Enter()
