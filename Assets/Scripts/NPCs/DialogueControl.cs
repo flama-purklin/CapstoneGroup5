@@ -24,6 +24,8 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private BeepSpeak beepSpeak;
     [SerializeField] private TMPro.TextMeshProUGUI npcDialogueText;
 
+    [SerializeField] private AudioControl audioControl;
+
     [SerializeField] private Animator anim;
 
     private bool isTransitioning = false;
@@ -108,6 +110,7 @@ public class DialogueControl : MonoBehaviour
 
     private IEnumerator ActivateDialogueAnimation() 
     {
+        audioControl.PlaySFX_Enter();
         isTransitioning = true;
         dialogueCanvas.SetActive(true);
         anim.Play("DialogueActivate");
@@ -194,6 +197,7 @@ public class DialogueControl : MonoBehaviour
             (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
         {
             if (GameControl.GameController.currentState == GameState.FINAL) shutdown = true;
+            audioControl.PlaySFX_Exit();
             Deactivate();
         }
     }

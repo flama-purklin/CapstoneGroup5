@@ -10,6 +10,7 @@ public class ConstellationToggle : MonoBehaviour
     [SerializeField] Camera mysteryCam;
     [SerializeField] GameObject mysteryHUD;
     [SerializeField] GameObject mainHUD;
+    [SerializeField] AudioControl audioControl;
 
     Camera mainCam;
 
@@ -55,6 +56,8 @@ public class ConstellationToggle : MonoBehaviour
 
                     GameControl.GameController.currentState = GameState.MYSTERY;
                     Time.timeScale = 0f;
+
+                    audioControl.PlaySFX_Enter();
                 }
                 else if (GameControl.GameController.currentState == GameState.MYSTERY)
                 {
@@ -71,6 +74,8 @@ public class ConstellationToggle : MonoBehaviour
 
                     GameControl.GameController.currentState = GameState.DEFAULT;
                     Time.timeScale = 1f;
+
+                    audioControl.PlaySFX_Exit();
                 }    
             }
             else

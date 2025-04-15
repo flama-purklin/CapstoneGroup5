@@ -4,6 +4,7 @@ public class MinigameObj : MonoBehaviour, IInteractable
 {
     [SerializeField] float interactionRadius;
     [SerializeField] GameObject indicator;
+    [SerializeField] AudioControl audioControl;
 
     bool inRange;
 
@@ -30,6 +31,7 @@ public class MinigameObj : MonoBehaviour, IInteractable
             inRange && Input.GetKeyDown(KeyCode.E) &&
             player.GetComponent<PlayerMovement>().closestInteractable == gameObject)
         {
+            if (audioControl != null) { audioControl.PlaySFX_Enter(); }
             Interact();
         }
     }

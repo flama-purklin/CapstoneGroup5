@@ -21,6 +21,6 @@ public class InteractableManager : MonoBehaviour
     public static IEnumerable<GameObject> FindAllInteractablesinRange(Vector3 point, float range)
     {
         range *= range;
-        return allInteractables.Where(x => (point - x.transform.position).sqrMagnitude < range);
+        return allInteractables.Where(x => x != null && (point - x.transform.position).sqrMagnitude < range);
     }
 }

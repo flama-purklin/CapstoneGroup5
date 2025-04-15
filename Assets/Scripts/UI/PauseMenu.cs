@@ -11,6 +11,8 @@ public class PauseMenu : MonoBehaviour
     private string levelToLoad;
     public static bool GameIsPaused = false;
     public GameObject pauseMenuUI;
+    public GameObject[] checkInactive;
+    public AudioControl audioControl;
 
     //store the current game state here before pause
     GameState prevState;
@@ -24,17 +26,28 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && GameControl.GameController.currentState == GameState.DEFAULT)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if(GameIsPaused)
             {
+                audioControl.PlaySFX_Select();
                 Resume();
             }
-            else
+            else if(GameControl.GameController.currentState == GameState.DEFAULT && CanPause())
             {
+                audioControl.PlaySFX_Select();
                 Pause();
             }
         }
+    }
+
+    private bool CanPause()//you can only pause if all game objects in the array are deactivated
+    {
+        for(int i = 0; i < checkInactive.Length; i++)
+        {
+            if (checkInactive[i].activeSelf) { return false; }
+        }
+        return true;
     }
 
     public void Resume()
