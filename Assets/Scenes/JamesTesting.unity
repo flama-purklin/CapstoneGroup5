@@ -1044,6 +1044,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
+  powerControl: {fileID: 0}
 --- !u!4 &236770847
 Transform:
   m_ObjectHideFlags: 0
@@ -3527,7 +3528,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.11666667
+  m_VoxelSize: 0.083333336
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
@@ -4540,6 +4541,7 @@ MonoBehaviour:
   mysteryCam: {fileID: 0}
   mysteryHUD: {fileID: 0}
   mainHUD: {fileID: 0}
+  audioControl: {fileID: 0}
 --- !u!224 &926624312 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 934167514897754339, guid: e3574a9c592ff284f9fdfcb0716e8ad8, type: 3}
@@ -4758,6 +4760,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
+  powerControl: {fileID: 0}
 --- !u!4 &967031264
 Transform:
   m_ObjectHideFlags: 0
@@ -7934,6 +7937,9 @@ MonoBehaviour:
     - m_Text: Table
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
+    - m_Text: Chair
+      m_Image: {fileID: 0}
+      m_Color: {r: 1, g: 1, b: 1, a: 1}
     - m_Text: Walkway
       m_Image: {fileID: 0}
       m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9607,6 +9613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
+  powerControl: {fileID: 0}
 --- !u!4 &1920814902
 Transform:
   m_ObjectHideFlags: 0
@@ -10914,6 +10921,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 2081027310}
   pauseMenuUI: {fileID: 1573745150}
+  checkInactive: []
+  audioControl: {fileID: 0}
 --- !u!95 &2081027310
 Animator:
   serializedVersion: 7
@@ -11359,9 +11368,29 @@ PrefabInstance:
     m_TransformParent: {fileID: 707991437}
     m_Modifications:
     - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: maxRows
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: rowField
+      value: 
+      objectReference: {fileID: 2043806762}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: savePath
+      value: Assets/Resources/TrainJsons/
+      objectReference: {fileID: 0}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: pathField
       value: 
       objectReference: {fileID: 885307976}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: maxColumns
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: columnField
+      value: 
+      objectReference: {fileID: 626316756}
     - target: {fileID: 828280098389829339, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: fileNameField
       value: 
@@ -11529,6 +11558,18 @@ PrefabInstance:
     - target: {fileID: 4951262907829904063, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: carSpacing
       value: 16.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6556456651286033906, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: cellSize
+      value: 0.83
+      objectReference: {fileID: 0}
+    - target: {fileID: 6556456651286033906, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: gridRows
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6556456651286033906, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: gridColumns
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 6556456651286033906, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: shellConfigEntries.Array.size
@@ -11728,6 +11769,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 958192798}
     m_Modifications:
     - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: cellSize
+      value: 0.83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: gridRows
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: gridColumns
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 3163535952881520843, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: spawnOnStart
       value: 0
       objectReference: {fileID: 0}
@@ -11805,16 +11858,24 @@ PrefabInstance:
       objectReference: {fileID: 4900000, guid: aab224b0677d7ae4b916c0d18c3792a3, type: 3}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: carJsonConfigs.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: carJsonConfigs.Array.data[0].carClass
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: carJsonConfigs.Array.data[1].carClass
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: carJsonConfigs.Array.data[0].layoutJson
       value: 
-      objectReference: {fileID: 4900000, guid: aab224b0677d7ae4b916c0d18c3792a3, type: 3}
+      objectReference: {fileID: 4900000, guid: b83d4d708da944545aa6750f13b728be, type: 3}
+    - target: {fileID: 3867605576092239750, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
+      propertyPath: carJsonConfigs.Array.data[1].layoutJson
+      value: 
+      objectReference: {fileID: 4900000, guid: b83d4d708da944545aa6750f13b728be, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: jsonFile
       value: 
@@ -11825,7 +11886,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: prefabSavePath
-      value: Assets/Resources/TrainCars
+      value: Assets/Resources/TrainCars/
       objectReference: {fileID: 0}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: selectedCarClass
