@@ -63,16 +63,6 @@ public class Revelation
     public string Accessibility { get; set; }
 }
 
-// New MysteryAttribute class definition
-public class MysteryAttribute
-{
-    [JsonProperty("trait")]
-    public string Trait { get; set; }
-
-    [JsonProperty("evidence_id")]
-    public string EvidenceId { get; set; }
-}
-
 
 public class Involvement
 {
@@ -81,9 +71,6 @@ public class Involvement
 
     [JsonProperty("type")]
     public string Type { get; set; }
-
-    [JsonProperty("mystery_attributes")]
-    public List<MysteryAttribute> MysteryAttributes { get; set; } // Changed from List<string>
 }
 
 // Whereabouts wrapper class removed
