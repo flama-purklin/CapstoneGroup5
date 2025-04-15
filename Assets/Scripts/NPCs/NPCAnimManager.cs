@@ -90,7 +90,7 @@ public class NPCAnimManager : MonoBehaviour
 
         if (animator.GetBool("moving"))
         {
-            if (movementControl.movementVector.z > 0)
+            if (backward)
                 currentAnim = anims.walkBack; // Assumes walkBack exists in NPCAnimContainer
             else
                 currentAnim = anims.walkFront; // Assumes walkFront exists
@@ -116,16 +116,16 @@ public class NPCAnimManager : MonoBehaviour
         }
         if (movementControl.movementVector.z > 0)
             backward = true;
-        else
+        else if (movementControl.movementVector.z < 0)
             backward = false;
 
     //then flip anim based on last movement vector
     if (sprite != null) // Add null check for safety
     {
-        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x >= 0 && backward))
+        if ((movementControl.movementVector.x < 0 && !backward) || (movementControl.movementVector.x > 0 && backward))
             sprite.transform.localScale = new Vector3(-originalScale.x, originalScale.y, originalScale.z);
-        else
-            sprite.transform.localScale = originalScale;
+        else if ((movementControl.movementVector.x > 0 && !backward) || (movementControl.movementVector.x < 0 && backward))
+                sprite.transform.localScale = originalScale;
     }
 }
 
