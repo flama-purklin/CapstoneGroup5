@@ -59,6 +59,9 @@ public class LLMDialogueManager : BaseDialogueManager
         currentResponse.Clear();
         lastReply = "";
 
+        //drain power here
+        GameControl.GameController.powerControl.PowerDrain(0.005f);
+
         _ = llmCharacter.Chat(userInput, HandleReply, OnReplyComplete);
     }
 

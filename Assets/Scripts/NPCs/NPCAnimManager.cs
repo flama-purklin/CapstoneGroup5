@@ -6,7 +6,7 @@ public class NPCAnimManager : MonoBehaviour
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] Animator animator;
     [SerializeField] NPCMovement movementControl;
-    [SerializeField] NPCAnimContainer anims; // This will be assigned externally now
+    [SerializeField] public NPCAnimContainer anims; // This will be assigned externally now
     GameObject player;
 
     // Removed allAnims array - no longer needed
@@ -174,11 +174,12 @@ public class NPCAnimManager : MonoBehaviour
     {
         if (container != null)
         {
-            this.anims = container;
+            anims = container;
             // Initialize currentAnim based on the new container
-            if (this.anims.idleFront != null) // Default to idleFront
+            if (anims.idleFront != null) // Default to idleFront
             {
-                currentAnim = this.anims.idleFront;
+                currentAnim = anims.idleFront;
+                Debug.Log(container + " successfully added to " + gameObject.name);
             }
             else
             {
@@ -190,7 +191,7 @@ public class NPCAnimManager : MonoBehaviour
         else
         {
             Debug.LogError($"NPCAnimManager on {gameObject.name}: Attempted to assign a null NPCAnimContainer.");
-            this.anims = null;
+            anims = null;
             currentAnim = null;
         }
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "npcAnims", menuName = "ScriptableObjects/NPCAnimContainer", order = 1)]
 public class NPCAnimContainer : ScriptableObject
 {
-
+    public Sprite profile;
     public Sprite[] walkFront;
     public Sprite[] walkBack;
     public Sprite[] idleFront;

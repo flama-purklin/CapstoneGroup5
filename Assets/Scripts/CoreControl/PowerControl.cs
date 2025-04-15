@@ -31,6 +31,14 @@ public class PowerControl : MonoBehaviour
         maxMask = powerBack.rectTransform.rect.width;
     }
 
+    private void Update()
+    {
+        if (powerActive)
+            powerPercent.text = Mathf.CeilToInt((float)currentPower / powerTotal * 100f) + "%";
+        else
+            powerPercent.text = string.Empty;
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -41,10 +49,7 @@ public class PowerControl : MonoBehaviour
                 StopAllCoroutines();
                 GameOver();
             }
-            powerPercent.text = Mathf.CeilToInt((float)currentPower / powerTotal * 100f) + "%";
         }
-        else
-            powerPercent.text = string.Empty;
     }
 
     public void PowerInit()
@@ -102,8 +107,8 @@ public class PowerControl : MonoBehaviour
                 //update the actual mask
                 powerMask.padding = newPadding;
 
-                currentTime += Time.fixedDeltaTime;
-                yield return new WaitForFixedUpdate();
+                currentTime += Time.unscaledDeltaTime;
+                yield return new WaitForEndOfFrame();
             }
         }
         else

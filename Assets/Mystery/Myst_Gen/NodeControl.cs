@@ -427,6 +427,10 @@ public class NodeControl : MonoBehaviour
     {
         theoryMode = TheoryMode.Simulation;
         instructions.text = "Running simulation...";
+
+        //power decrement
+        GameControl.GameController.powerControl.PowerDrain(0.1f);
+
         StartCoroutine(Simulation());
     }
 

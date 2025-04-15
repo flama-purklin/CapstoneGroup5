@@ -104,7 +104,13 @@ public class DialogueControl : MonoBehaviour
         llmDialogueManager.SetCharacter(llmCharacter);
         GameControl.GameController.currentState = GameState.DIALOGUE;
         if (defaultHud) defaultHud.SetActive(false);
-        characterName.text = llmCharacter.AIName; 
+
+        //set the character name
+        characterName.text = llmCharacter.AIName;
+
+        //set the character profile
+        characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;
+
         StartCoroutine(ActivateDialogueAnimation()); 
     }
 

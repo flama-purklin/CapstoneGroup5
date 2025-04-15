@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: LightPlayer
+  m_EditorClassIdentifier: 
+  walkFront:
+  - {fileID: -356062949, guid: 359c2adbc7ca90c4b8806349bbea9d18, type: 3}
+  - {fileID: -577933766, guid: 359c2adbc7ca90c4b8806349bbea9d18, type: 3}
+  - {fileID: -382296145, guid: 359c2adbc7ca90c4b8806349bbea9d18, type: 3}
+  - {fileID: 1590192124, guid: 359c2adbc7ca90c4b8806349bbea9d18, type: 3}
+  walkBack:
+  - {fileID: -97849369, guid: d04e1dcc2e22ecf4099e8067183907bf, type: 3}
+  - {fileID: -2043462819, guid: d04e1dcc2e22ecf4099e8067183907bf, type: 3}
+  - {fileID: -2035494698, guid: d04e1dcc2e22ecf4099e8067183907bf, type: 3}
+  - {fileID: -241143311, guid: d04e1dcc2e22ecf4099e8067183907bf, type: 3}
+  idleFront:
+  - {fileID: -1152567207, guid: 6d9d3d0403edf8f4cad8e22a9b186b55, type: 3}
+  - {fileID: -253086895, guid: 6d9d3d0403edf8f4cad8e22a9b186b55, type: 3}
+  idleBack:
+  - {fileID: -163274111, guid: 11a3534644cf9f74da71cb21dfcb5803, type: 3}
+  - {fileID: 1068937413, guid: 11a3534644cf9f74da71cb21dfcb5803, type: 3}

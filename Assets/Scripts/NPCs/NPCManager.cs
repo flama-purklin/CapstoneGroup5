@@ -54,7 +54,7 @@ public class NPCManager : MonoBehaviour
             // --- LLMCharacter Child should NOT be on the prefab ---
 
             // --- Assign Animation Container ---
-            NPCAnimManager npcAnimManager = npcInstance.GetComponent<NPCAnimManager>();
+            NPCAnimManager npcAnimManager = npcInstance.GetComponentInChildren<NPCAnimManager>();
             if (npcAnimManager == null) {
                 Debug.LogWarning($"NPCManager: Adding missing NPCAnimManager to {npcInstance.name}. Check prefab!");
                 npcAnimManager = npcInstance.AddComponent<NPCAnimManager>();
@@ -62,7 +62,8 @@ public class NPCManager : MonoBehaviour
             if (npcAnimManager != null) {
                 if (availableAnimContainers != null && availableAnimContainers.Length > 0) {
                     int containerIndex = characterIndex % availableAnimContainers.Length;
-                    NPCAnimContainer containerToAssign = availableAnimContainers[containerIndex];
+                    //NPCAnimContainer containerToAssign = availableAnimContainers[containerIndex];
+                    NPCAnimContainer containerToAssign = RetrieveCharacter(characterName);
                     if (containerToAssign != null) { npcAnimManager.SetAnimContainer(containerToAssign); }
                     else { Debug.LogWarning($"NPCManager: AnimContainer at index {containerIndex} is null for {characterName}."); }
                 } else { Debug.LogWarning($"NPCManager: availableAnimContainers array is null or empty for {characterName}."); }
@@ -116,4 +117,21 @@ public class NPCManager : MonoBehaviour
 
     public float GetInitializationProgress() { return isInitialized ? 1.0f : 0.0f; }
     
+    public NPCAnimContainer RetrieveCharacter(string charId)
+    {
+        Debug.Log("Attempting to retrieve anims for " + charId);
+        switch (charId)
+        {
+            case "maxwell_porter": return availableAnimContainers[5];
+            case "gregory_crowe": return availableAnimContainers[6];
+            case "victoria_blackwood": return availableAnimContainers[0];
+            case "eleanor_verne": return availableAnimContainers[1];
+            case "nova_winchester": return availableAnimContainers[2];
+            case "penelope_valor": return availableAnimContainers[3];
+            case "gideon_marsh": return availableAnimContainers[7];
+            case "mira_sanchez": return availableAnimContainers[4];
+            case "timmy_seol": return availableAnimContainers[8];
+            default: return null;
+        }
+    }
 }
