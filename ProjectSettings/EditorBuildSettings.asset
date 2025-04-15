@@ -23,9 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ResultScreen.unity
     guid: 5ae9530c4474beb49997c4f1ae516ea2
-  - enabled: 0
-    path: Assets/Scenes/JamesTesting.unity
-    guid: df46d87235fa2164caeaccacfed0c3df
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 35845fe01580c41289b024647b1d1c53, type: 3}
   m_UseUCBPForAssetBundles: 0
