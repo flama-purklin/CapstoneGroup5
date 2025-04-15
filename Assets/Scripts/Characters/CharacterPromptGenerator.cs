@@ -184,25 +184,23 @@ namespace LLMUnity
                 StringBuilder formattedRevelations = new StringBuilder();
                 if (characterData.Core.Revelations != null && characterData.Core.Revelations.Count > 0)
                 {
+                    formattedRevelations.AppendLine("Your available information nodes:");
                     foreach (var revelation in characterData.Core.Revelations)
                     {
-                        string revId = revelation.Key;
                         Revelation revData = revelation.Value;
                         
                         if (revData != null && !string.IsNullOrEmpty(revData.Content) && !string.IsNullOrEmpty(revData.Reveals))
                         {
-                            // Format revelation entry
-                            formattedRevelations.AppendLine($"**Revelation ID: {revId}**");
-                            formattedRevelations.AppendLine($"* **Reveals node_id:** {revData.Reveals}");
-                            
+                            // Format revelation entry with emphasis on the node_id to be revealed (not the revelation ID)
                             string triggerType = revData.TriggerType ?? "unknown";
                             string triggerValue = revData.TriggerValue ?? "unknown";
-                            formattedRevelations.AppendLine($"* **Trigger:** Type={triggerType}, Value={triggerValue}");
-                            
                             string accessibility = revData.Accessibility ?? "medium";
-                            formattedRevelations.AppendLine($"* **Access difficulty:** {accessibility}");
                             
-                            formattedRevelations.AppendLine($"* **Content:** \"{revData.Content}\"");
+                            formattedRevelations.AppendLine($"## Node ID: \"{revData.Reveals}\"");
+                            formattedRevelations.AppendLine($"* **When triggered:** When player {triggerValue} (Trigger type: {triggerType})");
+                            formattedRevelations.AppendLine($"* **Difficulty:** {accessibility}");
+                            formattedRevelations.AppendLine($"* **What to say:** \"{revData.Content}\"");
+                            formattedRevelations.AppendLine($"* **IMPORTANT:** After saying this, use: [/ACTION]: reveal_node(node_id={revData.Reveals})");
                             formattedRevelations.AppendLine();
                         }
                     }
@@ -251,10 +249,13 @@ namespace LLMUnity
                 
                 prompt.AppendLine("# REVELATION SYSTEM (CRITICAL)");
                 prompt.AppendLine();
-                prompt.AppendLine("You possess ONLY these specific revelations that MUST ONLY be revealed when EXACTLY triggered:");
+                prompt.AppendLine("You can only reveal specific information when EXACTLY triggered. When triggered, you MUST use the EXACT node_id in your function call:");
                 prompt.Append(formattedRevelations);
                 prompt.AppendLine();
-                prompt.AppendLine("**NEVER INVENT OR HALLUCINATE ADDITIONAL REVELATION NODES.**");
+                prompt.AppendLine("**IMPORTANT FUNCTION CALL RULES:**");
+                prompt.AppendLine("* ONLY use node_ids listed above in your reveal_node function calls");
+                prompt.AppendLine("* NEVER invent new node_ids or use the revelation name itself");
+                prompt.AppendLine("* The node_id parameter must EXACTLY MATCH one of the Node IDs above");
                 prompt.AppendLine();
                 prompt.AppendLine("**Triggering rules:**");
                 prompt.AppendLine("* For evidence_presentation: Player uses `/give [Evidence Name]`");
@@ -268,8 +269,8 @@ namespace LLMUnity
                 prompt.AppendLine();
                 prompt.AppendLine("**1. reveal_node(node_id=STRING_VALUE)**");
                 prompt.AppendLine("* Use ONLY after delivering triggered revelation dialogue");
-                prompt.AppendLine("* CRITICAL: node_id MUST be one of the exact values listed in your revelations section");
-                prompt.AppendLine("* NEVER invent new node IDs, even if they seem plausible");
+                prompt.AppendLine("* CRITICAL: node_id parameter MUST EXACTLY match one of the Node IDs from your revelations section");
+                prompt.AppendLine("* DO NOT use the revelation name or make up new node IDs");
                 prompt.AppendLine("* Example:");
                 prompt.AppendLine("  ```");
                 prompt.AppendLine("  \"I saw Gregory talking to Maxwell right before it happened... they seemed agitated.\"");

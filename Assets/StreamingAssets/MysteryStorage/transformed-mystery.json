@@ -405,7 +405,7 @@
             "content": "Photos? Oh, I have *plenty*. Caught the argument, faces near the lounge... But info isn't free. What exclusive can *you* offer *me*?",
             "reveals": "barrier-camera", 
             "trigger_type": "conversation_topic",
-            "trigger_value": "Asking about photos or evidence she might have",
+            "trigger_value": "Asking about photos or evidence she might have AND gossip about other characters she knows",
             "accessibility": "easy"
           },
           "mira_testifies_photo_content": {
