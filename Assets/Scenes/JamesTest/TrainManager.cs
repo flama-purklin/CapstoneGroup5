@@ -25,7 +25,8 @@ public class TrainManager : MonoBehaviour
         Kitchen,
         Bar,
         Engine,
-        Storage
+        Storage,
+        Lounge
     }
 
     // Class for centralizing car info. Should add proper access protection later, all pub now
