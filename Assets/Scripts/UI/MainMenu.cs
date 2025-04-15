@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
     public AudioMixer audioMixer;
     public TMP_Dropdown resolutionDropdown;
 
+    public Slider volumeSlider;
     public AudioSource uiAudioSource;
     public AudioClip hoverSound;
     public AudioClip clickSound;
@@ -102,7 +103,13 @@ public class MainMenu : MonoBehaviour
 
     public void SetVolume(float volume)
     {
-        audioMixer.SetFloat("volume", volume);
+        if(volume < 1) { volume = 0.001f; }
+        RefreshSlider(volume);
+        audioMixer.SetFloat("volume", Mathf.Log10(volume / 100) * 20f);
+    }
+    public void RefreshSlider(float value)
+    {
+        volumeSlider.value = value;
     }
 
     public void BackToMainMenu()

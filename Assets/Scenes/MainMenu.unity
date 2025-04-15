@@ -864,6 +864,7 @@ MonoBehaviour:
   optionsMenu: {fileID: 821042019}
   audioMixer: {fileID: 24100000, guid: 7b23eb4594c985a41a5a9613442e46bb, type: 2}
   resolutionDropdown: {fileID: 1341100464}
+  volumeSlider: {fileID: 0}
   uiAudioSource: {fileID: 175344053}
   hoverSound: {fileID: 8300000, guid: 1c544331b7488a641883135df9fbcdd7, type: 3}
   clickSound: {fileID: 8300000, guid: 5bf4e86a92634174f8347872ac9b8637, type: 3}
@@ -2087,6 +2088,7 @@ MonoBehaviour:
   optionsMenu: {fileID: 821042019}
   audioMixer: {fileID: 24100000, guid: 7b23eb4594c985a41a5a9613442e46bb, type: 2}
   resolutionDropdown: {fileID: 1341100464}
+  volumeSlider: {fileID: 1141025641}
   uiAudioSource: {fileID: 821042025}
   hoverSound: {fileID: 8300000, guid: 1c544331b7488a641883135df9fbcdd7, type: 3}
   clickSound: {fileID: 8300000, guid: 5bf4e86a92634174f8347872ac9b8637, type: 3}
@@ -3382,10 +3384,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 327126516}
   m_HandleRect: {fileID: 1275516701}
   m_Direction: 0
-  m_MinValue: -20
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
