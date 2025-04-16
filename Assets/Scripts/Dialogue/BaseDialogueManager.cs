@@ -69,32 +69,20 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
         try
         {
-            // If an action has already been found in this stream, do nothing further
-            // This prevents displaying any text the LLM might send after the ACTION delimiter
+            // If an action has already been found in this stream, completely ignore any further text
             if (actionFoundInCurrentStream)
             {
                 Debug.Log($"[HandleReply] Action already found in stream, ignoring additional text: '{reply}'");
                 return;
             }
 
-            // Always append the new chunk to the accumulated response
-            if (reply.Length > lastReply.Length && reply.StartsWith(lastReply))
-            {
-                // Extract only the new content to avoid duplication
-                string newContent = reply.Substring(lastReply.Length);
-                currentResponse.Append(newContent);
-                lastReply = reply;
-            }
-            else
-            {
-                // Handle cases where the stream might reset or change significantly
-                currentResponse.Append(reply);
-                lastReply = reply;
-            }
-
+            // SIMPLIFICATION: Just append the new chunk to the accumulated response
+            // This is more straightforward than the previous complex logic
+            currentResponse.Append(reply);
+            
             // Get the accumulated text so far
             string accumulatedText = currentResponse.ToString();
-
+            
             // Check for both the original and new action delimiter formats
             int actionIndex = accumulatedText.IndexOf("[/ACTION]:");
             if (actionIndex == -1)
@@ -134,6 +122,11 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 
                 // Update the display with ONLY the dialogue part
                 UpdateDialogueDisplay(dialoguePart);
+                
+                // CRITICAL: Clear the currentResponse - this dialogue turn is effectively finished
+                // We no longer need to accumulate text since we've found the action
+                currentResponse.Clear();
+                lastReply = ""; // Reset this as well to avoid any carry-over issues
             }
             else
             {
