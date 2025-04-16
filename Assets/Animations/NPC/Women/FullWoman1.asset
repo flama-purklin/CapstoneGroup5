@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
   m_Name: FullWoman1
   m_EditorClassIdentifier: 
-  profile: {fileID: -1293076981, guid: 9af736dae14854c4f8b9e78891217007, type: 3}
+  profile: {fileID: 21300000, guid: 2f3732807505d0a448b92091a7ba2a02, type: 3}
   walkFront:
   - {fileID: -351189271, guid: 584107a301633504f914af67604c3383, type: 3}
   - {fileID: -146402142, guid: 584107a301633504f914af67604c3383, type: 3}

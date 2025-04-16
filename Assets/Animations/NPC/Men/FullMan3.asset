@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
   m_Name: FullMan3
   m_EditorClassIdentifier: 
-  profile: {fileID: -529924190, guid: 205d370f26dd0ae44a39f4e0d5b68ada, type: 3}
+  profile: {fileID: 21300000, guid: 5a7642149a27b9442b8e2466a2865e9e, type: 3}
   walkFront:
   - {fileID: 1151377860, guid: 9af736dae14854c4f8b9e78891217007, type: 3}
   - {fileID: -1293076981, guid: 9af736dae14854c4f8b9e78891217007, type: 3}
