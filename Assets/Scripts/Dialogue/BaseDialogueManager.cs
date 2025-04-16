@@ -76,8 +76,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 return;
             }
 
-            // SIMPLIFICATION: Just append the new chunk to the accumulated response
-            // This is more straightforward than the previous complex logic
+            // CRITICAL FIX: Reset StringBuilder and use the complete response from the LLM
+            // Instead of accumulating chunks and creating duplications
+            currentResponse.Clear();
             currentResponse.Append(reply);
             
             // Get the accumulated text so far
