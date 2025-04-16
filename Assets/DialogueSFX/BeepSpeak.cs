@@ -128,19 +128,31 @@ public class BeepSpeak : MonoBehaviour
     // Called every time there is a new update from the LLM.
     public void UpdateStreamingText(string cumulativeText)
     {
-        // If the new cumulative text is shorter than our previous target, assume this is a new response.
-        if (cumulativeText.Length < targetText.Length)
+        // Don't update if the text hasn't changed - prevents duplicate processing
+        if (cumulativeText == targetText)
         {
+            return;
+        }
+        
+        // Update the target text
+        targetText = cumulativeText;
+        lastTargetUpdateTime = Time.time;
+        
+        // If we need to start a new typing process, ALWAYS reset the state first
+        if (typingCoroutine == null) 
+        { 
+            // Clean slate for new typing process - prevents text duplication
             currentDisplayedText = "";
             lastProcessedText = "";
             lastProcessedWord = "";
             if (dialogueText != null)
                 dialogueText.text = "";
+                
+            // Now start the typing coroutine with a clean state
+            typingCoroutine = StartCoroutine(ProcessTyping());
         }
-
-        targetText = cumulativeText;
-        lastTargetUpdateTime = Time.time;
-        if (typingCoroutine == null) { typingCoroutine = StartCoroutine(ProcessTyping()); }
+        // If typingCoroutine is NOT null, the existing coroutine will continue 
+        // processing the difference between currentDisplayedText and targetText
     }
     private IEnumerator ProcessTyping()
     {
