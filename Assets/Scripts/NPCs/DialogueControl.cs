@@ -60,12 +60,32 @@ public class DialogueControl : MonoBehaviour
         }
     }
 
+    // Completely redesigned streaming text handling to prevent animation interruptions
     public void DisplayNPCDialogueStreaming(string dialogue)
     {
-        // Forward the text update to BeepSpeak if available
+        // Only start a new BeepSpeak animation if:
+        // 1. BeepSpeak is not currently typing OR
+        // 2. This appears to be a completely new message (significant length difference)
         if (beepSpeak != null)
         {
-            beepSpeak.UpdateStreamingText(dialogue);
+            // Get current text length being displayed/processed
+            int currentLength = beepSpeak.GetCurrentTargetLength();
+            
+            // If BeepSpeak is currently typing and this isn't a drastically different message,
+            // DON'T interrupt the animation - store the text for later display
+            if (beepSpeak.IsPlaying && dialogue.Length <= currentLength + 20) 
+            {
+                // Store the latest text as the "final" version but don't interrupt current animation
+                beepSpeak.SetFinalText(dialogue);
+                Debug.Log($"[DialogueControl] Stored final text (len={dialogue.Length}) without interrupting current animation (len={currentLength})");
+            }
+            else 
+            {
+                // Either BeepSpeak is not currently playing, or this is a much larger text update
+                // In this case, it's appropriate to start a new animation
+                Debug.Log($"[DialogueControl] Starting new BeepSpeak animation for text (len={dialogue.Length})");
+                beepSpeak.UpdateStreamingText(dialogue);
+            }
         }
         else if (npcDialogueText != null)
         {
@@ -208,12 +228,10 @@ public class DialogueControl : MonoBehaviour
                  Debug.Log("[DialogueControl.Deactivate] No save task was started (character null or save name empty).");
             }
             
-            // --- ADD 2 SECOND DELAY BEFORE ANIMATION ---
-            Debug.Log($"[TIMEDBG] Starting 2-second delay at {Time.realtimeSinceStartup:F3}s");
-            yield return new WaitForSeconds(2.0f);
-            Debug.Log($"[TIMEDBG] 2-second delay ended at {Time.realtimeSinceStartup:F3}s");
+            // --- ANIMATE IMMEDIATELY (No delay) ---
+            Debug.Log($"[TIMEDBG] Starting deactivation animation immediately at {Time.realtimeSinceStartup:F3}s");
             
-            // --- THEN ANIMATE ---
+            // --- ANIMATE ---
             float animStartTime = Time.realtimeSinceStartup;
             Debug.Log($"[TIMEDBG] Starting deactivation animation at {animStartTime:F3}s");
             anim.Rebind();

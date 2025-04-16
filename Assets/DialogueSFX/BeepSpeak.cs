@@ -64,6 +64,21 @@ public class BeepSpeak : MonoBehaviour
     
     // Debug method to check if typing coroutine is active
     public bool GetTypingCoroutineActive() => typingCoroutine != null;
+    
+    // Public method to forcefully stop any active typing
+    public void StopTyping()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+            Debug.Log("[BeepSpeak] StopTyping called and stopped active typing coroutine");
+        }
+        else
+        {
+            Debug.Log("[BeepSpeak] StopTyping called but no active typing coroutine to stop");
+        }
+    }
 
     private PrecomputedSentence currentSentence;
     private PrecomputedWord currentWord;
@@ -154,71 +169,194 @@ public class BeepSpeak : MonoBehaviour
             // Now start the typing coroutine with a clean state
             typingCoroutine = StartCoroutine(ProcessTyping());
         }
-        // If typingCoroutine is NOT null, the existing coroutine will continue 
-        // processing the difference between currentDisplayedText and targetText
-    }
-    private IEnumerator ProcessTyping()
-    {
-        // Continue until all characters in targetText have been typed
-        while (currentDisplayedText.Length < targetText.Length)
+        
+        // If this is a "final" update (likely the last chunk from LLM), 
+        // make sure we have a way to force complete the text display, but
+        // give the typing animation much more time to complete naturally
+        if (cumulativeText.EndsWith(".") || cumulativeText.EndsWith("!") || cumulativeText.EndsWith("?"))
         {
-            // Wait until the targetText has not updated for at least stabilityDelay seconds.
-            if (Time.time - lastTargetUpdateTime < stabilityDelay)
+            // Start a backup timer to ensure typingCoroutine gets cleaned up,
+            // but with a much longer delay to allow the typing animation to play
+            StartCoroutine(EnsureTypingCompletesWithLongDelay());
+        }
+    }
+    
+    // Modified method with a longer delay to allow typing animation to complete naturally
+    private IEnumerator EnsureTypingCompletesWithLongDelay()
+    {
+        // Wait for a much longer time (8 seconds) after receiving final punctuation
+        // This should allow most reasonable text segments to finish typing naturally
+        yield return new WaitForSeconds(8.0f);
+        
+        // If the typing coroutine is still running after this very long time, it might be genuinely stuck
+        if (typingCoroutine != null)
+        {
+            Debug.LogWarning("[BeepSpeak] Typing still active 8s after final update. Force completing display.");
+            
+            // Force complete the text display
+            if (dialogueText != null)
             {
-                yield return new WaitForSeconds(0.03f);
-                continue;
-            }
-
-            // Get what remains to be typed.
-            string remaining = targetText.Substring(currentDisplayedText.Length);
-
-            // If there is no space or punctuation immediately, wait until a complete word is available
-            int boundaryIndex = FindWordBoundary(remaining);
-            // If no boundary is found, we simply wait a short period and try again
-            if (boundaryIndex == -1)
-            {
-                yield return new WaitForSeconds(0.03f);
-                continue;
-            }
-
-            // Extract the complete next word plus the boundary character
-            string nextChunk = remaining.Substring(0, boundaryIndex + 1);
-
-            // Type the word letter-by-letter.
-            for (int i = 0; i < nextChunk.Length; i++)
-            {
-                char letter = nextChunk[i];
-                currentDisplayedText += letter;
-                if (dialogueText != null) dialogueText.text = currentDisplayedText;
-
-                // Determine the delay for this character.
-                float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
-                if (letter == '.' || letter == '!' || letter == '?') { delay += 0.5f; }
-                else if(letter == ';' || letter == ':' || letter == ',') { delay += 0.35f; }
-
-                //ellipses shenanigans
-                if (letter == '.' && currentDisplayedText.Length < targetText.Length && targetText[currentDisplayedText.Length] == '.')
-                {
-                    delay -= 0.4f;
-                }
-
-                // assume a word ends at the first space or punctuation
-                string word = ExtractCurrentWord(currentDisplayedText);
-                if (!string.IsNullOrEmpty(word))
-                {
-                    int letterIndexInWord = word.Length - 1; // index of the just-typed letter within the current word
-                    if (IsSyllable(word, letterIndexInWord))
-                    {
-                        PlayVoiceForSyllable(word, letterIndexInWord);
-                    }
-                }
-                yield return new WaitForSeconds(delay);
+                dialogueText.text = targetText;
+                currentDisplayedText = targetText;
             }
             
+            // Stop the typing coroutine if it's still running
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+                typingCoroutine = null;
+                Debug.Log("[BeepSpeak] ProcessTyping force completed after long timeout, typingCoroutine set to null");
+            }
         }
-        // Finished typing; clear the coroutine reference
+    }
+    
+    // Method to force immediate completion without waiting
+    public void ForceCompleteTyping()
+    {
+        // Skip any remaining typing animation
+        if (dialogueText != null)
+        {
+            dialogueText.text = targetText;
+            currentDisplayedText = targetText;
+        }
+        
+        // Clean up the coroutine
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+            Debug.Log("[BeepSpeak] ForceCompleteTyping called, typingCoroutine set to null");
+        }
+    }
+
+    // Added method to get the current target text length
+    public int GetCurrentTargetLength()
+    {
+        return targetText?.Length ?? 0;
+    }
+
+    // Store final text to use once current animation completes
+    // This prevents interrupting ongoing typing animations
+    public void SetFinalText(string finalText)
+    {
+        // Only update the target text without restarting the animation
+        if (string.IsNullOrEmpty(finalText) || finalText == targetText)
+        {
+            return;
+        }
+        
+        // Store the final text
+        targetText = finalText;
+        lastTargetUpdateTime = Time.time;
+        
+        // Start the safety timeout to ensure typing eventually completes
+        if (finalText.EndsWith(".") || finalText.EndsWith("!") || finalText.EndsWith("?"))
+        {
+            StartCoroutine(EnsureTypingCompletesWithLongDelay());
+        }
+        
+        Debug.Log($"[BeepSpeak] Stored final text (len={finalText.Length}) for when current animation completes");
+    }
+
+    // Complete rewrite of ProcessTyping to fix animation interruption issues
+    private IEnumerator ProcessTyping()
+    {
+        Debug.Log("[BeepSpeak] Starting ProcessTyping for text of length: " + targetText.Length);
+        
+        // Store initial text length to track progress
+        int initialTargetLength = targetText.Length;
+        float typingStartTime = Time.time;
+        
+        // Calculate a reasonable typing duration based on text length (about 25 chars per second)
+        float estimatedDuration = Mathf.Max(1.0f, initialTargetLength * 0.04f);
+        Debug.Log($"[BeepSpeak] Estimated typing duration: {estimatedDuration:F2}s for {initialTargetLength} chars");
+        
+        // Variables to track typing progress
+        float elapsedTime = 0;
+        float lastUpdateTime = Time.time;
+        int lastDisplayedLength = 0;
+        
+        // Continue until the animation completes
+        while (elapsedTime < estimatedDuration)
+        {
+            // Update elapsed time
+            elapsedTime = Time.time - typingStartTime;
+            
+            // Calculate how far through the text we should be (0.0 to 1.0)
+            float normalizedProgress = Mathf.Clamp01(elapsedTime / estimatedDuration);
+            
+            // Calculate how many characters should be displayed at this point
+            int targetDisplayLength = Mathf.FloorToInt(targetText.Length * normalizedProgress);
+            
+            // If we've just added a new character, play a sound for it
+            if (targetDisplayLength > lastDisplayedLength && targetDisplayLength <= targetText.Length)
+            {
+                // Update the displayed text
+                currentDisplayedText = targetText.Substring(0, targetDisplayLength);
+                if (dialogueText != null)
+                    dialogueText.text = currentDisplayedText;
+                
+                // Only play sounds every few characters to avoid sound spam
+                if ((targetDisplayLength - lastDisplayedLength) >= 1)
+                {
+                    // Get the newest character
+                    char newestChar = targetText[targetDisplayLength - 1];
+                    
+                    // Play a sound if appropriate
+                    if (Char.IsLetter(newestChar))
+                    {
+                        // Extract current word
+                        string word = ExtractCurrentWord(currentDisplayedText);
+                        if (!string.IsNullOrEmpty(word))
+                        {
+                            int letterIndexInWord = word.Length - 1;
+                            if (IsSyllable(word, letterIndexInWord))
+                            {
+                                PlayVoiceForSyllable(word, letterIndexInWord);
+                            }
+                        }
+                    }
+                }
+                
+                lastDisplayedLength = targetDisplayLength;
+            }
+            
+            // If the target text was updated (new content from LLM), adjust our typing speed
+            if (Time.time - lastUpdateTime < 0.1f)
+            {
+                // Target text has been updated recently
+                if (targetText.Length > initialTargetLength)
+                {
+                    // Recalculate the estimated duration based on new length
+                    float newEstimatedDuration = Mathf.Max(estimatedDuration, targetText.Length * 0.04f);
+                    
+                    // Adjust timing to maintain consistent typing speed
+                    float completionRatio = normalizedProgress;
+                    typingStartTime = Time.time - (completionRatio * newEstimatedDuration);
+                    estimatedDuration = newEstimatedDuration;
+                    
+                    // Update the initialTargetLength
+                    initialTargetLength = targetText.Length;
+                    
+                    Debug.Log($"[BeepSpeak] Text updated mid-typing. New length: {targetText.Length}, new duration: {estimatedDuration:F2}s");
+                }
+                
+                lastUpdateTime = Time.time;
+            }
+            
+            // Wait a small amount before the next character
+            yield return new WaitForSeconds(0.02f);  // 50 updates per second
+        }
+        
+        // Ensure the final text is fully displayed
+        currentDisplayedText = targetText;
+        if (dialogueText != null)
+            dialogueText.text = targetText;
+        
+        Debug.Log($"[BeepSpeak] Typing completed after {Time.time - typingStartTime:F2}s ({targetText.Length} characters)");
         typingCoroutine = null;
     }
+
     private int FindWordBoundary(string text)
     {
         int space = text.IndexOf(' ');

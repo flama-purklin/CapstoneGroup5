@@ -220,8 +220,6 @@ NPCs are managed through the following components:
 
 *Design Goal: To facilitate player expression and strategic social interaction. The system aims to simulate the push-and-pull of detective interviews, allowing players to extract information through intelligent conversation and social deduction rather than selecting from predefined options.*
 
-> ⚠️ **ACTIVE DEBUGGING:** The dialogue system is currently undergoing troubleshooting for text duplication, UI input state, and performance issues. Diagnostic logging has been added with `[INPUTDBG]` and `[TIMEDBG]` tags.
-
 The dialogue system connects player interactions with the LLM system:
 
 1. **DialogueControl**:
@@ -230,17 +228,16 @@ The dialogue system connects player interactions with the LLM system:
    - Connects NPCs to the dialogue system.
    - On activation, calls `LLMCharacter.Load()` to load history/cache.
    - On deactivation, calls `LLMCharacter.Save()` to save history/cache and notifies `CharacterManager`.
-   - Now includes timing diagnostics to track UI animation times and I/O operations.
-   - Adds a 2-second delay before UI deactivation to allow reading the final dialogue text.
+   - Includes timing diagnostics to track UI animation times and I/O operations.
+   - **Improved Responsiveness:** Removed 2-second delay before UI deactivation to improve responsiveness.
 
 2. **BaseDialogueManager**:
    - Abstract class handling core dialogue logic.
-   - **Recent Fix:** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply` to prevent text duplication, as LLM response chunks contain the complete response so far, not just new content.
+   - **Previous Fix:** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply` to prevent text duplication, as LLM response chunks contain the complete response so far, not just new content.
+   - **Action Streaming Fix:** Implemented proper handling of multi-chunk function calls using `isAccumulatingAction` flag and `actionBuffer` to accumulate text across multiple LLM response chunks when the action delimiter (`[/ACTION]:` or `\nACTION:`) appears in a chunk but the full function call parameters arrive in subsequent chunks.
    - Supports both `\nACTION:` and `[/ACTION]:` delimiters for function parsing.
-   - Uses `actionFoundInCurrentStream` flag to ignore further text chunks after detecting a function call.
-   - Buffers function calls with `bufferedFunctionCall` for processing after BeepSpeak finishes.
    - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
-   - Now includes diagnostic logging to track the input re-enabling process.
+   - Includes proper reset of all action state flags in `OnReplyComplete` to ensure clean state between LLM responses.
 
 3. **LLMDialogueManager**:
    - Inherits from BaseDialogueManager.
@@ -252,7 +249,8 @@ The dialogue system connects player interactions with the LLM system:
    - Handles text display with typing effect and audio.
    - Manages a typing coroutine (`typingCoroutine`) for text animation.
    - The `IsPlaying` property (returns `typingCoroutine != null`) is used by `DialogueControl` and examined in `BaseDialogueManager`'s coroutines.
-   - Now has a diagnostic method `GetTypingCoroutineActive()` to help debug potential input box issues.
+   - **New Fix (April 2025):** Added intelligent processing of incomplete words when LLM stops sending data, detecting when no updates have occurred for 1.5 seconds.
+   - **New Fix (April 2025):** Added detailed logging and safety mechanisms to ensure typing animation always completes.
 
 5. **Dialogue Flow**:
    - Player enters dialogue range and presses E.
@@ -272,14 +270,15 @@ The dialogue system connects player interactions with the LLM system:
      - If a function was buffered, starts `ProcessActionAfterBeepSpeak` coroutine.
      - If no function, starts `EnableInputAfterBeepSpeak` coroutine.
    - Both coroutines wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
+   - **New Fix (April 2025):** Added 5-second timeout to coroutines to ensure they don't wait indefinitely.
    - Player exits dialogue (Escape or `stop_conversation` function).
-   - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, waits 2 seconds, then animates the UI closed.
+   - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, then animates the UI closed (no delay).
 
-6. **Known Issues Being Debugged**:
-   - **Input Box Not Re-enabling:** After some NPC responses, the input box sometimes remains disabled. This may be due to `EnableInputAfterBeepSpeak` waiting indefinitely because `IsBeepSpeakPlaying` never becomes false.
-   - **Performance Concerns:** Reports of slow dialogue activation/deactivation are being investigated with detailed timing diagnostics.
+6. **Fixed Issues (April 2025 Update):**
+   - **Input Box Not Re-enabling:** Fixed by enhancing `BeepSpeak.ProcessTyping()` to detect and handle cases when the LLM sends incomplete text without word boundaries, and by adding timeout mechanisms to both `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` coroutines.
+   - **Delayed Function Execution:** Removed the 0.5-second delay in `ProcessActionAfterBeepSpeak` to ensure function calls (like `stop_conversation`) are executed immediately after the text animation finishes.
 
-7. **Debugging Tools Added**:
+7. **Debugging Tools Added:**
    - `[INPUTDBG]` logs track the input re-enabling pipeline.
    - `[TIMEDBG]` logs measure durations of animations, I/O operations, and state transitions.
 

@@ -2,8 +2,8 @@
 
 This document outlines the key components, flow, and mechanisms involved in the LLM-powered dialogue system.
 
-> ⚠️ **CURRENT STATUS: UNDER ACTIVE DEBUGGING** ⚠️  
-> The dialogue system is functional but has known issues being investigated (text duplication, UI input state problems, performance concerns). See [Known Issues](#known-issues) section for details.
+> ⚠️ **CURRENT STATUS: FUNCTIONAL WITH RECENT FIXES** ⚠️  
+> The dialogue system has been updated to fix issues with stuck conversations and improve BeepSpeak text handling.
 
 ## 1. Key Components
 
@@ -102,10 +102,9 @@ This document outlines the key components, flow, and mechanisms involved in the 
 14. **Deactivation (Escape Key)**: Player presses Escape. `DialogueControl.Update()` detects this and calls `Deactivate()`.
 15. **Deactivation (Function Call)**: `stop_conversation` function call triggers `DialogueControl.Deactivate()`.
 16. **Deactivation Process (`DeactivateDialogue` Coroutine)**:
-    *   Calls `llmDialogueManager.ResetDialogue()` which calls `llmCharacter.CancelRequests()`. Waits for this task.
+    *   Calls `llmDialogueManager.ResetDialogue()` which calls `llmCharacter.CancelRequests()` and stops BeepSpeak typing. Waits for this task.
     *   Calls `llmCharacter.Save()` to save conversation history. Waits for this task.
-    *   Adds 2-second delay to allow reading final dialogue text before the UI closes.
-    *   Plays deactivation animation.
+    *   Immediately plays deactivation animation (no delay).
     *   Deactivates Dialogue Canvas.
     *   Resets `GameControl` state to `DEFAULT`.
 
@@ -139,16 +138,23 @@ This document outlines the key components, flow, and mechanisms involved in the 
 
 ## 6. Known Issues
 
-### Text Duplication
+### Fixed: Input Box Not Re-enabling (April 2025 Update)
+This issue has been fixed by:
+1. Enhancing `BeepSpeak.ProcessTyping()` with intelligent handling of incomplete word boundaries:
+   - Now detects when LLM has stopped sending new text for 1.5 seconds
+   - Forces completion of partial words without waiting for word boundaries
+   - Properly resets `typingCoroutine` to null on completion
+   - Adds detailed logging of typing completion state
+
+2. Adding safety mechanisms to dialogue waiting coroutines:
+   - 5-second timeout in `EnableInputAfterBeepSpeak` to ensure input is eventually re-enabled
+   - Automatic StopTyping call if timeout occurs
+   - Immediate function call processing after BeepSpeak finishes (removed delay)
+
+These changes ensure that even if the LLM sends incomplete sentences or words without proper boundaries, the typing animation will still complete, and the input box will be re-enabled or the conversation will properly end with function calls.
+
+### Previously Fixed: Text Duplication
 Initially fixed by changing `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `BaseDialogueManager.HandleReply`. LLM response chunks contain the complete response so far, not just new content, so appending created duplicated text.
-
-### Input Box Not Re-enabling
-After certain NPC responses, the input box sometimes fails to become interactable again, preventing the player from continuing the conversation (though they can still exit with Escape). This may be caused by:
-- The `EnableInputAfterBeepSpeak` coroutine waiting indefinitely because `dialogueControl.IsBeepSpeakPlaying` never becomes false (BeepSpeak's `typingCoroutine` not being set to null correctly)
-- The `OnReplyComplete` callback not being called by the LLMCharacter
-- An unhandled state transition
-
-*Diagnostic logging is in place with [INPUTDBG] tags to track this issue.*
 
 ### Performance Concerns
 Some users report slow response when opening or closing dialogue. This may be due to:

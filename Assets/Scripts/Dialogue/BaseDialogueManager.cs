@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Text;
 using System.Threading.Tasks;
 using LLMUnity;
+using System; // Add missing System namespace for StringSplitOptions
 
 public abstract class BaseDialogueManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public abstract class BaseDialogueManager : MonoBehaviour
     protected DialogueControl dialogueControl;
     protected string bufferedFunctionCall = null; // Buffer for detected function calls
     private bool actionFoundInCurrentStream = false; // Flag to track if action has been found in current stream
+    private bool isAccumulatingAction = false; // Flag to track if we're accumulating an action across chunks
+    private StringBuilder actionBuffer = new StringBuilder(); // Buffer to accumulate action text across chunks
 
     /// <summary>
     /// Provides access to the current LLMCharacter being used for dialogue
@@ -56,7 +59,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         lastReply = "";
         bufferedFunctionCall = null; // Clear buffer on init
         actionFoundInCurrentStream = false; // Reset action flag
-
+        isAccumulatingAction = false; // Reset accumulation flag
+        actionBuffer.Clear(); // Clear action buffer
+        
         EnableInput();
     }
 
@@ -69,33 +74,71 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
         try
         {
-            // If an action has already been found in this stream, completely ignore any further text
-            if (actionFoundInCurrentStream)
+            // NEW APPROACH: Handle action accumulation completely differently
+            
+            // If we already found the action delimiter in an earlier chunk and are now accumulating the action
+            if (isAccumulatingAction)
             {
-                Debug.Log($"[HandleReply] Action already found in stream, ignoring additional text: '{reply}'");
+                // Check if this chunk contains a duplicated action marker
+                bool containsActionMarker = reply.Contains("[/ACTION]:") || reply.Contains("\nACTION:");
+                
+                if (containsActionMarker)
+                {
+                    // Extract the relevant parts without the marker
+                    string cleaned = CleanFunctionCall(reply);
+                    Debug.Log($"[HandleReply] Accumulating action (cleaned chunk): '{cleaned}'");
+                    actionBuffer.Append(cleaned);
+                }
+                else
+                {
+                    // No marker found, just append the entire chunk
+                    Debug.Log($"[HandleReply] Accumulating action (raw chunk): '{reply}'");
+                    actionBuffer.Append(reply);
+                }
+                
+                return; // Skip the rest of processing for this chunk
+            }
+            
+            // If an action has already been found and we're not accumulating, completely ignore further text
+            if (actionFoundInCurrentStream && !isAccumulatingAction)
+            {
+                Debug.Log($"[HandleReply] Action already found in stream, ignoring additional text");
                 return;
             }
 
-            // CRITICAL FIX: Reset StringBuilder and use the complete response from the LLM
-            // Instead of accumulating chunks and creating duplications
+            // For normal text without action markers, clear and update the display
             currentResponse.Clear();
             currentResponse.Append(reply);
             
             // Get the accumulated text so far
             string accumulatedText = currentResponse.ToString();
             
-            // Check for both the original and new action delimiter formats
+            // Check for partial action markers at the end of the text
+            if (EndsWithPartialActionMarker(accumulatedText))
+            {
+                int markerStartIndex = GetPartialMarkerStartIndex(accumulatedText);
+                if (markerStartIndex > 0)
+                {
+                    // Display only the clean part without the partial marker
+                    string cleanText = accumulatedText.Substring(0, markerStartIndex);
+                    Debug.Log($"[HandleReply] Found partial action marker, displaying only: '{cleanText}'");
+                    UpdateDialogueDisplay(cleanText);
+                    return;
+                }
+            }
+            
+            // Check for full action markers in the text
             int actionIndex = accumulatedText.IndexOf("[/ACTION]:");
             if (actionIndex == -1)
             {
-                // Also check for the original format as a fallback
                 actionIndex = accumulatedText.IndexOf("\nACTION:");
             }
 
             if (actionIndex != -1)
             {
                 // Action delimiter found!
-                actionFoundInCurrentStream = true; // Set the flag for this stream
+                actionFoundInCurrentStream = true;
+                isAccumulatingAction = true;
                 
                 // Extract the dialogue part (text before the delimiter)
                 string dialoguePart = accumulatedText.Substring(0, actionIndex).Trim();
@@ -111,27 +154,21 @@ public abstract class BaseDialogueManager : MonoBehaviour
                     delimiterLength = "\nACTION:".Length;
                 }
                 
-                // Extract the function call part (text after the delimiter)
+                // Extract the initial function call part and start accumulating
                 string functionCallPart = accumulatedText.Substring(actionIndex + delimiterLength).Trim();
+                actionBuffer.Clear();
+                actionBuffer.Append(functionCallPart);
                 
-                Debug.Log($"[HandleReply] Action detected. Delimiter index: {actionIndex}");
-                Debug.Log($"[HandleReply] Split Dialogue: '{dialoguePart}'");
-                Debug.Log($"[HandleReply] Split Function Call: '{functionCallPart}'");
+                Debug.Log($"[HandleReply] Action detected at index: {actionIndex}");
+                Debug.Log($"[HandleReply] Dialogue part: '{dialoguePart}'");
+                Debug.Log($"[HandleReply] Initial function part: '{functionCallPart}'");
                 
-                // Buffer the function call for processing after stream completes
-                bufferedFunctionCall = functionCallPart;
-                
-                // Update the display with ONLY the dialogue part
+                // Only update display with the dialogue part
                 UpdateDialogueDisplay(dialoguePart);
-                
-                // CRITICAL: Clear the currentResponse - this dialogue turn is effectively finished
-                // We no longer need to accumulate text since we've found the action
-                currentResponse.Clear();
-                lastReply = ""; // Reset this as well to avoid any carry-over issues
             }
             else
             {
-                // No action delimiter found yet, update the display with the accumulated text
+                // No action delimiter, just display the normal text
                 UpdateDialogueDisplay(accumulatedText);
             }
         }
@@ -141,14 +178,106 @@ public abstract class BaseDialogueManager : MonoBehaviour
             OnError();
         }
     }
+    
+    // Helper method to check if text ends with a partial action marker
+    private bool EndsWithPartialActionMarker(string text)
+    {
+        return text.EndsWith("[") || 
+               text.EndsWith("[/") || 
+               text.EndsWith("[/A") || 
+               text.EndsWith("[/AC") || 
+               text.EndsWith("[/ACT") || 
+               text.EndsWith("[/ACTI") || 
+               text.EndsWith("[/ACTIO") || 
+               text.EndsWith("[/ACTION") || 
+               text.EndsWith("[/ACTION]") ||
+               text.EndsWith("\n") || // Possible start of "\nACTION:"
+               text.EndsWith("\nA") || 
+               text.EndsWith("\nAC") || 
+               text.EndsWith("\nACT") || 
+               text.EndsWith("\nACTI") || 
+               text.EndsWith("\nACTIO") || 
+               text.EndsWith("\nACTION");
+    }
+    
+    // Helper method to get the starting index of a partial marker
+    private int GetPartialMarkerStartIndex(string text)
+    {
+        if (text.EndsWith("[")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/A")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/AC")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/ACT")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/ACTI")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/ACTIO")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/ACTION")) return text.LastIndexOf('[');
+        if (text.EndsWith("[/ACTION]")) return text.LastIndexOf('[');
+        
+        if (text.EndsWith("\n")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nA")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nAC")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nACT")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nACTI")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nACTIO")) return text.LastIndexOf('\n');
+        if (text.EndsWith("\nACTION")) return text.LastIndexOf('\n');
+        
+        return -1; // No marker found
+    }
+
+    // Clean up function call string by removing duplicated action markers and dialogue text
+    private string CleanFunctionCall(string functionCall)
+    {
+        // First try to get just the last occurrence of a complete function call pattern
+        int lastRevealIndex = functionCall.LastIndexOf("reveal_node(");
+        int lastStopIndex = functionCall.LastIndexOf("stop_conversation(");
+        
+        // If either pattern is found, use the later one
+        if (lastRevealIndex >= 0 || lastStopIndex >= 0)
+        {
+            int startIndex = Math.Max(lastRevealIndex, lastStopIndex);
+            if (startIndex >= 0)
+            {
+                // Just return the function call part
+                return functionCall.Substring(startIndex);
+            }
+        }
+        
+        // Fallback: If text contains multiple [/ACTION]: prefixes, extract only the last part
+        if (functionCall.Contains("[/ACTION]:"))
+        {
+            string[] parts = functionCall.Split(new[] { "[/ACTION]:" }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 0)
+            {
+                // Use the last part which should contain the actual function call
+                return parts[parts.Length - 1].Trim();
+            }
+        }
+        
+        // Similarly for \nACTION:
+        if (functionCall.Contains("\nACTION:"))
+        {
+            string[] parts = functionCall.Split(new[] { "\nACTION:" }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 0)
+            {
+                return parts[parts.Length - 1].Trim();
+            }
+        }
+        
+        return functionCall;
+    }
+
     protected virtual void ProcessFunctionCall(string functionCall)
     {
         if (string.IsNullOrEmpty(functionCall)) return; // Don't process empty calls
 
-        Debug.Log($"[ProcessFunctionCall] Attempting to process: '{functionCall}'");
+        Debug.Log($"[ProcessFunctionCall] Processing: '{functionCall}'");
+        
+        // Clean up the function call - remove any duplicated prefixes
+        string cleanedFunctionCall = CleanFunctionCall(functionCall);
+        Debug.Log($"[ProcessFunctionCall] Cleaned function call: '{cleanedFunctionCall}'");
 
         // Use case-insensitive comparison for robustness
-        if (functionCall.StartsWith("stop_conversation", System.StringComparison.OrdinalIgnoreCase))
+        if (cleanedFunctionCall.StartsWith("stop_conversation", System.StringComparison.OrdinalIgnoreCase))
         {
             Debug.Log("[ProcessFunctionCall] Detected 'stop_conversation'");
             // Try to use our field first, otherwise find it in the scene
@@ -175,11 +304,11 @@ public abstract class BaseDialogueManager : MonoBehaviour
             }
         }
         // Use case-insensitive comparison for robustness
-        else if (functionCall.StartsWith("reveal_node", System.StringComparison.OrdinalIgnoreCase))
+        else if (cleanedFunctionCall.StartsWith("reveal_node", System.StringComparison.OrdinalIgnoreCase))
         {
             Debug.Log("[ProcessFunctionCall] Detected 'reveal_node'");
             // Extract the node ID parameter
-            string nodeId = ExtractNodeId(functionCall);
+            string nodeId = ExtractNodeId(cleanedFunctionCall);
             Debug.Log($"[ProcessFunctionCall] Extracted Node ID: '{nodeId ?? "NULL"}'");
             if (!string.IsNullOrEmpty(nodeId))
             {
@@ -202,14 +331,43 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 {
                     Debug.LogError("Cannot reveal node: GameControl.coreConstellation is null");
                 }
+                
+                // CRITICAL: For reveal_node, ALWAYS re-enable input since the conversation should continue
+                // Unlike stop_conversation, this function does not end the dialogue
+                StartCoroutine(ReenableInputAfterRevealNode());
             }
             else
             {
-                Debug.LogError($"Failed to extract node ID from function call: {functionCall}");
+                Debug.LogError($"Failed to extract node ID from function call: {cleanedFunctionCall}");
+                // Still try to re-enable input even if node ID extraction failed
+                StartCoroutine(ReenableInputAfterRevealNode());
             }
         }
     }
     
+    /// <summary>
+    /// Helper coroutine to re-enable input after a reveal_node function call
+    /// Unlike stop_conversation, reveal_node should continue the conversation
+    /// </summary>
+    private System.Collections.IEnumerator ReenableInputAfterRevealNode()
+    {
+        // Brief pause to let any UI updates complete
+        yield return new WaitForSeconds(0.2f);
+        
+        Debug.Log("[ProcessFunctionCall] Re-enabling input after reveal_node");
+        
+        // Only re-enable input if dialogue is still active
+        if (dialogueControl != null && dialogueControl.IsDialogueCanvasActive)
+        {
+            EnableInput();
+            Debug.Log("[ProcessFunctionCall] Input re-enabled after reveal_node");
+        }
+        else
+        {
+            Debug.Log("[ProcessFunctionCall] Dialogue no longer active, not re-enabling input");
+        }
+    }
+
     private string ExtractNodeId(string functionCall)
     {
         // Parse function call like "reveal_node(node_id=testimony-two-men)" to extract "testimony-two-men"
@@ -233,10 +391,24 @@ public abstract class BaseDialogueManager : MonoBehaviour
             return;
         }
 
-        // LLM finished sending data. Decide what to do based on whether an action was buffered.
-        if (!string.IsNullOrEmpty(bufferedFunctionCall))
+        // LLM finished sending data. If we've been accumulating an action, finalize it
+        if (isAccumulatingAction)
         {
-            Debug.Log("[INPUTDBG] OnReplyComplete - Action detected: " + bufferedFunctionCall);
+            string finalActionText = actionBuffer.ToString().Trim();
+            Debug.Log($"[INPUTDBG] OnReplyComplete - Finalized accumulated action: '{finalActionText}'");
+            
+            // Start coroutine to process the accumulated action after BeepSpeak finishes
+            StartCoroutine(ProcessActionAfterBeepSpeak(finalActionText));
+            
+            // Reset action accumulation state
+            actionBuffer.Clear();
+            isAccumulatingAction = false;
+            bufferedFunctionCall = null;
+        }
+        // Otherwise check for a single-chunk function call (backward compatibility)
+        else if (!string.IsNullOrEmpty(bufferedFunctionCall))
+        {
+            Debug.Log("[INPUTDBG] OnReplyComplete - Single-chunk action detected: " + bufferedFunctionCall);
             // Action was detected during HandleReply.
             // Start coroutine to process it after BeepSpeak finishes and a short delay.
             StartCoroutine(ProcessActionAfterBeepSpeak(bufferedFunctionCall));
@@ -251,6 +423,12 @@ public abstract class BaseDialogueManager : MonoBehaviour
             StartCoroutine(EnableInputAfterBeepSpeak());
         }
 
+        // Reset all action state flags
+        actionFoundInCurrentStream = false;
+        isAccumulatingAction = false;
+        actionBuffer.Clear();
+        bufferedFunctionCall = null;
+        
         isProcessingResponse = false; // Mark processing as complete
         Debug.Log("[INPUTDBG] OnReplyComplete - finished, set isProcessingResponse=false");
     }
@@ -273,6 +451,13 @@ public abstract class BaseDialogueManager : MonoBehaviour
         {
              Debug.LogWarning("[BaseDialogueManager.ResetDialogue] llmCharacter is null, returning.");
              return;
+        }
+        
+        // BUGFIX: Stop BeepSpeak typing first to ensure it properly resets its state
+        if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
+        {
+            Debug.Log("[BaseDialogueManager.ResetDialogue] Stopping BeepSpeak typing...");
+            dialogueControl.GetBeepSpeak().StopTyping();
         }
 
         if (isProcessingResponse)
@@ -310,48 +495,69 @@ public abstract class BaseDialogueManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Waits for BeepSpeak to finish playing, then processes the buffered function call after a short delay.
+    /// Waits for BeepSpeak to finish playing, then processes the buffered function call.
+    /// If BeepSpeak takes too long, uses ForceCompleteTyping instead of waiting indefinitely.
     /// </summary>
     private System.Collections.IEnumerator ProcessActionAfterBeepSpeak(string action)
     {
-        // Wait for BeepSpeak to finish
-        // Add a timeout safeguard? Maybe later if needed.
-        while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
+        float startTime = Time.realtimeSinceStartup;
+        float maxWaitTime = 0.5f; // Give the animation up to 0.5 seconds before completing it
+        
+        // Wait for BeepSpeak to finish naturally, but only for a short time
+        while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying && 
+               Time.realtimeSinceStartup - startTime < maxWaitTime)
         {
             yield return null;
         }
-
-        // Add a short delay for readability before the action happens
-        yield return new WaitForSeconds(0.5f); // Configurable?
-
+        
+        // If it's still playing after maxWaitTime, force it to complete
+        if (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
+        {
+            Debug.Log("[BaseDialogueManager] BeepSpeak still playing after maxWaitTime, calling ForceCompleteTyping");
+            dialogueControl.GetBeepSpeak()?.ForceCompleteTyping();
+            
+            // Short yield to let any other processing finish
+            yield return null;
+        }
+        
+        // Process the function immediately
         ProcessFunctionCall(action);
     }
 
     /// <summary>
     /// Waits for BeepSpeak to finish playing, then re-enables input if dialogue is still active.
+    /// If BeepSpeak takes too long, forces typing completion instead of waiting indefinitely.
     /// </summary>
     private System.Collections.IEnumerator EnableInputAfterBeepSpeak()
     {
         Debug.Log("[INPUTDBG] EnableInputAfterBeepSpeak started");
         float startTime = Time.realtimeSinceStartup;
+        float maxWaitTime = 0.5f; // Give the animation up to 0.5 seconds before forcing completion
         int loopCount = 0;
         
-        // Wait for BeepSpeak to finish
-        while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
+        // Wait for BeepSpeak to finish naturally, but only for a short time
+        while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying && 
+               Time.realtimeSinceStartup - startTime < maxWaitTime)
         {
             loopCount++;
             if (loopCount % 30 == 0) // Log every ~0.5 seconds (assuming 60fps)
             {
                 Debug.Log($"[INPUTDBG] Still waiting for BeepSpeak to finish playing. Elapsed: {Time.realtimeSinceStartup - startTime:F1}s");
-                if (dialogueControl != null)
+                if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
                 {
-                    Debug.Log($"[INPUTDBG] dialogueControl.IsBeepSpeakPlaying = {dialogueControl.IsBeepSpeakPlaying}");
-                    if (dialogueControl.IsBeepSpeakPlaying && dialogueControl.GetBeepSpeak() != null)
-                    {
-                        Debug.Log($"[INPUTDBG] BeepSpeak.typingCoroutine != null: {dialogueControl.GetBeepSpeak().GetTypingCoroutineActive()}");
-                    }
+                    Debug.Log($"[INPUTDBG] BeepSpeak.typingCoroutine != null: {dialogueControl.GetBeepSpeak().GetTypingCoroutineActive()}");
                 }
             }
+            yield return null;
+        }
+        
+        // If it's still playing after maxWaitTime, force it to complete
+        if (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
+        {
+            Debug.Log("[INPUTDBG] BeepSpeak still playing after maxWaitTime, calling ForceCompleteTyping");
+            dialogueControl.GetBeepSpeak()?.ForceCompleteTyping();
+            
+            // Short yield to let any other processing finish
             yield return null;
         }
 
