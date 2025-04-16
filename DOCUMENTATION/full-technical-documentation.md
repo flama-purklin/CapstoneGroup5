@@ -237,6 +237,7 @@ The dialogue system connects player interactions with the LLM system:
    - **Action Streaming Fix:** Implemented proper handling of multi-chunk function calls using `isAccumulatingAction` flag and `actionBuffer` to accumulate text across multiple LLM response chunks when the action delimiter (`[/ACTION]:` or `\nACTION:`) appears in a chunk but the full function call parameters arrive in subsequent chunks.
    - Supports both `\nACTION:` and `[/ACTION]:` delimiters for function parsing.
    - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
+   - **April 2025 Fix:** Enhanced coroutines to dynamically calculate appropriate wait times based on text length (roughly 14 characters/second) before forcing completion, ensuring longer messages have time to animate properly.
    - Includes proper reset of all action state flags in `OnReplyComplete` to ensure clean state between LLM responses.
 
 3. **LLMDialogueManager**:
@@ -250,6 +251,8 @@ The dialogue system connects player interactions with the LLM system:
    - Manages a typing coroutine (`typingCoroutine`) for text animation.
    - The `IsPlaying` property (returns `typingCoroutine != null`) is used by `DialogueControl` and examined in `BaseDialogueManager`'s coroutines.
    - **New Fix (April 2025):** Added intelligent processing of incomplete words when LLM stops sending data, detecting when no updates have occurred for 1.5 seconds.
+   - **New Fix (April 2025):** Added a smooth transition fade effect for `ForceCompleteTyping()` to prevent jarring text jumps when a long message needs to be force-completed.
+   - **New Fix (April 2025):** Added longer timeout (8 seconds) for dialogue animation to ensure natural typing completion in most cases.
    - **New Fix (April 2025):** Added detailed logging and safety mechanisms to ensure typing animation always completes.
 
 5. **Dialogue Flow**:
@@ -270,17 +273,20 @@ The dialogue system connects player interactions with the LLM system:
      - If a function was buffered, starts `ProcessActionAfterBeepSpeak` coroutine.
      - If no function, starts `EnableInputAfterBeepSpeak` coroutine.
    - Both coroutines wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
-   - **New Fix (April 2025):** Added 5-second timeout to coroutines to ensure they don't wait indefinitely.
+   - **April 2025 Fix:** Added dynamic timeout calculation based on text length to ensure coroutines don't wait indefinitely while also giving proper time for text animation.
    - Player exits dialogue (Escape or `stop_conversation` function).
    - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, then animates the UI closed (no delay).
 
 6. **Fixed Issues (April 2025 Update):**
+   - **Text Glitching:** Fixed by implementing a smooth fade transition effect when forcing text completion, particularly for cases where the displayed text and target text have a significant difference in length.
+   - **Animation Cutting Off Early:** Fixed by dynamically calculating appropriate wait times based on text length (roughly 14 characters/second) rather than using a fixed 0.5-second timeout.
    - **Input Box Not Re-enabling:** Fixed by enhancing `BeepSpeak.ProcessTyping()` to detect and handle cases when the LLM sends incomplete text without word boundaries, and by adding timeout mechanisms to both `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` coroutines.
-   - **Delayed Function Execution:** Removed the 0.5-second delay in `ProcessActionAfterBeepSpeak` to ensure function calls (like `stop_conversation`) are executed immediately after the text animation finishes.
+   - **Delayed Function Execution:** Improved by ensuring sufficient time for the animation to complete naturally before force-completing the text display.
 
-7. **Debugging Tools Added:**
+7. **Debugging Tools:**
    - `[INPUTDBG]` logs track the input re-enabling pipeline.
    - `[TIMEDBG]` logs measure durations of animations, I/O operations, and state transitions.
+   - `[BeepSpeak DEBUG - COMPARISON]` logs provide detailed information about text state during force completion.
 
 ### Player System
 
