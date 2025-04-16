@@ -23,6 +23,9 @@ public class DialogueControl : MonoBehaviour
     [Header("BeepSpeak Integration")]
     [SerializeField] private BeepSpeak beepSpeak;
     [SerializeField] private TMPro.TextMeshProUGUI npcDialogueText;
+    
+    // Public getter for BeepSpeak for debugging purposes
+    public BeepSpeak GetBeepSpeak() => beepSpeak;
 
     [SerializeField] private AudioControl audioControl;
 
@@ -74,6 +77,9 @@ public class DialogueControl : MonoBehaviour
     // Made async to await Load
     public async void Activate(GameObject npcObject) 
     {
+        float startTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] Activate started at {startTime:F3}s");
+        
         if (isTransitioning) return;
         Debug.Log($"Attempting to activate dialogue with {npcObject.name}");
 
@@ -117,28 +123,55 @@ public class DialogueControl : MonoBehaviour
 
     private IEnumerator ActivateDialogueAnimation() 
     {
+        float startTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] ActivateDialogueAnimation started at {startTime:F3}s");
+        
         audioControl.PlaySFX_Enter();
         isTransitioning = true;
         dialogueCanvas.SetActive(true);
         anim.Play("DialogueActivate");
-        yield return null; 
-        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) yield return null; 
+        
+        float animStartTime = Time.realtimeSinceStartup;
+        yield return null;
+        
+        int frameCount = 0;
+        while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) 
+        {
+            frameCount++;
+            if (frameCount % 60 == 0) // Log every ~1 second
+            {
+                Debug.Log($"[TIMEDBG] Animation progress: {anim.GetCurrentAnimatorStateInfo(0).normalizedTime:F2}, elapsed: {Time.realtimeSinceStartup - animStartTime:F1}s");
+            }
+            yield return null;
+        }
+        
+        float beforeInitTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] Animation completed after {beforeInitTime - animStartTime:F3}s, calling InitializeDialogue");
+        
         llmDialogueManager.InitializeDialogue();
+        
+        float afterInitTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] InitializeDialogue completed after {afterInitTime - beforeInitTime:F3}s");
+        
         isTransitioning = false;
+        Debug.Log($"[TIMEDBG] ActivateDialogueAnimation completed in {Time.realtimeSinceStartup - startTime:F3}s");
     }
 
     private IEnumerator DeactivateDialogue()
     {
-        Debug.Log("[DialogueControl] DeactivateDialogue Coroutine Started.");
+        float startTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Started at {startTime:F3}s");
         try
         {
             isTransitioning = true;
 
             // --- RESET/CANCEL FIRST ---
-            Debug.Log("[DialogueControl.Deactivate] Calling llmDialogueManager.ResetDialogue() (which should call CancelRequests)...");
+            float resetStartTime = Time.realtimeSinceStartup;
+            Debug.Log($"[TIMEDBG] Calling ResetDialogue at {resetStartTime:F3}s");
             Task resetTask = llmDialogueManager.ResetDialogue();
             yield return StartCoroutine(WaitForTask(resetTask)); // Wait for the async ResetDialogue task to complete
-            Debug.Log("[DialogueControl.Deactivate] AFTER WaitForTask(resetTask). ResetDialogue() finished."); // ADDED LOG
+            float resetEndTime = Time.realtimeSinceStartup;
+            Debug.Log($"[TIMEDBG] ResetDialogue completed after {resetEndTime - resetStartTime:F3}s");
 
             // --- THEN SAVE ---
             LLMCharacter characterToSave = llmDialogueManager.CurrentCharacter; 
@@ -148,7 +181,8 @@ public class DialogueControl : MonoBehaviour
                 Debug.Log($"[DialogueControl.Deactivate] Character to save: {characterToSave.save}, Current chat count: {characterToSave.chat.Count}");
                 if (!string.IsNullOrEmpty(characterToSave.save)) {
                     try {
-                        Debug.Log($"ATTEMPTING to save conversation state for '{characterToSave.save}'");
+                        float saveStartTime = Time.realtimeSinceStartup;
+                        Debug.Log($"[TIMEDBG] Starting save for '{characterToSave.save}' at {saveStartTime:F3}s");
                         saveTask = characterToSave.Save(characterToSave.save); 
                     } catch (Exception e) {
                         Debug.LogError($"CRITICAL ERROR starting save for '{characterToSave.save}': {e.Message}\nStack trace: {e.StackTrace}");
@@ -159,9 +193,12 @@ public class DialogueControl : MonoBehaviour
 
             // Wait for the save task to complete (if it was started) AFTER the try-catch block
             if (saveTask != null) {
-                Debug.Log($"[DialogueControl.Deactivate] Waiting for save task for '{characterToSave?.save ?? "Unknown"}'...");
+                float saveWaitStartTime = Time.realtimeSinceStartup;
+                Debug.Log($"[TIMEDBG] Waiting for save task at {saveWaitStartTime:F3}s");
                 yield return StartCoroutine(WaitForTask(saveTask));
-                Debug.Log($"[DialogueControl.Deactivate] AFTER WaitForTask(saveTask) for '{characterToSave?.save ?? "Unknown"}'."); // ADDED LOG
+                float saveEndTime = Time.realtimeSinceStartup;
+                Debug.Log($"[TIMEDBG] Save completed after {saveEndTime - saveWaitStartTime:F3}s");
+                
                 if (!saveTask.IsFaulted) {
                      Debug.Log($"[DialogueControl.Deactivate] Successfully completed save for conversation state: '{characterToSave?.save ?? "Unknown"}'");
                 } else {
@@ -172,16 +209,31 @@ public class DialogueControl : MonoBehaviour
             }
             
             // --- ADD 2 SECOND DELAY BEFORE ANIMATION ---
-            Debug.Log("[DialogueControl.Deactivate] Waiting 2 seconds before UI animation to allow reading final dialogue...");
+            Debug.Log($"[TIMEDBG] Starting 2-second delay at {Time.realtimeSinceStartup:F3}s");
             yield return new WaitForSeconds(2.0f);
+            Debug.Log($"[TIMEDBG] 2-second delay ended at {Time.realtimeSinceStartup:F3}s");
             
             // --- THEN ANIMATE ---
-            Debug.Log("[DialogueControl.Deactivate] Starting UI deactivation animation...");
+            float animStartTime = Time.realtimeSinceStartup;
+            Debug.Log($"[TIMEDBG] Starting deactivation animation at {animStartTime:F3}s");
             anim.Rebind();
             anim.Update(0f);
             anim.Play("DialogueDeactivate");
-            yield return null; 
-            while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) yield return null; 
+            yield return null;
+            
+            int frameCount = 0;
+            while (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) 
+            {
+                frameCount++;
+                if (frameCount % 60 == 0) // Log every ~1 second
+                {
+                    Debug.Log($"[TIMEDBG] Animation progress: {anim.GetCurrentAnimatorStateInfo(0).normalizedTime:F2}, elapsed: {Time.realtimeSinceStartup - animStartTime:F1}s");
+                }
+                yield return null;
+            }
+            
+            float animEndTime = Time.realtimeSinceStartup;
+            Debug.Log($"[TIMEDBG] Animation completed after {animEndTime - animStartTime:F3}s");
 
             dialogueCanvas.SetActive(false);
             if (GameControl.GameController.currentState == GameState.DIALOGUE) {
@@ -194,7 +246,8 @@ public class DialogueControl : MonoBehaviour
             // Ensure flags are reset even if the coroutine is stopped or errors
             isTransitioning = false;
             deactivationCoroutine = null;
-            Debug.Log("[DialogueControl] DeactivateDialogue Coroutine Finished.");
+            float totalTime = Time.realtimeSinceStartup - startTime;
+            Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Finished after {totalTime:F3}s");
         }
     }
 
@@ -223,6 +276,9 @@ public class DialogueControl : MonoBehaviour
 
     public void Deactivate()
     {
+        float startTime = Time.realtimeSinceStartup;
+        Debug.Log($"[TIMEDBG] Deactivate called at {startTime:F3}s");
+        
         if (!dialogueCanvas.activeInHierarchy) {
             Debug.LogWarning("[Deactivate] Called but canvas is not active. Returning.");
             return;

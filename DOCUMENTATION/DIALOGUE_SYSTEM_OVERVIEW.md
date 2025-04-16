@@ -2,6 +2,9 @@
 
 This document outlines the key components, flow, and mechanisms involved in the LLM-powered dialogue system.
 
+> ⚠️ **CURRENT STATUS: UNDER ACTIVE DEBUGGING** ⚠️  
+> The dialogue system is functional but has known issues being investigated (text duplication, UI input state problems, performance concerns). See [Known Issues](#known-issues) section for details.
+
 ## 1. Key Components
 
 ### Scripts
@@ -22,12 +25,14 @@ This document outlines the key components, flow, and mechanisms involved in the 
     *   Holds reference to the current `LLMCharacter`.
     *   Manages response processing state (`isProcessingResponse`).
     *   Receives LLM responses via the `HandleReply` callback.
-    *   **Parses Function Calls:** Checks for `\nACTION:` delimiter in `HandleReply`. If found, splits dialogue from action string and calls `ProcessFunctionCall`.
+    *   **Processes Streaming Text:** In `HandleReply`, uses `currentResponse.Clear(); currentResponse.Append(reply);` to correctly handle streaming text chunks from the LLM (fixed text duplication issue).
+    *   **Parses Function Calls:** Checks for `\nACTION:` or `[/ACTION]:` delimiter in `HandleReply`. If found, sets `actionFoundInCurrentStream` flag, splits dialogue from action string, and buffers the function call for later processing.
     *   **Handles Function Calls (`ProcessFunctionCall`):**
         *   `stop_conversation`: Calls `DialogueControl.Deactivate()`.
         *   `reveal_node`: Extracts `node_id` parameter using `ExtractNodeId` and calls `GameControl.coreConstellation.DiscoverNode(nodeId)`.
     *   Handles cancellation via `ResetDialogue` which calls `LLMCharacter.CancelRequests()`.
     *   Defines abstract methods for UI interaction (`EnableInput`, `DisableInput`, `UpdateDialogueDisplay`).
+    *   Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` to wait for BeepSpeak to finish before acting.
 
 *   **`LLMDialogueManager.cs` (`Assets/Scripts/Dialogue/`)**:
     *   Concrete implementation inheriting from `BaseDialogueManager`.
@@ -41,7 +46,7 @@ This document outlines the key components, flow, and mechanisms involved in the 
 *   **`CharacterPromptGenerator.cs` (`Assets/Scripts/Characters/`)**:
     *   Static class responsible for creating the detailed system prompt string passed to the `LLMCharacter`.
     *   Uses data from `MysteryCharacter` and the overall `MysteryMetadata` (context, title).
-    *   Includes specific instructions for the LLM on how to format function calls (`\nACTION: ...`) and when to trigger revelations based on player input or evidence presentation.
+    *   Includes specific instructions for the LLM on how to format function calls (`\nACTION: ...` or `[/ACTION]:...`) and when to trigger revelations based on player input or evidence presentation.
 
 *   **`LLMCharacter.cs` (LLMUnity Package)**:
     *   The core component interfacing with the actual LLM backend.
@@ -57,6 +62,8 @@ This document outlines the key components, flow, and mechanisms involved in the 
 *   **`BeepSpeak.cs` (`Assets/DialogueSFX/`)**:
     *   Optional component referenced by `DialogueControl`.
     *   Used to display dialogue text with a typing effect and associated audio feedback. `DialogueControl.DisplayNPCDialogueStreaming` updates its text.
+    *   Manages a typing coroutine (`typingCoroutine`) that controls the text display pacing.
+    *   The `IsPlaying` property (returns `typingCoroutine != null`) is used by `DialogueControl` to determine when text animation is complete.
 
 ### Scene Objects / Prefabs
 
@@ -78,36 +85,42 @@ This document outlines the key components, flow, and mechanisms involved in the 
 7.  **Send to LLM**: `LLMDialogueManager.OnSubmitClicked` disables input, clears previous response data, and calls `llmCharacter.Chat(userInput, HandleReply, OnReplyComplete)`.
 8.  **LLM Response (Streaming)**: `LLMCharacter` sends the request to the LLM. As response chunks arrive, the `HandleReply` callback in `BaseDialogueManager` is invoked.
 9.  **Response Parsing (`HandleReply`)**:
-    *   Checks for `\nACTION:`.
-    *   If found, splits the text into dialogue (`processedReply`) and action (`functionCall`).
-    *   Calls `ProcessFunctionCall(functionCall)`.
-    *   Appends the dialogue part (`processedReply`) to `currentResponse`.
-    *   Calls `UpdateDialogueDisplay(currentResponse.ToString())`.
+    *   **CRITICAL FIX:** Previous duplication issues were fixed by changing `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)`. Each LLM chunk contains the complete response so far, not just new content.
+    *   Checks for delimiter (`\nACTION:` or `[/ACTION]:`).
+    *   If found, sets the `actionFoundInCurrentStream` flag, splits the text into dialogue (text before delimiter) and action (text after delimiter).
+    *   Buffers the function call for later with `bufferedFunctionCall = functionCallPart`.
+    *   Updates the display with ONLY the dialogue part via `UpdateDialogueDisplay(dialoguePart)`.
+    *   If no delimiter found, updates the display with the complete accumulated text.
 10. **UI Update (`UpdateDialogueDisplay`)**: `LLMDialogueManager` forwards the accumulating dialogue text to `DialogueControl`, which updates the NPC text UI (potentially via BeepSpeak).
-11. **Function Execution (`ProcessFunctionCall`)**: If an action was parsed:
+11. **Stream Complete (`OnReplyComplete`)**: Called by `LLMCharacter` when the full response is received. Checks if an action was buffered:
+    *   If buffered, starts `ProcessActionAfterBeepSpeak` coroutine to wait for dialogue text animation to finish, then process the action.
+    *   If no action, starts `EnableInputAfterBeepSpeak` coroutine to wait for dialogue animation to finish, then re-enable input.
+12. **Function Execution (`ProcessActionAfterBeepSpeak` -> `ProcessFunctionCall`)**: If an action was parsed:
     *   `stop_conversation`: `DialogueControl.Deactivate()` is called.
     *   `reveal_node`: `node_id` is extracted, `GameControl.coreConstellation.DiscoverNode(nodeId)` is called.
-12. **Reply Complete (`OnReplyComplete`)**: Called by `LLMCharacter` when the full response is generated. `BaseDialogueManager` sets `isProcessingResponse = false` and re-enables input via `EnableInput()`.
-13. **Deactivation (Escape Key)**: Player presses Escape. `DialogueControl.Update()` detects this and calls `Deactivate()`.
-14. **Deactivation (Function Call)**: `stop_conversation` function call triggers `DialogueControl.Deactivate()`.
-15. **Deactivation Process (`DeactivateDialogue` Coroutine)**:
+13. **Input Re-enabling (`EnableInputAfterBeepSpeak` -> `EnableInput`)**: After BeepSpeak finishes, input is re-enabled if dialogue is still active.
+14. **Deactivation (Escape Key)**: Player presses Escape. `DialogueControl.Update()` detects this and calls `Deactivate()`.
+15. **Deactivation (Function Call)**: `stop_conversation` function call triggers `DialogueControl.Deactivate()`.
+16. **Deactivation Process (`DeactivateDialogue` Coroutine)**:
     *   Calls `llmDialogueManager.ResetDialogue()` which calls `llmCharacter.CancelRequests()`. Waits for this task.
     *   Calls `llmCharacter.Save()` to save conversation history. Waits for this task.
+    *   Adds 2-second delay to allow reading final dialogue text before the UI closes.
     *   Plays deactivation animation.
     *   Deactivates Dialogue Canvas.
     *   Resets `GameControl` state to `DEFAULT`.
 
 ## 3. Function Calling Details
 
-*   **Prompting**: `CharacterPromptGenerator` explicitly tells the LLM the available functions (`reveal_node`, `stop_conversation`), their parameters, and the **exact** output format (`\nACTION: function_name(param=value)` on a new line after dialogue). It also links revelation triggers to the `reveal_node` action.
-*   **Parsing**: `BaseDialogueManager.HandleReply` uses `reply.IndexOf("\nACTION: ")` to find the delimiter and `Substring` to split the dialogue from the action string. `ExtractNodeId` uses `IndexOf` again to get the `node_id` parameter value.
-*   **Execution**: `BaseDialogueManager.ProcessFunctionCall` uses `StartsWith` to identify the function and then calls the relevant game logic (`DialogueControl.Deactivate` or `MysteryConstellation.DiscoverNode`).
+*   **Prompting**: `CharacterPromptGenerator` explicitly tells the LLM the available functions (`reveal_node`, `stop_conversation`), their parameters, and the **exact** output format (`\nACTION: function_name(param=value)` on a new line after dialogue, or alternatively `[/ACTION]: function_name(param=value)`). It also links revelation triggers to the `reveal_node` action.
+*   **Parsing**: `BaseDialogueManager.HandleReply` checks for both `\nACTION:` and `[/ACTION]:` delimiters using `IndexOf`. When found, it sets the `actionFoundInCurrentStream` flag and extracts both the dialogue part (before the delimiter) and the function call part (after the delimiter). The function call is buffered for later processing.
+*   **Execution**: After BeepSpeak finishes, `ProcessActionAfterBeepSpeak` calls `ProcessFunctionCall` which uses `StartsWith` to identify the function name and then calls the relevant game logic (`DialogueControl.Deactivate` or `MysteryConstellation.DiscoverNode`).
 
 ## 4. State Management
 
 *   **Game State**: `GameControl.currentState` is set to `GameState.DIALOGUE` during activation and back to `GameState.DEFAULT` during deactivation. Player movement and other systems likely check this state.
 *   **Dialogue UI State**: `DialogueControl` manages the active state of the canvas and UI animations (`isTransitioning`).
-*   **LLM Response State**: `BaseDialogueManager.isProcessingResponse` flag prevents sending new requests while waiting for a reply.
+*   **LLM Response State**: `BaseDialogueManager.isProcessingResponse` flag prevents sending new requests while waiting for a reply. `actionFoundInCurrentStream` flag prevents processing additional text chunks after an action has been found in the current stream.
+*   **BeepSpeak State**: `BeepSpeak.typingCoroutine` tracks the active typing animation. `IsPlaying` property returns whether this coroutine is active.
 *   **Input State**: `LLMDialogueManager` enables/disables the input field and submit button via `EnableInput`/`DisableInput`.
 
 ## 5. Dependencies & Interactions
@@ -122,5 +135,41 @@ This document outlines the key components, flow, and mechanisms involved in the 
 *   `BaseDialogueManager` -> `MysteryConstellation` (DiscoverNode via ProcessFunctionCall)
 *   `LLMDialogueManager` -> `DialogueControl` (DisplayNPCDialogueStreaming)
 *   `DialogueControl` -> `BeepSpeak` (Optional: StartDialogue, UpdateStreamingText)
+*   `BaseDialogueManager` -> `BeepSpeak` (Indirectly waits for `IsPlaying` to become false via `DialogueControl.IsBeepSpeakPlaying`)
 
-This covers the core aspects of the dialogue system as implemented and discussed.
+## 6. Known Issues
+
+### Text Duplication
+Initially fixed by changing `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `BaseDialogueManager.HandleReply`. LLM response chunks contain the complete response so far, not just new content, so appending created duplicated text.
+
+### Input Box Not Re-enabling
+After certain NPC responses, the input box sometimes fails to become interactable again, preventing the player from continuing the conversation (though they can still exit with Escape). This may be caused by:
+- The `EnableInputAfterBeepSpeak` coroutine waiting indefinitely because `dialogueControl.IsBeepSpeakPlaying` never becomes false (BeepSpeak's `typingCoroutine` not being set to null correctly)
+- The `OnReplyComplete` callback not being called by the LLMCharacter
+- An unhandled state transition
+
+*Diagnostic logging is in place with [INPUTDBG] tags to track this issue.*
+
+### Performance Concerns
+Some users report slow response when opening or closing dialogue. This may be due to:
+- Long animations
+- File I/O operations (Save/Load)
+- LLM operations affecting framerate
+
+*Timing diagnostics have been added with [TIMEDBG] tags to measure stages of activation/deactivation.*
+
+## 7. Debugging Tools
+
+### Input Flow Diagnostics
+Debug logs with `[INPUTDBG]` tags have been added to track the following:
+- When `OnReplyComplete` is called and if the `isProcessingResponse` flag is accurate
+- Whether `EnableInputAfterBeepSpeak` is started and waiting correctly
+- The state of `BeepSpeak.typingCoroutine` during waiting
+- When `EnableInput` is finally called or skipped and why
+
+### Performance Timing
+Debug logs with `[TIMEDBG]` tags have been added to measure:
+- Total time spent in `Activate` and `Deactivate`
+- Animation times for dialogue UI activation/deactivation
+- Time spent initializing dialogue
+- Time spent saving/loading conversation history

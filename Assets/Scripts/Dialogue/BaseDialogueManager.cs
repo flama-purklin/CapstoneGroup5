@@ -226,11 +226,17 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
     protected virtual void OnReplyComplete()
     {
-        if (!isProcessingResponse) return;
+        Debug.Log("[INPUTDBG] OnReplyComplete called, isProcessingResponse=" + isProcessingResponse);
+        if (!isProcessingResponse) 
+        {
+            Debug.Log("[INPUTDBG] OnReplyComplete - early return due to !isProcessingResponse");
+            return;
+        }
 
         // LLM finished sending data. Decide what to do based on whether an action was buffered.
         if (!string.IsNullOrEmpty(bufferedFunctionCall))
         {
+            Debug.Log("[INPUTDBG] OnReplyComplete - Action detected: " + bufferedFunctionCall);
             // Action was detected during HandleReply.
             // Start coroutine to process it after BeepSpeak finishes and a short delay.
             StartCoroutine(ProcessActionAfterBeepSpeak(bufferedFunctionCall));
@@ -239,12 +245,14 @@ public abstract class BaseDialogueManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("[INPUTDBG] OnReplyComplete - No action detected, starting EnableInputAfterBeepSpeak");
             // No action detected, normal end of reply.
             // Start coroutine to re-enable input only after BeepSpeak finishes.
             StartCoroutine(EnableInputAfterBeepSpeak());
         }
 
         isProcessingResponse = false; // Mark processing as complete
+        Debug.Log("[INPUTDBG] OnReplyComplete - finished, set isProcessingResponse=false");
     }
 
     protected virtual void OnError()
@@ -324,16 +332,44 @@ public abstract class BaseDialogueManager : MonoBehaviour
     /// </summary>
     private System.Collections.IEnumerator EnableInputAfterBeepSpeak()
     {
+        Debug.Log("[INPUTDBG] EnableInputAfterBeepSpeak started");
+        float startTime = Time.realtimeSinceStartup;
+        int loopCount = 0;
+        
         // Wait for BeepSpeak to finish
         while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
         {
+            loopCount++;
+            if (loopCount % 30 == 0) // Log every ~0.5 seconds (assuming 60fps)
+            {
+                Debug.Log($"[INPUTDBG] Still waiting for BeepSpeak to finish playing. Elapsed: {Time.realtimeSinceStartup - startTime:F1}s");
+                if (dialogueControl != null)
+                {
+                    Debug.Log($"[INPUTDBG] dialogueControl.IsBeepSpeakPlaying = {dialogueControl.IsBeepSpeakPlaying}");
+                    if (dialogueControl.IsBeepSpeakPlaying && dialogueControl.GetBeepSpeak() != null)
+                    {
+                        Debug.Log($"[INPUTDBG] BeepSpeak.typingCoroutine != null: {dialogueControl.GetBeepSpeak().GetTypingCoroutineActive()}");
+                    }
+                }
+            }
             yield return null;
         }
 
+        Debug.Log($"[INPUTDBG] BeepSpeak finished after {Time.realtimeSinceStartup - startTime:F1}s. Ready to enable input.");
+
         // Only enable if dialogue is still active (ProcessFunctionCall might have deactivated)
-        if (dialogueControl == null || dialogueControl.IsDialogueCanvasActive)
+        if (dialogueControl == null)
         {
-             EnableInput();
+            Debug.Log("[INPUTDBG] dialogueControl is null, cannot re-enable input");
+        }
+        else if (dialogueControl.IsDialogueCanvasActive)
+        {
+            Debug.Log("[INPUTDBG] Dialogue still active, calling EnableInput()");
+            EnableInput();
+        }
+        else
+        {
+            Debug.Log("[INPUTDBG] Dialogue no longer active, not calling EnableInput()");
         }
     }
 }

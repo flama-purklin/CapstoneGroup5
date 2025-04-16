@@ -61,6 +61,9 @@ public class BeepSpeak : MonoBehaviour
 
     // Public property to check if BeepSpeak is currently typing/playing audio
     public bool IsPlaying => typingCoroutine != null;
+    
+    // Debug method to check if typing coroutine is active
+    public bool GetTypingCoroutineActive() => typingCoroutine != null;
 
     private PrecomputedSentence currentSentence;
     private PrecomputedWord currentWord;

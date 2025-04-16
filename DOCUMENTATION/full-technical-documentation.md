@@ -220,6 +220,8 @@ NPCs are managed through the following components:
 
 *Design Goal: To facilitate player expression and strategic social interaction. The system aims to simulate the push-and-pull of detective interviews, allowing players to extract information through intelligent conversation and social deduction rather than selecting from predefined options.*
 
+> ⚠️ **ACTIVE DEBUGGING:** The dialogue system is currently undergoing troubleshooting for text duplication, UI input state, and performance issues. Diagnostic logging has been added with `[INPUTDBG]` and `[TIMEDBG]` tags.
+
 The dialogue system connects player interactions with the LLM system:
 
 1. **DialogueControl**:
@@ -228,13 +230,31 @@ The dialogue system connects player interactions with the LLM system:
    - Connects NPCs to the dialogue system.
    - On activation, calls `LLMCharacter.Load()` to load history/cache.
    - On deactivation, calls `LLMCharacter.Save()` to save history/cache and notifies `CharacterManager`.
+   - Now includes timing diagnostics to track UI animation times and I/O operations.
+   - Adds a 2-second delay before UI deactivation to allow reading the final dialogue text.
 
-2. **LLMDialogueManager**:
+2. **BaseDialogueManager**:
+   - Abstract class handling core dialogue logic.
+   - **Recent Fix:** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply` to prevent text duplication, as LLM response chunks contain the complete response so far, not just new content.
+   - Supports both `\nACTION:` and `[/ACTION]:` delimiters for function parsing.
+   - Uses `actionFoundInCurrentStream` flag to ignore further text chunks after detecting a function call.
+   - Buffers function calls with `bufferedFunctionCall` for processing after BeepSpeak finishes.
+   - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
+   - Now includes diagnostic logging to track the input re-enabling process.
+
+3. **LLMDialogueManager**:
    - Inherits from BaseDialogueManager.
    - Handles player input and LLM responses.
    - Manages dialogue flow and UI updates.
+   - Implements `EnableInput`/`DisableInput` for UI interactability.
 
-3. **Dialogue Flow**:
+4. **BeepSpeak**:
+   - Handles text display with typing effect and audio.
+   - Manages a typing coroutine (`typingCoroutine`) for text animation.
+   - The `IsPlaying` property (returns `typingCoroutine != null`) is used by `DialogueControl` and examined in `BaseDialogueManager`'s coroutines.
+   - Now has a diagnostic method `GetTypingCoroutineActive()` to help debug potential input box issues.
+
+5. **Dialogue Flow**:
    - Player enters dialogue range and presses E.
    - `DialogueControl.Activate()` is called.
    - `LLMCharacter.Load()` is called (if save file exists).
@@ -242,19 +262,26 @@ The dialogue system connects player interactions with the LLM system:
    - Player inputs text.
    - `LLMDialogueManager` sends input to `LLMCharacter.Chat()`.
    - `LLMCharacter` processes input and generates responses.
-   - `BaseDialogueManager.HandleReply` receives the response.
-     - It checks for the `\nACTION:` delimiter.
-     - If found, it splits the response into dialogue and function call strings.
-     - The dialogue part is passed to `UpdateDialogueDisplay`.
-     - The function call string is passed to `ProcessFunctionCall`.
-   - `BaseDialogueManager.ProcessFunctionCall` handles the action:
-     - `stop_conversation`: Calls `DialogueControl.Deactivate()`.
-     - `reveal_node`: Extracts `node_id` parameter and calls `GameControl.coreConstellation.DiscoverNode(nodeId)`.
-   - `LLMDialogueManager.UpdateDialogueDisplay` forwards the dialogue text to `DialogueControl.DisplayNPCDialogueStreaming` for UI update (potentially via BeepSpeak).
-   - Player exits dialogue (e.g., presses Escape).
-   - `DialogueControl.Deactivate()` is called.
-   - `LLMCharacter.Save()` is called for the target character.
-   - History persists only within a single game session; `CharacterManager.OnDestroy()` clears saved files on game stop.
+   - `BaseDialogueManager.HandleReply` receives each response chunk:
+     - **Critical Improvement:** Clears and replaces `currentResponse` instead of appending.
+     - Checks for `\nACTION:` or `[/ACTION]:` delimiters.
+     - If found, sets `actionFoundInCurrentStream` flag, splits dialogue from action, buffers the function call, and updates display with only the dialogue part.
+     - If not found, updates display with the complete text.
+   - `LLMDialogueManager.UpdateDialogueDisplay` forwards text to `DialogueControl.DisplayNPCDialogueStreaming`.
+   - When streaming completes, `OnReplyComplete` is called:
+     - If a function was buffered, starts `ProcessActionAfterBeepSpeak` coroutine.
+     - If no function, starts `EnableInputAfterBeepSpeak` coroutine.
+   - Both coroutines wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
+   - Player exits dialogue (Escape or `stop_conversation` function).
+   - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, waits 2 seconds, then animates the UI closed.
+
+6. **Known Issues Being Debugged**:
+   - **Input Box Not Re-enabling:** After some NPC responses, the input box sometimes remains disabled. This may be due to `EnableInputAfterBeepSpeak` waiting indefinitely because `IsBeepSpeakPlaying` never becomes false.
+   - **Performance Concerns:** Reports of slow dialogue activation/deactivation are being investigated with detailed timing diagnostics.
+
+7. **Debugging Tools Added**:
+   - `[INPUTDBG]` logs track the input re-enabling pipeline.
+   - `[TIMEDBG]` logs measure durations of animations, I/O operations, and state transitions.
 
 ### Player System
 
@@ -476,120 +503,4 @@ The project has the following key dependencies:
    - Sets the `IsParsingComplete` flag when done.
    - Fires `OnParsingProgress` and `OnMysteryParsed` events.
 
-*(Removed MysteryCharacterExtractor.cs section)*
-
-### Character System
-
-1. **CharacterManager.cs** (`Assets/Scripts/Characters/`):
-   - Component exists in the scene from start.
-   - Manages the lifecycle and state (`LoadingTemplate`, `WarmingUp`, `Ready`, `Failed`) of `LLMCharacter` instances.
-   - Reads character data and mystery metadata from `GameControl.coreMystery`.
-   - Creates `LLMCharacter` components, using `CharacterPromptGenerator` to generate the system prompt with character data, mystery context, and title.
-   - Handles context allocation (`nKeep`) based on `LLM.parallelPrompts`.
-   - Provides `WarmupCharacter` and `CooldownCharacter` methods for `SimpleProximityWarmup`.
-   - Includes `enableLLMCache` public bool to control LLMUnity caching (default `false`).
-   - Cleans up saved `.json` (and `.cache` if enabled) files in `OnDestroy`.
-   - Fires `OnInitializationComplete` event.
-
-2. **SimpleProximityWarmup.cs** (`Assets/Scripts/Characters/`):
-   - Component exists in the scene from start.
-   - Periodically checks player distance to NPCs.
-   - Calls `CharacterManager.WarmupCharacter` or `CooldownCharacter` to maintain `maxWarmCharacters` in the `Ready` state.
-
-3. **CharacterPromptGenerator.cs** (`Assets/Scripts/Characters/`):
-   - Static class used by `CharacterManager` to generate system prompts for the LLM.
-   - Takes `MysteryCharacter` object, `mysteryContext` string, and `mysteryTitle` string as input.
-   - Generates a detailed markdown prompt based on the `NEW_PROMPT.md` template, including sections for meta instructions, identity, personality, state of mind, knowledge (relationships, memories), actions (function calls), revelations, speech patterns, and immutable directives.
-   - Includes helper methods for formatting names and generating personality descriptions from OCEAN scores.
-   - Logic for `KeyTestimonies` and `mystery_attributes` is removed.
-
-4. **LLMCharacter.cs** (from LLMUnity):
-   - Interfaces with LLM system.
-   - Manages character dialogue and responses.
-   - Handles prompt and context management.
-   - Provides `Save()` and `Load()` methods for history persistence and optional caching (controlled by `saveCache` property, set via `CharacterManager.enableLLMCache`).
-
-### NPC System
-
-1. **NPCManager.cs**:
-   - Component exists in the scene from start.
-   - Spawns and manages NPCs (instantiates prefabs).
-   - Links NPCs to LLM characters (obtained from `CharacterManager`).
-   - NPC placement is initiated by `InitializationManager.SpawnAndLinkNPCs`, which reads the top-level `initial_location` from the `MysteryCharacter` object.
-   - Assigns NPCAnimContainer visuals to NPCs.
-
-2. **Character.cs**:
-   - Links NPC GameObject to LLMCharacter
-   - Provides character name and data access
-   - Initializes character components
-
-3. **NPCMovement.cs**:
-   - Controls NPC movement behavior
-   - Manages idle and movement states
-   - Detects player interaction for dialogue
-   - Ensures NavMeshAgent operations occur only when on NavMesh
-
-4. **NPCAnimManager.cs**:
-   - Manages NPC appearance and animations
-   - Applies animation state changes based on movement
-   - Handles sprite flipping by modifying child sprite scale
-   - Prevents NavMeshAgent issues by not modifying root transform scale
-
-5. **NPCAnimContainer.cs**:
-   - Scriptable Object that stores animation sprite arrays
-   - Defines idle and walk animations for different directions
-   - Assigned to NPCs by NPCManager during instantiation
-
-### Train System
-
-*Design Goal: Train layouts utilize a base template for consistent spatial flow across mysteries but allow mystery-specific variations in car types and their order. This supports the flexible "black-box" design, enabling diverse environments defined by the mystery JSON.*
-
-1. **TrainLayoutManager.cs**:
-   - Reads train car layout from mystery JSON
-   - Prepares car prefabs for instantiation
-   - Delegates actual car instantiation to TrainManager
-   - Maps car names to their GameObjects via NameCars()
-   - Provides methods to find cars and spawn points for NPCs
-   - Uses NavMesh sampling for valid NPC spawn positions
-
-2. **TrainManager.cs**:
-   - Handles actual instantiation of train cars
-   - Manages the physical layout and spacing of cars
-   - Maintains a list of instantiated car GameObjects
-
-### Initialization System
-
-1. **InitializationManager.cs**:
-   - Orchestrates the game initialization sequence.
-   - Finds existing core components (`ParsingControl`, `CharacterManager`, `NPCManager`, etc.) in its `Awake` phase. (Does *not* add components dynamically).
-   - Manages LoadingOverlay and initialization state.
-   - Coordinates the startup sequence explicitly: Waits for LLM, waits for Parsing (flag), triggers CharacterManager initialization (template loading only), waits for CharacterManager (event/flag), initializes NPCManager, spawns NPCs (reading data directly), completes initialization (proximity warmup starts).
-   - Handles NPC spawning through `SpawnAndLinkNPCs()` method, reading the top-level `initial_location` directly from the `MysteryCharacter` object within `GameControl.coreMystery`.
-
-### Dialogue System
-
-1. **DialogueControl.cs** (`Assets/Scripts/NPCs/`):
-   - Manages dialogue UI and state transitions.
-   - Activates dialogue with NPCs.
-   - Calls `LLMCharacter.Load()` on activation.
-   - Calls `LLMCharacter.Save()` and `CharacterManager.SaveCharacterConversation()` on deactivation.
-
-2. **BaseDialogueManager.cs** (`Assets/Scripts/Dialogue/`):
-   - Abstract base class for dialogue management.
-   - Handles LLM character interaction (`SetCharacter`, `InitializeDialogue`, `ResetDialogue`).
-   - Manages dialogue flow (`HandleReply`, `OnReplyComplete`, `OnError`).
-   - Parses LLM responses for function calls (`HandleReply`, `ProcessFunctionCall`, `ExtractNodeId`).
-     - Detects `\nACTION:` delimiter.
-     - Handles `stop_conversation` by calling `DialogueControl.Deactivate()`.
-     - Handles `reveal_node` by extracting `node_id` and calling `GameControl.coreConstellation.DiscoverNode()`.
-   - Provides abstract methods for UI interaction (`SetupInputHandlers`, `EnableInput`, `DisableInput`, `UpdateDialogueDisplay`).
-   - Provides `CurrentCharacter` property.
-   - Uses `FindFirstObjectByType` instead of obsolete `FindObjectOfType`.
-
-3. **LLMDialogueManager.cs** (`Assets/Scripts/Dialogue/`):
-   - Implements concrete dialogue UI interface, inheriting from `BaseDialogueManager`.
-   - Handles player input (via `TMP_InputField` and submit button) and triggers `LLMCharacter.Chat`.
-   - Implements `UpdateDialogueDisplay` to forward streaming text to `DialogueControl` (for BeepSpeak).
-   - Overrides `ProcessFunctionCall` to use its direct `dialogueControlRef` for `stop_conversation` if available, otherwise falls back to base implementation.
-   - Manages UI element state (`EnableInput`, `DisableInput`).
-   - Clears UI elements on `ResetDialogue`.
+*(Removed MysteryCharacterExt
