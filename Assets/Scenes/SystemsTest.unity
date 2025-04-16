@@ -3152,7 +3152,7 @@ MonoBehaviour:
   warmupTimeout: 30
   maxWarmupAttempts: 3
   baseBackoffDelay: 1
-  temperature: 0.6
+  temperature: 0.45
   topK: 40
   topP: 0.85
   repeatPenalty: 1.1
@@ -8061,7 +8061,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
-      value: mistral chat
+      value: mistral instruct
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
@@ -10847,8 +10847,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281848056
-  m_fontColor: {r: 0.9716981, g: 0.8162557, b: 0.21542363, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

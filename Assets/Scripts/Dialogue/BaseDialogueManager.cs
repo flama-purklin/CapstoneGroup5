@@ -501,9 +501,24 @@ public abstract class BaseDialogueManager : MonoBehaviour
     private System.Collections.IEnumerator ProcessActionAfterBeepSpeak(string action)
     {
         float startTime = Time.realtimeSinceStartup;
-        float maxWaitTime = 0.5f; // Give the animation up to 0.5 seconds before completing it
         
-        // Wait for BeepSpeak to finish naturally, but only for a short time
+        // Calculate an appropriate wait time based on text length in BeepSpeak
+        float textLength = 0f;
+        if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
+        {
+            textLength = dialogueControl.GetBeepSpeak().GetCurrentTargetLength();
+        }
+        
+        // Calculate wait time based on text length - at least 2 seconds, and 0.07 seconds per character
+        // (roughly 14 characters per second, which is a reasonable reading speed)
+        float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
+        
+        // Limit max wait time to 5 seconds to avoid excessively long waits
+        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        
+        Debug.Log($"[BaseDialogueManager] Waiting up to {maxWaitTime:F1}s for BeepSpeak to finish before processing action");
+        
+        // Wait for BeepSpeak to finish naturally, but only up to our calculated maxWaitTime
         while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying && 
                Time.realtimeSinceStartup - startTime < maxWaitTime)
         {
@@ -513,11 +528,11 @@ public abstract class BaseDialogueManager : MonoBehaviour
         // If it's still playing after maxWaitTime, force it to complete
         if (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
         {
-            Debug.Log("[BaseDialogueManager] BeepSpeak still playing after maxWaitTime, calling ForceCompleteTyping");
+            Debug.Log($"[BaseDialogueManager] BeepSpeak still playing after {maxWaitTime:F1}s, calling ForceCompleteTyping");
             dialogueControl.GetBeepSpeak()?.ForceCompleteTyping();
             
-            // Short yield to let any other processing finish
-            yield return null;
+            // Short yield to let the transition effect complete
+            yield return new WaitForSeconds(0.2f);
         }
         
         // Process the function immediately
@@ -526,39 +541,60 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
     /// <summary>
     /// Waits for BeepSpeak to finish playing, then re-enables input if dialogue is still active.
-    /// If BeepSpeak takes too long, forces typing completion instead of waiting indefinitely.
+    /// Gives BeepSpeak adequate time to complete naturally before forcing completion.
     /// </summary>
     private System.Collections.IEnumerator EnableInputAfterBeepSpeak()
     {
         Debug.Log("[INPUTDBG] EnableInputAfterBeepSpeak started");
         float startTime = Time.realtimeSinceStartup;
-        float maxWaitTime = 0.5f; // Give the animation up to 0.5 seconds before forcing completion
-        int loopCount = 0;
         
-        // Wait for BeepSpeak to finish naturally, but only for a short time
+        // Increase maximum wait time to allow proper typing animation to complete
+        // Average English reading speed is ~200-250 words/min (3-4 words/sec)
+        // Assuming ~5 chars/word, that's 15-20 chars/sec, so wait time should scale with text length
+        float textLength = 0f;
+        if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
+        {
+            textLength = dialogueControl.GetBeepSpeak().GetCurrentTargetLength();
+        }
+        
+        // Calculate a reasonable wait time based on text length
+        // Use at least 2 seconds, and add 0.07 seconds per character (roughly 14 chars/sec)
+        float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
+        
+        // Cap the maximum wait time to avoid excessive delays for very long text
+        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        
+        Debug.Log($"[INPUTDBG] Waiting up to {maxWaitTime:F1}s for {textLength} characters to type");
+        int loopCount = 0;
+        float lastProgressTime = Time.realtimeSinceStartup;
+        
+        // Wait for BeepSpeak to finish naturally, being more patient with longer text
         while (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying && 
                Time.realtimeSinceStartup - startTime < maxWaitTime)
         {
             loopCount++;
-            if (loopCount % 30 == 0) // Log every ~0.5 seconds (assuming 60fps)
+            
+            // Log status periodically, not every frame
+            if (loopCount % 60 == 0) // Log approximately every second at 60fps
             {
-                Debug.Log($"[INPUTDBG] Still waiting for BeepSpeak to finish playing. Elapsed: {Time.realtimeSinceStartup - startTime:F1}s");
+                Debug.Log($"[INPUTDBG] Still waiting for BeepSpeak to finish playing. Elapsed: {Time.realtimeSinceStartup - startTime:F1}s of {maxWaitTime:F1}s max wait");
                 if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
                 {
                     Debug.Log($"[INPUTDBG] BeepSpeak.typingCoroutine != null: {dialogueControl.GetBeepSpeak().GetTypingCoroutineActive()}");
                 }
             }
+            
             yield return null;
         }
         
         // If it's still playing after maxWaitTime, force it to complete
         if (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
         {
-            Debug.Log("[INPUTDBG] BeepSpeak still playing after maxWaitTime, calling ForceCompleteTyping");
+            Debug.Log($"[INPUTDBG] BeepSpeak still playing after {maxWaitTime:F1}s, calling ForceCompleteTyping");
             dialogueControl.GetBeepSpeak()?.ForceCompleteTyping();
             
             // Short yield to let any other processing finish
-            yield return null;
+            yield return new WaitForSeconds(0.1f);
         }
 
         Debug.Log($"[INPUTDBG] BeepSpeak finished after {Time.realtimeSinceStartup - startTime:F1}s. Ready to enable input.");

@@ -216,8 +216,34 @@ public class BeepSpeak : MonoBehaviour
         // Skip any remaining typing animation
         if (dialogueText != null)
         {
-            dialogueText.text = targetText;
-            currentDisplayedText = targetText;
+            string previousText = dialogueText.text;
+            int previousLength = previousText.Length;
+            
+            // Check if there's a significant difference between displayed and target text
+            bool significantDifference = (previousLength > 0 && targetText.Length > 0 && 
+                (previousLength < targetText.Length * 0.5f || 
+                 !targetText.StartsWith(previousText.Substring(0, Math.Min(5, previousLength)))));
+            
+            // Debug logs to understand what's happening
+            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Force completion executed");
+            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Previous displayed text: '{previousText}'");
+            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Target text that should display: '{targetText}'");
+            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Text lengths - Previous: {previousLength}, Target: {targetText.Length}");
+            
+            if (significantDifference)
+            {
+                Debug.LogWarning($"[BeepSpeak DEBUG - COMPARISON] Significant difference detected between displayed and target text!");
+                
+                // For smoother transition with large text differences, add a brief transition effect
+                // This makes the transition less jarring when forcing completion of a long text
+                StartCoroutine(SmoothTextTransition(previousText, targetText));
+            }
+            else
+            {
+                // Small difference - just set the text directly
+                dialogueText.text = targetText;
+                currentDisplayedText = targetText;
+            }
         }
         
         // Clean up the coroutine
@@ -225,8 +251,53 @@ public class BeepSpeak : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
-            Debug.Log("[BeepSpeak] ForceCompleteTyping called, typingCoroutine set to null");
+            Debug.Log("[BeepSpeak DEBUG - COMPARISON] Typing coroutine stopped");
         }
+    }
+    
+    // Smooth transition between texts when there's a big jump
+    private IEnumerator SmoothTextTransition(string fromText, string toText)
+    {
+        // Calculate transition frames based on text length difference
+        int framesToTransition = Mathf.Min(10, Mathf.CeilToInt((toText.Length - fromText.Length) / 50f));
+        
+        // Do a quick fade transition to avoid jarring instant text replacement
+        float startTime = Time.realtimeSinceStartup;
+        
+        // First briefly fade out the current text (very quick, just 2-3 frames)
+        float fadeOutDuration = 0.05f;
+        float elapsed = 0f;
+        Color originalColor = dialogueText.color;
+        Color transparentColor = originalColor;
+        transparentColor.a = 0;
+        
+        while (elapsed < fadeOutDuration)
+        {
+            elapsed = Time.realtimeSinceStartup - startTime;
+            float t = elapsed / fadeOutDuration;
+            dialogueText.color = Color.Lerp(originalColor, transparentColor, t);
+            yield return null;
+        }
+        
+        // Switch to the complete text while invisible
+        dialogueText.text = toText;
+        currentDisplayedText = toText;
+        
+        // Fade back in
+        startTime = Time.realtimeSinceStartup;
+        fadeOutDuration = 0.1f;
+        elapsed = 0f;
+        
+        while (elapsed < fadeOutDuration)
+        {
+            elapsed = Time.realtimeSinceStartup - startTime;
+            float t = elapsed / fadeOutDuration;
+            dialogueText.color = Color.Lerp(transparentColor, originalColor, t);
+            yield return null;
+        }
+        
+        // Ensure we're back to normal
+        dialogueText.color = originalColor;
     }
 
     // Added method to get the current target text length
@@ -258,102 +329,88 @@ public class BeepSpeak : MonoBehaviour
         Debug.Log($"[BeepSpeak] Stored final text (len={finalText.Length}) for when current animation completes");
     }
 
-    // Complete rewrite of ProcessTyping to fix animation interruption issues
+    // Simple implementation that maintains the original character-by-character behavior
     private IEnumerator ProcessTyping()
     {
-        Debug.Log("[BeepSpeak] Starting ProcessTyping for text of length: " + targetText.Length);
+        Debug.Log("[BeepSpeak DEBUG] Starting ProcessTyping for text of length: " + targetText.Length);
+        Debug.Log("[BeepSpeak DEBUG] Full target text: '" + targetText + "'");
         
-        // Store initial text length to track progress
-        int initialTargetLength = targetText.Length;
-        float typingStartTime = Time.time;
+        // Initialize state for tracking
+        int charactersProcessed = 0;
+        string lastDisplayed = "";
         
-        // Calculate a reasonable typing duration based on text length (about 25 chars per second)
-        float estimatedDuration = Mathf.Max(1.0f, initialTargetLength * 0.04f);
-        Debug.Log($"[BeepSpeak] Estimated typing duration: {estimatedDuration:F2}s for {initialTargetLength} chars");
-        
-        // Variables to track typing progress
-        float elapsedTime = 0;
-        float lastUpdateTime = Time.time;
-        int lastDisplayedLength = 0;
-        
-        // Continue until the animation completes
-        while (elapsedTime < estimatedDuration)
+        // Process the text character by character
+        while (charactersProcessed < targetText.Length)
         {
-            // Update elapsed time
-            elapsedTime = Time.time - typingStartTime;
-            
-            // Calculate how far through the text we should be (0.0 to 1.0)
-            float normalizedProgress = Mathf.Clamp01(elapsedTime / estimatedDuration);
-            
-            // Calculate how many characters should be displayed at this point
-            int targetDisplayLength = Mathf.FloorToInt(targetText.Length * normalizedProgress);
-            
-            // If we've just added a new character, play a sound for it
-            if (targetDisplayLength > lastDisplayedLength && targetDisplayLength <= targetText.Length)
+            // Check if target text has changed during typing
+            if (lastDisplayed != currentDisplayedText)
             {
-                // Update the displayed text
-                currentDisplayedText = targetText.Substring(0, targetDisplayLength);
-                if (dialogueText != null)
-                    dialogueText.text = currentDisplayedText;
-                
-                // Only play sounds every few characters to avoid sound spam
-                if ((targetDisplayLength - lastDisplayedLength) >= 1)
-                {
-                    // Get the newest character
-                    char newestChar = targetText[targetDisplayLength - 1];
-                    
-                    // Play a sound if appropriate
-                    if (Char.IsLetter(newestChar))
-                    {
-                        // Extract current word
-                        string word = ExtractCurrentWord(currentDisplayedText);
-                        if (!string.IsNullOrEmpty(word))
-                        {
-                            int letterIndexInWord = word.Length - 1;
-                            if (IsSyllable(word, letterIndexInWord))
-                            {
-                                PlayVoiceForSyllable(word, letterIndexInWord);
-                            }
-                        }
-                    }
-                }
-                
-                lastDisplayedLength = targetDisplayLength;
+                Debug.Log("[BeepSpeak DEBUG] Current displayed text changed unexpectedly!");
+                Debug.Log("[BeepSpeak DEBUG] Expected: '" + lastDisplayed + "'");
+                Debug.Log("[BeepSpeak DEBUG] Actual: '" + currentDisplayedText + "'");
             }
             
-            // If the target text was updated (new content from LLM), adjust our typing speed
-            if (Time.time - lastUpdateTime < 0.1f)
+            // Make sure we don't try to access beyond the string length
+            // (in case targetText was shortened somehow)
+            if (charactersProcessed >= targetText.Length)
             {
-                // Target text has been updated recently
-                if (targetText.Length > initialTargetLength)
-                {
-                    // Recalculate the estimated duration based on new length
-                    float newEstimatedDuration = Mathf.Max(estimatedDuration, targetText.Length * 0.04f);
-                    
-                    // Adjust timing to maintain consistent typing speed
-                    float completionRatio = normalizedProgress;
-                    typingStartTime = Time.time - (completionRatio * newEstimatedDuration);
-                    estimatedDuration = newEstimatedDuration;
-                    
-                    // Update the initialTargetLength
-                    initialTargetLength = targetText.Length;
-                    
-                    Debug.Log($"[BeepSpeak] Text updated mid-typing. New length: {targetText.Length}, new duration: {estimatedDuration:F2}s");
-                }
+                Debug.Log("[BeepSpeak DEBUG] Breaking early, charactersProcessed >= targetText.Length");
+                break;
+            }
                 
-                lastUpdateTime = Time.time;
+            // Get the next character to display
+            char nextChar = targetText[charactersProcessed];
+            
+            // Add it to our displayed text
+            currentDisplayedText += nextChar;
+            lastDisplayed = currentDisplayedText;
+            
+            // Log every 5 characters to avoid flooding the console
+            if (charactersProcessed % 5 == 0 || nextChar == '.' || nextChar == '!' || nextChar == '?')
+            {
+                Debug.Log($"[BeepSpeak DEBUG] Typed {charactersProcessed+1}/{targetText.Length}: Current text = '{currentDisplayedText}'");
             }
             
-            // Wait a small amount before the next character
-            yield return new WaitForSeconds(0.02f);  // 50 updates per second
+            // Update the UI
+            if (dialogueText != null)
+                dialogueText.text = currentDisplayedText;
+                
+            // Play appropriate sound for this character
+            string currentWord = ExtractCurrentWord(currentDisplayedText);
+            if (!string.IsNullOrEmpty(currentWord))
+            {
+                int letterIndexInWord = currentWord.Length - 1;
+                if (IsSyllable(currentWord, letterIndexInWord))
+                {
+                    PlayVoiceForSyllable(currentWord, letterIndexInWord);
+                }
+            }
+            
+            // Calculate delay based on character type
+            float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
+            
+            // Add extra pause for punctuation
+            if (nextChar == '.' || nextChar == '!' || nextChar == '?')
+                delay += 0.3f;
+            else if (nextChar == ',' || nextChar == ';' || nextChar == ':')
+                delay += 0.2f;
+                
+            // Wait before processing the next character
+            yield return new WaitForSeconds(delay);
+            
+            // Move to the next character
+            charactersProcessed++;
         }
         
-        // Ensure the final text is fully displayed
-        currentDisplayedText = targetText;
+        // Ensure the complete text is displayed
         if (dialogueText != null)
+        {
             dialogueText.text = targetText;
+            Debug.Log("[BeepSpeak DEBUG] Final text set in UI: '" + targetText + "'");
+        }
+        currentDisplayedText = targetText;
         
-        Debug.Log($"[BeepSpeak] Typing completed after {Time.time - typingStartTime:F2}s ({targetText.Length} characters)");
+        Debug.Log("[BeepSpeak DEBUG] ProcessTyping completed, typed " + targetText.Length + " characters");
         typingCoroutine = null;
     }
 

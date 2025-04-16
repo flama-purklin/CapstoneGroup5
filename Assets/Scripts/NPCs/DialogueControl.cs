@@ -63,6 +63,9 @@ public class DialogueControl : MonoBehaviour
     // Completely redesigned streaming text handling to prevent animation interruptions
     public void DisplayNPCDialogueStreaming(string dialogue)
     {
+        Debug.Log($"[BEEP DEBUG] DisplayNPCDialogueStreaming called with text length: {dialogue.Length}");
+        Debug.Log($"[BEEP DEBUG] First 40 chars: '{dialogue.Substring(0, Math.Min(40, dialogue.Length))}'");
+        
         // Only start a new BeepSpeak animation if:
         // 1. BeepSpeak is not currently typing OR
         // 2. This appears to be a completely new message (significant length difference)
@@ -71,11 +74,14 @@ public class DialogueControl : MonoBehaviour
             // Get current text length being displayed/processed
             int currentLength = beepSpeak.GetCurrentTargetLength();
             
+            Debug.Log($"[BEEP DEBUG] Current BeepSpeak text length: {currentLength}, IsPlaying: {beepSpeak.IsPlaying}");
+            
             // If BeepSpeak is currently typing and this isn't a drastically different message,
             // DON'T interrupt the animation - store the text for later display
             if (beepSpeak.IsPlaying && dialogue.Length <= currentLength + 20) 
             {
                 // Store the latest text as the "final" version but don't interrupt current animation
+                Debug.Log($"[BEEP DEBUG] Calling SetFinalText - NOT interrupting animation");
                 beepSpeak.SetFinalText(dialogue);
                 Debug.Log($"[DialogueControl] Stored final text (len={dialogue.Length}) without interrupting current animation (len={currentLength})");
             }
@@ -83,8 +89,10 @@ public class DialogueControl : MonoBehaviour
             {
                 // Either BeepSpeak is not currently playing, or this is a much larger text update
                 // In this case, it's appropriate to start a new animation
-                Debug.Log($"[DialogueControl] Starting new BeepSpeak animation for text (len={dialogue.Length})");
+                Debug.Log($"[BEEP DEBUG] Calling UpdateStreamingText - STARTING NEW animation");
+                Debug.Log($"[BEEP DEBUG] Reason: {(beepSpeak.IsPlaying ? "Large text diff" : "Not currently playing")}");
                 beepSpeak.UpdateStreamingText(dialogue);
+                Debug.Log($"[DialogueControl] Starting new BeepSpeak animation for text (len={dialogue.Length})");
             }
         }
         else if (npcDialogueText != null)
