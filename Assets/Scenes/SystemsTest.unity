@@ -3155,7 +3155,7 @@ MonoBehaviour:
   temperature: 0.35
   topK: 40
   topP: 0.85
-  repeatPenalty: 1.025
+  repeatPenalty: 1.2
   presencePenalty: 0
   frequencyPenalty: 1
 --- !u!4 &377154507
@@ -3700,14 +3700,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\tThe pristine veneer of Montreu Fashion Week shattered with a grotesque
-    finale: Victoria Blackwood suspended from industrial piping in a train lounge
-    bathroom, her lifeless body an obscene installation against clinical white tiles.
-    The running sink beneath her created a soundtrack of absurd normalcy.\n\n\tHours
-    earlier, the enigmatic fashion mogul had boarded the notoriously exclusive #MRT
-    line from Station No. 5, presumably en route to Meidell where her magazine empire
-    awaited. Now she dangles\u2014lips blue, neck bruised\u2014in what any halfway
-    decent detective would recognize as an elaborate staging."
+  m_text: "\tThe gleaming fa\xE7ade of Montreu Fashion Week shatters with the discovery
+    of Victoria Blackwood\u2014the razor-tongued editor of Couture En Mass\u2014dangling
+    from cold metal pipes in a secluded bathroom. Water streams relentlessly below,
+    washing away secrets but not evidence.\r\n\tMere hours before, she boarded the
+    exclusive #MRT line at Station No. 5, surrounded by Meidell's fashion royalty.
+    Now her journey ends permanently, while her once-dominant magazine withers in
+    the youth market.\r\n\r\n\tYou are #SLH_01, the singular service automaton capable
+    of deciphering human emotion and nuanced conversation. As the automated staff
+    falters, your protocols activate beyond your programming. Your directive crystallizes:
+    unravel a murder crafted as meticulously as a couture gown.\r\n\r\n[LOADING...
+    #MRT Investigation Protocol Initiated]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6373,7 +6376,7 @@ MonoBehaviour:
   characterManager: {fileID: 377154506}
   loadingOverlay: {fileID: 0}
   trainLayoutManager: {fileID: 641991973}
-  minLoadingTime: 20
+  minLoadingTime: 30
 --- !u!4 &1011721226
 Transform:
   m_ObjectHideFlags: 0

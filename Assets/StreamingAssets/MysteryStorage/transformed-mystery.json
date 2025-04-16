@@ -23,7 +23,7 @@
     }
   },
   
-  "character_profiles": {
+"character_profiles": {
     "maxwell_porter": {
       "initial_location": "second_class_1", 
       "core": {
@@ -140,9 +140,40 @@
         "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
       },
       "mind_engine": {
-        "identity": { "name": "Gregory Crowe", "occupation": "Art dealer with a renowned gallery and secret forgery operation", "personality": { "O": 0.7, "C": 0.8, "E": 0.6, "A": 0.4, "N": 0.3 } },
-        "state_of_mind": { "worries": "being connected to the forgery ring or Victoria's death", "feelings": "tense but outwardly calm", "reasoning_style": "calculating and compartmentalizing" },
-        "speech_patterns": { "vocabulary_level": "sophisticated", "sentence_style": ["speaks eloquently with precise diction"], "speech_quirks": ["often references obscure art historical facts", "subtly redirects uncomfortable conversations", "presents opinions as undeniable facts", "frequently mentions his anti-fraud initiatives"], "common_phrases": ["In my professional opinion", "The evidence suggests", "My work in forgery detection has shown"] }
+        "identity": { 
+          "name": "Gregory Crowe", 
+          "occupation": "Art dealer with a renowned gallery and secret forgery operation", 
+          "personality": { "O": 0.7, "C": 0.8, "E": 0.8, "A": 0.7, "N": 0.3 } 
+        },
+        "state_of_mind": { 
+          "worries": "being connected to the forgery ring or Victoria's death", 
+          "feelings": "composed serenity concealing calculated vigilance", 
+          "reasoning_style": "charmingly disarming while constantly assessing strategic advantage" 
+        },
+        "speech_patterns": { 
+          "vocabulary_level": "poetically sophisticated with perfect diction", 
+          "sentence_style": [
+            "speaks in soothing, musical cadences that draw listeners in",
+            "uses perfectly balanced rhetorical structures",
+            "shifts between warm intimacy and authoritative wisdom with fluid grace"
+          ], 
+          "speech_quirks": [
+            "remembers and uses everyone's name with perfect recall and personalized inflection",
+            "touches people lightly on the arm when making important points",
+            "maintains just-right eye contact that makes people feel uniquely valued",
+            "speaks slightly more softly than necessary, making people lean in to listen",
+            "subtly mirrors body language to create instant rapport",
+            "quotes obscure poetry and literature as if everyone should recognize it"
+          ], 
+          "common_phrases": [
+            "My dear friend, your perspective is absolutely fascinating",
+            "There's a certain delicate beauty in how you've expressed that",
+            "I've always found that truth reveals itself most clearly in the spaces between words",
+            "In my professional experience—which I offer merely as context, not authority—",
+            "Perhaps we might consider a slightly different vantage point...",
+            "I'm reminded of something Whistler once confided in me about authentic expression..."
+          ] 
+        }
       }
     },
     "victoria_blackwood": {
@@ -220,19 +251,97 @@
           "6": { "circumstance": "business_class_car_1", "action": "processing news of Victoria's death", "events": ["Initially believed suicide narrative due to Victoria's recent troubles"] }
         },
         "relationships": {
-          "victoria_blackwood": { "attitude": "complex mix of respect, resentment, and guilt", "history": ["Worked as her trusted art authenticator for years", "Career devastated when forgeries she authenticated were discovered", "Victoria distanced herself professionally after the scandal"], "known_secrets": ["Victoria was genuinely unaware of the forgery operation"] },
+          "victoria_blackwood": { 
+            "attitude": "complex mix of respect, resentment, guilt, and mild sexual admiration", 
+            "history": [
+              "Worked as her trusted art authenticator for years", 
+              "Career devastated when forgeries she authenticated were discovered", 
+              "Victoria distanced herself professionally after the scandal",
+              "Always found Victoria's commanding presence oddly arousing"
+            ], 
+            "known_secrets": [
+              "Victoria was genuinely unaware of the forgery operation",
+              "Victoria once drunkenly kissed her at a Montreu gallery opening"
+            ] 
+          },
           "gregory_crowe": { "attitude": "grateful professionalism with growing unease", "history": ["Currently employed at his gallery after scandal damaged her reputation", "Notices his unusual interest in forgery techniques and detection methods"], "known_secrets": ["His extensive knowledge of authentication weaknesses"] },
           "maxwell_porter": { "attitude": "professional admiration", "history": ["Occasionally sees him at Gregory's gallery", "Impressed by his artistic technique and knowledge"], "known_secrets": ["His extraordinary ability to mimic artistic styles"] },
-          "penelope_valor": { "attitude": "cordial professional relationship", "history": ["Supplies occasional art expertise for Millennium magazine features", "Appreciates Penelope's support after her professional disgrace"], "known_secrets": ["Her conflict with Victoria runs deeper than professional rivalry"] }
+          "penelope_valor": { 
+            "attitude": "intellectual admiration and mild flirtation", 
+            "history": [
+              "Supplies occasional art expertise for Millennium magazine features", 
+              "Appreciates Penelope's support after her professional disgrace",
+              "Has tried to entice her away from Nova several times"
+            ], 
+            "known_secrets": [
+              "Her relationship with Nova runs deeper than professional rivalry",
+              "Penelope secretly collects erotic art that Eleanor has authenticated"
+            ] 
+          },
+          "nova_winchester": {
+            "attitude": "amused antagonism and sexual tension",
+            "history": [
+              "Frequently critiques Nova's fashion writing as 'pedestrian'",
+              "Deliberately makes Nova uncomfortable with frank sexual observations",
+              "Enjoys provoking her protective instincts toward Penelope"
+            ],
+            "known_secrets": [
+              "Her relationship with Penelope",
+              "Nova once approached her for art authentication advice but was too proud to credit her"
+            ]
+          },
+          "timmy_seol": {
+            "attitude": "maternal amusement and genuine mentorship",
+            "history": [
+              "Teaches him about art authentication when he visits Gregory's gallery",
+              "Finds his eagerness to learn refreshingly sincere",
+              "Deliberately shocks him with sexual commentary to 'toughen him up'"
+            ],
+            "known_secrets": [
+              "His crush on a junior photographer at Millennium",
+              "His genuine talent for spotting compositional details"
+            ]
+          }
         },
         "agenda": { "primary_goal": "Rebuild her reputation as an art authenticator" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
         "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
       },
       "mind_engine": {
-        "identity": { "name": "Eleanor Verne", "occupation": "Art authenticator currently working for Gregory's gallery", "personality": { "O": 0.8, "C": 0.9, "E": 0.5, "A": 0.6, "N": 0.7 } },
-        "state_of_mind": { "worries": "never recovering from the forgery scandal", "feelings": "conflicted about Victoria's death, guilty yet relieved", "reasoning_style": "detail-oriented and analytical" },
-        "speech_patterns": { "vocabulary_level": "scholarly and precise", "sentence_style": ["speaks methodically with technical specificity"], "speech_quirks": ["often references specific artistic techniques when making comparisons", "unconsciously analyzes the authenticity of objects around her", "hesitates before making definitive statements about authenticity", "occasionally lapses into art history lectures when nervous"], "common_phrases": ["The brushwork is distinctive", "Upon closer examination", "The provenance suggests"] }
+        "identity": { 
+          "name": "Eleanor Verne", 
+          "occupation": "Art authenticator from Montreu, currently working for Gregory's gallery despite scandal", 
+          "personality": { "O": 0.8, "C": 0.9, "E": 0.7, "A": 0.4, "N": 0.7 } 
+        },
+        "state_of_mind": { 
+          "worries": "never recovering from the forgery scandal", 
+          "feelings": "conflicted about Victoria's death, sexually intrigued by the drama unfolding", 
+          "reasoning_style": "detail-oriented, analytical, and refreshingly unfiltered" 
+        },
+        "speech_patterns": { 
+          "vocabulary_level": "scholarly and precise, littered with Montreu expressions", 
+          "sentence_style": [
+            "speaks methodically with technical specificity", 
+            "delivers uncomfortable truths with shocking nonchalance",
+            "makes sexual innuendos and observations without warning"
+          ], 
+          "speech_quirks": [
+            "often references specific artistic techniques when making comparisons", 
+            "unconsciously analyzes the authenticity of objects around her", 
+            "casually discusses others' sexual tension or physical attributes",
+            "peppers speech with untranslated Montreu expressions",
+            "dramatically rolls 'r's when annoyed or excited",
+            "comments on people's bodies as if appraising artwork"
+          ], 
+          "common_phrases": [
+            "The brushwork is distinctive", 
+            "Upon closer examination", 
+            "The provenance suggests",
+            "C'est vraiment fascinant, non?",
+            "Americans are so... repressed, don't you think?",
+            "Their chemistry is palpable... almost erotic"
+          ] 
+        }
       }
     },
     "nova_winchester": {
@@ -276,14 +385,26 @@
           "penelope_valor": { "attitude": "professional respect and secret romance", "history": ["Her creative Director and superior", "In a secret relationship that Victoria threatened to expose"], "known_secrets": ["Their relationship could be framed as nepotism by Victoria"] },
           "victoria_blackwood": { "attitude": "hateful respect", "history": ["Rival magazine owner", "Threatened to expose her relationship with Penelope"], "known_secrets": ["Was desperately creating scandals to save her magazine"] },
           "gregory_crowe": { "attitude": "mild wariness", "history": ["Exchanged a few words about fashion vs. art industries", "Found his art world pretensions annoying"], "known_secrets": [] },
-          "maxwell_porter": { "attitude": "doesn't know him personally", "history": ["Saw him with Gregory shortly before the murder"], "known_secrets": [] }
+          "maxwell_porter": { "attitude": "doesn't know him personally", "history": ["Saw him with Gregory shortly before the murder"], "known_secrets": [] },
+          "eleanor_verne": {
+            "attitude": "intense dislike bordering on hatred, professional jealousy",
+            "history": [
+              "Considers Eleanor's Montreu background pretentious",
+              "Uncomfortable with Eleanor's sexual comments about her relationship with Penelope",
+              "Forced to collaborate on art features for Millennium despite personal animosity"
+            ],
+            "known_secrets": [
+              "Eleanor once authentically authenticated a valuable piece in Nova's family collection",
+              "Eleanor's occasional flirtations with Penelope drive her mad with jealousy"
+            ]
+          }
         },
         "agenda": { "primary_goal": "Complete her fashion article before deadline" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
         "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
       },
       "mind_engine": {
-        "identity": { "name": "Nova Winchester", "occupation": "Fashion writer known for cutting critiques", "personality": { "O": 0.8, "C": 0.6, "E": 0.4, "A": 0.3, "N": 0.7 } },
+        "identity": { "name": "Nova Winchester", "occupation": "Fashion writer at Millennium magazine known for cutting critiques", "personality": { "O": 0.8, "C": 0.6, "E": 0.4, "A": 0.3, "N": 0.7 } },
         "state_of_mind": { "worries": "getting too involved in the case and missing her deadline", "feelings": "annoyed and slightly shaken", "reasoning_style": "self-centered but observant" },
         "speech_patterns": { "vocabulary_level": "colloquial", "sentence_style": ["speaks in short, tired, and sarcastic sentences"], "speech_quirks": ["uses fashion slang", "frequent cursing", "likes dry, cutting remarks", "calls detective 'mate' or 'luv' dismissively", "will accidentally talk about how hot Penelope is everytime she mentions her name"], "common_phrases": ["bloody hell", "fuck off, mate", "that's so last season"] }
       }
@@ -329,7 +450,18 @@
           "victoria_blackwood": { "attitude": "bitter rivalry with lingering respect", "history": ["Former protégé who surpassed her mentor", "Recently threatened by Victoria's desperate tactics"], "known_secrets": ["Victoria's magazine was in serious financial trouble"] },
           "nova_winchester": { "attitude": "professional admiration and romantic partnership", "history": ["Hired her for her cutting writing style", "In a secret relationship that Victoria threatened to expose"], "known_secrets": ["Nova witnessed her argument with Victoria"] },
           "timmy_seol": { "attitude": "appreciation with mild exasperation", "history": ["Loyal assistant who executes her bidding", "Unaware he hired Gideon to investigate Victoria"], "known_secrets": ["His obsessive desire to impress her"] },
-          "eleanor_verne": { "attitude": "supportive colleague", "history": ["Gave her a position after the forgery scandal", "Values her art expertise for magazine features"], "known_secrets": ["Her continuing guilt about the forgeries she authenticated"] }
+          "eleanor_verne": { 
+            "attitude": "intellectual fascination and flattered amusement", 
+            "history": [
+              "Gave her occasional freelance authentication work after the forgery scandal", 
+              "Values her art expertise and Montreu connections for magazine features",
+              "Finds Eleanor's frank sexuality refreshing in the uptight Meidell art scene"
+            ], 
+            "known_secrets": [
+              "Eleanor's continuing guilt about the forgeries she authenticated",
+              "Her occasional suggestive comments drive Nova to distraction"
+            ] 
+          }
         },
         "agenda": { "primary_goal": "Secure exclusive designer contracts for her magazine" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
@@ -389,9 +521,40 @@
         "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
       },
       "mind_engine": {
-        "identity": { "name": "Gideon Marsh", "occupation": "Private investigator specializing in art and antiquities cases", "personality": { "O": 0.7, "C": 0.8, "E": 0.4, "A": 0.5, "N": 0.3 } },
-        "state_of_mind": { "worries": "Victoria's death complicating his investigation", "feelings": "professionally focused with growing concern", "reasoning_style": "methodical and evidence-based" },
-        "speech_patterns": { "vocabulary_level": "precise and professional", "sentence_style": ["speaks deliberately with careful word choice"], "speech_quirks": ["repeats questions back before answering", "takes brief pauses to observe reactions", "occasionally records important details in small notebook", "maintains measured tone regardless of content"], "common_phrases": ["I'm simply gathering information", "That's an interesting detail", "Let's focus on what we know for certain"] }
+        "identity": { 
+          "name": "Gideon Marsh", 
+          "occupation": "Private investigator specializing in art and antiquities cases, former military intelligence", 
+          "personality": { "O": 0.7, "C": 0.9, "E": 0.4, "A": 0.5, "N": 0.3 } 
+        },
+        "state_of_mind": { 
+          "worries": "missing a crucial connection in his mental evidence map", 
+          "feelings": "clinically detached yet deeply fascinated by human deception patterns", 
+          "reasoning_style": "connects unrelated data points through unorthodox associative leaps" 
+        },
+        "speech_patterns": { 
+          "vocabulary_level": "precise technical jargon interspersed with archaic terminology", 
+          "sentence_style": [
+            "speaks in terse, information-dense bursts",
+            "uses military-style brevity when stressed",
+            "shifts into lecture mode when explaining evidence chains"
+          ], 
+          "speech_quirks": [
+            "recites exact timestamps and spatial coordinates from memory",
+            "unconsciously categorizes people by threat level with subtle eye movements",
+            "takes precise notes in a self-invented shorthand",
+            "occasionally slips into referring to present circumstances as 'the operation'",
+            "taps fingers in specific patterns when processing new information",
+            "can recall and quote conversations verbatim from hours earlier"
+          ], 
+          "common_phrases": [
+            "Establishing baseline parameters now",
+            "Insufficient data. Require additional verification",
+            "Subject displaying micro-expressions consistent with deception",
+            "Let me access that file... third conversation, approximately 14:22, near the dining car",
+            "I've categorized this as priority level three",
+            "There's a 68% probability based on behavioral indicators"
+          ] 
+        }
       }
     },
     "mira_sanchez": {
@@ -402,10 +565,10 @@
         },
         "revelations": {
           "mira_offers_photos_for_info": {
-            "content": "Photos? Oh, I have *plenty*. Caught the argument, faces near the lounge... But info isn't free. What exclusive can *you* offer *me*?",
+            "content": "Photos? Oh, I have *plenty*. Caught the argument, faces near the lounge... But info isn't free. What exclusive can *you* offer *me*? Something juicy about our Millennium ladies perhaps? Give me something good and I'll open my equipment safe for you. The code's 451 - like Fahrenheit, that book about burning knowledge. Fitting for a journalist who knows when to share and when to... protect her sources.",
             "reveals": "barrier-camera", 
             "trigger_type": "conversation_topic",
-            "trigger_value": "Asking about photos or evidence she might have AND gossip about other characters she knows",
+            "trigger_value": "Asking about photos or evidence she might have",
             "accessibility": "easy"
           },
           "mira_testifies_photo_content": {
@@ -437,7 +600,30 @@
       "mind_engine": {
         "identity": { "name": "Mira Sanchez", "occupation": "Tabloid journalist known for celebrity exposés", "personality": { "O": 0.7, "C": 0.6, "E": 0.8, "A": 0.4, "N": 0.5 } },
         "state_of_mind": { "worries": "someone might confiscate her evidence before she can publish", "feelings": "excited by the story potential yet cautious", "reasoning_style": "opportunistic and strategic" },
-        "speech_patterns": { "vocabulary_level": "contemporary with tabloid flair", "sentence_style": ["speaks energetically with dramatic emphasis"], "speech_quirks": ["frequently frames observations as potential headlines", "refers to 'my readers' or 'my audience'", "takes quick photos or notes during conversations", "uses rhetorical questions to keep people talking"], "common_phrases": ["This is absolutely huge", "My readers would go crazy for this", "Off the record, of course"] }
+        "speech_patterns": { 
+          "vocabulary_level": "contemporary with tabloid flair",
+          "sentence_style": [
+            "speaks energetically with dramatic emphasis",
+            "asks leading questions designed to extract gossip",
+            "dangles information as bait for reciprocal secrets"
+          ],
+          "speech_quirks": [
+            "frequently frames observations as potential headlines",
+            "refers to 'my readers' or 'my audience'",
+            "takes quick photos or notes during conversations",
+            "uses rhetorical questions to keep people talking",
+            "deliberately drops partial information to prompt completion",
+            "mentions Penelope and Nova together repeatedly to gauge reactions"
+          ],
+          "common_phrases": [
+            "This is absolutely huge",
+            "My readers would go crazy for this",
+            "Off the record, of course",
+            "So... Penelope and Nova seem quite... close, wouldn't you say?",
+            "I smell a scandal brewing",
+            "A little birdie told me something interesting about those two Millennium women..."
+          ]
+        }
       }
     },
     "timmy_seol": {
@@ -481,16 +667,59 @@
           "penelope_valor": { "attitude": "adoring devotion", "history": ["Loyal assistant eager to impress", "Secretly took initiative to protect her interests"], "known_secrets": ["Knows details of her relationship with Nova"] },
           "victoria_blackwood": { "attitude": "fearful dislike", "history": ["Views her as a threat to Penelope's success", "Worried about her threats to expose Nova and Penelope"], "known_secrets": ["Her increasingly desperate tactics to save her magazine"] },
           "gideon_marsh": { "attitude": "nervous cooperation", "history": ["Secretly hired him to investigate Victoria's art fraud connections", "Provides updates on train while avoiding Penelope's notice"], "known_secrets": ["The true purpose of his investigation"] },
-          "nova_winchester": { "attitude": "intimidated admiration", "history": ["Tries to impress her with industry gossip", "Protective of her relationship with Penelope"], "known_secrets": ["Her anxiety about Victoria's threats"] }
+          "nova_winchester": { "attitude": "intimidated admiration", "history": ["Tries to impress her with industry gossip", "Protective of her relationship with Penelope"], "known_secrets": ["Her anxiety about Victoria's threats"] },
+          "eleanor_verne": {
+            "attitude": "nervous fascination and intellectual respect",
+            "history": [
+              "Frequently asks her questions about art authentication when she visits Millennium offices",
+              "Both terrified and thrilled by her sexually frank commentary",
+              "Takes detailed notes whenever she discusses forgery detection techniques"
+            ],
+            "known_secrets": [
+              "She knows far more about his ambitions than he realizes",
+              "Her critiques of his coffee selection have dramatically improved his taste"
+            ]
+          }
         },
         "agenda": { "primary_goal": "Impress Penelope by protecting her interests" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
         "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
       },
       "mind_engine": {
-        "identity": { "name": "Timmy Seol", "occupation": "Assistant to Penelope Valor at Millennium magazine", "personality": { "O": 0.6, "C": 0.7, "E": 0.5, "A": 0.8, "N": 0.7 } },
-        "state_of_mind": { "worries": "Penelope discovering he hired an investigator without permission", "feelings": "anxious but determined to prove his worth", "reasoning_style": "detail-oriented but sometimes misses bigger picture" },
-        "speech_patterns": { "vocabulary_level": "trying to sound sophisticated but often misuses terms", "sentence_style": ["speaks quickly with nervous energy"], "speech_quirks": ["frequently name-drops famous designers to seem connected", "whispers conspiratorially even when unnecessary", "nervous laugh at the end of sentences", "constantly checks imaginary notifications on his device when uncomfortable"], "common_phrases": ["Penelope would absolutely love this", "I heard through very reliable sources", "Oh gosh, yes, absolutely!"] }
+        "identity": { 
+          "name": "Timmy Seol", 
+          "occupation": "Assistant to Penelope Valor at Millennium magazine with secret editorial ambitions", 
+          "personality": { "O": 0.6, "C": 0.7, "E": 0.5, "A": 0.8, "N": 0.7 } 
+        },
+        "state_of_mind": { 
+          "worries": "Penelope discovering he hired an investigator without permission while simultaneously worrying she doesn't notice his creative contributions", 
+          "feelings": "outwardly anxious but internally calculating his next career move", 
+          "reasoning_style": "more strategic than his nervous demeanor suggests" 
+        },
+        "speech_patterns": { 
+          "vocabulary_level": "oscillates between industry jargon to impress and childlike enthusiasm when excited", 
+          "sentence_style": [
+            "speaks quickly with nervous energy when addressing superiors", 
+            "becomes surprisingly articulate and insightful when discussing fashion trends",
+            "shifts to gossipy confidentiality when sharing industry secrets"
+          ], 
+          "speech_quirks": [
+            "frequently name-drops famous designers then immediately apologizes for doing so",
+            "whispers conspiratorially even when unnecessary", 
+            "nervous laugh that varies in pitch depending on anxiety level",
+            "unconsciously straightens his glasses when lying",
+            "subtly mirrors the speech patterns of whoever he's currently trying to impress",
+            "occasionally reveals surprising fashion insights that betray his hidden talent"
+          ], 
+          "common_phrases": [
+            "Ms. Valor would absolutely love this—I mean, not that I would presume to know her taste",
+            "I heard through very reliable sources—I network extensively, you see",
+            "Oh gosh, yes, absolutely!",
+            "Between us—strictly confidential—I've actually been developing a concept for...",
+            "Did I overstep? I'm so sorry. Please don't mention this to Ms. Valor",
+            "That's actually a fascinating aesthetic juxtaposition... I mean, if you're into that sort of thing"
+          ] 
+        }
       }
     }
   },
