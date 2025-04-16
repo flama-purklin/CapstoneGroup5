@@ -22,8 +22,6 @@
       "details": "Maxwell sedated Victoria and staged a suicide by hanging using her scarf and bathroom fixtures"
     }
   },
-  
-  ```json
   "character_profiles": {
       "maxwell_porter": {
         "initial_location": "second_class_1", 
@@ -523,8 +521,7 @@
           }
         }
       }
-    }
-  ```,
+    },
   
   "environment": {
     "cars": {
