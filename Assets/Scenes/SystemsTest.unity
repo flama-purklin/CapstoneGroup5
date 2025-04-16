@@ -3952,7 +3952,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 54.1
+  m_fontSize: 54.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -5901,7 +5901,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 96.65
+  m_fontSize: 96.7
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11688,7 +11688,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28.25
+  m_fontSize: 28.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15590,6 +15590,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EvidenceObj
       objectReference: {fileID: 0}
+    - target: {fileID: 537862102080467874, guid: a49c1d9ce2312fa438cd1ec4e9148c49, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6957843034490975583, guid: a49c1d9ce2312fa438cd1ec4e9148c49, type: 3}
       propertyPath: audioControl
       value: 
@@ -15673,6 +15677,10 @@ PrefabInstance:
     - target: {fileID: 394580877587506483, guid: 1d0a84e1c84c24a41a7af73c74d3d9d4, type: 3}
       propertyPath: m_Name
       value: LuggageObj
+      objectReference: {fileID: 0}
+    - target: {fileID: 394580877587506483, guid: 1d0a84e1c84c24a41a7af73c74d3d9d4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2945458945322555468, guid: 1d0a84e1c84c24a41a7af73c74d3d9d4, type: 3}
       propertyPath: m_LocalPosition.x
