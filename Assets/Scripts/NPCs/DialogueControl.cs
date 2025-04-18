@@ -15,6 +15,7 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private GameObject dialogueCanvas;
     [SerializeField] private GameObject defaultHud;
     [SerializeField] private RectTransform dialoguePanel;
+    [SerializeField] private DialogueUIController dialogueUIController; // New DialogueUIController reference
 
     [Header("Canvas Components")]
     [SerializeField] Image characterProf;
@@ -46,12 +47,72 @@ public class DialogueControl : MonoBehaviour
         if (!llmDialogueManager) { Debug.LogError("LLMDialogueManager reference not set!"); enabled = false; return; }
         if (!dialogueCanvas) { Debug.LogError("DialogueCanvas reference not set!"); enabled = false; return; }
         if (!anim) { Debug.LogError("Animator reference not set!"); enabled = false; return; }
+        
+        // Check for DialogueUIController reference
+        if (!dialogueUIController) {
+            dialogueUIController = GetComponentInChildren<DialogueUIController>();
+            if (!dialogueUIController) {
+                Debug.LogWarning("DialogueUIController reference not set! Falling back to legacy dialogue UI.");
+            } else {
+                Debug.Log("Found DialogueUIController in children!");
+            }
+        }
+
         dialogueCanvas.SetActive(false);
         llmDialogueManager.RegisterDialogueControl(this);
+
+        // Subscribe to DialogueUIController's OnPlayerMessageSubmitted event if available
+        if (dialogueUIController != null) {
+            dialogueUIController.OnPlayerMessageSubmitted += HandlePlayerInput;
+            Debug.Log("Successfully subscribed to DialogueUIController.OnPlayerMessageSubmitted");
+        }
+    }
+
+    // Handle player input from the new DialogueUIController
+    private void HandlePlayerInput(string input)
+    {
+        Debug.Log($"[DialogueControl] Received player input from new UI: {input}");
+        
+        // Forward the player's message to the LLM system
+        // llmDialogueManager.SendPlayerMessage(input); // This method doesn't exist
+        
+        // Use the correct approach - simulate as if the input came from the input field
+        if (llmDialogueManager != null && !string.IsNullOrEmpty(input))
+        {
+            // Get a reference to the input field used by LLMDialogueManager
+            var inputField = llmDialogueManager.GetComponent<LLMDialogueManager>()?.GetComponentInChildren<TMP_InputField>();
+            if (inputField != null)
+            {
+                // Set the text in the input field
+                inputField.text = input;
+                
+                // Find and invoke the submit button's onClick event
+                var submitButton = llmDialogueManager.GetComponent<LLMDialogueManager>()?.GetComponentInChildren<Button>();
+                if (submitButton != null)
+                {
+                    submitButton.onClick.Invoke();
+                }
+                else
+                {
+                    Debug.LogWarning("Could not find submit button in LLMDialogueManager");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Could not find input field in LLMDialogueManager");
+            }
+        }
     }
 
     public void DisplayNPCDialogue(string dialogue)
     {
+        // First try to use the new UI if available
+        if (dialogueUIController != null) {
+            dialogueUIController.SetNPCResponse(dialogue);
+            Debug.Log($"[DialogueControl] Set NPC response using new DialogueUIController: {dialogue.Substring(0, Mathf.Min(40, dialogue.Length))}...");
+        }
+        
+        // Also update the old UI for compatibility
         if (beepSpeak != null) {
             var dialogueEntries = new List<BeepSpeak.DialogueEntry> { new BeepSpeak.DialogueEntry { text = dialogue, speaker = beepSpeak } };
             beepSpeak.StartDialogue(dialogueEntries);
@@ -63,6 +124,13 @@ public class DialogueControl : MonoBehaviour
     // Completely redesigned streaming text handling to prevent animation interruptions
     public void DisplayNPCDialogueStreaming(string dialogue)
     {
+        // First try to use the new UI if available
+        if (dialogueUIController != null) {
+            dialogueUIController.AppendToNPCResponse(dialogue);
+            Debug.Log($"[DialogueControl] Appended NPC response using new DialogueUIController: {dialogue}");
+            return; // Exit early if using the new UI
+        }
+        
         Debug.Log($"[BEEP DEBUG] DisplayNPCDialogueStreaming called with text length: {dialogue.Length}");
         Debug.Log($"[BEEP DEBUG] First 40 chars: '{dialogue.Substring(0, Math.Min(40, dialogue.Length))}'");
         
@@ -140,10 +208,28 @@ public class DialogueControl : MonoBehaviour
         GameControl.GameController.currentState = GameState.DIALOGUE;
         if (defaultHud) defaultHud.SetActive(false);
 
-        //set the character name
+        // Activate the new UI if available
+        if (dialogueUIController != null) {
+            // Get character portrait image from the NPC
+            Sprite portrait = npcObject.GetComponentInChildren<NPCAnimManager>()?.anims?.profile;
+            
+            Debug.Log($"[DialogueControl] About to call dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
+            Debug.Log($"[DialogueControl] dialogueUIController.gameObject active: {dialogueUIController.gameObject.activeInHierarchy}");
+            
+            dialogueUIController.ShowDialogue(llmCharacter.AIName, portrait);
+            Debug.Log($"[DialogueControl] Called dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
+            
+            // Log state of DialogueUIController after activation
+            dialogueUIController.LogRuntimeState();
+        }
+        else {
+            Debug.LogError("[DialogueControl] dialogueUIController is NULL! Cannot show UI.");
+        }
+
+        //set the character name (legacy UI)
         characterName.text = llmCharacter.AIName;
 
-        //set the character profile
+        //set the character profile (legacy UI)
         characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;
 
         StartCoroutine(ActivateDialogueAnimation()); 
@@ -183,6 +269,12 @@ public class DialogueControl : MonoBehaviour
         
         isTransitioning = false;
         Debug.Log($"[TIMEDBG] ActivateDialogueAnimation completed in {Time.realtimeSinceStartup - startTime:F3}s");
+        
+        // Log DialogueUIController state after animation completes
+        if (dialogueUIController != null) {
+            Debug.Log("[DialogueControl] Checking DialogueUIController state after animation completes:");
+            dialogueUIController.LogRuntimeState();
+        }
     }
 
     private IEnumerator DeactivateDialogue()
@@ -192,6 +284,12 @@ public class DialogueControl : MonoBehaviour
         try
         {
             isTransitioning = true;
+
+            // Hide the new UI if it's being used
+            if (dialogueUIController != null) {
+                dialogueUIController.HideDialogue();
+                Debug.Log("[DialogueControl] Called HideDialogue on new DialogueUIController");
+            }
 
             // --- RESET/CANCEL FIRST ---
             float resetStartTime = Time.realtimeSinceStartup;

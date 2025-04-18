@@ -227,18 +227,27 @@ public abstract class BaseDialogueManager : MonoBehaviour
     // Clean up function call string by removing duplicated action markers and dialogue text
     private string CleanFunctionCall(string functionCall)
     {
-        // First try to get just the last occurrence of a complete function call pattern
-        int lastRevealIndex = functionCall.LastIndexOf("reveal_node(");
-        int lastStopIndex = functionCall.LastIndexOf("stop_conversation(");
-        
-        // If either pattern is found, use the later one
-        if (lastRevealIndex >= 0 || lastStopIndex >= 0)
+        // First try to extract a complete function call pattern
+        foreach (string funcPrefix in new[] { "reveal_node(", "stop_conversation(" })
         {
-            int startIndex = Math.Max(lastRevealIndex, lastStopIndex);
-            if (startIndex >= 0)
+            int lastIndex = functionCall.LastIndexOf(funcPrefix);
+            if (lastIndex >= 0)
             {
-                // Just return the function call part
-                return functionCall.Substring(startIndex);
+                // Extract from the start of the function name to the end
+                string extracted = functionCall.Substring(lastIndex);
+                
+                // If there's a closing parenthesis, make sure to include it
+                int closingParen = extracted.IndexOf(')');
+                if (closingParen >= 0)
+                {
+                    // Return just the complete function call
+                    return extracted.Substring(0, closingParen + 1);
+                }
+                else
+                {
+                    // No closing parenthesis found, return what we have
+                    return extracted;
+                }
             }
         }
         
