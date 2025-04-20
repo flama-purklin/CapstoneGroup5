@@ -33,11 +33,11 @@ namespace LLMUnity
         [Tooltip("GPU acceleration mode")]
         [LLM] public GPUAccelerationMode gpuAcceleration = GPUAccelerationMode.Off;
 
-        /// <summary> number of model layers to offload to the GPU (1-40 in Manual mode).
+        /// <summary> number of model layers to offload to the GPU (1-100 in Manual mode).
         /// Only editable when GPU Acceleration is set to Manual. </summary>
-        [Tooltip("number of model layers to offload to the GPU (1-40 in Manual mode). Only editable when GPU Acceleration is set to Manual.")]
+        [Tooltip("number of model layers to offload to the GPU (1-100 in Manual mode). Only editable when GPU Acceleration is set to Manual.")]
         [LLM]
-        [Range(1, 40)]
+        [Range(1, 100)]
         [SerializeField]
         private int _numGPULayers = 1;
         public int numGPULayers
@@ -47,7 +47,7 @@ namespace LLMUnity
             {
                 if (gpuAcceleration == GPUAccelerationMode.Manual)
                 {
-                    _numGPULayers = Mathf.Clamp(value, 1, 40);
+                    _numGPULayers = Mathf.Clamp(value, 1, 100);
                 }
             }
         }
@@ -163,7 +163,22 @@ namespace LLMUnity
         // ADDED FOR GPU OPTIMIZATION
         public void SetGPULayersBasedOnVRAM()
         {
-            _numGPULayers = Mathf.Clamp(Mathf.RoundToInt(Mathf.Round((2.0f * SystemInfo.graphicsMemorySize / 1024f) / 4) * 4), 0, 40);
+            int totalMB = SystemInfo.graphicsMemorySize;  // ≈15500  :contentReference[oaicite:10]{index=10}
+            int reservedGraphicsMB = 2048;                           //  2 GB for rendering
+            int slotCount = 3;                              //  3 warm slots
+            int kvPerSlotMB = 200;                            // ≈0.1 MB/token×2000 tokens
+            int perSliceMB = 96;                             // ≈7.48 GB/78 slices
+
+            int budgetMB = totalMB
+                          - reservedGraphicsMB
+                          - (slotCount * kvPerSlotMB);
+
+            int rawSlices = budgetMB / perSliceMB;                   // ~101
+            int target = Mathf.Clamp((rawSlices / 4) * 4, 0, 78); // →  100, clamp to ≤78
+
+            // **Manual override** to avoid edge‑case spikes:
+            _numGPULayers = Mathf.Min(target, 64);
+
 
         }
 
