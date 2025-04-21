@@ -143,7 +143,7 @@ public class InputGhostManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[InputGhostManager] Cannot force show ghost text. lastPlayerMessage empty: {string.IsNullOrEmpty(lastPlayerMessage)}, ghostText null: {ghostText == null}");
+            //Debug.LogWarning($"[InputGhostManager] Cannot force show ghost text. lastPlayerMessage empty: {string.IsNullOrEmpty(lastPlayerMessage)}, ghostText null: {ghostText == null}");
         }
     }
     

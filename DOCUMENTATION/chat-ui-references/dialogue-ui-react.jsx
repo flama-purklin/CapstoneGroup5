@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 // --- Configuration ---
 const config = {
     maxDialogueWidth: 'max-w-3xl', // Tailwind class for max pixel width (768px)
-    // --- NEW: Typewriter Speed (milliseconds per character) ---
+    // --- NEW: Typewriter Speed (m illiseconds per character) ---
     typingSpeed: 30, // Lower is faster
 };
 
