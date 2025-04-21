@@ -514,7 +514,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
         
         // Limit max wait time to 5 seconds to avoid excessively long waits
-        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        float maxWaitTime = Mathf.Max(calculatedWaitTime, 5.0f);
         
         Debug.Log($"[BaseDialogueManager] Waiting up to {maxWaitTime:F1}s for BeepSpeak to finish before processing action");
         
@@ -528,7 +528,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         // If it's still playing after maxWaitTime, force it to complete
         if (dialogueControl != null && dialogueControl.IsBeepSpeakPlaying)
         {
-            Debug.Log($"[BaseDialogueManager] BeepSpeak still playing after {maxWaitTime:F1}s, calling ForceCompleteTyping");
+            Debug.Log($"[BaseDialogueManager] BeepSpeak still playing after {maxWaitTime:F1}s, calling ForceCompleteTyping from Process");
             dialogueControl.GetBeepSpeak()?.ForceCompleteTyping();
             
             // Short yield to let the transition effect complete
@@ -562,7 +562,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
         float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
         
         // Cap the maximum wait time to avoid excessive delays for very long text
-        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        float maxWaitTime = Mathf.Max(calculatedWaitTime, 5.0f);
         
         Debug.Log($"[INPUTDBG] Waiting up to {maxWaitTime:F1}s for {textLength} characters to type");
         int loopCount = 0;

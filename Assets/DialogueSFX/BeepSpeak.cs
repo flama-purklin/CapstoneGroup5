@@ -186,12 +186,12 @@ public class BeepSpeak : MonoBehaviour
     {
         // Wait for a much longer time (8 seconds) after receiving final punctuation
         // This should allow most reasonable text segments to finish typing naturally
-        yield return new WaitForSeconds(8.0f);
+        yield return new WaitForSeconds(60.0f);
         
         // If the typing coroutine is still running after this very long time, it might be genuinely stuck
         if (typingCoroutine != null)
         {
-            Debug.LogWarning("[BeepSpeak] Typing still active 8s after final update. Force completing display.");
+            Debug.LogWarning("[BeepSpeak] Typing still active 60s after final update. Force completing display.");
             
             // Force complete the text display
             if (dialogueText != null)
