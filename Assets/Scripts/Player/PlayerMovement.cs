@@ -53,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
             backward = false;
             xDelta = 0f;
             yDelta = 0f;
+            playerAnim.SetBool("moving", false);
         }
 
         //called every fixedUpdate to make sure the player anims updated properly regardless of gamestate
