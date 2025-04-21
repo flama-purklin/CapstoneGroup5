@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Rigidbody rb;
     [SerializeField] NPCAnimContainer animContainer;
     [SerializeField] SpriteRenderer sprite;
+    [SerializeField] AudioControl audioControl;
 
     //vars
     float startingY;
@@ -19,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     float xDelta;
     float yDelta;
     bool backward = false;
+    
+    Sprite lastSprite;
 
     Sprite[] currentAnim;
 
@@ -146,7 +149,13 @@ public class PlayerMovement : MonoBehaviour
         // Ensure currentAnim is valid and the index is within bounds
         if (currentAnim != null && currentSprite >= 0 && currentSprite < currentAnim.Length)
         {
-            sprite.sprite = currentAnim[currentSprite];
+            Sprite newSprite = currentAnim[currentSprite];
+            if(playerAnim.GetBool("moving") && newSprite != lastSprite && (currentSprite == 1 || currentSprite == 3))
+            {
+                audioControl.PlaySFX_Footstep();
+                lastSprite = newSprite;
+            }
+            sprite.sprite = newSprite;
         }
         else if (currentAnim == null)
         {

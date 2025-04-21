@@ -8,6 +8,7 @@ public class AudioControl : MonoBehaviour
     public AudioClip sfx_exit;
     public AudioClip sfx_hover;
     public AudioClip sfx_click;
+    public AudioClip[] sfx_footsteps;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,10 +22,10 @@ public class AudioControl : MonoBehaviour
         
     }
 
-    private void RandomizePitch()
+    private void RandomizePitch(float f = 0.1f)
     {
         audioSource.volume = 0.65f + Random.Range(0f, 0.05f);
-        audioSource.pitch = 0.95f + Random.Range(0f, 0.1f);
+        audioSource.pitch = 1f - (f/2) + Random.Range(0f, f);
     }
     public void PlaySFX_Enter()
     {
@@ -50,5 +51,10 @@ public class AudioControl : MonoBehaviour
     {
         RandomizePitch();
         audioSource.PlayOneShot(sfx_click);
+    }
+    public void PlaySFX_Footstep()
+    {
+        RandomizePitch(0.4f);
+        audioSource.PlayOneShot(sfx_footsteps[Random.Range(0, sfx_footsteps.Length)]);
     }
 }
