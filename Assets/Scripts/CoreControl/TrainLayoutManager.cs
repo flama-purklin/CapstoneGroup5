@@ -312,6 +312,30 @@ public class TrainLayoutManager : MonoBehaviour
          
     }
 
+    /// Like getCarTransform but for the object reference.
+    public GameObject GetCarReference(string carNameKey)
+    {
+        if (trainManager == null || trainManager.trainCarList == null)
+        {
+            Debug.LogError("GetCarReference: TrainManager or its trainCarList is not available.");
+            return null;
+        }
+        if (string.IsNullOrEmpty(carNameKey))
+        {
+            Debug.LogError("GetCarReference: Provided carNameKey is null or empty.");
+            return null;
+        }
+
+        carInstanceMap.TryGetValue(carNameKey, out GameObject carInstance);
+
+        if (carInstance == null)
+        {
+            Debug.LogError($"GetCarReference: Found key '{carNameKey}' in map, but the GameObject reference is null!");
+            return null;
+        }
+        return carInstance;
+    }
+
     /// <summary>
     /// Finds the Transform of a spawned train car based on its key name from the layout.
     /// </summary>

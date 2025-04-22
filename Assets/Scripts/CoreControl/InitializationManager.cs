@@ -212,6 +212,20 @@ public class InitializationManager : MonoBehaviour
                 Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
                 GameObject spawnedNPC = npcManager.SpawnNPCInCar(characterName, spawnPos, carTransform, i);
                 if (spawnedNPC != null) {
+                    // Adds npc reference to TrainManager
+                    if (trainLayoutManager != null)
+                    {
+                        foreach (TrainManager.TrainCar car in trainLayoutManager.trainManager.trainCarList)
+                        {
+                            if (car.trainCar.name == trainLayoutManager.GetCarReference(startCarName).name)
+                            {
+                                // Add npc object reference to that TrainCar structure.
+                                car.npcsInCar.Add(spawnedNPC);
+                                break;
+                            }
+                        }
+                    }
+
                     Character characterComponent = spawnedNPC.GetComponent<Character>();
                     LLMCharacter llmCharacterRef = characterManager.GetCharacterByName(characterName);
                     if (characterComponent != null && llmCharacterRef != null) {
