@@ -139,14 +139,18 @@ public class TrainLayoutManager : MonoBehaviour
 
         Debug.Log($"TrainLayoutManager: Building train with {layoutOrder.Count} cars.", this);
 
+        // Logic for reverse order spawning to preserve json's intended layout, keeping references to use in naming
+        List<string> reversedLayout = new List<string>(layoutOrder);
+        reversedLayout.Reverse();
+
         // Loop through the layout order defined in the JSON
-        for (int i = 0; i < layoutOrder.Count; i++)
+        for (int i = 0; i < reversedLayout.Count; i++)
         {
             if (spawnFromPrefab)
             {
                 trainManager.spawnWithJsons = false;    // This is set more times than needs to be but idc
 
-                string carKey = layoutOrder[i];
+                string carKey = reversedLayout[i];
                 GameObject prefabToLoad = null;
                 // Construct the path within the Resources folder (e.g., "TrainCars/first_class")
                 string resourcePath = Path.Combine(resourceFolderPath, carKey);
@@ -185,7 +189,7 @@ public class TrainLayoutManager : MonoBehaviour
                 // Logic here to spawn from jsons, basically the same  as above, just add the jsons to the carJsons instead
                 trainManager.spawnWithJsons = true;    // This is set more times than needs to be but idc
 
-                string carKey = layoutOrder[i];
+                string carKey = reversedLayout[i];
                 TextAsset jsonToLoad = null;
                 // Construct the path within the Resources folder (e.g., "TrainJsons/shell.json")
                 string resourcePath = Path.Combine(jsonFolderPath, carKey);
@@ -254,6 +258,10 @@ public class TrainLayoutManager : MonoBehaviour
         List<string> layoutOrder = GameControl.GameController.coreMystery.Environment.LayoutOrder;
         Dictionary<string, int> carTypeCounts = new Dictionary<string, int>(); // To track counts for suffixes
 
+        // Logic for reverse order spawning to preserve json's intended layout, keeping references to use in naming
+        List<string> reversedLayout = new List<string>(layoutOrder);
+        reversedLayout.Reverse();
+
         if (trainManager == null || trainManager.trainCarList == null || trainManager.trainCarList.Count != layoutOrder.Count)
         {
              Debug.LogError($"NameCars: TrainManager list is null or count ({trainManager?.trainCarList?.Count ?? -1}) doesn't match layout order ({layoutOrder.Count}). Cannot name cars.");
@@ -261,9 +269,9 @@ public class TrainLayoutManager : MonoBehaviour
         }
 
 
-        for (int i = 0; i < layoutOrder.Count; i++)
+        for (int i = 0; i < reversedLayout.Count; i++)
         {
-            string baseCarKey = layoutOrder[i]; // e.g., "business_class"
+            string baseCarKey = reversedLayout[i]; // e.g., "business_class"
             string finalCarKey = baseCarKey; // Key to use for map and lookup
 
             // Check if this car type has appeared before
@@ -277,7 +285,7 @@ public class TrainLayoutManager : MonoBehaviour
                 // First time seeing this type, count starts at 1
                 carTypeCounts[baseCarKey] = 1;
                 // Check if ANY other car in the layout has the same base key. If so, the first one also needs "_1"
-                bool needsSuffix = layoutOrder.FindAll(key => key == baseCarKey).Count > 1;
+                bool needsSuffix = reversedLayout.FindAll(key => key == baseCarKey).Count > 1;
                 if (needsSuffix)
                 {
                      finalCarKey = $"{baseCarKey}_1"; // Add suffix, e.g., "business_class_1"
