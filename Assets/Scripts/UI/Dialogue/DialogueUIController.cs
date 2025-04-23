@@ -32,6 +32,9 @@ public class DialogueUIController : MonoBehaviour
     private bool isWaitingForResponse = false;
     private string currentResponse = string.Empty;
 
+    // Add a property to expose the responseText for BeepSpeak
+    public TextMeshProUGUI ResponseTextComponent => responseText;
+
     private void Awake()
     {
         Debug.Log("[DialogueUIController] Awake called");
@@ -137,7 +140,10 @@ public class DialogueUIController : MonoBehaviour
             Debug.LogError("[DialogueUIController] inputGhostManager is null in ClearDialogue!");
         }
         
-        responseText.text = string.Empty;
+        // Clear the text field (BeepSpeak will handle actual text rendering)
+        if (responseText != null)
+            responseText.text = string.Empty;
+        
         dynamicInputHeight.ResetHeightToMin();
         isWaitingForResponse = false;
         currentResponse = string.Empty;
@@ -176,8 +182,10 @@ public class DialogueUIController : MonoBehaviour
             Debug.LogError("[DialogueUIController] inputGhostManager is NULL in OnPlayerSubmitInput!");
         }
 
-        // Clear the response area for the new response
-        responseText.text = string.Empty;
+        // Clear the response area for the new response - BeepSpeak will handle populating it
+        if (responseText != null)
+            responseText.text = string.Empty;
+        
         ScrollToBottom();
         scrollFadeManager?.ContentChanged();
 
@@ -190,14 +198,19 @@ public class DialogueUIController : MonoBehaviour
 
     /// <summary>
     /// Called by LLM manager when the full response arrives.
+    /// THIS METHOD IS NOW ONLY USED FOR INTERNAL TRACKING, NOT DISPLAY.
+    /// BeepSpeak now controls the actual text display.
     /// </summary>
     public void SetNPCResponse(string fullResponse)
     {
         Debug.Log($"[DialogueUIController] SetNPCResponse called, response length: {fullResponse?.Length ?? 0}");
+        Debug.Log("[DialogueUIController] NOTE: This method no longer directly sets UI text. BeepSpeak handles display.");
         
         isWaitingForResponse = false;
         currentResponse = fullResponse;
-        responseText.text = fullResponse;
+        
+        // We no longer set responseText.text here - BeepSpeak will handle that
+        // responseText.text = fullResponse; // REMOVED
 
         Debug.Log("[DialogueUIController] About to call inputGhostManager.ForceShowGhostText");
         if (inputGhostManager != null)
@@ -210,24 +223,29 @@ public class DialogueUIController : MonoBehaviour
             Debug.LogError("[DialogueUIController] inputGhostManager is NULL in SetNPCResponse!");
         }
 
-        ScrollToBottom();
-        scrollFadeManager?.ContentChanged();
+        // BeepSpeak will trigger scroll as needed when it updates text
+        // ScrollToBottom();
+        // scrollFadeManager?.ContentChanged();
         
         Debug.Log("[DialogueUIController] SetNPCResponse completed");
     }
 
     /// <summary>
     /// For streaming scenarios: append partial text.
+    /// THIS METHOD IS NOW ONLY USED FOR INTERNAL TRACKING, NOT DISPLAY.
+    /// BeepSpeak now controls the actual text display.
     /// </summary>
     public void AppendToNPCResponse(string chunk)
     {
         if (chunk != null && chunk.Length > 0)
         {
             Debug.Log($"[DialogueUIController] AppendToNPCResponse called with chunk: '{chunk}'");
+            Debug.Log("[DialogueUIController] NOTE: This method no longer directly modifies UI text. BeepSpeak handles display.");
         }
         
         currentResponse += chunk;
-        responseText.text = currentResponse;
+        // We no longer set responseText.text here - BeepSpeak will handle that
+        // responseText.text = currentResponse; // REMOVED
 
         // Ensure ghost text remains visible during streaming
         if (!string.IsNullOrEmpty(chunk))
@@ -243,19 +261,33 @@ public class DialogueUIController : MonoBehaviour
             }
         }
 
-        if (responseScrollRect.verticalNormalizedPosition <= autoScrollThreshold)
-            ScrollToBottom();
-
-        scrollFadeManager?.ContentChanged();
+        // BeepSpeak will trigger scroll as needed when it updates text
+        // if (responseScrollRect.verticalNormalizedPosition <= autoScrollThreshold)
+        //     ScrollToBottom();
+        // scrollFadeManager?.ContentChanged();
     }
 
     /// <summary>
     /// Scrolls to bottom using a targeted rebuild.
+    /// This method is public so BeepSpeak can call it.
     /// </summary>
-    private void ScrollToBottom()
+    public void ScrollToBottom()
     {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(responseText.rectTransform);
-        responseScrollRect.verticalNormalizedPosition = 0f;
+        if (responseText != null && responseScrollRect != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(responseText.rectTransform);
+            responseScrollRect.verticalNormalizedPosition = 0f;
+        }
+    }
+
+    /// <summary>
+    /// Notify the ScrollFadeManager that content has changed.
+    /// This method is public so BeepSpeak can call it.
+    /// </summary>
+    public void NotifyContentChanged()
+    {
+        if (scrollFadeManager != null)
+            scrollFadeManager.ContentChanged();
     }
 
     private IEnumerator FocusInputNextFrame()

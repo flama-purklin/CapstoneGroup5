@@ -51,7 +51,9 @@ public class BeepSpeak : MonoBehaviour
         public BeepSpeak speaker;
     }
 
-    public TMP_Text dialogueText;
+    public TMP_Text dialogueText; // Legacy reference
+    [Tooltip("New UI's text component - will be used if assigned")]
+    public TMP_Text newUIResponseText; // New UI reference
     public AudioSource audioSource;
     public VoiceSettings npcVoice;
 
@@ -143,9 +145,21 @@ public class BeepSpeak : MonoBehaviour
         DisplayNextDialogue();
     }
 
-    // Called every time there is a new update from the LLM.
+    // REVISED: The core method for handling text streaming from the LLM
     public void UpdateStreamingText(string cumulativeText)
     {
+        // CRITICAL: Prevent function call text from showing to players
+        int actionMarkerIndex = cumulativeText.IndexOf("[/ACTION]:");
+        if (actionMarkerIndex == -1)
+            actionMarkerIndex = cumulativeText.IndexOf("\nACTION:");
+        
+        if (actionMarkerIndex != -1)
+        {
+            // Only display text before the function call marker
+            cumulativeText = cumulativeText.Substring(0, actionMarkerIndex).TrimEnd();
+            Debug.Log($"[BeepSpeak] Filtered out function call markers from displayed text");
+        }
+        
         // Don't update if the text hasn't changed - prevents duplicate processing
         if (cumulativeText == targetText)
         {
@@ -153,97 +167,81 @@ public class BeepSpeak : MonoBehaviour
         }
         
         // Update the target text
+        string previousText = targetText;
         targetText = cumulativeText;
         lastTargetUpdateTime = Time.time;
         
-        // If we need to start a new typing process, ALWAYS reset the state first
+        // If we're not already typing, start a new typing process
         if (typingCoroutine == null) 
         { 
             // Clean slate for new typing process - prevents text duplication
             currentDisplayedText = "";
             lastProcessedText = "";
             lastProcessedWord = "";
+            
+            // Clear both text components
             if (dialogueText != null)
                 dialogueText.text = "";
+            if (newUIResponseText != null)
+                newUIResponseText.text = "";
                 
             // Now start the typing coroutine with a clean state
             typingCoroutine = StartCoroutine(ProcessTyping());
+            
+            Debug.Log($"[BeepSpeak] Starting new typing process for text: '{targetText}'");
+        }
+        else
+        {
+            // We're already typing, just let the coroutine continue with the updated target text
+            // The ProcessTyping coroutine will read the latest targetText value
+            Debug.Log($"[BeepSpeak] Updated target text while typing continues: '{targetText}'");
         }
         
-        // If this is a "final" update (likely the last chunk from LLM), 
-        // make sure we have a way to force complete the text display, but
-        // give the typing animation much more time to complete naturally
-        if (cumulativeText.EndsWith(".") || cumulativeText.EndsWith("!") || cumulativeText.EndsWith("?"))
-        {
-            // Start a backup timer to ensure typingCoroutine gets cleaned up,
-            // but with a much longer delay to allow the typing animation to play
-            StartCoroutine(EnsureTypingCompletesWithLongDelay());
-        }
+        // No longer needed - timeout is now handled by BaseDialogueManager
     }
     
-    // Modified method with a longer delay to allow typing animation to complete naturally
-    private IEnumerator EnsureTypingCompletesWithLongDelay()
-    {
-        // Wait for a much longer time (8 seconds) after receiving final punctuation
-        // This should allow most reasonable text segments to finish typing naturally
-        yield return new WaitForSeconds(8.0f);
-        
-        // If the typing coroutine is still running after this very long time, it might be genuinely stuck
-        if (typingCoroutine != null)
-        {
-            Debug.LogWarning("[BeepSpeak] Typing still active 8s after final update. Force completing display.");
-            
-            // Force complete the text display
-            if (dialogueText != null)
-            {
-                dialogueText.text = targetText;
-                currentDisplayedText = targetText;
-            }
-            
-            // Stop the typing coroutine if it's still running
-            if (typingCoroutine != null)
-            {
-                StopCoroutine(typingCoroutine);
-                typingCoroutine = null;
-                Debug.Log("[BeepSpeak] ProcessTyping force completed after long timeout, typingCoroutine set to null");
-            }
-        }
-    }
+    // Removed redundant timeout coroutine - timeout handling now centralized in BaseDialogueManager
     
     // Method to force immediate completion without waiting
     public void ForceCompleteTyping()
     {
-        // Skip any remaining typing animation
-        if (dialogueText != null)
+        // Check and update both text components
+        string previousText = "";
+        
+        if (newUIResponseText != null)
+            previousText = newUIResponseText.text;
+        else if (dialogueText != null)
+            previousText = dialogueText.text;
+        
+        int previousLength = previousText.Length;
+        
+        // Check if there's a significant difference between displayed and target text
+        bool significantDifference = (previousLength > 0 && targetText.Length > 0 && 
+            (previousLength < targetText.Length * 0.5f || 
+             !targetText.StartsWith(previousText.Substring(0, Math.Min(5, previousLength)))));
+        
+        // Debug logs to understand what's happening
+        Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Force completion executed");
+        Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Previous displayed text: '{previousText}'");
+        Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Target text that should display: '{targetText}'");
+        Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Text lengths - Previous: {previousLength}, Target: {targetText.Length}");
+        
+        if (significantDifference)
         {
-            string previousText = dialogueText.text;
-            int previousLength = previousText.Length;
+            Debug.LogWarning($"[BeepSpeak DEBUG - COMPARISON] Significant difference detected between displayed and target text!");
             
-            // Check if there's a significant difference between displayed and target text
-            bool significantDifference = (previousLength > 0 && targetText.Length > 0 && 
-                (previousLength < targetText.Length * 0.5f || 
-                 !targetText.StartsWith(previousText.Substring(0, Math.Min(5, previousLength)))));
-            
-            // Debug logs to understand what's happening
-            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Force completion executed");
-            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Previous displayed text: '{previousText}'");
-            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Target text that should display: '{targetText}'");
-            Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Text lengths - Previous: {previousLength}, Target: {targetText.Length}");
-            
-            if (significantDifference)
-            {
-                Debug.LogWarning($"[BeepSpeak DEBUG - COMPARISON] Significant difference detected between displayed and target text!");
-                
-                // For smoother transition with large text differences, add a brief transition effect
-                // This makes the transition less jarring when forcing completion of a long text
-                StartCoroutine(SmoothTextTransition(previousText, targetText));
-            }
-            else
-            {
-                // Small difference - just set the text directly
+            // For smoother transition with large text differences, add a brief transition effect
+            StartCoroutine(SmoothTextTransition(previousText, targetText));
+        }
+        else
+        {
+            // Small difference - just set the text directly
+            if (newUIResponseText != null)
+                newUIResponseText.text = targetText;
+            else if (dialogueText != null)
                 dialogueText.text = targetText;
-                currentDisplayedText = targetText;
-            }
+            
+            currentDisplayedText = targetText;
         }
         
         // Clean up the coroutine
@@ -258,6 +256,10 @@ public class BeepSpeak : MonoBehaviour
     // Smooth transition between texts when there's a big jump
     private IEnumerator SmoothTextTransition(string fromText, string toText)
     {
+        // First determine which text component to use
+        TMP_Text targetTextComponent = newUIResponseText != null ? newUIResponseText : dialogueText;
+        if (targetTextComponent == null) yield break;
+        
         // Calculate transition frames based on text length difference
         int framesToTransition = Mathf.Min(10, Mathf.CeilToInt((toText.Length - fromText.Length) / 50f));
         
@@ -267,7 +269,7 @@ public class BeepSpeak : MonoBehaviour
         // First briefly fade out the current text (very quick, just 2-3 frames)
         float fadeOutDuration = 0.05f;
         float elapsed = 0f;
-        Color originalColor = dialogueText.color;
+        Color originalColor = targetTextComponent.color;
         Color transparentColor = originalColor;
         transparentColor.a = 0;
         
@@ -275,12 +277,12 @@ public class BeepSpeak : MonoBehaviour
         {
             elapsed = Time.realtimeSinceStartup - startTime;
             float t = elapsed / fadeOutDuration;
-            dialogueText.color = Color.Lerp(originalColor, transparentColor, t);
+            targetTextComponent.color = Color.Lerp(originalColor, transparentColor, t);
             yield return null;
         }
         
         // Switch to the complete text while invisible
-        dialogueText.text = toText;
+        targetTextComponent.text = toText;
         currentDisplayedText = toText;
         
         // Fade back in
@@ -292,12 +294,12 @@ public class BeepSpeak : MonoBehaviour
         {
             elapsed = Time.realtimeSinceStartup - startTime;
             float t = elapsed / fadeOutDuration;
-            dialogueText.color = Color.Lerp(transparentColor, originalColor, t);
+            targetTextComponent.color = Color.Lerp(transparentColor, originalColor, t);
             yield return null;
         }
         
         // Ensure we're back to normal
-        dialogueText.color = originalColor;
+        targetTextComponent.color = originalColor;
     }
 
     // Added method to get the current target text length
@@ -320,11 +322,7 @@ public class BeepSpeak : MonoBehaviour
         targetText = finalText;
         lastTargetUpdateTime = Time.time;
         
-        // Start the safety timeout to ensure typing eventually completes
-        if (finalText.EndsWith(".") || finalText.EndsWith("!") || finalText.EndsWith("?"))
-        {
-            StartCoroutine(EnsureTypingCompletesWithLongDelay());
-        }
+        // No timeout needed - BaseDialogueManager now handles timing with dynamic calculation
         
         Debug.Log($"[BeepSpeak] Stored final text (len={finalText.Length}) for when current animation completes");
     }
@@ -371,8 +369,10 @@ public class BeepSpeak : MonoBehaviour
                 Debug.Log($"[BeepSpeak DEBUG] Typed {charactersProcessed+1}/{targetText.Length}: Current text = '{currentDisplayedText}'");
             }
             
-            // Update the UI
-            if (dialogueText != null)
+            // Update the UI - check BOTH text components
+            if (newUIResponseText != null)
+                newUIResponseText.text = currentDisplayedText;
+            else if (dialogueText != null)
                 dialogueText.text = currentDisplayedText;
                 
             // Play appropriate sound for this character
@@ -403,15 +403,43 @@ public class BeepSpeak : MonoBehaviour
         }
         
         // Ensure the complete text is displayed
-        if (dialogueText != null)
+        if (newUIResponseText != null)
+        {
+            newUIResponseText.text = targetText;
+            Debug.Log("[BeepSpeak DEBUG] Final text set in new UI: '" + targetText + "'");
+        }
+        else if (dialogueText != null)
         {
             dialogueText.text = targetText;
-            Debug.Log("[BeepSpeak DEBUG] Final text set in UI: '" + targetText + "'");
+            Debug.Log("[BeepSpeak DEBUG] Final text set in legacy UI: '" + targetText + "'");
         }
+        
         currentDisplayedText = targetText;
         
         Debug.Log("[BeepSpeak DEBUG] ProcessTyping completed, typed " + targetText.Length + " characters");
         typingCoroutine = null;
+    }
+
+    // Helper method to determine if a character indicates a syllable
+    private bool IsSyllable(string word, int index)
+    {
+        if (string.IsNullOrEmpty(word) || index < 0 || index >= word.Length)
+            return false;
+        
+        // Start of word is always a syllable
+        if (index == 0)
+            return true;
+            
+        char c = word[index];
+        char prev = word[index - 1];
+        
+        // Vowels often mark syllables when preceded by consonants
+        bool isVowel = "aeiouAEIOU".IndexOf(c) >= 0;
+        bool prevIsConsonant = "aeiouAEIOU".IndexOf(prev) < 0;
+        
+        // Complex version would look at vowel patterns, consonant clusters, etc.
+        // This simplified version just checks for vowels after consonants
+        return isVowel && prevIsConsonant;
     }
 
     private int FindWordBoundary(string text)
@@ -670,94 +698,40 @@ public class BeepSpeak : MonoBehaviour
             randomSeed += c;
 
         AudioClip clip = npcVoice.timbre[randomSeed % npcVoice.timbre.Length];
-        float randomPitch = (randomSeed % (npcVoice.pitchVariance * 200f) - (npcVoice.pitchVariance * 100f)) / 100f;
-        float randomVolume = (randomSeed % (npcVoice.volumeVariance * 200f) - (npcVoice.volumeVariance * 100f)) / 100f;
+        float randomPitch = (randomSeed % (int)(npcVoice.pitchVariance * 200f) - (npcVoice.pitchVariance * 100f)) / 100f;
+        float randomVolume = (randomSeed % (int)(npcVoice.volumeVariance * 200f) - (npcVoice.volumeVariance * 100f)) / 100f;
 
         // Modify pitch based on phrase endings
         float pitchModifier = 0f;
         float volumeModifier = 0f;
-        if (currentSentence.sentenceEnd == '?')
+        
+        // Check if we're at the end of a sentence
+        if (currentSentence != null && currentWord != null && 
+            currentSentence.words.IndexOf(currentWord) == currentSentence.words.Count - 1)
         {
-            pitchModifier = 0.05f; // Slight raise for questions
-            if (currentWord == currentSentence.words[^1]) pitchModifier += 0.05f; // Last word pitch increase
-            if (currentSyllable == currentWord.syllables[^1]) pitchModifier += 0.1f; // Final syllable
-        }
-        else if (currentSentence.sentenceEnd == '!')
-        {
-            pitchModifier = 0.02f;
-            volumeModifier = 0.1f;
-        }
-        else
-        {
-            if (currentWord == currentSentence.words[^1])
+            // Last word in sentence
+            if (currentSentence.sentenceEnd == '.')
             {
-                pitchModifier -= 0.1f;
-                volumeModifier -= 0.05f;
+                pitchModifier = -0.2f;
+                volumeModifier = -0.1f;
+            }
+            else if (currentSentence.sentenceEnd == '?')
+            {
+                pitchModifier = 0.2f;
+                volumeModifier = 0.05f;
+            }
+            else if (currentSentence.sentenceEnd == '!')
+            {
+                pitchModifier = 0.1f;
+                volumeModifier = 0.15f;
             }
         }
-        //Modify voice based on given emotion (ADD LATER)
 
+        // Apply all modifiers
         audioSource.pitch = npcVoice.basePitch + pitchModifier + randomPitch;
         audioSource.volume = npcVoice.baseVolume + volumeModifier + randomVolume;
-        //Debug.Log($"Playing syllable {currentSyllable.text}");
+        
+        // Play the sound
         audioSource.PlayOneShot(clip);
-    }
-
-    //determines whether a syllable "starts" at a given letter. used for accurate-ish syllable count
-    private bool IsSyllable(string text, int index)
-    {
-        if (index < 0 || index >= text.Length)
-        {
-            Debug.LogError($"Syllable check out of bounds! Index: {index}, Text Length: {text.Length}");
-            return false;
-        }
-
-        char c = text[index];
-        string vowels = "aeiouyAEIOUY";
-        string ichar = "iI";
-        string tchar = "tT";
-        string nchar = "nN";
-        string lchar = "lL";
-
-        if (text.Length == 1) return true;//hardcode exceptions for 'W', '7', e.t.c.? how do i handle multi-syllable 1 letter words?
-        if (!vowels.Contains(c)) return false;//vowels determine syllables
-        if (index == 0) { return true; }
-
-        //Check if any letters remain. This is because punctuation can throw it off otherwise.
-        bool remainingLetters = false;
-        for (int i = index + 1; i <= text.Length - 1; i++)
-        {
-            if (Char.IsLetter(text[i]))
-            {
-                remainingLetters = true;
-                break;
-            }
-        }
-
-        //previous character is consonant or 'i' and not "tion"
-        bool isSyllable = !vowels.Contains(text[index - 1]) ||
-                   (ichar.Contains(text[index - 1]) &&
-                   (!remainingLetters || !(tchar.Contains(text[index - 2]) && nchar.Contains(text[index + 1]))));
-
-        // Special case: final "e" //dont forget consonant LE like uncle        
-        if ((c == 'e' || c == 'E') && !remainingLetters)
-        {
-            // Count only if "e" is the *only* vowel in the word
-            bool hasOtherVowel = false;
-            for (int i = 0; i < text.Length - 1; i++)
-            {
-                if (vowels.Contains(text[i]))
-                {
-                    hasOtherVowel = true;
-                    break;
-                }
-            }
-            if (hasOtherVowel)
-                isSyllable = false; // Silent "e"
-            if (index > 2 && !vowels.Contains(text[index - 2]) && lchar.Contains(text[index - 1]))
-                isSyllable = true;//exception like "uncle"
-        }
-
-        return isSyllable;
     }
 }

@@ -68,7 +68,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
     protected virtual void HandleReply(string reply)
     {
         // --- DEBUG: Log raw reply chunk ---
-        // Debug.Log($"[HandleReply RAW]: '{reply}'"); // Potentially very verbose, uncomment if needed
+        Debug.Log($"[HandleReply RAW]: '{reply}'"); // Enable to trace exact LLM response
 
         if (string.IsNullOrEmpty(reply)) return;
 
@@ -79,24 +79,36 @@ public abstract class BaseDialogueManager : MonoBehaviour
             // If we already found the action delimiter in an earlier chunk and are now accumulating the action
             if (isAccumulatingAction)
             {
-                // Check if this chunk contains a duplicated action marker
+                // IMPROVED: Replace the buffer with the latest chunk instead of appending
+                // This keeps only the latest/most complete version of the function call
                 bool containsActionMarker = reply.Contains("[/ACTION]:") || reply.Contains("\nACTION:");
+                
+                // Check if this chunk contains a closing parenthesis - likely the final chunk
+                bool containsClosingParen = reply.Contains(")");
                 
                 if (containsActionMarker)
                 {
                     // Extract the relevant parts without the marker
                     string cleaned = CleanFunctionCall(reply);
-                    Debug.Log($"[HandleReply] Accumulating action (cleaned chunk): '{cleaned}'");
+                    Debug.Log($"[HandleReply] Replacing action buffer with cleaned chunk: '{cleaned}'");
+                    actionBuffer.Clear();
                     actionBuffer.Append(cleaned);
                 }
                 else
                 {
-                    // No marker found, just append the entire chunk
-                    Debug.Log($"[HandleReply] Accumulating action (raw chunk): '{reply}'");
+                    // No marker found, replace the entire buffer with this chunk
+                    Debug.Log($"[HandleReply] Replacing action buffer with raw chunk: '{reply}'");
+                    actionBuffer.Clear();
                     actionBuffer.Append(reply);
                 }
                 
-                return; // Skip the rest of processing for this chunk
+                // If this chunk contains a closing parenthesis, it's likely complete
+                if (containsClosingParen)
+                {
+                    Debug.Log($"[HandleReply] Found closing parenthesis, likely the complete function call");
+                }
+                
+                return; // Skip the rest of processing for this chunk - don't send this to UI
             }
             
             // If an action has already been found and we're not accumulating, completely ignore further text
@@ -106,7 +118,8 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 return;
             }
 
-            // For normal text without action markers, clear and update the display
+            // CRITICAL FIX: Replace append with clear+append to prevent text duplication
+            // Each LLM chunk contains the complete response so far, not just new content
             currentResponse.Clear();
             currentResponse.Append(reply);
             
@@ -162,6 +175,14 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 Debug.Log($"[HandleReply] Action detected at index: {actionIndex}");
                 Debug.Log($"[HandleReply] Dialogue part: '{dialoguePart}'");
                 Debug.Log($"[HandleReply] Initial function part: '{functionCallPart}'");
+                
+                // IMPORTANT: Store the function call buffer for later use in OnReplyComplete
+                bufferedFunctionCall = functionCallPart;
+                
+                // Update currentResponse to contain only the dialogue part before the action flag
+                // This is important so that later calls that use currentResponse don't include the action flag
+                currentResponse.Clear();
+                currentResponse.Append(dialoguePart);
                 
                 // Only update display with the dialogue part
                 UpdateDialogueDisplay(dialoguePart);
@@ -227,27 +248,18 @@ public abstract class BaseDialogueManager : MonoBehaviour
     // Clean up function call string by removing duplicated action markers and dialogue text
     private string CleanFunctionCall(string functionCall)
     {
-        // First try to extract a complete function call pattern
-        foreach (string funcPrefix in new[] { "reveal_node(", "stop_conversation(" })
+        // First try to get just the last occurrence of a complete function call pattern
+        int lastRevealIndex = functionCall.LastIndexOf("reveal_node(");
+        int lastStopIndex = functionCall.LastIndexOf("stop_conversation(");
+        
+        // If either pattern is found, use the later one
+        if (lastRevealIndex >= 0 || lastStopIndex >= 0)
         {
-            int lastIndex = functionCall.LastIndexOf(funcPrefix);
-            if (lastIndex >= 0)
+            int startIndex = Math.Max(lastRevealIndex, lastStopIndex);
+            if (startIndex >= 0)
             {
-                // Extract from the start of the function name to the end
-                string extracted = functionCall.Substring(lastIndex);
-                
-                // If there's a closing parenthesis, make sure to include it
-                int closingParen = extracted.IndexOf(')');
-                if (closingParen >= 0)
-                {
-                    // Return just the complete function call
-                    return extracted.Substring(0, closingParen + 1);
-                }
-                else
-                {
-                    // No closing parenthesis found, return what we have
-                    return extracted;
-                }
+                // Just return the function call part
+                return functionCall.Substring(startIndex);
             }
         }
         
@@ -427,7 +439,20 @@ public abstract class BaseDialogueManager : MonoBehaviour
         else
         {
             Debug.Log("[INPUTDBG] OnReplyComplete - No action detected, starting EnableInputAfterBeepSpeak");
-            // No action detected, normal end of reply.
+            
+            // Only send the complete text to the display if we're not using the new UI
+            // This prevents duplicate display when BeepSpeak is already updating the UI
+            if (dialogueControl != null && !dialogueControl.UseNewUI)
+            {
+                // For legacy UI only - send the final complete text to legacy display
+                dialogueControl.DisplayNPCDialogue(currentResponse.ToString());
+                Debug.Log("[INPUTDBG] OnReplyComplete - Sent final text to legacy display");
+            }
+            else
+            {
+                Debug.Log("[INPUTDBG] OnReplyComplete - Not sending final text to UI (using new UI with BeepSpeak)");
+            }
+            
             // Start coroutine to re-enable input only after BeepSpeak finishes.
             StartCoroutine(EnableInputAfterBeepSpeak());
         }
@@ -511,19 +536,37 @@ public abstract class BaseDialogueManager : MonoBehaviour
     {
         float startTime = Time.realtimeSinceStartup;
         
-        // Calculate an appropriate wait time based on text length in BeepSpeak
+        // Retrieve the BeepSpeak instance and its timing configuration
         float textLength = 0f;
-        if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
+        float characterSpeed = 0.07f; // Default fallback speed if we can't access actual settings
+        float speedVariance = 0.01f;  // Default fallback variance
+        BeepSpeak beepSpeakInstance = null;
+        
+        if (dialogueControl != null)
         {
-            textLength = dialogueControl.GetBeepSpeak().GetCurrentTargetLength();
+            beepSpeakInstance = dialogueControl.GetBeepSpeak();
+            if (beepSpeakInstance != null)
+            {
+                textLength = beepSpeakInstance.GetCurrentTargetLength();
+                
+                // Access the actual typing speed settings if possible
+                if (beepSpeakInstance.npcVoice != null)
+                {
+                    characterSpeed = beepSpeakInstance.npcVoice.baseSpeed;
+                    speedVariance = beepSpeakInstance.npcVoice.speedVariance;
+                    Debug.Log($"[BaseDialogueManager] Retrieved BeepSpeak speed: {characterSpeed:F3}s per char, variance: {speedVariance:F3}s");
+                }
+            }
         }
         
-        // Calculate wait time based on text length - at least 2 seconds, and 0.07 seconds per character
-        // (roughly 14 characters per second, which is a reasonable reading speed)
-        float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
+        // Calculate expected typing duration based on actual settings
+        // Add extra time for punctuation pauses and general processing overhead
+        float estimatedCharTime = characterSpeed + speedVariance; // Worst case (slowest typing speed)
+        float punctuationPauseEstimate = Mathf.Min(textLength * 0.2f, 4.0f); // Estimate extra time for punctuation pauses
+        float calculatedWaitTime = Mathf.Max(3.0f, (textLength * estimatedCharTime) + punctuationPauseEstimate);
         
-        // Limit max wait time to 5 seconds to avoid excessively long waits
-        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        // Allow much longer maximum wait time for long responses
+        float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
         
         Debug.Log($"[BaseDialogueManager] Waiting up to {maxWaitTime:F1}s for BeepSpeak to finish before processing action");
         
@@ -557,21 +600,37 @@ public abstract class BaseDialogueManager : MonoBehaviour
         Debug.Log("[INPUTDBG] EnableInputAfterBeepSpeak started");
         float startTime = Time.realtimeSinceStartup;
         
-        // Increase maximum wait time to allow proper typing animation to complete
-        // Average English reading speed is ~200-250 words/min (3-4 words/sec)
-        // Assuming ~5 chars/word, that's 15-20 chars/sec, so wait time should scale with text length
+        // Retrieve the BeepSpeak instance and its timing configuration
         float textLength = 0f;
-        if (dialogueControl != null && dialogueControl.GetBeepSpeak() != null)
+        float characterSpeed = 0.07f; // Default fallback speed if we can't access actual settings
+        float speedVariance = 0.01f;  // Default fallback variance
+        BeepSpeak beepSpeakInstance = null;
+        
+        if (dialogueControl != null)
         {
-            textLength = dialogueControl.GetBeepSpeak().GetCurrentTargetLength();
+            beepSpeakInstance = dialogueControl.GetBeepSpeak();
+            if (beepSpeakInstance != null)
+            {
+                textLength = beepSpeakInstance.GetCurrentTargetLength();
+                
+                // Access the actual typing speed settings if possible
+                if (beepSpeakInstance.npcVoice != null)
+                {
+                    characterSpeed = beepSpeakInstance.npcVoice.baseSpeed;
+                    speedVariance = beepSpeakInstance.npcVoice.speedVariance;
+                    Debug.Log($"[INPUTDBG] Retrieved BeepSpeak speed: {characterSpeed:F3}s per char, variance: {speedVariance:F3}s");
+                }
+            }
         }
         
-        // Calculate a reasonable wait time based on text length
-        // Use at least 2 seconds, and add 0.07 seconds per character (roughly 14 chars/sec)
-        float calculatedWaitTime = Mathf.Max(2.0f, textLength * 0.07f);
+        // Calculate expected typing duration based on actual settings
+        // Add extra time for punctuation pauses and general processing overhead
+        float estimatedCharTime = characterSpeed + speedVariance; // Worst case (slowest typing speed)
+        float punctuationPauseEstimate = Mathf.Min(textLength * 0.2f, 4.0f); // Estimate extra time for punctuation pauses
+        float calculatedWaitTime = Mathf.Max(3.0f, (textLength * estimatedCharTime) + punctuationPauseEstimate);
         
-        // Cap the maximum wait time to avoid excessive delays for very long text
-        float maxWaitTime = Mathf.Min(calculatedWaitTime, 5.0f);
+        // Allow much longer maximum wait time for long responses
+        float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
         
         Debug.Log($"[INPUTDBG] Waiting up to {maxWaitTime:F1}s for {textLength} characters to type");
         int loopCount = 0;
