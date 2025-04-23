@@ -194,12 +194,22 @@ public class CharacterManager : MonoBehaviour
          if (characterCache.Count > 0) {
             try {
                 if (sharedLLM.parallelPrompts <= 0) { Debug.LogError($"CRITICAL: parallelPrompts invalid: {sharedLLM.parallelPrompts}. Using fallback 3."); sharedLLM.parallelPrompts = 3; }
-                int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
-                Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens/char (total: {sharedLLM.contextSize}, slots: {sharedLLM.parallelPrompts})");
+                // No longer divide by parallelPrompts - use full context for each character
+                int contextPerCharacter = sharedLLM.contextSize;
+                Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens/char (total: {sharedLLM.contextSize}, using full context since parallelPrompts={sharedLLM.parallelPrompts})");
                 foreach (var kvp in characterCache) {
                     LLMCharacter character = kvp.Value;
-                    if (character != null) { try { character.nKeep = contextPerCharacter; } catch (Exception e) { Debug.LogError($"Failed nKeep for {kvp.Key}: {e.Message}"); } }
-                } Debug.Log($"Finished setting nKeep for {characterCache.Count} characters.");
+                    if (character != null) { 
+                        try { 
+                            character.nKeep = contextPerCharacter;
+                            // Ensure cache saving is enabled
+                            character.saveCache = enableLLMCache; 
+                        } catch (Exception e) { 
+                            Debug.LogError($"Failed nKeep for {kvp.Key}: {e.Message}"); 
+                        } 
+                    }
+                } 
+                Debug.Log($"Finished setting nKeep for {characterCache.Count} characters.");
             } catch (Exception e) { Debug.LogError($"CRITICAL context allocation error: {e.Message}\n{e.StackTrace}"); }
         } else { Debug.LogWarning("AllocateContext: No characters in cache."); }
     }

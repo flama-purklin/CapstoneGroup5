@@ -86,6 +86,10 @@ public class InitializationManager : MonoBehaviour
             if (npcManager != null) { npcManager.SpawningComplete = true; Debug.Log($"NPC Spawning Complete. Flag set on NPCManager."); } 
             else { Debug.LogError("NPCManager is null, cannot set SpawningComplete flag!"); }
 
+            // Step 3.5: Pre-bake NPC caches
+            Debug.Log("--- INIT STEP 3.5: Pre-bake NPC caches ---");
+            await PrebakeAllNpcCaches();
+
             // --- Minimum Loading Time Check ---
             float elapsedTime = Time.realtimeSinceStartup - initializationStartTime;
             if (elapsedTime < minLoadingTime)
@@ -318,5 +322,57 @@ public class InitializationManager : MonoBehaviour
         float animationLength = stateInfo.length; 
         yield return new WaitForSeconds(animationLength); 
         target.SetActive(false); 
+    }
+
+    /// <summary>
+    /// Pre-bakes all NPC caches during initialization to improve first-interaction response time.
+    /// </summary>
+    private async Task PrebakeAllNpcCaches()
+    {
+        if (characterManager == null)
+        {
+            Debug.LogError("Cannot pre-bake NPC caches: CharacterManager is null");
+            return;
+        }
+
+        Debug.Log($"Starting NPC cache pre-baking...");
+        
+        foreach (var kvp in characterManager.GetAvailableCharacters())
+        {
+            string characterName = kvp;
+            LLMCharacter npc = characterManager.GetCharacterByName(characterName);
+            
+            if (npc == null)
+            {
+                Debug.LogWarning($"Cannot pre-bake cache for '{characterName}': Character not found");
+                continue;
+            }
+
+            Debug.Log($"Pre-baking cache for '{characterName}'...");
+            
+            try
+            {
+                // 1. Warm-up with system prompt
+                await npc.Warmup();
+                Debug.Log($"Warmup complete for '{characterName}'");
+                
+                // 2. Ensure cache saving is enabled
+                npc.saveCache = true;
+                
+                // 3. Persist KV-cache to disk
+                await npc.SaveCacheFile();
+                Debug.Log($"Cache saved for '{characterName}'");
+                
+                // 4. Free slot immediately
+                npc.CancelRequests();
+                Debug.Log($"Slot freed for '{characterName}'");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error pre-baking cache for '{characterName}': {ex.Message}");
+            }
+        }
+        
+        Debug.Log("NPC cache pre-baking complete");
     }
 }

@@ -655,6 +655,22 @@ namespace LLMUnity
                 return null;
             }
         }
+        
+        /// <summary>
+        /// Save the character's KV cache to disk.
+        /// </summary>
+        /// <returns>Result of the save operation</returns>
+        public virtual async Task<string> SaveCacheFile()
+        {
+            if (!remote && saveCache)
+            {
+                string cachePath = GetCacheSavePath(save);
+                Debug.Log($"Saving cache to {cachePath}");
+                return await Slot(cachePath, "save");
+            }
+            Debug.Log($"Skipping cache save (remote={remote}, saveCache={saveCache})");
+            return null;
+        }
 
         protected override async Task<Ret> PostRequestLocal<Res, Ret>(string json, string endpoint, ContentCallback<Res, Ret> getContent, Callback<Ret> callback = null)
         {
