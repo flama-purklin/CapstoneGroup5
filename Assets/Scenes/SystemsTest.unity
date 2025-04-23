@@ -6383,7 +6383,7 @@ MonoBehaviour:
   llm: {fileID: 1286452019}
   npcManager: {fileID: 393672616}
   characterManager: {fileID: 377154506}
-  loadingOverlay: {fileID: 0}
+  loadingOverlay: {fileID: 18984962}
   trainLayoutManager: {fileID: 641991973}
   minLoadingTime: 5
 --- !u!4 &1011721226
