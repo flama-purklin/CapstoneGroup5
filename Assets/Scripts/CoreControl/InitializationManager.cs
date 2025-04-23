@@ -76,6 +76,10 @@ public class InitializationManager : MonoBehaviour
                  await WaitForCharacterManagerInitialization(); // Wait for it
             } else { Debug.LogError("CharacterManager is null, cannot initialize!"); }
 
+            // Step 3.5: Pre-bake NPC caches
+            Debug.Log("--- INIT STEP 3.5: Pre-bake NPC caches ---");
+            await PrebakeAllNpcCaches();
+
             // Step 4: Build the train layout
             Debug.Log("--- INIT STEP 4: Build Train ---");
             BuildTrain(); 
@@ -85,10 +89,6 @@ public class InitializationManager : MonoBehaviour
             SpawnAndLinkNPCs(); // Combined spawning and linking
             if (npcManager != null) { npcManager.SpawningComplete = true; Debug.Log($"NPC Spawning Complete. Flag set on NPCManager."); } 
             else { Debug.LogError("NPCManager is null, cannot set SpawningComplete flag!"); }
-
-            // Step 3.5: Pre-bake NPC caches
-            Debug.Log("--- INIT STEP 3.5: Pre-bake NPC caches ---");
-            await PrebakeAllNpcCaches();
 
             // --- Minimum Loading Time Check ---
             float elapsedTime = Time.realtimeSinceStartup - initializationStartTime;
@@ -367,9 +367,9 @@ public class InitializationManager : MonoBehaviour
                 Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Set saveCache from {previousCacheSetting} to {npc.saveCache}");
                 
                 // 3. Persist KV-cache to disk
-                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling SaveCacheFile()...");
-                string result = await npc.SaveCacheFile();
-                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] SaveCacheFile returned: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling Save()...");
+                string result = await npc.Save(characterName);
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Save returned: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
                 
                 // 4. Free slot immediately
                 Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling CancelRequests()...");

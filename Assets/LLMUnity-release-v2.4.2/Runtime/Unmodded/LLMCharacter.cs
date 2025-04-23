@@ -10,12 +10,6 @@ using UnityEngine;
 
 namespace LLMUnity
 {
-    [Serializable]
-    public class ChatListWrapper
-    {
-        public List<ChatMessage> chat;
-    }
-
     [DefaultExecutionOrder(-2)]
     /// @ingroup llm
     /// <summary>
@@ -491,8 +485,7 @@ namespace LLMUnity
                 {
                     chatLock.Release();
                 }
-                // Removed automatic save:
-                // if (save != "") _ = Save(save);
+                if (save != "") _ = Save(save);
             }
 
             completionCallback?.Invoke();
@@ -596,28 +589,15 @@ namespace LLMUnity
         /// <returns></returns>
         public virtual async Task<string> Save(string filename)
         {
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Save called with filename: {filename}");
-            
             string filepath = GetJsonSavePath(filename);
             string dirname = Path.GetDirectoryName(filepath);
             if (!Directory.Exists(dirname)) Directory.CreateDirectory(dirname);
             string json = JsonUtility.ToJson(new ChatListWrapper { chat = chat.GetRange(1, chat.Count - 1) });
             File.WriteAllText(filepath, json);
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] JSON history saved to {filepath}");
 
             string cachepath = GetCacheSavePath(filename);
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Pre-KV cache save check: remote={remote}, saveCache={saveCache}");
-            
-            if (remote || !saveCache) 
-            {
-                Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Skipping KV cache save, returning null");
-                return null;
-            }
-            
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Attempting to save KV cache to: {cachepath}");
+            if (remote || !saveCache) return null;
             string result = await Slot(cachepath, "save");
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] KV cache save result: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
-            
             return result;
         }
 
@@ -628,41 +608,21 @@ namespace LLMUnity
         /// <returns></returns>
         public virtual async Task<string> Load(string filename)
         {
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Load called with filename: {filename}");
-            
             string filepath = GetJsonSavePath(filename);
             if (!File.Exists(filepath))
             {
-                Debug.LogError($"[LLM_UPDATE_DEBUG] [{save}] JSON file {filepath} does not exist.");
+                LLMUnitySetup.LogError($"File {filepath} does not exist.");
                 return null;
             }
-            
             string json = File.ReadAllText(filepath);
             List<ChatMessage> chatHistory = JsonUtility.FromJson<ChatListWrapper>(json).chat;
             ClearChat();
             chat.AddRange(chatHistory);
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Loaded JSON history from {filepath}, chat.Count = {chat.Count}");
+            LLMUnitySetup.Log($"Loaded {filepath}");
 
             string cachepath = GetCacheSavePath(filename);
-            string fullCachePath = GetSavePath(cachepath);
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Pre-KV cache restore check: remote={remote}, saveCache={saveCache}, fileExists={File.Exists(fullCachePath)}");
-            
-            if (remote || !saveCache) 
-            {
-                Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Skipping KV cache restore (remote or !saveCache), returning null");
-                return null;
-            }
-            
-            if (!File.Exists(fullCachePath))
-            {
-                Debug.LogWarning($"[LLM_UPDATE_DEBUG] [{save}] KV cache file does not exist at {fullCachePath}, returning null");
-                return null;
-            }
-            
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Attempting to restore KV cache from: {cachepath}");
+            if (remote || !saveCache || !File.Exists(GetSavePath(cachepath))) return null;
             string result = await Slot(cachepath, "restore");
-            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] KV cache restore result: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
-            
             return result;
         }
 
@@ -701,4 +661,12 @@ namespace LLMUnity
             return result;
         }
     }
+
+    /// \cond HIDE
+    [Serializable]
+    public class ChatListWrapper
+    {
+        public List<ChatMessage> chat;
+    }
+    /// \endcond
 }

@@ -62,7 +62,39 @@ public class CharacterManager : MonoBehaviour
         if (sharedLLM == null) sharedLLM = FindFirstObjectByType<LLM>();
         if (npcManager == null) npcManager = FindFirstObjectByType<NPCManager>();
         ValidateConfiguration();
-        OrganizeHierarchy(); 
+        OrganizeHierarchy();
+        
+        // Apply the recommended configuration for LLM
+        ApplyOptimalLLMConfiguration();
+    }
+    
+    /// <summary>
+    /// Apply the recommended configuration for the LLM to optimize performance
+    /// </summary>
+    private void ApplyOptimalLLMConfiguration()
+    {
+        if (sharedLLM != null)
+        {
+            Debug.Log("[LLM_UPDATE_DEBUG] Applying optimized LLM configuration");
+            
+            // Record original values for logging
+            int originalPrompts = sharedLLM.parallelPrompts;
+            int originalContext = sharedLLM.contextSize;
+            
+            // Apply new values
+            sharedLLM.parallelPrompts = 1;     // Single-slot configuration
+            sharedLLM.contextSize = 6144;      // 6K tokens context
+            
+            Debug.Log($"[LLM_UPDATE_DEBUG] LLM Configuration updated: parallelPrompts {originalPrompts} → {sharedLLM.parallelPrompts}, " +
+                      $"contextSize {originalContext} → {sharedLLM.contextSize}");
+                      
+            // Note: n_batch setting would be configured in the LLM inspector 
+            // or via command line arguments when launching the LLM process
+        }
+        else
+        {
+            Debug.LogError("[LLM_UPDATE_DEBUG] Cannot apply LLM configuration - sharedLLM is null");
+        }
     }
     
     private void OrganizeHierarchy() {

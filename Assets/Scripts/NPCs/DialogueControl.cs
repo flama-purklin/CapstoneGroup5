@@ -103,7 +103,7 @@ public class DialogueControl : MonoBehaviour
     }
 
     // NPC greeting tag constant - used to make NPCs speak first
-    private const string PLAYER_APPROACHES_TAG = "<PLAYER_APPROACHES/>";
+    private const string PLAYER_APPROACHES_TAG = "[THE STAFF ROBOT SLEUTH APPROACHES YOU]";
     
     // Track if the cache has been restored in this session
     private bool cacheRestored = false;
