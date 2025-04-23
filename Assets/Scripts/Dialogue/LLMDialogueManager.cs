@@ -15,6 +15,11 @@ public class LLMDialogueManager : BaseDialogueManager
     [SerializeField] private Button submitButton;
     [SerializeField] private DialogueControl dialogueControlRef;
 
+    private void Awake()
+    {
+        // Initialization code if needed
+    }
+
     protected override void SetupInputHandlers()
     {
         if (submitButton)

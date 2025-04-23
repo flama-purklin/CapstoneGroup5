@@ -7266,7 +7266,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 6
   m_Viewport: {fileID: 733682947}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 776270124}
@@ -8819,31 +8819,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
+      value: Phi-4-mini-instruct-Q4_K_M.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: batchSize
-      value: 2048
+      value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
-      value: 12000
+      value: 6000
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
-      value: mistral chat
+      value: phi-4-mini
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
-      value: 4096
+      value: 3072
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
-      value: 32768
+      value: 131072
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: dontDestroyOnLoad
@@ -14366,6 +14366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueText: {fileID: 6552968255495239368}
+  newUIResponseText: {fileID: 0}
   audioSource: {fileID: 1908089330}
   npcVoice:
     voiceID: 100000
@@ -16329,7 +16330,6 @@ MonoBehaviour:
   inputBox: {fileID: 1167077927224421573}
   submitButton: {fileID: 0}
   dialogueControlRef: {fileID: 5268162263547235753}
-  dialogueUIController: {fileID: 1908089333}
 --- !u!1 &1167077927224421573
 GameObject:
   m_ObjectHideFlags: 0
@@ -16774,6 +16774,8 @@ MonoBehaviour:
   defaultHud: {fileID: 161372750}
   dialoguePanel: {fileID: 677779949}
   dialogueUIController: {fileID: 1908089333}
+  nodeUnlockNotifHud: {fileID: 1544314202}
+  powerControlHud: {fileID: 940167674}
   characterProf: {fileID: 5747818288522950805}
   characterName: {fileID: 6281281486042900182}
   beepSpeak: {fileID: 1908089331}

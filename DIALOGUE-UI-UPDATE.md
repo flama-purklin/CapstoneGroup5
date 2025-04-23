@@ -1,104 +1,126 @@
-# Dialogue UI Update - Goals and Implementation Plan
+# DIALOGUE SYSTEM IMPROVEMENTS (April/May 2025)
 
-## Overview
+## 0. Previous Issues
 
-This document outlines a plan to replace the current dialogue system with a more modern chat-style interface that better supports conversation flow with NPCs. The update aims to improve user experience while maintaining compatibility with existing LLM integration.
-
-## Implementation Tiers
-
-The dialogue UI will be implemented using a tiered approach, starting with a Minimum Viable Product (MVP) and advancing to more sophisticated features with each tier.
-
-### Tier 1: MVP Implementation (Minimal Intrusion)
-* Basic chat-style interface with message bubbles
-* Chat history visible within the dialogue session
-* Simple visuals with native Unity UI components
-* Event-based communication with existing dialogue systems
-* Toggle mechanism for easy fallback to the original system
-
-### Tier 2: Enhanced Experience
-* Basic animations for messages appearing
-* Visual polish (shadows, rounded corners on message bubbles)
-* Responsive layout that adjusts to message length
-* Character portrait/expression indicators
-
-### Tier 3: Refined Interface
-* Typing indicators when NPC is responding
-* Message delivery states (sent, seen, etc.)
-* Sound effects for sending/receiving messages
-* Customized input field behaviors
-
-### Tier 4: Advanced Features
-* Custom rendering for different message types
-* Animated transitions between dialogue states
-* Deep integration with other game systems (evidence, clues, etc.)
-* Platform-specific optimizations
-
-## Core Components
-
-The dialogue UI update will require the following key components:
-
-1. **ChatDialogueManager**: Core script that manages the chat interface, message display, and communication with LLMDialogueManager
-   
-2. **MessageBubble**: Component for individual message bubbles, handling text display, sizing, and visual appearance
-
-3. **UI Prefabs**:
-   - PlayerMessagePrefab: For player messages (right-aligned, distinct color)
-   - NPCMessagePrefab: For NPC responses (left-aligned, different color)
-
-4. **UI Structure**:
-   - DialogueWindow: Main container for the chat interface
-   - Header: Contains character name and portrait
-   - MessageArea: Scrollable area containing message bubbles
-   - InputArea: Input field and send button
-
-## Integration Points
-
-The new UI system will connect to the existing dialogue infrastructure at these key points:
-
-1. **LLMDialogueManager**: Add events to notify when player sends message and NPC responds
-   
-2. **DialogueControl**: Add reference to the chat UI and a toggle to enable/disable it
-
-3. **Character Component**: Connect character data (name, portrait) to the chat UI header
-
-## Design Guidelines
-
-### Visual Style
-- Modern, clean interface with clear visual hierarchy
-- Distinct color coding for player vs NPC messages
-- Proper spacing and padding for readability
-- Support for both text and potential rich content (images, evidence items)
-
-### Interaction Design
-- Intuitive scrolling behavior for message history
-- Clear visual feedback when sending messages
-- Appropriate transitions and animations (subtle, not distracting)
-- Ensure keyboard and controller support for input
-
-### Technical Considerations
-- Use Unity's recommended UI practices (Content Size Fitters, Layout Groups)
-- Implement proper anchoring for responsive scaling
-- Use TextMeshPro for all text elements
-- Consider performance with long conversations (object pooling)
-- Maintain backward compatibility option
-
-## Implementation Plan
-
-1. Create core scripts
-2. Design and implement UI prefabs
-3. Integrate with existing dialogue systems
-4. Add toggle for switching between UI modes
-5. Test with various conversation scenarios
-6. Refine visuals and user experience
-7. Implement higher-tier features incrementally
-
-## Future Considerations
-
-- Support for special message types (system notifications, evidence reveals)
-- Chat history persistence between game sessions
-- Accessibility features (text size options, high contrast mode)
-- Mobile-specific UI adjustments if needed
+| Component | Issue |
+|------|---------|
+| `BaseDialogueManager.HandleReply()` | Text duplication due to appending each LLM chunk instead of replacing. |
+| `BeepSpeak` and `BaseDialogueManager` | Conflicting timeout mechanisms causing premature animation termination. |
+| `DialogueControl.Activate()` | Deactivating ALL HUD elements, including critical ones needed for node notifications. |
+| `BaseDialogueManager` | Function call handling accumulated redundant text across chunks. |
 
 ---
 
-**Note**: This document outlines the high-level goals and approach. Implementation details will evolve as development progresses.
+## 1. Implemented Improvements
+
+```
+                     /- BaseDialogueManager (replaced chunk handling)
+LLM ---- Chunks ---<
+                     \- BeepSpeak (improved text processing & removed conflicting timeout)
+                            |
+                            v
+                         Dynamic timing
+                       (based on text length)
+                            |
+                            v
+                  Selective HUD Management
+                  (keep critical UI elements)
+```
+
+### 1.1 Text Duplication Fix
+
+```csharp
+// OLD - in BaseDialogueManager.HandleReply()
+currentResponse.Append(reply);
+
+// NEW - Each chunk contains the complete response so far, not just new content
+currentResponse.Clear();
+currentResponse.Append(reply);
+```
+
+### 1.2 Function Call Handling
+
+```csharp
+// OLD - Keeping redundant accumulated text across chunks
+if (isAccumulatingAction)
+{
+    actionBuffer.Append(reply); // Causes "revealreveal_node..." accumulation
+}
+
+// NEW - Only keep the most recent/complete version of function calls
+if (isAccumulatingAction)
+{
+    actionBuffer.Clear();
+    actionBuffer.Append(reply); // Only the latest chunk is preserved
+}
+```
+
+### 1.3 Dynamic Timing for Animation
+
+```csharp
+// OLD - Fixed timeout regardless of text length
+float maxWaitTime = 5.0f;
+
+// NEW - Dynamically calculated based on actual typing speed
+float estimatedCharTime = characterSpeed + speedVariance;
+float punctuationPauseEstimate = Mathf.Min(textLength * 0.2f, 4.0f);
+float calculatedWaitTime = Mathf.Max(3.0f, (textLength * estimatedCharTime) + punctuationPauseEstimate);
+float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
+```
+
+### 1.4 Selective HUD Management
+
+```csharp
+// OLD - All HUD elements deactivated during dialogue
+if (defaultHud) defaultHud.SetActive(false);
+
+// NEW - Only deactivate non-essential HUD elements
+if (defaultHud) {
+    for (int i = 0; i < defaultHud.transform.childCount; i++) {
+        Transform childTransform = defaultHud.transform.GetChild(i);
+        GameObject childObject = childTransform.gameObject;
+        
+        // Skip our critical HUD elements
+        bool isNodeUnlockNotif = nodeUnlockNotifHud != null && childObject == nodeUnlockNotifHud;
+        bool isPowerControl = powerControlHud != null && childObject == powerControlHud;
+        
+        if (!isNodeUnlockNotif && !isPowerControl) {
+            childObject.SetActive(false);
+        } else {
+            childObject.SetActive(true);
+        }
+    }
+}
+```
+
+### 1.5 Single Timeout System
+
+```csharp
+// REMOVED from BeepSpeak.cs - Redundant timeout mechanism that caused premature text animation termination
+private IEnumerator EnsureTypingCompletesWithLongDelay()
+{
+    yield return new WaitForSeconds(8.0f);
+    if (typingCoroutine != null)
+    {
+        // Force completion code...
+    }
+}
+```
+
+---
+
+## 2. Behavior After Improvements
+
+• **Consistent Text Display:** No more duplication or flashing between states thanks to proper chunk handling.
+
+• **Smooth Animation:** BeepSpeak now runs at its configured speed without premature termination.
+
+• **Appropriate Timing:** Wait times before input re-enabling are dynamically calculated based on actual text length and typing speed.
+
+• **Reliable Function Calling:** Node revelations and conversation ending work consistently.
+
+• **Visible Critical UI:** NodeUnlockNotif and PowerControl remain visible during dialogue, ensuring function calls can properly trigger UI feedback.
+
+• **Simplified State Management:** Single timeout system in BaseDialogueManager ensures consistent behavior.
+
+_Total code touched_: **3 files**, ~100 LOC modified.

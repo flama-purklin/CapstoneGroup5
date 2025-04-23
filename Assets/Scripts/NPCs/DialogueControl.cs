@@ -15,6 +15,11 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private GameObject dialogueCanvas;
     [SerializeField] private GameObject defaultHud;
     [SerializeField] private RectTransform dialoguePanel;
+    [SerializeField] private DialogueUIController dialogueUIController; // New DialogueUIController reference
+    
+    [Header("HUD Elements to Keep Active")]
+    [SerializeField] private GameObject nodeUnlockNotifHud; // Keep this active during dialogue for function calls
+    [SerializeField] private GameObject powerControlHud; // Keep this active during dialogue
 
     [Header("Canvas Components")]
     [SerializeField] Image characterProf;
@@ -41,17 +46,102 @@ public class DialogueControl : MonoBehaviour
     // Public property to check if BeepSpeak is currently playing
     public bool IsBeepSpeakPlaying => beepSpeak != null && beepSpeak.IsPlaying;
 
+    // Public property to check if we're using new UI
+    public bool UseNewUI => dialogueUIController != null;
+
     private void Start()
     {
         if (!llmDialogueManager) { Debug.LogError("LLMDialogueManager reference not set!"); enabled = false; return; }
         if (!dialogueCanvas) { Debug.LogError("DialogueCanvas reference not set!"); enabled = false; return; }
         if (!anim) { Debug.LogError("Animator reference not set!"); enabled = false; return; }
+        
+        // Check for DialogueUIController reference
+        if (!dialogueUIController) {
+            dialogueUIController = GetComponentInChildren<DialogueUIController>();
+            if (!dialogueUIController) {
+                Debug.LogWarning("DialogueUIController reference not set! Falling back to legacy dialogue UI.");
+            } else {
+                Debug.Log("Found DialogueUIController in children!");
+            }
+        }
+
+        // Connect BeepSpeak with the new UI's text component if available
+        if (beepSpeak != null && dialogueUIController != null) {
+            // Get the responseText TMP component from DialogueUIController
+            TMP_Text responseText = dialogueUIController.ResponseTextComponent;
+            if (responseText != null) {
+                beepSpeak.newUIResponseText = responseText;
+                Debug.Log("Successfully connected BeepSpeak to DialogueUIController's response text");
+            } else {
+                Debug.LogError("Failed to get responseText component from DialogueUIController");
+            }
+        } else if (dialogueUIController != null) {
+            Debug.LogWarning("BeepSpeak component not found but DialogueUIController exists. Text animations may not work properly.");
+        }
+
         dialogueCanvas.SetActive(false);
         llmDialogueManager.RegisterDialogueControl(this);
+
+        // Subscribe to DialogueUIController's OnPlayerMessageSubmitted event if available
+        if (dialogueUIController != null) {
+            dialogueUIController.OnPlayerMessageSubmitted += HandlePlayerInput;
+            Debug.Log("Successfully subscribed to DialogueUIController.OnPlayerMessageSubmitted");
+        }
+    }
+
+    // Handle player input from the new DialogueUIController
+    private void HandlePlayerInput(string input)
+    {
+        Debug.Log($"[DialogueControl] Received player input from new UI: {input}");
+        
+        // Forward the player's message to the LLM system
+        // llmDialogueManager.SendPlayerMessage(input); // This method doesn't exist
+        
+        // Use the correct approach - simulate as if the input came from the input field
+        if (llmDialogueManager != null && !string.IsNullOrEmpty(input))
+        {
+            // Get a reference to the input field used by LLMDialogueManager
+            var inputField = llmDialogueManager.GetComponent<LLMDialogueManager>()?.GetComponentInChildren<TMP_InputField>();
+            if (inputField != null)
+            {
+                // Set the text in the input field
+                inputField.text = input;
+                
+                // Find and invoke the submit button's onClick event
+                var submitButton = llmDialogueManager.GetComponent<LLMDialogueManager>()?.GetComponentInChildren<Button>();
+                if (submitButton != null)
+                {
+                    submitButton.onClick.Invoke();
+                }
+                else
+                {
+                    Debug.LogWarning("Could not find submit button in LLMDialogueManager");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Could not find input field in LLMDialogueManager");
+            }
+        }
     }
 
     public void DisplayNPCDialogue(string dialogue)
     {
+        if (UseNewUI) {
+            // When using the new UI, only let BeepSpeak handle the text display
+            // The BeepSpeak component is already connected to the DialogueUIController's text
+            if (beepSpeak != null) {
+                beepSpeak.UpdateStreamingText(dialogue);
+                Debug.Log($"[DialogueControl] BeepSpeak updating text for new UI: {dialogue.Substring(0, Mathf.Min(40, dialogue.Length))}...");
+            } else {
+                // Direct fallback if somehow BeepSpeak is missing
+                dialogueUIController.SetNPCResponse(dialogue);
+                Debug.Log($"[DialogueControl] Direct UI update (no BeepSpeak): {dialogue.Substring(0, Mathf.Min(40, dialogue.Length))}...");
+            }
+            return;
+        }
+        
+        // Legacy path - used only when DialogueUIController is not available
         if (beepSpeak != null) {
             var dialogueEntries = new List<BeepSpeak.DialogueEntry> { new BeepSpeak.DialogueEntry { text = dialogue, speaker = beepSpeak } };
             beepSpeak.StartDialogue(dialogueEntries);
@@ -63,37 +153,31 @@ public class DialogueControl : MonoBehaviour
     // Completely redesigned streaming text handling to prevent animation interruptions
     public void DisplayNPCDialogueStreaming(string dialogue)
     {
+        if (UseNewUI) {
+            // For the new UI, only use BeepSpeak to handle typed text display
+            if (beepSpeak != null) {
+                beepSpeak.UpdateStreamingText(dialogue);
+                Debug.Log($"[DialogueControl] BeepSpeak streaming for new UI: {dialogue}");
+            } else {
+                // Direct fallback if somehow BeepSpeak is missing
+                dialogueUIController.AppendToNPCResponse(dialogue);
+                Debug.Log($"[DialogueControl] Direct streaming (no BeepSpeak): {dialogue}");
+            }
+            return;
+        }
+        
+        // Legacy path below - only used when DialogueUIController is not available
         Debug.Log($"[BEEP DEBUG] DisplayNPCDialogueStreaming called with text length: {dialogue.Length}");
         Debug.Log($"[BEEP DEBUG] First 40 chars: '{dialogue.Substring(0, Math.Min(40, dialogue.Length))}'");
         
-        // Only start a new BeepSpeak animation if:
-        // 1. BeepSpeak is not currently typing OR
-        // 2. This appears to be a completely new message (significant length difference)
         if (beepSpeak != null)
         {
-            // Get current text length being displayed/processed
-            int currentLength = beepSpeak.GetCurrentTargetLength();
-            
-            Debug.Log($"[BEEP DEBUG] Current BeepSpeak text length: {currentLength}, IsPlaying: {beepSpeak.IsPlaying}");
-            
-            // If BeepSpeak is currently typing and this isn't a drastically different message,
-            // DON'T interrupt the animation - store the text for later display
-            if (beepSpeak.IsPlaying && dialogue.Length <= currentLength + 20) 
-            {
-                // Store the latest text as the "final" version but don't interrupt current animation
-                Debug.Log($"[BEEP DEBUG] Calling SetFinalText - NOT interrupting animation");
-                beepSpeak.SetFinalText(dialogue);
-                Debug.Log($"[DialogueControl] Stored final text (len={dialogue.Length}) without interrupting current animation (len={currentLength})");
-            }
-            else 
-            {
-                // Either BeepSpeak is not currently playing, or this is a much larger text update
-                // In this case, it's appropriate to start a new animation
-                Debug.Log($"[BEEP DEBUG] Calling UpdateStreamingText - STARTING NEW animation");
-                Debug.Log($"[BEEP DEBUG] Reason: {(beepSpeak.IsPlaying ? "Large text diff" : "Not currently playing")}");
-                beepSpeak.UpdateStreamingText(dialogue);
-                Debug.Log($"[DialogueControl] Starting new BeepSpeak animation for text (len={dialogue.Length})");
-            }
+            // SIMPLIFICATION: Always use UpdateStreamingText for consistency
+            // This matches the behavior of the new UI path and reduces complexity
+            // The BeepSpeak component will internally decide how to handle the new text
+            Debug.Log($"[BEEP DEBUG] Calling UpdateStreamingText with text length: {dialogue.Length}");
+            beepSpeak.UpdateStreamingText(dialogue);
+            Debug.Log($"[DialogueControl] Using consistent BeepSpeak text handling approach");
         }
         else if (npcDialogueText != null)
         {
@@ -138,12 +222,52 @@ public class DialogueControl : MonoBehaviour
         
         llmDialogueManager.SetCharacter(llmCharacter);
         GameControl.GameController.currentState = GameState.DIALOGUE;
-        if (defaultHud) defaultHud.SetActive(false);
+        
+        // MODIFIED: Selectively deactivate HUD elements, preserving critical ones
+        if (defaultHud) {
+            // Instead of deactivating the entire HUD, iterate and selectively hide non-essential elements
+            for (int i = 0; i < defaultHud.transform.childCount; i++) {
+                Transform childTransform = defaultHud.transform.GetChild(i);
+                GameObject childObject = childTransform.gameObject;
+                
+                // Skip our critical HUD elements
+                bool isNodeUnlockNotif = nodeUnlockNotifHud != null && childObject == nodeUnlockNotifHud;
+                bool isPowerControl = powerControlHud != null && childObject == powerControlHud;
+                
+                if (!isNodeUnlockNotif && !isPowerControl) {
+                    // Only hide non-critical elements
+                    childObject.SetActive(false);
+                    Debug.Log($"[DialogueControl] Hiding HUD element during dialogue: {childObject.name}");
+                } else {
+                    // Ensure critical elements stay visible
+                    childObject.SetActive(true);
+                    Debug.Log($"[DialogueControl] Keeping HUD element visible during dialogue: {childObject.name}");
+                }
+            }
+        }
 
-        //set the character name
+        // Activate the new UI if available
+        if (dialogueUIController != null) {
+            // Get character portrait image from the NPC
+            Sprite portrait = npcObject.GetComponentInChildren<NPCAnimManager>()?.anims?.profile;
+            
+            Debug.Log($"[DialogueControl] About to call dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
+            Debug.Log($"[DialogueControl] dialogueUIController.gameObject active: {dialogueUIController.gameObject.activeInHierarchy}");
+            
+            dialogueUIController.ShowDialogue(llmCharacter.AIName, portrait);
+            Debug.Log($"[DialogueControl] Called dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
+            
+            // Log state of DialogueUIController after activation
+            dialogueUIController.LogRuntimeState();
+        }
+        else {
+            Debug.LogError("[DialogueControl] dialogueUIController is NULL! Cannot show UI.");
+        }
+
+        //set the character name (legacy UI)
         characterName.text = llmCharacter.AIName;
 
-        //set the character profile
+        //set the character profile (legacy UI)
         characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;
 
         StartCoroutine(ActivateDialogueAnimation()); 
@@ -183,6 +307,12 @@ public class DialogueControl : MonoBehaviour
         
         isTransitioning = false;
         Debug.Log($"[TIMEDBG] ActivateDialogueAnimation completed in {Time.realtimeSinceStartup - startTime:F3}s");
+        
+        // Log DialogueUIController state after animation completes
+        if (dialogueUIController != null) {
+            Debug.Log("[DialogueControl] Checking DialogueUIController state after animation completes:");
+            dialogueUIController.LogRuntimeState();
+        }
     }
 
     private IEnumerator DeactivateDialogue()
@@ -192,6 +322,12 @@ public class DialogueControl : MonoBehaviour
         try
         {
             isTransitioning = true;
+
+            // Hide the new UI if it's being used
+            if (dialogueUIController != null) {
+                dialogueUIController.HideDialogue();
+                Debug.Log("[DialogueControl] Called HideDialogue on new DialogueUIController");
+            }
 
             // --- RESET/CANCEL FIRST ---
             float resetStartTime = Time.realtimeSinceStartup;
