@@ -57,5 +57,6 @@
         "Temp/": true
     },
     "dotnet.defaultSolution": "CapstoneGroup5.sln",
-    "dotnet.preferCSharpExtension": true
+    "dotnet.preferCSharpExtension": true,
+    "chat.editor.fontSize": 14
 }
