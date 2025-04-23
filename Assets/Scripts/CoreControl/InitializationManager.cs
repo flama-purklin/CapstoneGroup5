@@ -86,6 +86,10 @@ public class InitializationManager : MonoBehaviour
             if (npcManager != null) { npcManager.SpawningComplete = true; Debug.Log($"NPC Spawning Complete. Flag set on NPCManager."); } 
             else { Debug.LogError("NPCManager is null, cannot set SpawningComplete flag!"); }
 
+            // Step 3.5: Pre-bake NPC caches
+            Debug.Log("--- INIT STEP 3.5: Pre-bake NPC caches ---");
+            await PrebakeAllNpcCaches();
+
             // --- Minimum Loading Time Check ---
             float elapsedTime = Time.realtimeSinceStartup - initializationStartTime;
             if (elapsedTime < minLoadingTime)
@@ -318,5 +322,70 @@ public class InitializationManager : MonoBehaviour
         float animationLength = stateInfo.length; 
         yield return new WaitForSeconds(animationLength); 
         target.SetActive(false); 
+    }
+
+    /// <summary>
+    /// Pre-bakes all NPC caches during initialization to improve first-interaction response time.
+    /// </summary>
+    private async Task PrebakeAllNpcCaches()
+    {
+        if (characterManager == null)
+        {
+            Debug.LogError("[LLM_UPDATE_DEBUG] Cannot pre-bake NPC caches: CharacterManager is null");
+            return;
+        }
+
+        Debug.Log($"[LLM_UPDATE_DEBUG] ========== STARTING PRE-BAKE PROCESS FOR ALL NPCS ==========");
+        Debug.Log($"[LLM_UPDATE_DEBUG] Total characters to process: {characterManager.GetAvailableCharacters().Length}");
+        int processedCount = 0;
+        int successCount = 0;
+        
+        foreach (var kvp in characterManager.GetAvailableCharacters())
+        {
+            string characterName = kvp;
+            processedCount++;
+            LLMCharacter npc = characterManager.GetCharacterByName(characterName);
+            
+            if (npc == null)
+            {
+                Debug.LogWarning($"[LLM_UPDATE_DEBUG] Cannot pre-bake cache for '{characterName}': Character not found");
+                continue;
+            }
+
+            Debug.Log($"[LLM_UPDATE_DEBUG] [{processedCount}] Starting pre-bake for '{characterName}'");
+            
+            try
+            {
+                // 1. Warm-up with system prompt
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling Warmup()...");
+                await npc.Warmup();
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Warmup completed successfully");
+                
+                // 2. Ensure cache saving is enabled
+                bool previousCacheSetting = npc.saveCache;
+                npc.saveCache = true;
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Set saveCache from {previousCacheSetting} to {npc.saveCache}");
+                
+                // 3. Persist KV-cache to disk
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling SaveCacheFile()...");
+                string result = await npc.SaveCacheFile();
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] SaveCacheFile returned: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
+                
+                // 4. Free slot immediately
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Calling CancelRequests()...");
+                npc.CancelRequests();
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Slot freed");
+                
+                successCount++;
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{characterName}] Pre-bake completed successfully");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LLM_UPDATE_DEBUG] [{characterName}] ERROR pre-baking cache: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+        
+        Debug.Log($"[LLM_UPDATE_DEBUG] ========== PRE-BAKE PROCESS COMPLETE ==========");
+        Debug.Log($"[LLM_UPDATE_DEBUG] Pre-bake summary: {successCount}/{processedCount} characters processed successfully");
     }
 }

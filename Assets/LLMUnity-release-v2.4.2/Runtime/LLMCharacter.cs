@@ -17,6 +17,8 @@ namespace LLMUnity
     /// </summary>
     public class LLMCharacter : LLMCaller
     {
+        // Flag to track if cache has been restored for this instance
+        private bool cacheRestored = false;
         /// <summary> file to save the chat history.
         /// The file will be saved within the persistentDataPath directory. </summary>
         [Tooltip("file to save the chat history. The file will be saved within the persistentDataPath directory.")]
@@ -463,6 +465,38 @@ namespace LLMUnity
         /// <returns>the LLM response</returns>
         public virtual async Task<string> Chat(string query, Callback<string> callback = null, EmptyCallback completionCallback = null, bool addToHistory = true)
         {
+            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Chat called with query: '{query}', addToHistory: {addToHistory}");
+            
+            // Fast-path: restore cached KV if not loaded in this slot yet
+            if (!remote && saveCache && !cacheRestored)
+            {
+                string cachePath = GetCacheSavePath(save);
+                string fullCachePath = GetSavePath(cachePath);
+                
+                Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Checking for cache at {fullCachePath}, cacheRestored={cacheRestored}");
+                
+                if (File.Exists(fullCachePath))
+                {
+                    Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Cache file exists, restoring cache...");
+                    try
+                    {
+                        string cacheResult = await Slot(cachePath, "restore");
+                        Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Cache restore result: {(string.IsNullOrEmpty(cacheResult) ? "null/empty" : cacheResult)}");
+                        cacheRestored = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"[LLM_UPDATE_DEBUG] [{save}] Error restoring cache: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] No cache file found at {fullCachePath}");
+                }
+                
+                cacheRestored = true; // Set flag even if restoration failed to avoid trying again
+            }
+            
             // handle a chat message by the user
             // call the callback function while the answer is received
             // call the completionCallback function when the answer is fully received
@@ -478,20 +512,21 @@ namespace LLMUnity
                 await chatLock.WaitAsync();
                 try
                 {
-                    Debug.Log($"[LLMCharacter.Chat - {save}] Before Add: chat.Count = {chat.Count}");
+                    Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Before Add: chat.Count = {chat.Count}");
                     AddPlayerMessage(query);
                     AddAIMessage(result);
-                    Debug.Log($"[LLMCharacter.Chat - {save}] After Add: chat.Count = {chat.Count}");
+                    Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] After Add: chat.Count = {chat.Count}");
                 }
                 finally
                 {
-                chatLock.Release();
+                    chatLock.Release();
                 }
                 // Removed the automatic save from here. Saving should be handled explicitly when dialogue ends.
                 // if (save != "") _ = Save(save); 
             }
 
             completionCallback?.Invoke();
+            Debug.Log($"[LLM_UPDATE_DEBUG] [{save}] Chat completed, returning result length: {(result?.Length ?? 0)}");
             return result;
         }
 
@@ -654,6 +689,25 @@ namespace LLMUnity
                 Debug.Log($"Skipping native cache restore for {filename} (saveCache={saveCache}, remote={remote})");
                 return null;
             }
+        }
+        
+        /// <summary>
+        /// Save the character's KV cache to disk.
+        /// </summary>
+        /// <returns>Result of the save operation</returns>
+        public virtual async Task<string> SaveCacheFile()
+        {
+            if (!remote && saveCache)
+            {
+                string cachePath = GetCacheSavePath(save);
+                Debug.Log($"[LLM_UPDATE_DEBUG] SaveCacheFile: Saving cache to {cachePath}");
+                Debug.Log($"[LLM_UPDATE_DEBUG] SaveCacheFile: Slot={slot}, remote={remote}, saveCache={saveCache}");
+                string result = await Slot(cachePath, "save");
+                Debug.Log($"[LLM_UPDATE_DEBUG] SaveCacheFile: Slot returned: {(string.IsNullOrEmpty(result) ? "null/empty" : result)}");
+                return result;
+            }
+            Debug.Log($"[LLM_UPDATE_DEBUG] SaveCacheFile: Skipping cache save (remote={remote}, saveCache={saveCache})");
+            return null;
         }
 
         protected override async Task<Ret> PostRequestLocal<Res, Ret>(string json, string endpoint, ContentCallback<Res, Ret> getContent, Callback<Ret> callback = null)
