@@ -225,47 +225,25 @@ public class CharacterManager : MonoBehaviour
     private void AllocateContext() { 
          if (characterCache.Count > 0) {
             try {
-                Debug.Log($"[LLM_UPDATE_DEBUG] AllocateContext starting, Character count: {characterCache.Count}");
-                
-                if (sharedLLM.parallelPrompts <= 0) { 
-                    Debug.LogError($"[LLM_UPDATE_DEBUG] CRITICAL: parallelPrompts invalid: {sharedLLM.parallelPrompts}. Using fallback 3."); 
-                    sharedLLM.parallelPrompts = 3; 
-                }
-                
+                if (sharedLLM.parallelPrompts <= 0) { Debug.LogError($"CRITICAL: parallelPrompts invalid: {sharedLLM.parallelPrompts}. Using fallback 3."); sharedLLM.parallelPrompts = 3; }
                 // No longer divide by parallelPrompts - use full context for each character
                 int contextPerCharacter = sharedLLM.contextSize;
-                
-                Debug.Log($"[LLM_UPDATE_DEBUG] CONTEXT ALLOCATION: Full context used. {contextPerCharacter} tokens/char (total: {sharedLLM.contextSize}, parallelPrompts={sharedLLM.parallelPrompts})");
-                Debug.Log($"[LLM_UPDATE_DEBUG] Using LLM cache: {enableLLMCache}");
-                
+                Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens/char (total: {sharedLLM.contextSize}, using full context since parallelPrompts={sharedLLM.parallelPrompts})");
                 foreach (var kvp in characterCache) {
-                    string characterName = kvp.Key;
                     LLMCharacter character = kvp.Value;
-                    
                     if (character != null) { 
                         try { 
-                            int previousNKeep = character.nKeep;
-                            bool previousSaveCache = character.saveCache;
-                            
                             character.nKeep = contextPerCharacter;
                             // Ensure cache saving is enabled
                             character.saveCache = enableLLMCache; 
-                            
-                            Debug.Log($"[LLM_UPDATE_DEBUG] Character '{characterName}': nKeep {previousNKeep} → {character.nKeep}, saveCache {previousSaveCache} → {character.saveCache}");
                         } catch (Exception e) { 
-                            Debug.LogError($"[LLM_UPDATE_DEBUG] Failed setting context for {kvp.Key}: {e.Message}"); 
+                            Debug.LogError($"Failed nKeep for {kvp.Key}: {e.Message}"); 
                         } 
-                    } else {
-                        Debug.LogWarning($"[LLM_UPDATE_DEBUG] Character '{characterName}' is null in cache");
                     }
                 } 
-                Debug.Log($"[LLM_UPDATE_DEBUG] Finished setting context for {characterCache.Count} characters.");
-            } catch (Exception e) { 
-                Debug.LogError($"[LLM_UPDATE_DEBUG] CRITICAL context allocation error: {e.Message}\n{e.StackTrace}"); 
-            }
-        } else { 
-            Debug.LogWarning("[LLM_UPDATE_DEBUG] AllocateContext: No characters in cache."); 
-        }
+                Debug.Log($"Finished setting nKeep for {characterCache.Count} characters.");
+            } catch (Exception e) { Debug.LogError($"CRITICAL context allocation error: {e.Message}\n{e.StackTrace}"); }
+        } else { Debug.LogWarning("AllocateContext: No characters in cache."); }
     }
 
     private async Task LoadTemplateWithTimeout(LLMCharacter character, string characterName) {

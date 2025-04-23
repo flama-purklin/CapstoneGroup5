@@ -202,9 +202,7 @@ public class DialogueControl : MonoBehaviour
     // Helper coroutine to handle the "NPC speaks first" feature
     private IEnumerator NPCSpeaksFirst(LLMCharacter llmCharacter)
     {
-        Debug.Log($"[LLM_UPDATE_DEBUG] NPCSpeaksFirst coroutine started for {llmCharacter.save}");
-        Debug.Log($"[LLM_UPDATE_DEBUG] Current chat history count: {llmCharacter.chat.Count}");
-        Debug.Log($"[LLM_UPDATE_DEBUG] Using approach tag: '{PLAYER_APPROACHES_TAG}'");
+        Debug.Log($"[NPC-SPEAKS-FIRST] Sending approach tag to trigger NPC greeting");
         
         // Create a TaskCompletionSource to handle the async/await to coroutine bridging
         var tcs = new TaskCompletionSource<string>();
@@ -212,12 +210,9 @@ public class DialogueControl : MonoBehaviour
         // Create a completion callback that will set the result when done
         EmptyCallback onComplete = () => 
         {
-            Debug.Log($"[LLM_UPDATE_DEBUG] NPC greeting completed callback received for {llmCharacter.save}");
+            Debug.Log("[NPC-SPEAKS-FIRST] NPC greeting completed callback received");
             tcs.TrySetResult("done");
         };
-        
-        Debug.Log($"[LLM_UPDATE_DEBUG] Starting Chat request with approach tag");
-        float chatStartTime = Time.realtimeSinceStartup;
         
         // Start the Chat task but don't await it - store the task
         Task<string> chatTask = llmCharacter.Chat(PLAYER_APPROACHES_TAG, null, onComplete);
@@ -225,63 +220,36 @@ public class DialogueControl : MonoBehaviour
         // Wait for the completion callback to be called, or timeout after 10 seconds
         float startTime = Time.time;
         float timeout = 10f;
-        int frameCount = 0;
         while (!tcs.Task.IsCompleted && Time.time - startTime < timeout)
         {
-            frameCount++;
-            if (frameCount % 60 == 0) // Log every ~1 second
-            {
-                Debug.Log($"[LLM_UPDATE_DEBUG] Waiting for NPC greeting, elapsed: {Time.time - startTime:F1}s");
-            }
             yield return null;
         }
         
         // Check if we got a result or timed out
         if (tcs.Task.IsCompleted)
         {
-            float chatElapsedTime = Time.realtimeSinceStartup - chatStartTime;
             string response = chatTask.Result; // This is safe now that we know the task is completed
-            Debug.Log($"[LLM_UPDATE_DEBUG] NPC greeting completed in {chatElapsedTime:F3}s");
-            Debug.Log($"[LLM_UPDATE_DEBUG] NPC responded with: '{response}'");
+            Debug.Log($"[NPC-SPEAKS-FIRST] NPC responded with: '{response}'");
             
             // Trim the history to keep it manageable
             // System prompt (0) + approach tag (1) + NPC greeting (2) = 3 messages so far
             if (llmCharacter.chat.Count > 3) 
             {
-                Debug.Log($"[LLM_UPDATE_DEBUG] Trimming chat history, current count: {llmCharacter.chat.Count} messages");
-                int removedCount = 0;
-                
+                Debug.Log($"[NPC-SPEAKS-FIRST] Trimming chat history, was {llmCharacter.chat.Count} messages");
                 // For a beginning conversation, this won't trigger, but handles 
                 // case where there was a previous conversation
                 while (llmCharacter.chat.Count > 5) // Keep system + last 4 messages max
                 {
                     // Remove the oldest non-system message (index 1)
-                    string removed = llmCharacter.chat[1].content.Substring(0, Math.Min(30, llmCharacter.chat[1].content.Length));
-                    Debug.Log($"[LLM_UPDATE_DEBUG] Removing message at index 1: '{removed}...'");
                     llmCharacter.chat.RemoveAt(1);
-                    removedCount++;
                 }
-                
-                if (removedCount > 0)
-                {
-                    Debug.Log($"[LLM_UPDATE_DEBUG] Removed {removedCount} messages, new chat count: {llmCharacter.chat.Count}");
-                }
-                else
-                {
-                    Debug.Log($"[LLM_UPDATE_DEBUG] No messages needed trimming, keeping all {llmCharacter.chat.Count} messages");
-                }
-            }
-            else
-            {
-                Debug.Log($"[LLM_UPDATE_DEBUG] No trimming needed, chat count is only {llmCharacter.chat.Count}");
+                Debug.Log($"[NPC-SPEAKS-FIRST] Chat history trimmed to {llmCharacter.chat.Count} messages");
             }
         }
         else
         {
-            Debug.LogWarning($"[LLM_UPDATE_DEBUG] TIMEOUT: NPC greeting timed out after {timeout}s");
+            Debug.LogWarning("[NPC-SPEAKS-FIRST] Timed out waiting for NPC greeting");
         }
-        
-        Debug.Log($"[LLM_UPDATE_DEBUG] NPCSpeaksFirst coroutine completed for {llmCharacter.save}");
     }
 
     private IEnumerator DeactivateDialogue()
