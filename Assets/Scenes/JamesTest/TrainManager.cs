@@ -39,6 +39,7 @@ public class TrainManager : MonoBehaviour
         public int carNumber;
         public bool isSelected = false; // Means player is in it.
         public List<GameObject> npcsInCar = new List<GameObject>();
+        public List<GameObject> emptyAnchors = new List<GameObject>();
     }
 
     public List<GameObject> carPrefabs; // List of spawnable cars
@@ -146,6 +147,8 @@ public class TrainManager : MonoBehaviour
             isSelected = carInstance.GetComponent<CarVisibility>().selected,
             carNumber = trainCarList.Count
         };
+        trainCar.emptyAnchors = GetsEmptyAnchors(trainCar);
+
         trainCarList.Add(trainCar);
 
         tempPosition += Vector3.left * carSpacing; // Spacing, left is -x?
@@ -176,12 +179,47 @@ public class TrainManager : MonoBehaviour
         //cameraInstance = Instantiate(cameraPrefab, new Vector3(-698.669983f, -385.386841f, -8.52000046f), Quaternion.Euler(30.0000076f, 0f, 0f));
     }
 
+    // Loop through floor of provided TrainCar data structure, add to empty node list if ANchor's child = walkway 
+    public List<GameObject> GetsEmptyAnchors(TrainCar car)
+    {
+        GameObject floorRef = car.trainCar.transform.Find("RailCarFloor")?.gameObject;
+        List<GameObject> emptyAnchors = new List<GameObject>();
+
+        if (floorRef == null)
+        {
+            Debug.LogWarning("RailCarFloor not found in trainCar.");
+            return emptyAnchors;
+        }
+
+        // Loop through all children of the floor object
+        foreach (Transform anchorTransform in floorRef.transform)
+        {
+            GameObject anchor = anchorTransform.gameObject;
+
+            if (anchor.name.StartsWith("Anchor"))
+            {
+                foreach (Transform node in anchor.transform)
+                {
+                    if (node.name.StartsWith("walkway"))
+                    {
+                        // Add empty node to list, stop checking
+                        emptyAnchors.Add(anchor);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return emptyAnchors;
+    }
+
+    // *Important, they dont have CarCharacter script anymore, so this does not work
     // Update information in train car manager from cars in the train
     public void GetUpdatedInfo()
     {
         foreach (TrainCar car in trainCarList)
         {
-            car.npcsInCar = car.trainCar.GetComponent<CarCharacters>().GetCurrCharacters();
+            //car.npcsInCar = car.trainCar.GetComponent<CarCharacters>().GetCurrCharacters();
             car.isSelected = car.trainCar.GetComponent<CarVisibility>().selected;
         }
     }
