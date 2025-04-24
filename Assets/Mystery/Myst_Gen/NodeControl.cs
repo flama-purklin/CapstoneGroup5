@@ -438,6 +438,8 @@ public class NodeControl : MonoBehaviour
     }
 
     //called by the simulation button
+
+    //TODO add a simulation confirmation, where the user can see how much power each simulation will cost and has the opportunity to change before confirming things
     public void RunSimulation()
     {
         theoryMode = TheoryMode.Simulation;

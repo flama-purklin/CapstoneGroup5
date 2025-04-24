@@ -24,6 +24,8 @@ public class MysteryConstellation
     [Header("MysteryCompletion")]
     public int completeMysteryCount = 0;
     public int currentMysteryCount = 0;
+
+    public List<string> foundEvidence = new List<string>();
     
     public MysteryNode DiscoverNode(string nodeKey)
     {
@@ -53,6 +55,9 @@ public class MysteryConstellation
 
             //Unlock the Visual Node GameObject
             GameObject.FindFirstObjectByType<NodeControl>().UnlockVisualNode(nodeKey);
+
+            if (Nodes[nodeKey].Type == "EVIDENCE")
+                foundEvidence.Add(nodeKey);
 
             return Nodes[nodeKey];
         }

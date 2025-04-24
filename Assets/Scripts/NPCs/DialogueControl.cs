@@ -6,7 +6,8 @@ using TMPro;
 using LLMUnity;
 using System; 
 using System.IO; // Added for Path and File
-using System.Threading.Tasks; // Added for Task
+using System.Threading.Tasks;
+using UnityEngine.InputSystem.Android.LowLevel; // Added for Task
 
 public class DialogueControl : MonoBehaviour
 {
@@ -25,6 +26,11 @@ public class DialogueControl : MonoBehaviour
     [Header("Canvas Components")]
     [SerializeField] Image characterProf;
     [SerializeField] TMP_Text characterName;
+
+    [Header("Evidence Selection")]
+    [SerializeField] TMP_Dropdown evidenceSelect;
+    private List<string> evidenceNames = new List<string>();
+
 
     [Header("BeepSpeak Integration")]
     [SerializeField] private BeepSpeak beepSpeak;
@@ -261,6 +267,9 @@ public class DialogueControl : MonoBehaviour
         //set the character profile (legacy UI)
         characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;
 
+        //update the evidence options
+        UpdateEvidence();
+
         StartCoroutine(ActivateDialogueAnimation()); 
     }
 
@@ -384,11 +393,11 @@ public class DialogueControl : MonoBehaviour
                 }
                 yield return null;
             }
-            
+            dialogueCanvas.SetActive(false);
+
             float animEndTime = Time.realtimeSinceStartup;
             Debug.Log($"[TIMEDBG] Animation completed after {animEndTime - animStartTime:F3}s");
 
-            dialogueCanvas.SetActive(false);
             if (GameControl.GameController.currentState == GameState.DIALOGUE) {
                 if(defaultHud) defaultHud.SetActive(true);
                 GameControl.GameController.currentState = GameState.DEFAULT;
@@ -446,5 +455,49 @@ public class DialogueControl : MonoBehaviour
 
         Debug.Log("[Deactivate] Starting DeactivateDialogue coroutine.");
         deactivationCoroutine = StartCoroutine(DeactivateDialogue());
+    }
+
+    //handler for the evidence button
+    public void UpdateEvidence()
+    {
+        //update evidence panel if there are new unlocks
+        if (evidenceSelect.options.Count != GameControl.GameController.coreConstellation.foundEvidence.Count + 1)
+        {
+            //reset vars
+            evidenceSelect.ClearOptions();
+            evidenceNames.Clear();
+
+            // find all evidence nodes that are discovered
+            for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
+            {
+                //TODO - replace with evidence name once defined
+                evidenceNames.Add(GameControl.GameController.coreConstellation.foundEvidence[i]);
+            }
+
+            //add no evidence to the list
+            evidenceNames.Add("No Evidence");
+
+            //add all evidence names
+            evidenceSelect.AddOptions(evidenceNames);
+
+            //default selection to no evidence
+            evidenceSelect.value = evidenceSelect.options.Count - 1;
+        }
+    }
+
+    public string RetrieveEvidence()
+    {
+        //return the key to the node as long as the value of dropdown is within the bounds
+        if (evidenceSelect.value < evidenceNames.Count)
+        {
+            return GameControl.GameController.coreConstellation.foundEvidence[evidenceSelect.value];
+        }
+        else if (evidenceSelect.value == evidenceNames.Count)
+            return null;
+        else
+        {
+            Debug.LogWarning("Evidence index was unexpectedly out of range");
+            return null;
+        }
     }
 }

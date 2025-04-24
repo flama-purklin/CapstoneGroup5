@@ -110,6 +110,7 @@ public class DialogueUIController : MonoBehaviour
         
         Debug.Log("[DialogueUIController] About to call canvasFade.FadeIn()");
         canvasFade.FadeIn();
+        
         StartCoroutine(FocusInputNextFrame());
     }
 
@@ -119,7 +120,7 @@ public class DialogueUIController : MonoBehaviour
     public void HideDialogue()
     {
         Debug.Log("[DialogueUIController] HideDialogue called");
-        canvasFade.FadeOut();
+        //canvasFade.FadeOut();
     }
 
     /// <summary>

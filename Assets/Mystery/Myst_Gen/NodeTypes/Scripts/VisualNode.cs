@@ -65,6 +65,8 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         Debug.Log("Visual Node" + nodeKey + " Discovered");
 
+        transform.localPosition = Random.insideUnitCircle * 300f;
+
         if (connections.Count > 0)
         {
             foreach (var connection in connections)
