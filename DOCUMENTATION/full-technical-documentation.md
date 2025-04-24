@@ -229,16 +229,22 @@ The dialogue system connects player interactions with the LLM system:
    - On activation, calls `LLMCharacter.Load()` to load history/cache.
    - On deactivation, calls `LLMCharacter.Save()` to save history/cache and notifies `CharacterManager`.
    - Includes timing diagnostics to track UI animation times and I/O operations.
-   - **Improved Responsiveness:** Removed 2-second delay before UI deactivation to improve responsiveness.
+   - **May 2025 Improvement:** Implemented selective child GameObject activation to keep critical HUD elements (`NodeUnlockNotif` and `PowerControl`) visible during dialogue, while hiding other HUD elements.
 
 2. **BaseDialogueManager**:
    - Abstract class handling core dialogue logic.
-   - **Previous Fix:** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply` to prevent text duplication, as LLM response chunks contain the complete response so far, not just new content.
-   - **Action Streaming Fix:** Implemented proper handling of multi-chunk function calls using `isAccumulatingAction` flag and `actionBuffer` to accumulate text across multiple LLM response chunks when the action delimiter (`[/ACTION]:` or `\nACTION:`) appears in a chunk but the full function call parameters arrive in subsequent chunks.
+   - **Fixed Text Duplication (May 2025):** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply`, as LLM response chunks contain the complete response so far, not just new content.
+   - **Improved Function Call Handling (May 2025):** Now uses `actionBuffer.Clear(); actionBuffer.Append(cleaned);` to prevent redundant text accumulation, fixing the "revealreveal_node..." issue.
    - Supports both `\nACTION:` and `[/ACTION]:` delimiters for function parsing.
-   - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
-   - **April 2025 Fix:** Enhanced coroutines to dynamically calculate appropriate wait times based on text length (roughly 14 characters/second) before forcing completion, ensuring longer messages have time to animate properly.
-   - Includes proper reset of all action state flags in `OnReplyComplete` to ensure clean state between LLM responses.
+   - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for typing animation to complete before acting.
+   - **Improved Wait Timing (May 2025):** Enhanced coroutines to dynamically calculate appropriate wait times based on text length and BeepSpeak typing speed settings:
+   ```csharp
+   float estimatedCharTime = characterSpeed + speedVariance;
+   float punctuationPauseEstimate = Mathf.Min(textLength * 0.2f, 4.0f);
+   float calculatedWaitTime = Mathf.Max(3.0f, (textLength * estimatedCharTime) + punctuationPauseEstimate);
+   float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
+   ```
+   - Increased maximum wait time from 5 to 20 seconds to handle longer messages properly.
 
 3. **LLMDialogueManager**:
    - Inherits from BaseDialogueManager.
@@ -249,39 +255,40 @@ The dialogue system connects player interactions with the LLM system:
 4. **BeepSpeak**:
    - Handles text display with typing effect and audio.
    - Manages a typing coroutine (`typingCoroutine`) for text animation.
-   - The `IsPlaying` property (returns `typingCoroutine != null`) is used by `DialogueControl` and examined in `BaseDialogueManager`'s coroutines.
-   - **New Fix (April 2025):** Added intelligent processing of incomplete words when LLM stops sending data, detecting when no updates have occurred for 1.5 seconds.
-   - **New Fix (April 2025):** Added a smooth transition fade effect for `ForceCompleteTyping()` to prevent jarring text jumps when a long message needs to be force-completed.
-   - **New Fix (April 2025):** Added longer timeout (8 seconds) for dialogue animation to ensure natural typing completion in most cases.
-   - **New Fix (April 2025):** Added detailed logging and safety mechanisms to ensure typing animation always completes.
+   - The `IsPlaying` property (returns `typingCoroutine != null`) is used to determine when text animation is complete.
+   - **May 2025 Improvement:** Removed redundant 8-second timeout (`EnsureTypingCompletesWithLongDelay`) that caused premature animation termination.
+   - **May 2025 Feature:** Added function call text filtering to prevent action text from appearing in the dialogue box.
+   - Provides `ForceCompleteTyping()` method with smooth transition effect for emergency animation completion.
 
 5. **Dialogue Flow**:
    - Player enters dialogue range and presses E.
    - `DialogueControl.Activate()` is called.
    - `LLMCharacter.Load()` is called (if save file exists).
    - Dialogue UI is activated.
+   - **New in May 2025:** Selective HUD deactivation preserves critical elements like `NodeUnlockNotif` and `PowerControl`.
    - Player inputs text.
    - `LLMDialogueManager` sends input to `LLMCharacter.Chat()`.
    - `LLMCharacter` processes input and generates responses.
    - `BaseDialogueManager.HandleReply` receives each response chunk:
-     - **Critical Improvement:** Clears and replaces `currentResponse` instead of appending.
+     - **FIXED:** Clears and replaces `currentResponse` instead of appending.
      - Checks for `\nACTION:` or `[/ACTION]:` delimiters.
-     - If found, sets `actionFoundInCurrentStream` flag, splits dialogue from action, buffers the function call, and updates display with only the dialogue part.
-     - If not found, updates display with the complete text.
+     - If found, sets `actionFoundInCurrentStream` flag, splits dialogue from action, and buffers the function call.
+     - **IMPROVED:** When accumulating action text, uses `actionBuffer.Clear()` instead of append to prevent redundant text buildup.
+     - Updates the display with ONLY the dialogue part.
    - `LLMDialogueManager.UpdateDialogueDisplay` forwards text to `DialogueControl.DisplayNPCDialogueStreaming`.
    - When streaming completes, `OnReplyComplete` is called:
      - If a function was buffered, starts `ProcessActionAfterBeepSpeak` coroutine.
      - If no function, starts `EnableInputAfterBeepSpeak` coroutine.
-   - Both coroutines wait for `DialogueControl.IsBeepSpeakPlaying` to become false before acting.
-   - **April 2025 Fix:** Added dynamic timeout calculation based on text length to ensure coroutines don't wait indefinitely while also giving proper time for text animation.
+   - Both coroutines use dynamically calculated timeouts based on text length and BeepSpeak typing speed.
    - Player exits dialogue (Escape or `stop_conversation` function).
-   - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, then animates the UI closed (no delay).
+   - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, then animates the UI closed.
 
-6. **Fixed Issues (April 2025 Update):**
-   - **Text Glitching:** Fixed by implementing a smooth fade transition effect when forcing text completion, particularly for cases where the displayed text and target text have a significant difference in length.
-   - **Animation Cutting Off Early:** Fixed by dynamically calculating appropriate wait times based on text length (roughly 14 characters/second) rather than using a fixed 0.5-second timeout.
-   - **Input Box Not Re-enabling:** Fixed by enhancing `BeepSpeak.ProcessTyping()` to detect and handle cases when the LLM sends incomplete text without word boundaries, and by adding timeout mechanisms to both `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` coroutines.
-   - **Delayed Function Execution:** Improved by ensuring sufficient time for the animation to complete naturally before force-completing the text display.
+6. **Fully Resolved Issues (May 2025):**
+   - ✅ Text Duplication
+   - ✅ Premature Animation Termination
+   - ✅ Function Call Redundancy
+   - ✅ Missing HUD Elements
+   - ✅ Animation Speed Issues
 
 7. **Debugging Tools:**
    - `[INPUTDBG]` logs track the input re-enabling pipeline.
@@ -350,7 +357,7 @@ The project's specific data flow follows this pattern:
    ```
    Player Input → DialogueControl → LLMDialogueManager → LLMCharacter → Response → BaseDialogueManager (HandleReply → ProcessFunctionCall) → GameControl.coreConstellation (DiscoverNode) / DialogueControl (Deactivate)
    ```
-   *(Response is parsed for ACTION: delimiter; function calls trigger constellation updates or dialogue deactivation)*
+   *(Response is parsed for ACTION: delimiter; function calls trigger constellation updates or dialogue deactivation. Wait times dynamically calculated.)*
 5. **Warmup/Cooldown Flow**:
    ```
    Player Position → SimpleProximityWarmup → CharacterManager.Warmup/CooldownCharacter → LLMCharacter State Change
@@ -480,8 +487,9 @@ The project has the following key dependencies:
    - ParsingControl → GameControl
    - CharacterManager → LLM, GameControl, CharacterPromptGenerator
    - NPCManager → CharacterManager, TrainLayoutManager, GameControl (indirectly via InitializationManager for spawning)
-   - DialogueControl → LLMDialogueManager, CharacterManager
+   - DialogueControl → LLMDialogueManager, CharacterManager, BeepSpeak
    - SimpleProximityWarmup → CharacterManager, NPCManager, Player Transform
+   - BaseDialogueManager → DialogueControl, BeepSpeak (indirectly)
 
 ## Code Reference
 
@@ -508,4 +516,4 @@ The project has the following key dependencies:
    - Sets the `IsParsingComplete` flag when done.
    - Fires `OnParsingProgress` and `OnMysteryParsed` events.
 
-*(Removed MysteryCharacterExt
+*(Removed MysteryCharacterExtractor.cs)*

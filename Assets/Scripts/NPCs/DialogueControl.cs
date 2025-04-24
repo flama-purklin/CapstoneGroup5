@@ -16,6 +16,7 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private GameObject defaultHud;
     [SerializeField] private RectTransform dialoguePanel;
     [SerializeField] private DialogueUIController dialogueUIController; // New DialogueUIController reference
+    private CharacterManager characterManager; // Reference to CharacterManager for EnsureReady
     
     [Header("HUD Elements to Keep Active")]
     [SerializeField] private GameObject nodeUnlockNotifHud; // Keep this active during dialogue for function calls
@@ -54,6 +55,10 @@ public class DialogueControl : MonoBehaviour
         if (!llmDialogueManager) { Debug.LogError("LLMDialogueManager reference not set!"); enabled = false; return; }
         if (!dialogueCanvas) { Debug.LogError("DialogueCanvas reference not set!"); enabled = false; return; }
         if (!anim) { Debug.LogError("Animator reference not set!"); enabled = false; return; }
+        
+        // Find the CharacterManager in the scene
+        characterManager = FindFirstObjectByType<CharacterManager>();
+        if (!characterManager) { Debug.LogError("CharacterManager not found in the scene!"); enabled = false; return; }
         
         // Check for DialogueUIController reference
         if (!dialogueUIController) {
@@ -186,7 +191,7 @@ public class DialogueControl : MonoBehaviour
         }
     }
 
-    // Made async to await Load
+    // Made async to await EnsureReady
     public async void Activate(GameObject npcObject) 
     {
         float startTime = Time.realtimeSinceStartup;
@@ -201,24 +206,10 @@ public class DialogueControl : MonoBehaviour
         var llmCharacter = character.GetLLMCharacter();
         if (llmCharacter == null) { Debug.LogError($"Failed to get LLMCharacter for {character.GetCharacterName()}"); return; }
 
-        // Load conversation state ONLY if the save file exists
-        if (!string.IsNullOrEmpty(llmCharacter.save)) {
-            string saveFilePath = Path.Combine(Application.persistentDataPath, llmCharacter.save + ".json");
-            if (File.Exists(saveFilePath)) // Check if file exists BEFORE trying to load
-            {
-                try {
-                    Debug.Log($"Save file found for {llmCharacter.save}. ATTEMPTING to load conversation state...");
-                    await llmCharacter.Load(llmCharacter.save); // Await the load operation
-                    Debug.Log($"Load operation completed for: {llmCharacter.save}");
-                } catch (Exception e) {
-                    Debug.LogError($"CRITICAL ERROR loading conversation for {llmCharacter.save}: {e.Message}\nStack trace: {e.StackTrace}");
-                }
-            } else {
-                 Debug.Log($"No save file found for {llmCharacter.save}. Starting fresh conversation.");
-                 // Optionally clear chat explicitly if Load doesn't handle it on file not found
-                 // llmCharacter.ClearChat(); 
-            }
-        } else { Debug.LogWarning($"Character {character.GetCharacterName()} has empty 'save' property. Cannot load conversation state."); }
+        // Ensure the character is ready (warm up if needed)
+        Debug.Log($"[DialogueControl] Ensuring {character.GetCharacterName()} is ready via CharacterManager...");
+        await characterManager.EnsureReady(llmCharacter);
+        Debug.Log($"[DialogueControl] Character {character.GetCharacterName()} ready state ensured");
         
         llmDialogueManager.SetCharacter(llmCharacter);
         GameControl.GameController.currentState = GameState.DIALOGUE;

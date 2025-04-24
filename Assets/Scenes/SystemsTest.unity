@@ -3471,6 +3471,7 @@ MonoBehaviour:
   sfx_exit: {fileID: 8300000, guid: 9451ea27a7effac42a61d08d8e3d74a3, type: 3}
   sfx_hover: {fileID: 8300000, guid: 1c544331b7488a641883135df9fbcdd7, type: 3}
   sfx_click: {fileID: 8300000, guid: 5bf4e86a92634174f8347872ac9b8637, type: 3}
+  sfx_footsteps: []
 --- !u!82 &464073573
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8749,7 +8750,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1251519877}
   - component: {fileID: 1251519876}
-  - component: {fileID: 1251519878}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -8786,25 +8786,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1251519878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1251519875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebcf110752fadbd4ea8eea40a235450f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterManager: {fileID: 377154506}
-  npcManager: {fileID: 393672616}
-  player: {fileID: 46893853370859958}
-  llmInstance: {fileID: 1286452019}
-  maxWarmCharacters: 3
-  checkInterval: 10
-  significantMovementThreshold: 10
 --- !u!1001 &1286452018
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8818,12 +8799,16 @@ PrefabInstance:
       value: LLM
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: Phi-4-mini-instruct-Q4_K_M.gguf
+      value: Mistral-Nemo-Instruct-2407-Q4_K_M.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: batchSize
-      value: 1024
+      value: 768
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
@@ -8831,11 +8816,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
-      value: phi-4-mini
+      value: mistral chat
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
-      value: 3072
+      value: 5120
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
@@ -8843,7 +8828,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
-      value: 131072
+      value: 1024000
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: dontDestroyOnLoad
@@ -16257,6 +16242,14 @@ PrefabInstance:
       propertyPath: raycastOffset.y
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 4821733877407599817, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+      propertyPath: speedMod
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4821733877407599817, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
+      propertyPath: audioControl
+      value: 
+      objectReference: {fileID: 464073572}
     - target: {fileID: 7441357142540035523, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
       propertyPath: m_Name
       value: Player
@@ -16270,11 +16263,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
---- !u!4 &46893853370859958 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1420150803019551755, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
-  m_PrefabInstance: {fileID: 46893853370859957}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &572690969874719951
 MonoBehaviour:
   m_ObjectHideFlags: 0

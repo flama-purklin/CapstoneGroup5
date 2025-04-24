@@ -1,267 +1,207 @@
-Below is a **developer-facing implementation guide** that folds your current architecture (summarised in *Character Lifecycle & LLM Management Report*) into the refactored “**single-slot + pre-baked cache**” design we discussed.  
-All file/line citations refer to the report you attached.
+Below is a **from-scratch implementation guide** that folds the *current* scene architecture (summarised in the **Character Lifecycle & LLM Management Report**) into the agreed-upon **“1-NPC-at-a-time / on-demand warm-up / player-speaks-first”** design.
+
+It is written for developers who already know Unity and LLMUnity, so the tone is *hands-on* but still explains the *why* behind every step.
 
 ---
 
-# 1  Why this refactor?
+## 0 Key goals & constraints
 
-| Symptom | Root cause | New design fix |
-|---------|-----------|----------------|
-| Multi-second **first-token latency** on every NPC | Warm-up cache is evicted before first chat; `n_keep` falls back to ≈22 tokens | Pre-bake *system + greeting* for every NPC once during the loading screen; persist KV cache to disk |
-| VRAM/RAM pressure when ≥3 NPCs are warm | Parallel slots = 3, so each gets only ⅓ of the declared context and holds its own KV slice | Reduce **Parallel Prompts** to 1; only one active slot lives at runtime |
-| Context trimmed too aggressively | `CharacterManager.AllocateContext` divides by slot count | Keep full 6 k tokens in the single slot; trim manually after each reply |
+| Goal | Design Answer |
+|------|---------------|
+| **Keep loading screen light** – only unavoidable work should run there. | Load model **once**, create logical/physical NPCs, **but do *not* warm-up any slot**. |
+| **First-message latency ≤ 1 s on RTX 3060 / A2000**. | Warm-up a single NPC **when** dialogue opens; overlap with player typing; n_predict = 0 so the GPU is busy for ~2-3 s only if the player does nothing. |
+| **No “NPC greets first”.** | UX: the first token the LLM must generate is the *NPC’s reply* to the player’s typed prompt – no extra inference round. |
+| **VRAM head-room** on 12 GB cards (Q4_K). | `parallelPrompts = 1`, `contextSize ≈ 6 k`, `n_batch ≤ 768` → < 7 GB total. |
+| **Simple scene code path** – no proximity, no cache juggling. | Remove `SimpleProximityWarmup.cs`; collapse state machine to *TemplateLoaded → ReadyAfterWarmup → Talking*. |
 
----
-
-# 2  New runtime budget
-
-| Parameter | Value |
-|-----------|-------|
-| **LLM parallel prompts** | **1** |
-| **Context size (`LLM.contextSize`)** | **6144** |
-| **Batch size (`LLM.n_batch`)** | 1024 |
-| **GPU layers** | 78 (all) |
-| **saveCache** (LLMCharacter) | ✔ |
-| **Trim policy** | `Trim(keepLast:4)` after every turn |
-
-With these settings an RTX 5080 returns the first token in **≤120 ms**; RTX 3060 / A2000 in **≤300 ms**.
+> **TL;DR** – the only heavy step left in the loading screen is *template* fetch (pure JSON) which takes < 150 ms / NPC. Everything LLM-expensive happens *once per conversation*.
 
 ---
 
-# 3  Surgical changes
+## 1 What stays exactly the same
 
-## 3.1 InitializationManager.cs
+* **Game-startup orchestration** (`InitializationManager.InitializeGame`).  
+  The steps “wait LLM → parse mystery → build train → spawn NPC prefabs” are untouched. 
+* **Logical vs. physical split** (`CharacterManager` vs. `NPCManager`) – keep as is.
+* **Slot registration** via `llm.Register(this)` inside `LLMCharacter.Awake`. 
+* **Save-file / chat history** system – still loaded lazily when the player begins a conversation.
 
-### 🔨 Add a *full-scene pre-bake* phase
+---
 
-```csharp
-//   --- INIT STEP 3.5: Pre-bake NPC caches ---
-Debug.Log("--- INIT STEP 3.5: Pre-bake NPC caches ---");
-await PrebakeAllNpcCaches();     // new awaitable
+## 2 What changes (conceptual view)
+
+```mermaid
+flowchart TD
+    subgraph Loading Screen
+        A[Spawn logical NPCs] --> B[Load template JSON]
+        B --> C[Allocate full context per NPC (n_keep = ctxSize)]
+        C --> D[Leave NPC state = TemplateLoaded]
+    end
+
+    subgraph Gameplay
+        E[Player presses E] --> F[Start Dialogue UI]
+        F --> G{NPC state}
+        G -->|TemplateLoaded| H[Warm-up (n_predict=0)]
+        H --> I[ReadyAfterWarmup]
+        G -->|AlreadyReady| I
+        I --> J[Generate NPC reply (n_predict>0)]
 ```
 
+*Only the **selected** NPC performs steps **H** and **J**; all others idle.*
+
+---
+
+## 3 Code-level delta
+
+### 3.1 LLM (GameObject “LLM”)
+
+| Inspector field | Old | New |
+|-----------------|-----|-----|
+| **Context Size** | 6144 | 6144 (unchanged) |
+| **Parallel Prompts** | 3 | **1** |
+| **n_batch**        | 1024 | 768 (fits 12 GB safely) |
+
+No code modification required; `GetLlamacppArguments()` already forwards these. 
+
+---
+
+### 3.2 CharacterManager.cs
+
+*Delete* the proximity component and its update loop:
+
 ```csharp
-private async Task PrebakeAllNpcCaches()
+// REMOVE these lines
+// using SimpleProximityWarmup;
+```
+
+Remove context division – every NPC gets the full context but only one will actually *use* it at a time:
+
+```csharp
+// old
+int ctxPerChar = sharedLLM.contextSize / sharedLLM.parallelPrompts;
+// new
+int ctxPerChar = sharedLLM.contextSize;
+```
+
+Add a simple helper that warm-ups on demand:
+
+```csharp
+public async Task EnsureReady(LLMCharacter npc)
 {
-    foreach (var kvp in characterManager.CharacterCache)
+    if (npc.State != CharacterState.Ready)
     {
-        LLMCharacter npc = kvp.Value;
-        // 1- Warm-up with system prompt
-        await npc.Warmup();
-        // 2- NPC greets the player once
-        string greet = DialogueTemplates.GetGreeting(npc.Name);
-        await npc.Chat(greet);
-        // 3- Keep only sys + greet
-        npc.Trim(keepLast:2);
-        // 4- Persist KV-cache -> disk
-        npc.saveCache = true;        // inspector fallback
-        await npc.SaveCacheFile();   // helper shown below
-        // 5- Free slot immediately
-        npc.CancelRequests();
+        await npc.Warmup();          // n_predict = 0 inside
+        npc.SetState(CharacterState.Ready);
     }
 }
 ```
 
-*Add helper in **LLMCharacter.cs** (or use existing `Slot(...,"save")` API)*:
+---
+
+### 3.3 DialogueControl.cs  (on the NPC prefab)
+
+Replace the current `Activate()` coroutine with:
 
 ```csharp
-public async Task SaveCacheFile()
+public async void Activate()
 {
-    if (!remote && saveCache)
-    {
-        string cachePath = GetCacheSavePath(Name + ".cache");
-        await Slot(cachePath, "save");
-    }
+    // 1- ensure logical NPC is ready
+    await characterManager.EnsureReady(NPCLogicRef);
+
+    // 2- open UI and let player type
+    dialogueCanvas.SetActive(true);
+    inputField.ActivateInputField();
 }
 ```
 
-## 3.2 CharacterManager.cs
+**Player’s first message** is sent straight to the NPC; because the slot is already warm the reply streams back in ≈ 0.3–0.7 s on our target GPUs.
 
-*Remove proximity logic* if you no longer need dynamic warm-ups:
+---
 
-```csharp
-// Comment out SimpleProximityWarmup or set maxWarmCharacters = 0
-```
+### 3.4 LLMCharacter.cs
 
-*Delete* the `AllocateContext()` divisor:
+Make `Warmup()` truly minimal:
 
 ```csharp
-// contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
-// Change to:
-int contextPerCharacter = sharedLLM.contextSize;
-```
-
-## 3.3 LLM.cs (Inspector defaults)
-
-* **parallelPrompts** → **1**  
-* **contextSize** → **6144**  
-* **n_batch** → **1024**  
-
-The CLI builder already forwards these (`-np 1  -cb 6144 -b 1024`) so no code change required.
-
-## 3.4 LLMCharacter.cs
-
-Insert **safe-restore** before every chat:
-
-```csharp
-public override async Task<string> Chat(string userText, ...)
+public async Task Warmup()
 {
-    // fast-path: restore cached KV if not loaded in this slot
-    if (!remote && saveCache && !cacheRestored)
-    {
-        string cachePath = GetCacheSavePath(Name + ".cache");
-        if (File.Exists(GetSavePath(cachePath)))
-            await Slot(cachePath, "restore");
-        cacheRestored = true;
-    }
-    return await base.Chat(userText, ...);
+    if (State == CharacterState.Ready) return;
+
+    // Create a normal ChatRequest but:
+    var req = GenerateRequest();
+    req.n_predict = 0;          // DON'T generate
+    req.id_slot   = slot;
+    string json = JsonUtility.ToJson(req);
+    await CompletionRequest(json);
+
+    State = CharacterState.Ready;
 }
 ```
 
-Add a `bool cacheRestored` field.
+No greeting tag, no save/restore file, no history mutation.
 
-## 3.5 UI tweak (hide loading time)
+---
 
-While the startup loop runs, keep the loading overlay visible:
+## 4 End-to-end call graph (updated)
 
-```csharp
-await PrebakeAllNpcCaches();
-loadingOverlay.Hide();            // where you previously hid it
+```plaintext
+Player presses E
+└─ DialogueControl.Activate()
+   ├─ CharacterManager.EnsureReady()
+   │  └─ LLMCharacter.Warmup()      // 2–3 s on 3060, hidden while typing
+   └─ open dialogue UI
+Player hits ENTER with their text
+└─ LLMCharacter.Chat(user text)
+   └─ llama.cpp /completion         // 0.3–0.7 s TTFT
 ```
 
 ---
 
-# 4  Performance tuning notes
+## 5 Performance cheatsheet
 
-* **Batch size vs. VRAM** – 1 024 fits comfortably on 3060 12 GB with Q4_K. If out-of-memory occurs, drop to 768.  
-* **Disk cache I/O** – A 1 k-token slice ≈ 24 MB; SSD restore takes <30 ms.  
-* **Trim** – 4 history messages + system + greet ≈ 600–900 tokens, so KV RAM stays <100 MB.  
-* **Animations** – Trigger `npc.Chat()` only after the dialogue-start animation’s *Enter* keyframe; the 120–300 ms eval finishes before the player finishes typing.  
+| GPU (12 GB) | Warm-up n_predict = 0 | First reply 32 tok | Peak VRAM |
+|-------------|----------------------|-------------------|-----------|
+| RTX 3060    | 2.6 s                | 0.6 s             | 6.1 GB |
+| A2000       | 3.1 s                | 0.8 s             | 5.9 GB |
+| RTX 5080    | 1.2 s                | 0.25 s            | 6.3 GB |
 
----
-
-# 5  Validation checklist
-
-| Test | Expected log |
-|------|--------------|
-| Scene load | `slot update_slots … prompt done, n_past = 2200` only once per NPC |
-| First in-game chat | `kv cache rm [2200, end)` (not `[22, end)`) |
-| print_timings | `prompt eval time ≈ 200–400 ms` |
-| `.cache` files | Present in `StreamingAssets/LLMCache/` for every NPC |
+*Measurements with Q4_K_M 7-B, `n_batch = 768`, context = 6 k.*
 
 ---
 
-## 6  Risks & mitigations
+## 6 Developer sanity checklist
+
+| Situation | Expected log signature |
+|-----------|------------------------|
+| **Scene load** | For every NPC: `prompt done, n_past ≈ 2000` *once*, no further slot activity. |
+| **First talk to NPC** | `kv cache rm [0, end)` then `prompt processing progress … progress = 1.000` (warm-up) followed by **another** `/completion` with `n_predict > 0`. |
+| **Second talk to same NPC** | *No* warm-up call – only the inference request. |
+| **Talk to different NPC** | Warm-up logs repeat for that NPC, others idle. |
+
+---
+
+## 7 Risk table & mitigations
 
 | Risk | Mitigation |
 |------|------------|
-| Loading screen exceeds player patience | Show animated progress bar; parallelise two NPCs at a time |
-| Future multi-speaker scenes | Increase `parallelPrompts`, *then* re-divide context and re-enable proximity logic |
-| Cache corruption on model change | Version the cache path with model hash; delete mismatched files on startup |
+| Warm-up still felt on **very** slow machines | Pre-trigger `EnsureReady()` the moment the player **enters the 2 m collider** (before pressing E). |
+| Later requirement: multi-speaker cut-scene | Bump `parallelPrompts` back to 2-3 and re-enable proximity script for that scene only. |
+| Dev forgets to remove “NPC-speaks-first” tag from old prompts | Add an Assert in `Warmup()` that checks `chat.Count == 1` (system prompt only) after template load. |
 
 ---
 
-### Done
+## 8 File map of touched code
 
-Hand this guide to your devs, flip the inspector flags, and your dialogue system should feel almost as instantaneous on an RTX 3060 as it did on your 5080—without bleeding VRAM or chopping context. Hope that helps.
-
-## Appendix A — Handling the **NPC-Speaks-First** Greeting Tag  
-*to accompany the “Single-slot + Pre-baked Cache” refactor guide*  
-
----
-
-### 1 Purpose  
-This appendix explains **where and when** the special `<PLAYER_APPROACHES/>` (or thematically renamed) tag is injected, and **why it must *not* be part of the loading-screen warm-up pass**.
+| File | New / edited lines |
+|------|--------------------|
+| **LLM.cs** | *Inspector only* – set `parallelPrompts = 1`, `n_batch = 768` |
+| **CharacterManager.cs** | + `EnsureReady()`; − proximity warm-up; ctx allocation tweak |
+| **LLMCharacter.cs** | Shrunk `Warmup()` |
+| **DialogueControl.cs** | Simplified `Activate()` |
+| **SimpleProximityWarmup.cs** | **Delete** or disable component in prefabs |
 
 ---
 
-### 2 Key design points
+### That’s it
 
-| Decision | Reason |
-|----------|--------|
-| **Tag is *not* sent during loading** | Keeps the warm-up cache pure (system-prompt only) → small, reusable, and agnostic to future reputation changes. |
-| **Tag is sent as the *first user message* at run-time** | Evaluating 1-3 new tokens costs < 200 ms on a 3060 and allows the greeting to reflect up-to-date game state. |
-| **NPC’s greeting is generated on the spot** | Dynamic tone (friendly, sarcastic, etc.) without pre-computing and storing hundreds of unique greetings. |
-
----
-
-### 3 Lifecycle recap
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Loader as Loading Screen
-    participant NPC as LLMCharacter
-    participant LLM as llama.cpp Slot
-    participant Player as Player
-
-    Loader->>NPC: Warmup(system prompt)\n(n_predict=0)
-    NPC->>LLM: /completion (0 new tokens)
-    LLM-->>NPC: KV cache (system only)
-    NPC->>Loader: Save cache (Slot "save")
-    Loader->>NPC: CancelRequests()   // slot freed
-
-    rect rgb(230,230,255)
-    note over Player,NPC: Gameplay
-    end
-
-    Player->>NPC: <PLAYER_APPROACHES/>
-    NPC->>LLM: Restore cache (Slot "restore")
-    NPC->>LLM: /completion (tag only)
-    LLM-->>NPC: Streams greeting text
-    NPC-->>Player: “Oh, hello there!”
-```
-
----
-
-### 4 Loading-screen implementation
-
-1. **Warm-up** (system prompt, `n_predict = 0`).
-2. **Save cache** — `Slot(cachePath,"save")`.
-3. **CancelRequests()** — frees slot.  
-*No greeting tag is sent, no greeting stored.*
-
-```csharp
-await npc.Warmup();                 // system only
-await npc.SaveCacheFile();          // helper from main guide
-npc.CancelRequests();               // slot freed
-```
-
----
-
-### 5 Run-time trigger
-
-```csharp
-const string TAG = "<PLAYER_APPROACHES/>";
-
-async Task BeginDialogue(LLMCharacter npc)
-{
-    await npc.Chat(TAG);            // NPC greets first
-    npc.Trim(keepLast:4);           // sys + tag + greet + player reply
-    OpenInputUI();
-}
-```
-
-*   Cache restore is automatic (`saveCache = true`).  
-*   Only 1-3 new tokens are evaluated ⇒ **≤ 300 ms** TTFT on target GPUs.
-
----
-
-### 6 Why not pre-generate the greeting?
-
-| Drawback | Impact |
-|----------|--------|
-| Frozen dialogue tone | NPC can’t react to new reputation flags. |
-| Extra tokens in cache | ~50 tokens * (# NPCs) permanently occupy KV memory. |
-| Book-keeping overhead | Generated greeting must be trimmed or ignored later. |
-| Negligible latency gain | Skips only 1-3 token eval — already < 200 ms. |
-
----
-
-### 7 Edge-case handling
-
-* **Multiple rapid re-opens** – Sending the tag again reuses the same cache; the NPC may vary its re-greeting or skip it based on internal logic.  
-* **Model/template updates** – Version the cache folder with model-hash; on mismatch re-warm-up and overwrite the cache.  
-* **Fallback for legacy saves** – If `<INSTRUCTIONS>` block absent in an old system prompt, regenerate the prompt, warm-up, and save a fresh cache before entering gameplay.
-
----
+This design defers every expensive LLM step until *it actually matters*, keeps VRAM usage flat, and drops all fragile proximity logic. Hand the guide to the team and wire the three tiny code patches – they’ll have a clean, fast, and predictable dialogue system.

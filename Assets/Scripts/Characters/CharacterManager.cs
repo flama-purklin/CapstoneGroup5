@@ -194,7 +194,7 @@ public class CharacterManager : MonoBehaviour
          if (characterCache.Count > 0) {
             try {
                 if (sharedLLM.parallelPrompts <= 0) { Debug.LogError($"CRITICAL: parallelPrompts invalid: {sharedLLM.parallelPrompts}. Using fallback 3."); sharedLLM.parallelPrompts = 3; }
-                int contextPerCharacter = sharedLLM.contextSize / sharedLLM.parallelPrompts;
+                int contextPerCharacter = sharedLLM.contextSize;
                 Debug.Log($"CONTEXT ALLOCATION: {contextPerCharacter} tokens/char (total: {sharedLLM.contextSize}, slots: {sharedLLM.parallelPrompts})");
                 foreach (var kvp in characterCache) {
                     LLMCharacter character = kvp.Value;
@@ -291,6 +291,55 @@ public class CharacterManager : MonoBehaviour
     }
     
     public int GetReadyCharacterCount() { return stateTransitions.Count(x => x.Value.CurrentState == CharacterState.Ready); }
+    
+    public async Task EnsureReady(LLMCharacter npc)
+    {
+        if (npc == null) { Debug.LogError("EnsureReady: NPC reference is null"); return; }
+        
+        string characterName = npc.name;
+        if (!characterCache.ContainsKey(characterName)) { Debug.LogError($"EnsureReady: Character '{characterName}' not found in cache"); return; }
+        if (!stateTransitions.ContainsKey(characterName)) { Debug.LogError($"EnsureReady: No state for '{characterName}'"); return; }
+        
+        // If already Ready, nothing to do
+        if (stateTransitions[characterName].CurrentState == CharacterState.Ready) {
+            Debug.Log($"[CM EnsureReady] Character '{characterName}' already Ready");
+            return;
+        }
+        
+        // Only proceed if in LoadingTemplate state
+        if (stateTransitions[characterName].CurrentState != CharacterState.LoadingTemplate) {
+            Debug.LogWarning($"[CM EnsureReady] Cannot warm up character '{characterName}' in state: {stateTransitions[characterName].CurrentState}");
+            return;
+        }
+        
+        Debug.Log($"[CM EnsureReady] Warming up character '{characterName}'");
+        
+        // Transition to WarmingUp state
+        if (!stateTransitions[characterName].TryTransition(CharacterState.WarmingUp)) {
+            Debug.LogError($"[CM EnsureReady] Failed to transition '{characterName}' to WarmingUp state");
+            return;
+        }
+        
+        try {
+            // Ensure LLM reference is set
+            if (npc.llm == null) npc.llm = sharedLLM;
+            
+            // Call the minimal Warmup method that sets n_predict=0
+            await npc.Warmup();
+            
+            // If successful, transition to Ready state
+            if (stateTransitions.ContainsKey(characterName)) {
+                stateTransitions[characterName].TryTransition(CharacterState.Ready);
+                Debug.Log($"[CM EnsureReady] Successfully warmed up '{characterName}'");
+            }
+        }
+        catch (Exception e) {
+            Debug.LogError($"[CM EnsureReady] Error warming up '{characterName}': {e.Message}\n{e.StackTrace}");
+            if (stateTransitions.ContainsKey(characterName)) {
+                stateTransitions[characterName].TryTransition(CharacterState.Failed);
+            }
+        }
+    }
 
     public IEnumerator WarmupCharacter(string characterName) { 
         if (!isInitialized) { Debug.LogError($"Cannot warm up char '{characterName}' - Not initialized"); yield break; } 
