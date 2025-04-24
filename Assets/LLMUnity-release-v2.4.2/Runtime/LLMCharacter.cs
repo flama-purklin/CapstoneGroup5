@@ -27,8 +27,8 @@ namespace LLMUnity
         /// <summary> log the constructed prompt the Unity Editor. </summary>
         [Tooltip("log the constructed prompt the Unity Editor.")]
         [LLM] public bool debugPrompt = false;
-        /// <summary> maximum number of tokens that the LLM will predict (-1 = infinity, -2 = until context filled). </summary>
-        [Tooltip("maximum number of tokens that the LLM will predict (-1 = infinity, -2 = until context filled).")]
+        /// <summary> maximum number of tokens that the LLM will predict (-1 = infinity). </summary>
+        [Tooltip("maximum number of tokens that the LLM will predict (-1 = infinity).")]
         [Model] public int numPredict = -1;
         /// <summary> slot of the server to use for computation (affects caching) </summary>
         [Tooltip("slot of the server to use for computation (affects caching)")]
@@ -478,17 +478,14 @@ namespace LLMUnity
                 await chatLock.WaitAsync();
                 try
                 {
-                    Debug.Log($"[LLMCharacter.Chat - {save}] Before Add: chat.Count = {chat.Count}");
                     AddPlayerMessage(query);
                     AddAIMessage(result);
-                    Debug.Log($"[LLMCharacter.Chat - {save}] After Add: chat.Count = {chat.Count}");
                 }
                 finally
                 {
-                chatLock.Release();
+                    chatLock.Release();
                 }
-                // Removed the automatic save from here. Saving should be handled explicitly when dialogue ends.
-                // if (save != "") _ = Save(save); 
+                if (save != "") _ = Save(save);
             }
 
             completionCallback?.Invoke();
@@ -598,19 +595,10 @@ namespace LLMUnity
             string json = JsonUtility.ToJson(new ChatListWrapper { chat = chat.GetRange(1, chat.Count - 1) });
             File.WriteAllText(filepath, json);
 
-            // Only save cache if saveCache is true and not remote
-            if (!remote && saveCache)
-            {
-                string cachepath = GetCacheSavePath(filename);
-                Debug.Log($"Attempting to save native cache to {cachepath}");
-                string result = await Slot(cachepath, "save");
-                return result;
-            }
-            else
-            {
-                Debug.Log($"Skipping native cache save for {filename} (saveCache={saveCache}, remote={remote})");
-                return null;
-            }
+            string cachepath = GetCacheSavePath(filename);
+            if (remote || !saveCache) return null;
+            string result = await Slot(cachepath, "save");
+            return result;
         }
 
         /// <summary>
@@ -628,32 +616,14 @@ namespace LLMUnity
             }
             string json = File.ReadAllText(filepath);
             List<ChatMessage> chatHistory = JsonUtility.FromJson<ChatListWrapper>(json).chat;
-            ClearChat(); // Adds system prompt
-            chat.AddRange(chatHistory); // Adds loaded history
-            Debug.Log($"[LLMCharacter.Load - {save}] After AddRange: chat.Count = {chat.Count}"); // Log count AFTER adding loaded history
-            LLMUnitySetup.Log($"Loaded JSON history from {filepath}");
+            ClearChat();
+            chat.AddRange(chatHistory);
+            LLMUnitySetup.Log($"Loaded {filepath}");
 
-            // Only load cache if saveCache is true, not remote, and file exists
-            if (!remote && saveCache)
-            {
-                string cachepath = GetCacheSavePath(filename);
-                if (File.Exists(GetSavePath(cachepath)))
-                {
-                    Debug.Log($"Attempting to restore native cache from {cachepath}");
-                    string result = await Slot(cachepath, "restore");
-                    return result;
-                }
-                else
-                {
-                     Debug.LogWarning($"Native cache file not found at {cachepath}, skipping restore.");
-                     return null;
-                }
-            }
-            else
-            {
-                Debug.Log($"Skipping native cache restore for {filename} (saveCache={saveCache}, remote={remote})");
-                return null;
-            }
+            string cachepath = GetCacheSavePath(filename);
+            if (remote || !saveCache || !File.Exists(GetSavePath(cachepath))) return null;
+            string result = await Slot(cachepath, "restore");
+            return result;
         }
 
         protected override async Task<Ret> PostRequestLocal<Res, Ret>(string json, string endpoint, ContentCallback<Res, Ret> getContent, Callback<Ret> callback = null)

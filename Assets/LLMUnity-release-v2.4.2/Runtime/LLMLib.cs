@@ -139,9 +139,7 @@ namespace LLMUnity
                 handle = Linux.dlopen(libraryName);
             else if (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.OSXServer)
                 handle = Mac.dlopen(libraryName);
-            else if (Application.platform == RuntimePlatform.Android || 
-                     Application.platform == RuntimePlatform.IPhonePlayer || 
-                     Application.platform == RuntimePlatform.VisionOS)
+            else if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.VisionOS)
                 handle = Mobile.dlopen(libraryName);
             else
                 throw new PlatformNotSupportedException($"Current platform is unknown, unable to load library '{libraryName}'.");
@@ -167,9 +165,7 @@ namespace LLMUnity
                 handle = Linux.dlsym(library, symbolName);
             else if (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.OSXServer)
                 handle = Mac.dlsym(library, symbolName);
-            else if (Application.platform == RuntimePlatform.Android || 
-                     Application.platform == RuntimePlatform.IPhonePlayer || 
-                     Application.platform == RuntimePlatform.VisionOS)
+            else if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.VisionOS)
                 handle = Mobile.dlsym(library, symbolName);
             else
                 throw new PlatformNotSupportedException($"Current platform is unknown, unable to load symbol '{symbolName}' from library {library}.");
@@ -192,9 +188,7 @@ namespace LLMUnity
                 Linux.dlclose(library);
             else if (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.OSXServer)
                 Mac.dlclose(library);
-            else if (Application.platform == RuntimePlatform.Android || 
-                     Application.platform == RuntimePlatform.IPhonePlayer || 
-                     Application.platform == RuntimePlatform.VisionOS)
+            else if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer || Application.platform == RuntimePlatform.VisionOS)
                 Mobile.dlclose(library);
             else
                 throw new PlatformNotSupportedException($"Current platform is unknown, unable to close library '{library}'.");
@@ -337,7 +331,8 @@ namespace LLMUnity
 
 #if (UNITY_ANDROID || UNITY_IOS || UNITY_VISIONOS) && !UNITY_EDITOR
 
-        public LLMLib(string arch) {
+        public LLMLib(string arch)
+        {
             architecture = arch;
         }
 
@@ -466,7 +461,6 @@ namespace LLMUnity
         public LLMLib(string arch)
         {
             architecture = arch;
-            
             foreach (string dependency in GetArchitectureDependencies(arch))
             {
                 LLMUnitySetup.Log($"Loading {dependency}");
@@ -543,7 +537,9 @@ namespace LLMUnity
                     dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/cublasLt64_12.dll"));
                     dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/cublas64_12.dll"));
                 }
-            } else if (arch == "vulkan") {
+            }
+            else if (arch == "vulkan")
+            {
                 if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsServer)
                 {
                     dependencies.Add(Path.Combine(LLMUnitySetup.libraryPath, $"windows-{arch}/vulkan-1.dll"));
