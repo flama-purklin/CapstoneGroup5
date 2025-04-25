@@ -4882,18 +4882,18 @@ Camera:
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
+  m_projectionMatrixMode: 2
   m_GateFitMode: 1
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 42.82031
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
-  m_Anamorphism: 0
+  m_Anamorphism: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
@@ -4902,9 +4902,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 6.8
+  near clip plane: 6.4
   far clip plane: 1000
-  field of view: 30
+  field of view: 31.310085
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4930,14 +4930,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 708103176}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.095845714, y: 0, z: 0, w: 0.99539626}
-  m_LocalPosition: {x: 0, y: 3.5, z: -9}
+  m_LocalRotation: {x: 0.09584572, y: 0.00002466548, z: -0.0002561608, w: 0.9953962}
+  m_LocalPosition: {x: -0.09262197, y: 3.429643, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2087307654}
+  - {fileID: 1484796255}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 11, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 10.61, y: 0, z: -0.044}
 --- !u!114 &708103180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8812,7 +8813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: qwen2-0_5b-instruct-q4_k_m.gguf
+      value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: batchSize
@@ -8824,11 +8825,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
-      value: chatml
+      value: mistral chat
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
-      value: 896
+      value: 4096
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
@@ -9778,6 +9779,102 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1484796252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1484796255}
+  - component: {fileID: 1484796254}
+  - component: {fileID: 1484796253}
+  m_Layer: 0
+  m_Name: Veltia
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1484796253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484796252}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 291fd5e4c2091814787162b4c6514eec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isGlobal: 1
+  priority: 10
+  temperature: 15
+  tint: 5
+  contrast: 1.1
+  saturation: 1.2
+  colorFilter: {r: 1, g: 0.97, b: 0.9, a: 1}
+  shadowsTint: {r: 0.16, g: 0.27, b: 0.35, a: 1}
+  shadowsBalance: 0.8
+  highlightsTint: {r: 1, g: 0.84, b: 0.67, a: 1}
+  highlightsBalance: 0.2
+  balance: -10
+  bloomIntensity: 0.3
+  bloomThreshold: 0.9
+  bloomScatter: 0.7
+  bloomTint: {r: 1, g: 0.88, b: 0.75, a: 1}
+  dirtTexture: {fileID: 2800000, guid: db50366cdf0244c42acc950d5344a6ac, type: 3}
+  dirtIntensity: 0.5
+  halationIntensity: 0.3
+  halationRadius: 2
+  halationColor: {r: 1, g: 0.5, b: 0.3, a: 1}
+  halationThreshold: 1.2
+  useHalationEffect: 1
+  grainIntensity: 0.4
+  grainResponse: 0.8
+  lensDistortion: -0.1
+  chromaticAberration: 0.1
+  vignetteIntensity: 0.25
+  vignetteSmoothness: 0.4
+  useGateWeave: 1
+  weaveAmount: 0.03
+  weaveSpeed: 0.2
+  rotationAmount: 0.05
+  rotationSpeed: 0.1
+--- !u!114 &1484796254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484796252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 10
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 0}
+--- !u!4 &1484796255
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484796252}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.0958457, y: 0.00004518504, z: -0.00046926484, w: 0.9953961}
+  m_LocalPosition: {x: 778.2504, y: 312.09702, z: -104.943085}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 708103179}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1485190009
 GameObject:
   m_ObjectHideFlags: 0
@@ -17141,12 +17238,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "You're absolutely right: for use as a base color (albedo/diffuse) texture
-    in PBR or Unity\u2019s Standard Shader, a built-in highlight\u2014like the one
-    in the image\u2014is a big no-no. That shiny bit implies a fixed lighting condition,
-    which totally breaks immersion when real-time lighting is applied in-engine.
-    You'll get conflicting highlights, like two suns fighting for dominance, which
-    is as hideous as it sounds."
+  m_text: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
+    in culpa qui officia deserunt mollit anim id est laborum.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

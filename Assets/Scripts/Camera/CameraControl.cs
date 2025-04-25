@@ -8,6 +8,9 @@ public class CameraControl : MonoBehaviour
 
     GameObject player;
     //CarDetection carDetection;
+    
+    // Reference to the VintageFilmLook component
+    private VintageFilmLook vintageFilmEffect;
 
     float carCenter;
     float carBoundMin;
@@ -34,6 +37,9 @@ public class CameraControl : MonoBehaviour
         //store the y and z values so that they are always constant
         startingY = transform.position.y;
         startingZ = transform.position.z;
+        
+        // Find VintageFilmLook component (on child Veltia)
+        vintageFilmEffect = GetComponentInChildren<VintageFilmLook>();
 
         // NEW: find initial car if player is in it
         var carDetection = player.GetComponent<CarDetection>();
@@ -66,6 +72,9 @@ public class CameraControl : MonoBehaviour
             //store the y and z values so that they are always constant
             startingY = transform.position.y;
             startingZ = transform.position.z;
+            
+            // Find VintageFilmLook component (on child Veltia)
+            vintageFilmEffect = GetComponentInChildren<VintageFilmLook>();
 
             // NEW: find initial car if player is in it
             var carDetection = player.GetComponent<CarDetection>();
@@ -81,10 +90,9 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    // NEW: Update() --> LateUpdate()
-    void Update()
+    // Using LateUpdate to ensure this runs after all other updates
+    void LateUpdate()
     {
-
         if (!player || transition || !boundsInitialized) return;
 
         //get the player x val
@@ -93,9 +101,20 @@ public class CameraControl : MonoBehaviour
         //clamp to the bounds of the current traincar
         float camX = Mathf.Clamp(playerPos.x, carBoundMin, carBoundMax);
 
-        //apply to the cam
-        transform.position = new Vector3(camX, startingY, startingZ);
-
+        // Calculate base camera position (before gate weave)
+        Vector3 basePosition = new Vector3(camX, startingY, startingZ);
+        
+        // Apply gate weave effect if available
+        if (vintageFilmEffect != null)
+        {
+            var (posOffset, rotOffset) = vintageFilmEffect.GetGateWeaveOffset();
+            transform.position = basePosition + posOffset;
+            transform.rotation = transform.rotation * rotOffset;
+        }
+        else
+        {
+            transform.position = basePosition;
+        }
     }
 
     //called whenever a new car is entered
@@ -155,17 +174,25 @@ public class CameraControl : MonoBehaviour
     private IEnumerator CarTransition(float startX, float endX)
     {
         transition = true;
-        float elapsed = 0;
+            float elapsed = 0;
 
-        Vector3 startPos = new Vector3(startX, startingY, startingZ);
-        Vector3 endPos = new Vector3(endX, startingY, startingZ);
+            Vector3 startPos = new Vector3(startX, startingY, startingZ);
+            Vector3 endPos = new Vector3(endX, startingY, startingZ);
+            
+            // Store the original rotation before the transition
+            Quaternion originalRotation = transform.rotation;
 
-        while (elapsed < transitionTime)
+            while (elapsed < transitionTime)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / transitionTime;
             Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
             transform.position = newPos;
+            
+            // Maintain the original rotation during the transition
+            // This prevents any gate weave rotation from accumulating during transitions
+            transform.rotation = originalRotation;
+            
             yield return null;
         }
 
