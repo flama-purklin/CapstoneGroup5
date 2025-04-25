@@ -92,10 +92,10 @@ public class NodeControl : MonoBehaviour
             confidenceScore.text = (GameControl.GameController.coreConstellation.ConfidenceScore()).ToString("P");
         }
 
-        if (simulationDisplayAmt.isActiveAndEnabled)
-        {
-            simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
-        }
+        //if (simulationDisplayAmt.isActiveAndEnabled)
+        //{
+        //    simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
+        //}
     }
 
     public void MapEnabled()

@@ -200,25 +200,69 @@ public abstract class BaseDialogueManager : MonoBehaviour
         }
     }
     
-    // Helper method to check if text ends with a partial action marker
+    // Optimized helper method to check if text ends with a partial action marker
+    // Avoids allocations by checking characters directly instead of EndsWith() string allocations
     private bool EndsWithPartialActionMarker(string text)
     {
-        return text.EndsWith("[") || 
-               text.EndsWith("[/") || 
-               text.EndsWith("[/A") || 
-               text.EndsWith("[/AC") || 
-               text.EndsWith("[/ACT") || 
-               text.EndsWith("[/ACTI") || 
-               text.EndsWith("[/ACTIO") || 
-               text.EndsWith("[/ACTION") || 
-               text.EndsWith("[/ACTION]") ||
-               text.EndsWith("\n") || // Possible start of "\nACTION:"
-               text.EndsWith("\nA") || 
-               text.EndsWith("\nAC") || 
-               text.EndsWith("\nACT") || 
-               text.EndsWith("\nACTI") || 
-               text.EndsWith("\nACTIO") || 
-               text.EndsWith("\nACTION");
+        int length = text.Length;
+        if (length == 0) return false;
+        
+        // Check for the ACTION tag pattern
+        if (text[length - 1] == '[') return true;
+        
+        // We need at least 2 characters to check for "[/" and "\n"
+        if (length < 2) return false;
+        
+        // Check for "[/" prefix
+        if (text[length - 2] == '[' && text[length - 1] == '/') return true;
+        
+        // Check for newline
+        if (text[length - 1] == '\n') return true;
+        
+        // More efficient pattern matching for partial "[/ACTION]" sequences
+        // Check if the last few characters match the expected pattern
+        string actionMarker = "[/ACTION]";
+        
+        // Check if the end of the string contains a partial segment of "[/ACTION]"
+        for (int i = 2; i <= Math.Min(actionMarker.Length, length); i++)
+        {
+            if (length >= i)
+            {
+                bool match = true;
+                for (int j = 0; j < i; j++)
+                {
+                    if (text[length - i + j] != actionMarker[j])
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) return true;
+            }
+        }
+        
+        // Check for partial "\nACTION" sequences
+        string newlineActionMarker = "\nACTION";
+        
+        // Check if the end of the string contains a partial segment of "\nACTION"
+        for (int i = 2; i <= Math.Min(newlineActionMarker.Length, length); i++)
+        {
+            if (length >= i)
+            {
+                bool match = true;
+                for (int j = 0; j < i; j++)
+                {
+                    if (text[length - i + j] != newlineActionMarker[j])
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) return true;
+            }
+        }
+        
+        return false;
     }
     
     // Helper method to get the starting index of a partial marker
@@ -405,10 +449,14 @@ public abstract class BaseDialogueManager : MonoBehaviour
 
     protected virtual void OnReplyComplete()
     {
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[INPUTDBG] OnReplyComplete called, isProcessingResponse=" + isProcessingResponse);
+        #endif
         if (!isProcessingResponse) 
         {
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - early return due to !isProcessingResponse");
+            #endif
             return;
         }
 
@@ -416,7 +464,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         if (isAccumulatingAction)
         {
             string finalActionText = actionBuffer.ToString().Trim();
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[INPUTDBG] OnReplyComplete - Finalized accumulated action: '{finalActionText}'");
+            #endif
             
             // Start coroutine to process the accumulated action after BeepSpeak finishes
             StartCoroutine(ProcessActionAfterBeepSpeak(finalActionText));
@@ -429,7 +479,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         // Otherwise check for a single-chunk function call (backward compatibility)
         else if (!string.IsNullOrEmpty(bufferedFunctionCall))
         {
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - Single-chunk action detected: " + bufferedFunctionCall);
+            #endif
             // Action was detected during HandleReply.
             // Start coroutine to process it after BeepSpeak finishes and a short delay.
             StartCoroutine(ProcessActionAfterBeepSpeak(bufferedFunctionCall));
@@ -438,7 +490,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         }
         else
         {
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - No action detected, starting EnableInputAfterBeepSpeak");
+            #endif
             
             // Only send the complete text to the display if we're not using the new UI
             // This prevents duplicate display when BeepSpeak is already updating the UI
@@ -446,11 +500,15 @@ public abstract class BaseDialogueManager : MonoBehaviour
             {
                 // For legacy UI only - send the final complete text to legacy display
                 dialogueControl.DisplayNPCDialogue(currentResponse.ToString());
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log("[INPUTDBG] OnReplyComplete - Sent final text to legacy display");
+                #endif
             }
             else
             {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log("[INPUTDBG] OnReplyComplete - Not sending final text to UI (using new UI with BeepSpeak)");
+                #endif
             }
             
             // Start coroutine to re-enable input only after BeepSpeak finishes.
@@ -464,7 +522,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         bufferedFunctionCall = null;
         
         isProcessingResponse = false; // Mark processing as complete
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[INPUTDBG] OnReplyComplete - finished, set isProcessingResponse=false");
+        #endif
     }
 
     protected virtual void OnError()
@@ -597,7 +657,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
     /// </summary>
     private System.Collections.IEnumerator EnableInputAfterBeepSpeak()
     {
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[INPUTDBG] EnableInputAfterBeepSpeak started");
+        #endif
         float startTime = Time.realtimeSinceStartup;
         
         // Retrieve the BeepSpeak instance and its timing configuration
@@ -618,7 +680,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 {
                     characterSpeed = beepSpeakInstance.npcVoice.baseSpeed;
                     speedVariance = beepSpeakInstance.npcVoice.speedVariance;
+                    #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     Debug.Log($"[INPUTDBG] Retrieved BeepSpeak speed: {characterSpeed:F3}s per char, variance: {speedVariance:F3}s");
+                    #endif
                 }
             }
         }
@@ -632,7 +696,9 @@ public abstract class BaseDialogueManager : MonoBehaviour
         // Allow much longer maximum wait time for long responses
         float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
         
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[INPUTDBG] Waiting up to {maxWaitTime:F1}s for {textLength} characters to type");
+        #endif
         int loopCount = 0;
         float lastProgressTime = Time.realtimeSinceStartup;
         

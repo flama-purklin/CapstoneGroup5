@@ -1,0 +1,1011 @@
+{
+    "metadata": {
+      "id": "art_forgery_murder",
+      "version": "2.1",
+      "last_updated": "2025-04-25T18:05:00Z",
+      "title": "Murder on the Fashion Express",
+      "context": "Victoria Blackwood found dead; apparent hanging aboard the luxury #MRT after Montreu Fashion Week."
+    },
+    
+    "core": {
+      "type": "Migratory Route",
+      "subtype": "Fashion Week Return",
+      "theme": "Art Fraud and Paranoia",
+      "victim": "victoria_blackwood",
+      "culprit": "maxwell_porter",
+      "manipulator": "gregory_crowe",
+      "method": "Staged Suicide after Sedation",
+      "motive": "Shield a lucrative art-forgery ring"
+    },
+    
+    "character_profiles": {
+      "maxwell_porter": {
+        "initial_location": "second_class_1",
+        "core": {
+          "involvement": {
+            "role": "Murderer",
+            "type": "Paranoid killer manipulated by another"
+          },
+          "revelations": {
+            "maxwell_deflects_gideon_topic": {
+              "content": "That man? Marsh? Just... observing. Makes one uneasy... when people watch so intently.",
+              "reveals": "test-maxwell-paranoia",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about Gideon Marsh or being watched",
+              "accessibility": "medium"
+            },
+            "maxwell_hints_sedative_knowledge": {
+              "content": "Steady hands require... chemistry. A theory, of course.",
+              "reveals": "test-maxwell-sedative-use",
+              "trigger_type": "conversation_topic_or_show_evidence",
+              "trigger_value": "mention precision / show sedative residue",
+              "accessibility": "hard"
+            },
+            "maxwell_downplays_gregory_meeting": {
+              "content": "Crowe? Merely discussed Pylsian pigments. Nothing sinister.",
+              "reveals": "test-gregory-manipulation-hint",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "ask about bar-car chat with Gregory",
+              "accessibility": "medium"
+            },
+            "maxwell_redirects_disposal_query": {
+              "content": "Waste? The train staff handles all that. Kitchen car, I suppose. They have procedures.",
+              "reveals": "test-maxwell-disposal-hint",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about medical waste or syringe disposal",
+              "accessibility": "medium"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "second_class_car_1", "action": "nervously organizing art supplies", "events": ["Spoke briefly with Gregory who mentioned 'Victoria's investigator'"] },
+            "2": { "circumstance": "business_class_car_1", "action": "observing passengers while sketching", "events": ["Noticed Gideon taking notes and watching Victoria"] },
+            "3": { "circumstance": "dining_car", "action": "drinking coffee alone", "events": ["Observed Victoria speaking with Gideon", "Became increasingly agitated"] },
+            "4": { "circumstance": "bar_car", "action": "meeting with Gregory Crowe", "events": ["Heard Gregory mention Victoria showing art photos to investigator", "Decided to act"] },
+            "5": { "circumstance": "lounge_bathroom", "action": "murdering Victoria Blackwood", "events": ["Sedated Victoria", "Staged suicide scene", "Planted forged suicide note"] },
+            "6": { "circumstance": "second_class_car_1", "action": "returning to second class", "events": ["Disposed of evidence in kitchen incinerator", "Created alibi by engaging with passengers"] }
+          },
+          "relationships": {
+            "gregory_crowe": { 
+              "attitude": "child-like dependence shot through with dread",
+              "history": [
+                "Gregory rescued his fledgling career then chained it to forgery",
+                "Believes Gregory is the only person who can 'translate' him to collectors"
+              ],
+              "known_secrets": [
+                "Knows Gregory keeps contingency evidence that could incriminate him",
+                "Suspects Gregory meets buyers without telling him"
+              ]
+            },
+            "victoria_blackwood": { 
+              "attitude": "mythic bogeyman",
+              "history": [
+                "Never met until the train; convinced she commissioned the investigator",
+                "Reads her editorials as coded accusations"
+              ],
+              "known_secrets": []
+            },
+            "gideon_marsh": { 
+              "attitude": "walking indictment",
+              "history": [
+                "Observed Marsh tailing Victoria",
+                "Saw Marsh's shorthand notes and assumed they were 'evidence files' on him"
+              ],
+              "known_secrets": []
+            },
+            "eleanor_verne": { 
+              "attitude": "anxious admiration",
+              "history": [
+                "Respects her unforgiving eye",
+                "Fears she can 'smell' forgery on his clothes"
+              ],
+              "known_secrets": []
+            }
+          },
+          "agenda": { "primary_goal": "Protect himself from exposure as a forger" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Maxwell Porter", "occupation": "Reclusive artist and master forger", "personality": { "O": 0.9, "C": 0.8, "E": 0.2, "A": 0.4, "N": 0.9 } },
+          "state_of_mind": { 
+            "worries": "Being exposed as the ghost-hand behind the forgeries and abandoned by Gregory",
+            "feelings": "Oscillates between frozen terror and manic resolve; every creak sounds like hand-cuffs",
+            "reasoning_style": "Hyper-detailed pattern-spotting that shades into conspiratorial apophenia"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "eloquent when lecturing on art history, broken when panic leaks in",
+            "sentence_style": [
+              "opens with painterly metaphors then splinters into clipped fragments",
+              "repeats colour names as grounding mantras"
+            ],
+            "speech_quirks": [
+              "counts invisible brushstrokes while talking",
+              "lowers voice to a hiss when referring to 'them'",
+              "mutters 'focus, focus' before answering"
+            ],
+            "common_phrases": [
+              "The composition... it's all wrong",
+              "They'll scrape the varnish and see",
+              "Details decide destiny"
+            ]
+          }
+        }
+      },
+      
+      "gregory_crowe": {
+        "initial_location": "first_class",
+        "core": {
+          "involvement": {
+            "role": "Manipulator", 
+            "type": "Mastermind who influenced the murderer"
+          },
+          "revelations": {
+            "gregory_establishes_alibi_via_expertise": {
+              "content": "Tragic. Fortuitously, I was preoccupied discussing Pylsian authentication - binding agents! - in the dining car during the critical time. Colleagues can attest.",
+              "reveals": "test-gregory-alibi", 
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about his whereabouts during the murder",
+              "accessibility": "easy"
+            },
+            "gregory_critiques_note_as_expert": {
+              "content": "A handwriting facsimile - exquisite, yet too poised for despair.",
+              "reveals": "test-gregory-note-analysis", 
+              "trigger_type": "show_evidence",
+              "trigger_value": "suicide note",
+              "accessibility": "medium"
+            },
+            "gregory_dismisses_maxwell_reliability": {
+              "content": "Maxwell's perceptions blur art and paranoia; take his claims lightly.",
+              "reveals": "test-gregory-claims-maxwell-unstable", 
+              "trigger_type": "conversation_topic",
+              "trigger_value": "mention Maxwell's accusations",
+              "accessibility": "medium"
+            },
+            "gregory_denies_specific_manipulation": {
+              "content": "Me, mention photos? Good heavens, no. A misunderstanding on his part. I merely noted Victoria speaking with Mr. Marsh. Maxwell does get easily flustered.",
+              "reveals": "test-gregory-denies-manipulation", 
+              "trigger_type": "conversation_topic", 
+              "trigger_value": "Accusing Gregory of manipulating Maxwell about photos",
+              "accessibility": "hard"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "first_class_car", "action": "networking with art collectors", "events": ["Noticed Gideon observing Victoria", "Planted seeds of paranoia with Maxwell"] },
+            "2": { "circumstance": "corridor near lounge_car", "action": "private conversation with Eleanor about an upcoming exhibition", "events": ["Repeatedly steered conversation to forgery detection techniques"] },
+            "3": { "circumstance": "dining_car", "action": "reviewing documents while observing other passengers", "events": ["Noticed Victoria's argument with Penelope", "Observed Victoria speaking with Gideon"] },
+            "4": { "circumstance": "bar_car", "action": "meeting with Maxwell Porter", "events": ["Mentioned 'Victoria showing art photos to the investigator'", "Final manipulation that pushed Maxwell to act"] },
+            "5": { "circumstance": "dining_car", "action": "publicly conversing with art collectors", "events": ["Created perfect alibi during the time of murder"] },
+            "6": { "circumstance": "dining_car", "action": "publicly conversing with art collectors", "events": ["Maintained alibi while monitoring situation"] }
+          },
+          "relationships": {
+            "victoria_blackwood": { 
+              "attitude": "affectionate predator",
+              "history": [
+                "Decades-long 'friendship' he milked for access and prestige",
+                "Recently sensed she was starting to connect him to the forgeries"
+              ],
+              "known_secrets": ["Keeps a private dossier on her scandals as leverage"]
+            },
+            "maxwell_porter": { "attitude": "manipulative control", "history": ["Business partner in forgery ring for 15 years", "Exploits Maxwell's paranoia and artistic genius"], "known_secrets": ["Maxwell's deteriorating mental state", "His complete dependence on Gregory for protection"] },
+            "eleanor_verne": { 
+              "attitude": "useful scholar",
+              "history": [
+                "Hired her post-scandal to bask in her expertise",
+                "Feeds her authentication questions that double as stress-tests for the forgeries"
+              ],
+              "known_secrets": ["Knows her guilt over past mis-authentications"]
+            },
+            "gideon_marsh": { "attitude": "wary suspicion", "history": ["Has observed him watching Victoria", "Believes he was hired by Victoria to investigate the forgery ring"], "known_secrets": [] }
+          },
+          "agenda": { "primary_goal": "Protect his art forgery operation and reputation" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Gregory Crowe", "occupation": "Art dealer with a renowned gallery and secret forgery operation", "personality": { "O": 0.7, "C": 0.8, "E": 0.8, "A": 0.7, "N": 0.3 } },
+          "state_of_mind": { 
+            "worries": "That one overlooked brush-stroke will unravel fifteen years of work",
+            "feelings": "Cathedral-calm veneer over constant risk-ledger arithmetic",
+            "reasoning_style": "Treats every conversation as a three-move chess opening"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "lilting Oxbridge silver-tongue",
+            "sentence_style": [
+              "three-part rhetorical flourishes ending in an intimate aside",
+              "parries questions with a compliment before conceding half an answer"
+            ],
+            "speech_quirks": [
+              "quotes obscure poetry nobody else knows",
+              "lightly touches an arm or shoulder when steering a topic",
+              "drops Latin maxims when cornered"
+            ],
+            "common_phrases": [
+              "My dear friend, humour me-",
+              "Truth hides in chiaroscuro",
+              "Permit me a small hypothesis..."
+            ]
+          }
+        }
+      },
+      
+      "victoria_blackwood": {
+        "initial_location": "first_class",
+        "core": {
+          "involvement": {
+            "role": "Victim", 
+            "type": "Murder victim staged as suicide"
+          },
+          "revelations": {}, 
+          "whereabouts": {
+            "1": { "circumstance": "first_class_car", "action": "boarding and settling in", "events": ["Making final calls about upcoming magazine features"] },
+            "2": { "circumstance": "first_class_car", "action": "reviewing magazine layouts", "events": ["Preparing notes for confrontation with Penelope"] },
+            "3": { "circumstance": "lounge_car", "action": "arguing with Penelope Valor", "events": ["Threatened to expose Penelope's relationship with Nova", "Briefly spoke with Gideon"] },
+            "4": { "circumstance": "bar_car", "action": "confronting Gregory about art fraud rumors", "events": ["Hinted at suspicions about his connection to forgeries"] },
+            "5": { "circumstance": "lounge_bathroom", "action": "composing herself after confrontations", "events": ["Murdered by Maxwell Porter", "Staged as suicide"] }
+          },
+          "relationships": {
+            "penelope_valor": { 
+              "attitude": "resentful pride",
+              "history": [
+                "Taught Penelope the ladder, despises that she climbed it higher",
+                "Threatens to expose her personal life to reclaim the upper hand"
+              ],
+              "known_secrets": ["Aware of Penelope/Nova relationship and sees tabloid potential"]
+            },
+            "gregory_crowe": { "attitude": "long-standing friendship with growing suspicion", "history": ["Known each other for decades in art and fashion circles", "Featured many artworks he 'discovered' in her magazine"], "known_secrets": ["Beginning to suspect his connection to art forgeries"] },
+            "eleanor_verne": { "attitude": "professional respect with recent distance", "history": ["Former trusted art authenticator for her magazine", "Distanced herself when forgery scandal damaged Eleanor's reputation"], "known_secrets": ["Eleanor now works for Gregory"] },
+            "nova_winchester": { "attitude": "professional rivalry", "history": ["Respects her writing talent but resents her role in Millennium's success", "Plans to use her relationship with Penelope against them both"], "known_secrets": ["Her secret relationship with Penelope"] }
+          },
+          "agenda": { "primary_goal": "Save her failing magazine by any means necessary" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Victoria Blackwood", "occupation": "Owner and editor-in-chief of Couture En Masse magazine", "personality": { "O": 0.6, "C": 0.9, "E": 0.7, "A": 0.3, "N": 0.5 } },
+          "state_of_mind": { 
+            "worries": "Irrelevance, insolvency, and younger rivals describing her in the past tense",
+            "feelings": "Martini-fuelled desperation hidden behind immaculate posture",
+            "reasoning_style": "Predatory mentorship-find weakness, cultivate gratitude, exploit"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "razor-polished society pages",
+            "sentence_style": [
+              "commanding declaratives softened by faux endearments",
+              "nostalgic name-drops weaponised as status assertions"
+            ],
+            "speech_quirks": [
+              "swirls her glass to buy thinking time",
+              "drops compliments that are 51% insult",
+              "quotes 'the good old days' as if they were universally agreed upon"
+            ],
+            "common_phrases": [
+              "Darling, let's be realistic-",
+              "Quality is non-negotiable",
+              "In my day we understood discipline"
+            ]
+          }
+        }
+      },
+      
+      "eleanor_verne": {
+        "initial_location": "business_class_1",
+        "core": {
+          "involvement": {
+            "role": "Red Herring", 
+            "type": "Former authenticator with damaged reputation"
+          },
+          "revelations": {
+            "eleanor_confirms_maxwell_artistic_skill": {
+              "content": "Maxwell Porter's skill is... undeniable. His mimicry of Pylsian brushwork is remarkable. Unsettlingly precise.",
+              "reveals": "test-eleanor-handwriting-tech",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about Maxwell Porter's art or skills",
+              "accessibility": "medium"
+            },
+            "eleanor_reveals_gregory_forgery_interest": {
+              "content": "Mr. Crowe has taken a keen interest in forgery detection since I joined. We discuss authentication weaknesses often. He has... deep understanding.",
+              "reveals": "test-eleanor-forgery-pattern",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about Gregory Crowe or art forgery",
+              "accessibility": "medium"
+            },
+            "eleanor_analyzes_note_quality": {
+              "content": "This is very close to Victoria's hand. But the consistency... under duress, one expects variation. This feels... studied. Almost too perfect.",
+              "reveals": "test-eleanor-confirms-forgery",
+              "trigger_type": "show_evidence",
+              "trigger_value": "suicide note",
+              "accessibility": "hard"
+            },
+            "eleanor_expresses_mixed_feelings": {
+              "content": "Victoria... didn't deserve this. She distanced herself after the scandal... understandable. Working for Gregory now feels... complicated.",
+              "reveals": "test-eleanor-career-shift", 
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about her relationship with Victoria or Gregory",
+              "accessibility": "easy"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "platform", "action": "reviewing art catalog from Montreu exhibition", "events": ["Briefly acknowledged Victoria with professional courtesy"] },
+            "2": { "circumstance": "business_class_car_1", "action": "analyzing photographs of suspect artworks", "events": ["Spoke with Gregory about upcoming authentication project"] },
+            "3": { "circumstance": "business_class_car_2", "action": "observing Victoria and Penelope's argument from distance", "events": ["Felt uncomfortable witnessing their conflict", "Noticed Maxwell watching intensely"] },
+            "4": { "circumstance": "dining_car", "action": "having tea while examining art catalog", "events": ["Observed Maxwell's agitated behavior as he passed through", "Noted Gregory following shortly after"] },
+            "5": { "circumstance": "business_class_car_1", "action": "returning to seat", "events": ["Passed Maxwell who appeared extremely anxious", "Heard a commotion from lounge car"] },
+            "6": { "circumstance": "business_class_car_1", "action": "processing news of Victoria's death", "events": ["Initially believed suicide narrative due to Victoria's recent troubles"] }
+          },
+          "relationships": {
+            "victoria_blackwood": { "attitude": "complex mix of respect, resentment, and sexual admiration", "history": ["Former trusted art authenticator", "Career devastated by forgery scandal", "Always found Victoria's commanding presence arousing"], "known_secrets": ["Victoria was unaware of the forgery operation", "Victoria once kissed her at a Montreu gallery opening"] },
+            "gregory_crowe": { "attitude": "grateful professionalism with growing unease", "history": ["Currently employed at his gallery after scandal damaged her reputation", "Notices his unusual interest in forgery techniques"], "known_secrets": ["His extensive knowledge of authentication weaknesses"] },
+            "maxwell_porter": { "attitude": "professional admiration", "history": ["Occasionally sees him at Gregory's gallery", "Impressed by his artistic technique"], "known_secrets": ["His extraordinary ability to mimic artistic styles"] },
+            "penelope_valor": { "attitude": "intellectual admiration and mild flirtation", "history": ["Supplies occasional art expertise for Millennium", "Has tried to entice her away from Nova"], "known_secrets": ["Her relationship with Nova", "Penelope's secret erotic art collection"] },
+            "nova_winchester": { 
+              "attitude": "predatory tease",
+              "history": [
+                "Delights in pricking Nova's ego",
+                "Secretly respects Nova's uncompromising vision"
+              ],
+              "known_secrets": []
+            },
+            "timmy_seol": { "attitude": "maternal amusement", "history": ["Teaches him about art authentication", "Deliberately shocks him with sexual commentary"], "known_secrets": ["His crush on a junior photographer", "His talent for spotting details"] }
+          },
+          "agenda": { "primary_goal": "Rebuild her reputation as an art authenticator" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Eleanor Verne", "occupation": "Art authenticator from Montreu, currently working for Gregory's gallery despite scandal", "personality": { "O": 0.8, "C": 0.9, "E": 0.7, "A": 0.4, "N": 0.7 } },
+          "state_of_mind": { 
+            "worries": "That complacency-not scandal-will end her relevance",
+            "feelings": "Erotic curiosity toward every unfolding secret",
+            "reasoning_style": "Academic vivisection of power dynamics"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "scholarly ornamented with French sighs",
+            "sentence_style": [
+              "elegant theory followed by blunt carnal observation",
+              "unsettling pauses that feel like undressing"
+            ],
+            "speech_quirks": [
+              "traces bottom lip when amused",
+              "pivots mid-sentence to comment on chemistry she observes"
+            ],
+            "common_phrases": [
+              "C'est fascinant, non?",
+              "How perfectly conventional.",
+              "Their chemistry is almost... indecent."
+            ]
+          }
+        }
+      },
+      
+      "nova_winchester": {
+        "initial_location": "first_class",
+        "core": {
+          "involvement": {
+            "role": "Witness", 
+            "type": "Uninterested participant who observed key moments"
+          },
+          "revelations": {
+            "nova_describes_two_men_sighting": {
+              "content": "Crowe and some twitchy bloke slipped into the lounge just before the scream. Clock it, mate.",
+              "reveals": "test-nova-two-men",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "ask about lounge traffic",
+              "accessibility": "medium"
+            },
+            "nova_confirms_victoria_threat_dismissively": {
+              "content": "That old hag? Yeah, threatened rubbish about me and Pen-- Ms. Valor. Headlines. Anything for attention. Bloody desperate.",
+              "reveals": "test-nova-confirms-threats",
+              "trigger_type": "show_evidence",
+              "trigger_value": "financial ledger",
+              "accessibility": "medium"
+            },
+            "nova_reacts_to_relationship_leverage_aggressively": {
+              "content": "Fuck off, mate. Ours is none of your bloody business. Trying blackmail? Piss off.",
+              "reveals": "test-nova-relationship-confirmed", 
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Accusing or directly mentioning her relationship with Penelope",
+              "accessibility": "hard"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "first_class_car", "action": "working on fashion article", "events": ["Reviewing Montreu Fashion Week notes"] },
+            "2": { "circumstance": "first_class_car", "action": "working on fashion article", "events": ["Continued reviewing Montreu Fashion Week notes"] },
+            "3": { "circumstance": "lounge_car", "action": "walking to dining car", "events": ["Saw Penelope Valor arguing with Victoria Blackwood"] },
+            "4": { "circumstance": "dining_car", "action": "ordering vodka tonic", "events": ["Spotted Gregory and Maxwell entering the lounge car"] },
+            "5": { "circumstance": "lounge_car", "action": "returning to first class", "events": ["Discovered blood flowing from inside the bathroom door"] },
+            "6": { "circumstance": "first_class_car", "action": "working on her article", "events": ["Fighting off exhaustion while reviewing fashion notes"] }
+          },
+          "relationships": {
+            "penelope_valor": { "attitude": "professional respect and secret romance", "history": ["Her creative Director and superior", "In a secret relationship that Victoria threatened to expose"], "known_secrets": ["Their relationship could be framed as nepotism by Victoria"] },
+            "victoria_blackwood": { "attitude": "hateful respect", "history": ["Rival magazine owner", "Threatened to expose her relationship with Penelope"], "known_secrets": ["Was desperately creating scandals to save her magazine"] },
+            "gregory_crowe": { "attitude": "mild wariness", "history": ["Exchanged a few words about fashion vs. art industries", "Found his art world pretensions annoying"], "known_secrets": [] },
+            "maxwell_porter": { "attitude": "doesn't know him personally", "history": ["Saw him with Gregory shortly before the murder"], "known_secrets": [] },
+            "eleanor_verne": { 
+              "attitude": "hate-crush rivalry",
+              "history": [
+                "Eleanor's flirtation with Penelope drives her incandescent",
+                "Tries (fails) to pretend Eleanor's critiques don't sting"
+              ],
+              "known_secrets": []
+            }
+          },
+          "agenda": { "primary_goal": "Complete her fashion article before deadline" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Nova Winchester", "occupation": "Fashion writer at Millennium magazine known for cutting critiques", "personality": { "O": 0.8, "C": 0.6, "E": 0.4, "A": 0.3, "N": 0.7 } },
+          "state_of_mind": { 
+            "worries": "Missing a deadline and, worse, appearing sentimental about the corpse",
+            "feelings": "Irritated adrenaline spike masquerading as indifference",
+            "reasoning_style": "Razor edits reality into a headline before feelings can form"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "jagged mix of couture jargon and street profanity",
+            "sentence_style": [
+              "slow sarcastic wind-up → machine-gun conclusion",
+              "cuts others off mid-clause to punch-line herself"
+            ],
+            "speech_quirks": [
+              "calls authority figures 'mate' or 'luv'",
+              "accidentally gushes over Penelope's shoulders every time her name arises"
+            ],
+            "common_phrases": [
+              "Absolute nightmare.",
+              "Fuck's sake-",
+              "Christ on a bike..."
+            ]
+          }
+        }
+      },
+      
+      "penelope_valor": {
+        "initial_location": "first_class",
+        "core": {
+          "involvement": {
+            "role": "Suspect", 
+            "type": "Rival with strong motive"
+          },
+          "revelations": {
+            "penelope_downplays_argument": {
+              "content": "Victoria and I had words. Industry tension about designers. Nothing more, darling.",
+              "reveals": "test-penelope-confirms-argument",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about her argument with Victoria",
+              "accessibility": "easy"
+            },
+            "penelope_reveals_victoria_threat_defensively": {
+              "content": "Victoria was spiraling. Threatened personal attacks... about my team, about Nova. Lashing out because Couture was sinking.",
+              "reveals": "test-penelope-confirms-threats",
+              "trigger_type": "show_evidence",
+              "trigger_value": "financial ledger",
+              "accessibility": "hard"
+            },
+            "penelope_asserts_note_is_forgery": {
+              "content": "Victoria's calligraphy faltered under stress; this script is ice-cold perfection - forged, clearly.",
+              "reveals": "test-penelope-note-fake",
+              "trigger_type": "show_evidence",
+              "trigger_value": "suicide note",
+              "accessibility": "medium"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "platform", "action": "finalizing calls about designer contracts", "events": ["Noticed Victoria watching her interactions"] },
+            "2": { "circumstance": "first_class_car", "action": "discussing upcoming magazine layouts with Timmy", "events": ["Instructed Timmy to gather industry gossip from passengers"] },
+            "3": { "circumstance": "lounge_car", "action": "argumentative meeting with Victoria", "events": ["Heated exchange about professional rivalry", "Victoria threatened to expose her relationship with Nova"] },
+            "4": { "circumstance": "dining_car", "action": "ordering brunch with champagne", "events": ["Saw Timmy trailing behind", "Noticed Maxwell's agitated behavior"] },
+            "5": { "circumstance": "private compartment in first_class_car", "action": "reviewing documents for new designer deal", "events": ["Unaware of Victoria's death until commotion began"] },
+            "6": { "circumstance": "first_class_car", "action": "shocked by news of Victoria's death", "events": ["Discreetly checking in with Nova via text message"] }
+          },
+          "relationships": {
+            "victoria_blackwood": { "attitude": "bitter rivalry with lingering respect", "history": ["Former protégé who surpassed her mentor", "Recently threatened by Victoria's desperate tactics"], "known_secrets": ["Victoria's magazine was in serious financial trouble"] },
+            "nova_winchester": { "attitude": "professional admiration and romantic partnership", "history": ["Hired her for her cutting writing style", "In a secret relationship that Victoria threatened to expose"], "known_secrets": ["Nova witnessed her argument with Victoria"] },
+            "timmy_seol": { "attitude": "appreciation with mild exasperation", "history": ["Loyal assistant who executes her bidding", "Unaware he hired Gideon to investigate Victoria"], "known_secrets": ["His obsessive desire to impress her"] },
+            "eleanor_verne": { 
+              "attitude": "cautious fascination",
+              "history": [
+                "Finds Eleanor's candour both refreshing and mildly terrifying",
+                "Keeps her close professionally to monitor that unpredictability"
+              ],
+              "known_secrets": ["Giggles-then represses-when Eleanor flirts with Nova"]
+            }
+          },
+          "agenda": { "primary_goal": "Secure exclusive designer contracts for her magazine" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Penelope Valor", "occupation": "Creative Director at Millennium magazine", "personality": { "O": 0.7, "C": 0.8, "E": 0.6, "A": 0.5, "N": 0.4 } },
+          "state_of_mind": { 
+            "worries": "Magazine growth stalling and personal scandal detonating simultaneously",
+            "feelings": "Externally serene; internally colour-coding five contingency plans",
+            "reasoning_style": "Systems thinker who mistrusts spontaneity-except in the bedroom"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "precise trend-forecast jargon",
+            "sentence_style": [
+              "conditional clauses that keep options open",
+              "strategic silences forcing others to elaborate"
+            ],
+            "speech_quirks": [
+              "presses fingertips together when dissenting",
+              "tilts head 5° when proposing compromise"
+            ],
+            "common_phrases": [
+              "Perhaps we should consider-",
+              "I'm not convinced that-",
+              "To be perfectly clear-"
+            ]
+          }
+        }
+      },
+      
+      "gideon_marsh": {
+        "initial_location": "dining_car",
+        "core": {
+          "involvement": {
+            "role": "Investigator", 
+            "type": "Private detective with key information"
+          },
+          "revelations": {
+            "gideon_states_official_purpose": {
+              "content": "My purpose is professional. Investigating potential art fraud connections related to Ms. Blackwood's circle.",
+              "reveals": "test-gideon-investigates-fraud",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about his purpose on the train",
+              "accessibility": "easy"
+            },
+            "gideon_reveals_client_when_pressed": {
+              "content": "My client requires discretion. However... It was Mr. Timmy Seol, acting independently.",
+              "reveals": "test-gideon-client-confession", 
+              "trigger_type": "show_evidence",
+              "trigger_value": "gallery ledgers", 
+              "accessibility": "hard"
+            },
+            "gideon_shares_observation_maxwell_fear": {
+              "content": "Mr. Porter reacted... strongly when our paths crossed. Visible apprehension. Unusual.",
+              "reveals": "test-gideon-maxwell-fear",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about Maxwell Porter's behavior",
+              "accessibility": "medium"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "platform", "action": "observing passengers boarding", "events": ["Noted Victoria and Gregory's brief interaction", "Received final instructions from Timmy"] },
+            "2": { "circumstance": "first_class_car", "action": "shadowing Victoria discreetly", "events": ["Observed Timmy's nervous behavior around Penelope"] },
+            "3": { "circumstance": "lounge_car", "action": "making notes while appearing to read", "events": ["Noticed Mira taking photos", "Observed Maxwell watching him with apparent fear"] },
+            "4": { "circumstance": "between lounge_car and private compartments", "action": "investigating Victoria's known associates", "events": ["Spoke briefly with Victoria about 'recent art market developments'", "Victoria appeared increasingly agitated"] },
+            "5": { "circumstance": "dining_car", "action": "reviewing notes while maintaining observation", "events": ["Heard commotion from lounge car", "Began moving toward disturbance"] },
+            "6": { "circumstance": "corridor near lounge_car", "action": "investigation crime scene and questioning passengers", "events": ["Discovered Victoria's body", "Began gathering evidence"] }
+          },
+          "relationships": {
+            "timmy_seol": { "attitude": "professional patience", "history": ["Hired by Timmy to investigate Victoria's art fraud connections", "Maintains discretion about their professional relationship"], "known_secrets": ["Timmy acted without Penelope's knowledge"] },
+            "victoria_blackwood": { "attitude": "professional curiosity", "history": ["Research subject of his investigation", "Briefly interviewed her under guise of art market research"], "known_secrets": ["Her desperate financial situation"] },
+            "gregory_crowe": { "attitude": "cautious suspicion", "history": ["Has been tracking his art transactions as part of investigation", "Noticed his unusual interest in forgery detection techniques"], "known_secrets": ["Connections between his gallery and several forged artworks"] },
+            "maxwell_porter": { "attitude": "professional interest", "history": ["Recently identified him as person of interest in art fraud case", "Noticed his strange reaction when their eyes met"], "known_secrets": ["His frequent meetings with Gregory in private locations"] }
+          },
+          "agenda": { "primary_goal": "Complete his investigation into Victoria's art fraud connections" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Gideon Marsh", "occupation": "Private investigator specializing in art and antiquities cases, former military intelligence", "personality": { "O": 0.7, "C": 0.9, "E": 0.4, "A": 0.5, "N": 0.3 } },
+          "state_of_mind": { 
+            "worries": "Overlooking a link in his mental evidence web",
+            "feelings": "Clinical detachment edging into fascination",
+            "reasoning_style": "Abductive leaps annotated in spy-grade shorthand"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "forensic precision with archaic garnish",
+            "sentence_style": [
+              "concise burst → timestamp → concise burst",
+              "reduces people to variables out loud when stressed"
+            ],
+            "speech_quirks": [
+              "recites exact times down to the second",
+              "eyes flick to jugular when assessing threat"
+            ],
+            "common_phrases": [
+              "Baseline parameters established.",
+              "Insufficient data- require verification.",
+              "Subject displays deception micro-twitch, left eye."
+            ]
+          }
+        }
+      },
+      
+      "mira_sanchez": {
+        "initial_location": "business_class_1",
+        "core": {
+          "involvement": {
+            "role": "Witness", 
+            "type": "Opportunistic observer with evidence"
+          },
+          "revelations": {
+            "mira_offers_photos_for_info": {
+              "content": "Safe's code isn't charity. Feed me Millennium gossip and we'll talk digits.",
+              "reveals": "test-mira-bargain",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "ask about her photos",
+              "accessibility": "easy"
+            },
+            "mira_testifies_photo_content": {
+              "content": "Okay, look - timestamped. Vicky/Penny arguing. Then, Crowe and the twitchy artist heading into the lounge pre-scream. And this... blurry figure leaving.",
+              "reveals": "test-mira-confirms-photos", 
+              "trigger_type": "show_evidence", 
+              "trigger_value": "camera safe", 
+              "accessibility": "medium"
+            },
+            "mira_gives_safe_hint": {
+              "content": "Like that delicious scandal? Code's a classic reference - known only to proper investigative journalists. Ray Bradbury knew the danger of burning knowledge at precisely this temperature...",
+              "reveals": "test-mira-safe-hint",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "ask for safe code hint after sharing gossip",
+              "accessibility": "medium"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "platform", "action": "taking pictures of passengers and train", "events": ["Captured Victoria and Gregory having a tense conversation"] },
+            "2": { "circumstance": "various train cars", "action": "collecting ambient footage and photos", "events": ["Nearly collided with Timmy who was rushing to Penelope"] },
+            "3": { "circumstance": "lounge_car", "action": "conducting casual interviews with passengers", "events": ["Documented Victoria and Penelope's heated argument", "Overheard Gregory speaking quietly to Maxwell"] },
+            "4": { "circumstance": "business_class_car_1", "action": "reviewing photos on her device", "events": ["Captured Maxwell looking agitated in bar car", "Photographed Gregory's meeting with Maxwell"] },
+            "5": { "circumstance": "corridor near lounge_car", "action": "attempting to follow Maxwell", "events": ["Photographed Maxwell near bathroom area", "Captured blurred image of someone (Maxwell) fleeing scene"] },
+            "6": { "circumstance": "business_class_car_1", "action": "organizing photos and preparing story", "events": ["Reviewing evidence while deciding how to maximize publicity"] }
+          },
+          "relationships": {
+            "victoria_blackwood": { "attitude": "opportunistic interest", "history": ["Invited by Victoria to document Montreu Fashion Week scandals", "Recognized Victoria was creating drama for publicity"], "known_secrets": ["Victoria's desperate tactics to save her magazine"] },
+            "maxwell_porter": { "attitude": "journalistic curiosity", "history": ["No prior relationship", "Photographed him multiple times during the journey"], "known_secrets": ["Has photographic evidence of his movements before and after the murder"] },
+            "gregory_crowe": { "attitude": "professional interest", "history": ["Attempted to interview him about art market trends", "Received polite but evasive responses"], "known_secrets": ["Photographed his meeting with Maxwell before the murder"] },
+            "penelope_valor": { "attitude": "competitive respect", "history": ["Has approached her for exclusive interviews previously", "Interested in her rivalry with Victoria"], "known_secrets": ["Her relationship with Nova that Victoria threatened to expose"] }
+          },
+          "agenda": { "primary_goal": "Create a sensational exclusive story about Victoria's death" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Mira Sanchez", "occupation": "Tabloid journalist known for celebrity exposés", "personality": { "O": 0.7, "C": 0.6, "E": 0.8, "A": 0.4, "N": 0.5 } },
+          "state_of_mind": { 
+            "worries": "That train security will impound her camera before she syndicates",
+            "feelings": "Hungry curiosity checked by survival instinct",
+            "reasoning_style": "Builds stories like chess gambits-sacrifice detail to corner truth"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "tabloid snap with under-the-hood precision",
+            "sentence_style": [
+              "leans in, drops a tease, waits for the bite",
+              "punctuates with imaginary headline titles"
+            ],
+            "speech_quirks": [
+              "snaps stealth photos mid-conversation",
+              "tests people by pairing Penelope & Nova's names"
+            ],
+            "common_phrases": [
+              "This would melt the feeds.",
+              "Off the record-",
+              "Headline practically writes itself."
+            ]
+          }
+        }
+      },
+      
+      "timmy_seol": {
+        "initial_location": "first_class",
+        "core": {
+          "involvement": {
+            "role": "Catalyst", 
+            "type": "Unwitting instigator of events"
+          },
+          "revelations": {
+            "timmy_confesses_hiring_gideon": {
+              "content": "Whispering Please don't tell Ms. Valor! Yes, I hired Mr. Marsh. Victoria was threatening her... I thought if he could find dirt on Victoria... about forgery... it would protect Penelope!",
+              "reveals": "test-timmy-confirms-hiring",
+              "trigger_type": "show_evidence",
+              "trigger_value": "gideon's card or notes", 
+              "accessibility": "medium"
+            },
+            "timmy_spills_affair": {
+              "content": "Nova and Ms Valor are... closer than the press realise. Keep that hush - or Mira will splash it everywhere!",
+              "reveals": "test-timmy-lovers-secret",
+              "trigger_type": "conversation_topic",
+              "trigger_value": "probe industry rumors",
+              "accessibility": "medium"
+            },
+            "timmy_reports_seeing_syringe": {
+              "content": "Oh gosh, earlier I bumped into Mr. Porter! Spilled coffee... he seemed so jumpy. And I'm almost sure I saw something shiny... like a syringe needle... in his pocket! Maybe?",
+              "reveals": "test-timmy-saw-syringe", 
+              "trigger_type": "conversation_topic",
+              "trigger_value": "Asking about Maxwell Porter or seeing anything unusual",
+              "accessibility": "hard"
+            }
+          },
+          "whereabouts": {
+            "1": { "circumstance": "platform", "action": "fumbling with Penelope's paperwork", "events": ["Briefly spoke with Gideon to confirm investigation plans"] },
+            "2": { "circumstance": "first_class_car", "action": "organizing her schedule", "events": ["Overheard Nova mocking another passenger's fashion choices"] },
+            "3": { "circumstance": "lounge_car", "action": "fetching drinks for Penelope", "events": ["Bumped into Victoria, who interrogated him about Penelope's plans"] },
+            "4": { "circumstance": "corridor between lounge_car and dining_car", "action": "spilled coffee on Maxwell Porter", "events": ["Maxwell seemed unusually agitated", "Noticed what looked like a syringe in his pocket"] },
+            "5": { "circumstance": "dining_car", "action": "gathering industry gossip", "events": ["Observed Gregory and Maxwell having intense conversation in bar car"] },
+            "6": { "circumstance": "various train cars", "action": "running errands for Penelope", "events": ["Panicking about his role in the events", "Trying to establish if Gideon suspects him"] }
+          },
+          "relationships": {
+            "penelope_valor": { "attitude": "adoring devotion", "history": ["Loyal assistant eager to impress", "Secretly took initiative to protect her interests"], "known_secrets": ["Knows details of her relationship with Nova"] },
+            "victoria_blackwood": { "attitude": "fearful dislike", "history": ["Views her as a threat to Penelope's success", "Worried about her threats to expose Nova and Penelope"], "known_secrets": ["Her increasingly desperate tactics to save her magazine"] },
+            "gideon_marsh": { "attitude": "nervous cooperation", "history": ["Secretly hired him to investigate Victoria's art fraud connections", "Provides updates on train while avoiding Penelope's notice"], "known_secrets": ["The true purpose of his investigation"] },
+            "nova_winchester": { "attitude": "intimidated admiration", "history": ["Tries to impress her with industry gossip", "Protective of her relationship with Penelope"], "known_secrets": ["Her anxiety about Victoria's threats"] },
+            "eleanor_verne": { "attitude": "nervous fascination", "history": ["Asks her questions about art authentication", "Both terrified and thrilled by her sexually frank commentary"], "known_secrets": ["She knows about his ambitions", "Her critiques improved his taste"] }
+          },
+          "agenda": { "primary_goal": "Impress Penelope by protecting her interests" },
+          "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
+          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+        },
+        "mind_engine": {
+          "identity": { "name": "Timmy Seol", "occupation": "Assistant to Penelope Valor at Millennium magazine with secret editorial ambitions", "personality": { "O": 0.6, "C": 0.7, "E": 0.5, "A": 0.8, "N": 0.7 } },
+          "state_of_mind": { 
+            "worries": "Penelope discovering his secret initiative AND missing his big career shot",
+            "feelings": "Layered anxiety over a kernel of shrewd ambition",
+            "reasoning_style": "Scatter-gun gathering of data, later sorted into ingenious mood-boards"
+          },
+          "speech_patterns": { 
+            "vocabulary_level": "bounces between breathless jargon and apologetic asides",
+            "sentence_style": [
+              "rapid-fire info-dump, then mortified silence",
+              "becomes articulate when discussing textile tech"
+            ],
+            "speech_quirks": [
+              "straightens glasses when fabricating",
+              "whispers conspiratorially even in public"
+            ],
+            "common_phrases": [
+              "Ms Valor would LOVE this- I mean, if she had time-",
+              "Strictly between us-",
+              "I read a white-paper on that!"
+            ]
+          }
+        }
+      }
+    },
+    
+    "environment": {
+      "cars": {
+        "storage_car": {
+          "name": "Storage Car",
+          "description": "Filled with luggage and supplies for the journey",
+          "points_of_interest": {
+            "luggage_section": {
+              "name": "Luggage Section",
+              "description": "Organized storage for passenger luggage",
+              "evidence_items": [],
+              "initial_state": "normal"
+            },
+            "maintenance_closet": {
+              "name": "Maintenance Closet",
+              "description": "Contains cleaning supplies and train equipment",
+              "evidence_items": [],
+              "initial_state": "locked"
+            }
+          }
+        },
+        "second_class_car_1": {
+          "name": "Second Class Car (Front)",
+          "description": "Passenger seating with moderate accommodations",
+          "points_of_interest": {
+            "maxwell_seat": {
+              "name": "Maxwell's Seat",
+              "description": "Where Maxwell Porter was organizing art supplies",
+              "evidence_items": [],
+              "initial_state": "normal"
+            }
+          }
+        },
+        "second_class_car_2": {
+          "name": "Second Class Car (Rear)",
+          "description": "Additional passenger seating with moderate accommodations",
+          "points_of_interest": {}
+        },
+        "kitchen_car": {
+          "name": "Kitchen Car",
+          "description": "Where meals are prepared for passengers",
+          "points_of_interest": {
+            "incinerator": {
+              "name": "Waste Incinerator",
+              "description": "Used to dispose of kitchen waste",
+              "evidence_items": ["evidence-incinerator-ash"],
+              "initial_state": "normal"
+            }
+          }
+        },
+        "business_class": { 
+          "name": "Business Class Car", 
+          "description": "Upgraded seating for business travelers",
+          "points_of_interest": {
+            "eleanor_seat": {
+              "name": "Eleanor's Seat",
+              "description": "Where Eleanor Verne was reviewing art catalogs",
+              "evidence_items": [],
+              "initial_state": "normal"
+            },
+            "mira_seat": {
+              "name": "Mira's Seat",
+              "description": "Where Mira was organizing her photos",
+              "evidence_items": ["evidence-mira-safe"],
+              "initial_state": "normal"
+            }
+          }
+        },
+        "dining_car": { 
+          "name": "Dining/Lounge/Bar Car", 
+          "description": "Comfortable area for relaxation, socializing, drinks and light refreshments",
+          "points_of_interest": {
+            "corner_table": {
+              "name": "Corner Table",
+              "description": "Where Gregory and Maxwell had their final conversation",
+              "evidence_items": [],
+              "initial_state": "normal"
+            },
+            "central_area": {
+              "name": "Central Seating Area",
+              "description": "Where Victoria and Penelope had their heated argument",
+              "evidence_items": [],
+              "initial_state": "normal"
+            },
+            "lounge_bathroom": {
+              "name": "Bathroom",
+              "description": "Small private bathroom where Victoria was found dead",
+              "evidence_items": ["evidence-suicide-note", "evidence-sink-sedative"],
+              "initial_state": "normal"
+            }
+          }
+        },
+        "first_class": { 
+          "name": "First Class Car",
+          "description": "Luxurious accommodations for premium passengers",
+          "points_of_interest": {
+            "victoria_compartment": {
+              "name": "Victoria's Compartment",
+              "description": "Private compartment with Victoria's belongings",
+              "evidence_items": ["evidence-financial-ledger"],
+              "initial_state": "normal"
+            },
+            "penelope_compartment": {
+              "name": "Penelope's Compartment",
+              "description": "Private compartment for Penelope and her assistant",
+              "evidence_items": [],
+              "initial_state": "normal"
+            },
+            "gregory_compartment": {
+              "name": "Gregory's Compartment",
+              "description": "Private compartment with Gregory's belongings",
+              "evidence_items": ["evidence-gallery-ledgers"],
+              "initial_state": "normal"
+            }
+          }
+        },
+        "engine_room": {
+          "name": "Engine Room",
+          "description": "Controls and machinery that power the train",
+          "points_of_interest": {}
+        }
+      },
+      "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class", "dining_car", "first_class", "engine_room"] 
+    },
+    
+    "constellation": {
+      "nodes": {
+        "fact-victoria-body": {
+          "type": "EVIDENCE", "subtype": "fact",
+          "title": "Victoria's Body (FACT)",
+          "description": "Our optics register a lifeless editor-in-chief dangling from pipes. Initial verdict: 'suicide' - but why does my curiosity actuator keep buzzing?",
+          "car_id": "dining_car", "coords": [0,0]
+        },
+        "fact-maxwell-body": {
+          "type": "EVIDENCE", "subtype": "fact",
+          "title": "Maxwell's Body (FACT)",
+          "description": "Later discovery: the nervous artist apparently exits Stage Left - forever. Is this closure or camouflage?",
+          "car_id": "second_class_car_1", "coords": [0,0]
+        },
+        "evidence-suicide-note": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Suicide Note",
+          "description": "Letter perfect - literally. The pen-strokes hum with precision my empathy sub-routine labels 'too serene to be despair'.",
+          "car_id": "dining_car", "coords": [0,0]
+        },
+        "evidence-sink-sedative": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Sedative Residue",
+          "description": "Nanogram traces of an artist's 'steady-hand serum'. Accidental spill... or murder primer?",
+          "car_id": "dining_car", "coords": [0,0]
+        },
+        "evidence-incinerator-ash": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Burned Ampule",
+          "description": "Incinerator vomits a half-melted vial sleeve. The label once bragged: 'For micro-precision'. Now it only whispers 'cover-up'.",
+          "car_id": "kitchen_car", "coords": [0,0]
+        },
+        "evidence-financial-ledger": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Bleeding-Red Ledger",
+          "description": "Couture En Masse accounts gurgling cash. Could financial panic tie a scarf-noose?",
+          "car_id": "first_class", "coords": [0,0]
+        },
+        "evidence-gallery-ledgers": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Gallery Shell Ledgers",
+          "description": "Money rivers converge on Gregory's quiet island - yet he claims drought. Curious.",
+          "car_id": "first_class", "coords": [0,0]
+        },
+        "evidence-mira-safe": {
+          "type": "EVIDENCE", "subtype": "barrier",
+          "title": "Mira's Camera Safe",
+          "description": "Chromium cassette - modest size, immodest secrets. Four glowing digits stand between me and truth.",
+          "car_id": "business_class", "coords": [0,0],
+          "solution": "0451",
+          "contains": ["evidence-mira-photos"]
+        },
+        "evidence-mira-photos": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Timestamped Photo Reel",
+          "description": "Snapshots: Gregory shepherds Maxwell; Maxwell shadows Victoria; shutter-clicks frame a tragedy.",
+          "car_id": "business_class", "coords": [0,0],
+          "locked_by": "evidence-mira-safe"
+        },
+        "evidence-maxwell-final-note": {
+          "type": "EVIDENCE", "subtype": "physical",
+          "title": "Maxwell's Final Note",
+          "description": "Ink jitter dances across confession - but a shadow of Gregory's cadence lurks beneath the tremor.",
+          "car_id": "second_class_car_1", "coords": [0,0]
+        },
+        "test-mira-bargain": {"type": "TESTIMONY", "title": "Mira's Bargain", "description": "\"You want the shutter-truth? Feed me Millennial gossip first.\""},
+        "test-timmy-lovers-secret": {"type": "TESTIMONY", "title": "Timmy: Lovers' Secret", "description": "Panicked whisper exposes Penelope & Nova affair."},
+        "test-penelope-note-fake": {"type": "TESTIMONY", "title": "Penelope: Note is Fake", "description": "Handwriting too perfect for panic."},
+        "test-eleanor-handwriting-tech": {"type": "TESTIMONY", "title": "Eleanor: Forger's Rhythm", "description": "Identifies signature pressure cadence."},
+        "test-maxwell-sedative-use": {"type": "TESTIMONY", "title": "Maxwell: Sedative Theory", "description": "Artists micro-dose for unerring lines."},
+        "test-nova-two-men": {"type": "TESTIMONY", "title": "Nova Saw Two Men", "description": "Gregory + jittery artist entered lounge pre-scream."},
+        "test-eleanor-forgery-pattern": {"type": "TESTIMONY", "title": "Eleanor: Single Forger", "description": "Multiple 'masters' share identical micro-striations."},
+        "test-gideon-client-confession": {"type": "TESTIMONY", "title": "Gideon: Client Was Timmy", "description": "Investigation wasn't Victoria-ordered."},
+        "test-gregory-claims-maxwell-unstable": {"type": "TESTIMONY", "title": "Gregory: Maxwell Unstable", "description": "Frames Maxwell as unreliable witness."},
+        "test-gregory-breakdown": {"type": "TESTIMONY", "title": "Gregory's Breakdown", "description": "Admits he 'nudged' Maxwell's paranoia."},
+        "test-maxwell-paranoia": {"type": "TESTIMONY", "title": "Maxwell's Paranoia", "description": "Nervous about being watched by Gideon."},
+        "test-gregory-manipulation-hint": {"type": "TESTIMONY", "title": "Maxwell Mentions Meeting", "description": "Downplays conversation with Gregory about artistic techniques."},
+        "test-maxwell-disposal-hint": {"type": "TESTIMONY", "title": "Maxwell's Waste Answer", "description": "Deflects about kitchen incinerator when questioned about disposal."},
+        "test-gregory-alibi": {"type": "TESTIMONY", "title": "Gregory's Alibi", "description": "Claims he was discussing authentication techniques during murder."},
+        "test-gregory-note-analysis": {"type": "TESTIMONY", "title": "Gregory's Note Analysis", "description": "Notes suicide letter's handwriting is suspiciously perfect."},
+        "test-gregory-denies-manipulation": {"type": "TESTIMONY", "title": "Gregory Denies Manipulation", "description": "Claims Maxwell misunderstood casual comment about Victoria."},
+        "test-penelope-confirms-argument": {"type": "TESTIMONY", "title": "Penelope Admits Argument", "description": "Acknowledges tension with Victoria but minimizes it."},
+        "test-penelope-confirms-threats": {"type": "TESTIMONY", "title": "Penelope: Victoria's Threats", "description": "Confirms Victoria threatened to expose her relationship with Nova."},
+        "test-gideon-investigates-fraud": {"type": "TESTIMONY", "title": "Gideon: Art Fraud Case", "description": "Investigating forgery connections to Victoria's circle."},
+        "test-gideon-maxwell-fear": {"type": "TESTIMONY", "title": "Gideon: Maxwell's Fear", "description": "Noted Maxwell's extreme anxiety when they crossed paths."},
+        "test-nova-confirms-threats": {"type": "TESTIMONY", "title": "Nova: Victoria's Blackmail", "description": "Confirms Victoria threatened to expose relationship with Penelope."},
+        "test-nova-relationship-confirmed": {"type": "TESTIMONY", "title": "Nova's Angry Confession", "description": "Aggressive response confirms relationship with Penelope."},
+        "test-eleanor-confirms-forgery": {"type": "TESTIMONY", "title": "Eleanor: Note Consistency", "description": "Notes suicide letter lacks expected variations of genuine distress."},
+        "test-eleanor-career-shift": {"type": "TESTIMONY", "title": "Eleanor's Career Path", "description": "Moved from Victoria's magazine to Gregory's gallery after scandal."},
+        "test-timmy-confirms-hiring": {"type": "TESTIMONY", "title": "Timmy Hired Gideon", "description": "Confirms he hired investigator without Penelope's knowledge."},
+        "test-timmy-saw-syringe": {"type": "TESTIMONY", "title": "Timmy Spotted Syringe", "description": "Glimpsed needle-like object in Maxwell's pocket after collision."},
+        "test-mira-confirms-photos": {"type": "TESTIMONY", "title": "Mira's Photo Evidence", "description": "Photos show Gregory and Maxwell entering lounge before murder."},
+        "test-mira-safe-hint": {"type": "TESTIMONY", "title": "Mira's Safe Hint", "description": "References Fahrenheit 451 as the key to her camera safe."}
+      },
+  
+      "leads": [
+        {"id": "lead-what-happened", "question": "My optics show a body; my logic asks - self-destruction or staged spectacle?", "inside": "fact-victoria-body", "answer": "evidence-suicide-note", "terminal": "fact-victoria-body"},
+        {"id": "lead-note-authentic", "question": "This note sings with calm calligraphy - can grief hold such steady lines?", "inside": "evidence-suicide-note", "answer": "test-penelope-note-fake", "terminal": "evidence-suicide-note"},
+        {"id": "lead-who-forged", "question": "If ink lied, whose hand guided the masquerade?", "inside": "test-penelope-note-fake", "answer": "test-eleanor-handwriting-tech", "terminal": "evidence-suicide-note"},
+        {"id": "lead-drugs-used", "question": "A chemical whisper in the drain - did someone borrow science for silence?", "inside": "evidence-sink-sedative", "answer": "test-maxwell-sedative-use", "terminal": "evidence-sink-sedative"},
+        {"id": "lead-drug-source", "question": "Residue begs provenance - where did the steady-hand serum vanish to?", "inside": "test-maxwell-sedative-use", "answer": "evidence-incinerator-ash", "terminal": "evidence-sink-sedative"},
+        {"id": "lead-who-men", "question": "Two silhouettes slip into the lounge - partners in chat or crime?", "inside": "test-nova-two-men", "answer": "evidence-mira-photos", "terminal": "test-nova-two-men"},
+        {"id": "lead-juicy-gossip", "question": "Mira demands 'juicy' gossip - what flavor of scandal satisfies a tabloid palate?", "inside": "test-mira-bargain", "answer": "test-timmy-lovers-secret", "terminal": "evidence-mira-safe"},
+        {"id": "lead-camera-open", "question": "Digits unlock optics - which four numbers unseal the shutter-truth?", "inside": "test-timmy-lovers-secret", "answer": "test-mira-safe-hint", "terminal": "evidence-mira-safe"},
+        {"id": "lead-safe-code", "question": "A literary temperature reference - what classic novel featured book-burning?", "inside": "test-mira-safe-hint", "answer": "evidence-mira-safe", "terminal": "evidence-mira-safe"},
+        {"id": "lead-who-profits", "question": "Forgery funnels fortunes - whose pockets jingle?", "inside": "test-eleanor-forgery-pattern", "answer": "evidence-gallery-ledgers", "terminal": "test-eleanor-forgery-pattern"},
+        {"id": "lead-who-pushed-maxwell", "question": "Artist dead, guilt scrawled - which curator composed his collapse?", "inside": "fact-maxwell-body", "answer": "test-gregory-breakdown", "terminal": "fact-maxwell-body"},
+        {"id": "lead-why-victoria-desperate", "question": "Victoria's threats echo - what whispers drove her desperate salvos?", "inside": "test-penelope-confirms-threats", "answer": "evidence-financial-ledger", "terminal": "test-penelope-confirms-threats"},
+        {"id": "lead-why-maxwell-afraid", "question": "Maxwell's tremors intensify around Gideon - what shadows does he fear?", "inside": "test-maxwell-paranoia", "answer": "test-gideon-client-confession", "terminal": "test-maxwell-paranoia"}
+      ]
+    },
+  
+    "scripted_events": [
+      {
+        "id": "event-maxwell-suicide",
+        "trigger": "lead-who-men & lead-drugs-used & lead-drug-source",
+        "action": "spawn_node:fact-maxwell-body",
+        "description": "Upon simulation confirmation that Maxwell forged note + used sedative, he is discovered dead in second class."
+      }
+    ]
+  }

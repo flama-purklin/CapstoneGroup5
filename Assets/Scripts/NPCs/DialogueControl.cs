@@ -7,7 +7,7 @@ using LLMUnity;
 using System; 
 using System.IO; // Added for Path and File
 using System.Threading.Tasks;
-using UnityEngine.InputSystem.Android.LowLevel; // Added for Task
+using UnityEngine.InputSystem; // Added for new Input System
 
 public class DialogueControl : MonoBehaviour
 {
@@ -95,6 +95,10 @@ public class DialogueControl : MonoBehaviour
 
         // Subscribe to DialogueUIController's OnPlayerMessageSubmitted event if available
         if (dialogueUIController != null) {
+            // Add reference check to ensure BeepSpeak has a valid TMP_Text reference
+            if (beepSpeak != null && beepSpeak.newUIResponseText == null)
+                beepSpeak.newUIResponseText = dialogueUIController.ResponseTextComponent;
+                
             dialogueUIController.OnPlayerMessageSubmitted += HandlePlayerInput;
             Debug.Log("Successfully subscribed to DialogueUIController.OnPlayerMessageSubmitted");
         }
@@ -201,7 +205,9 @@ public class DialogueControl : MonoBehaviour
     public async void Activate(GameObject npcObject) 
     {
         float startTime = Time.realtimeSinceStartup;
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[TIMEDBG] Activate started at {startTime:F3}s");
+        #endif
         
         if (isTransitioning) return;
         Debug.Log($"Attempting to activate dialogue with {npcObject.name}");
@@ -276,7 +282,9 @@ public class DialogueControl : MonoBehaviour
     private IEnumerator ActivateDialogueAnimation() 
     {
         float startTime = Time.realtimeSinceStartup;
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[TIMEDBG] ActivateDialogueAnimation started at {startTime:F3}s");
+        #endif
         
         audioControl.PlaySFX_Enter();
         isTransitioning = true;
@@ -318,7 +326,9 @@ public class DialogueControl : MonoBehaviour
     private IEnumerator DeactivateDialogue()
     {
         float startTime = Time.realtimeSinceStartup;
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Started at {startTime:F3}s");
+        #endif
         try
         {
             isTransitioning = true;
@@ -331,11 +341,15 @@ public class DialogueControl : MonoBehaviour
 
             // --- RESET/CANCEL FIRST ---
             float resetStartTime = Time.realtimeSinceStartup;
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[TIMEDBG] Calling ResetDialogue at {resetStartTime:F3}s");
+            #endif
             Task resetTask = llmDialogueManager.ResetDialogue();
             yield return StartCoroutine(WaitForTask(resetTask)); // Wait for the async ResetDialogue task to complete
             float resetEndTime = Time.realtimeSinceStartup;
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[TIMEDBG] ResetDialogue completed after {resetEndTime - resetStartTime:F3}s");
+            #endif
 
             // --- THEN SAVE ---
             LLMCharacter characterToSave = llmDialogueManager.CurrentCharacter; 
@@ -346,7 +360,9 @@ public class DialogueControl : MonoBehaviour
                 if (!string.IsNullOrEmpty(characterToSave.save)) {
                     try {
                         float saveStartTime = Time.realtimeSinceStartup;
+                        #if UNITY_EDITOR || DEVELOPMENT_BUILD
                         Debug.Log($"[TIMEDBG] Starting save for '{characterToSave.save}' at {saveStartTime:F3}s");
+                        #endif
                         saveTask = characterToSave.Save(characterToSave.save); 
                     } catch (Exception e) {
                         Debug.LogError($"CRITICAL ERROR starting save for '{characterToSave.save}': {e.Message}\nStack trace: {e.StackTrace}");
@@ -358,7 +374,9 @@ public class DialogueControl : MonoBehaviour
             // Wait for the save task to complete (if it was started) AFTER the try-catch block
             if (saveTask != null) {
                 float saveWaitStartTime = Time.realtimeSinceStartup;
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log($"[TIMEDBG] Waiting for save task at {saveWaitStartTime:F3}s");
+                #endif
                 yield return StartCoroutine(WaitForTask(saveTask));
                 float saveEndTime = Time.realtimeSinceStartup;
                 Debug.Log($"[TIMEDBG] Save completed after {saveEndTime - saveWaitStartTime:F3}s");
@@ -424,13 +442,39 @@ public class DialogueControl : MonoBehaviour
         }
     }
 
-    private void Update()
+    // Input System action reference
+    private InputAction escapeAction;
+    
+    private void Awake()
+    {
+        // Create the escape action
+        escapeAction = new InputAction("escape", binding: "<Keyboard>/escape");
+        
+        // Set up the callback
+        escapeAction.performed += ctx => HandleEscapeKey();
+        
+        // Enable the action
+        escapeAction.Enable();
+    }
+    
+    private void OnDestroy()
+    {
+        // Clean up the action when the object is destroyed
+        if (escapeAction != null)
+        {
+            escapeAction.Disable();
+            escapeAction.Dispose();
+        }
+    }
+    
+    private void HandleEscapeKey()
     {
         if (isTransitioning) return;
-        if ((Input.GetKeyDown(KeyCode.Escape) && GameControl.GameController.currentState == GameState.DIALOGUE) ||
+        if ((GameControl.GameController.currentState == GameState.DIALOGUE) ||
             (GameControl.GameController.currentState == GameState.FINAL && !shutdown))
         {
             if (GameControl.GameController.currentState == GameState.FINAL) shutdown = true;
+            
             audioControl.PlaySFX_Exit();
             Deactivate();
         }
@@ -461,28 +505,28 @@ public class DialogueControl : MonoBehaviour
     public void UpdateEvidence()
     {
         //update evidence panel if there are new unlocks
-        if (evidenceSelect.options.Count != GameControl.GameController.coreConstellation.foundEvidence.Count + 1)
-        {
-            //reset vars
-            evidenceSelect.ClearOptions();
-            evidenceNames.Clear();
+        //if (evidenceSelect.options.Count != GameControl.GameController.coreConstellation.foundEvidence.Count + 1)
+        //{
+        //    //reset vars
+        //    evidenceSelect.ClearOptions();
+        //    evidenceNames.Clear();
 
-            // find all evidence nodes that are discovered
-            for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
-            {
-                //TODO - replace with evidence name once defined
-                evidenceNames.Add(GameControl.GameController.coreConstellation.foundEvidence[i]);
-            }
+        //    // find all evidence nodes that are discovered
+        //    for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
+        //    {
+        //        //TODO - replace with evidence name once defined
+        //        evidenceNames.Add(GameControl.GameController.coreConstellation.foundEvidence[i]);
+        //    }
 
-            //add no evidence to the list
-            evidenceNames.Add("No Evidence");
+        //    //add no evidence to the list
+        //    evidenceNames.Add("No Evidence");
 
-            //add all evidence names
-            evidenceSelect.AddOptions(evidenceNames);
+        //    //add all evidence names
+        //    evidenceSelect.AddOptions(evidenceNames);
 
-            //default selection to no evidence
-            evidenceSelect.value = evidenceSelect.options.Count - 1;
-        }
+        //    //default selection to no evidence
+        //    evidenceSelect.value = evidenceSelect.options.Count - 1;
+        //}
     }
 
     public string RetrieveEvidence()

@@ -74,11 +74,15 @@ public class BeepSpeak : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[BeepSpeak] StopTyping called and stopped active typing coroutine");
+            #endif
         }
         else
         {
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[BeepSpeak] StopTyping called but no active typing coroutine to stop");
+            #endif
         }
     }
 
@@ -95,10 +99,7 @@ public class BeepSpeak : MonoBehaviour
     private float lastTargetUpdateTime = 0f;
     private float stabilityDelay = 0.05f;
 
-    void Update()
-    {
-
-    }
+    // Empty Update() method removed - performance optimization
 
     public void UpdateVoice(int vid = 100000, int vtimbre = 1, float pitch = 1.0f, float volume = 1.0f)
     {
@@ -157,7 +158,9 @@ public class BeepSpeak : MonoBehaviour
         {
             // Only display text before the function call marker
             cumulativeText = cumulativeText.Substring(0, actionMarkerIndex).TrimEnd();
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[BeepSpeak] Filtered out function call markers from displayed text");
+            #endif
         }
         
         // Don't update if the text hasn't changed - prevents duplicate processing
@@ -188,13 +191,17 @@ public class BeepSpeak : MonoBehaviour
             // Now start the typing coroutine with a clean state
             typingCoroutine = StartCoroutine(ProcessTyping());
             
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[BeepSpeak] Starting new typing process for text: '{targetText}'");
+            #endif
         }
         else
         {
             // We're already typing, just let the coroutine continue with the updated target text
             // The ProcessTyping coroutine will read the latest targetText value
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[BeepSpeak] Updated target text while typing continues: '{targetText}'");
+            #endif
         }
         
         // No longer needed - timeout is now handled by BaseDialogueManager
@@ -221,14 +228,18 @@ public class BeepSpeak : MonoBehaviour
              !targetText.StartsWith(previousText.Substring(0, Math.Min(5, previousLength)))));
         
         // Debug logs to understand what's happening
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Force completion executed");
         Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Previous displayed text: '{previousText}'");
         Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Target text that should display: '{targetText}'");
         Debug.Log($"[BeepSpeak DEBUG - COMPARISON] Text lengths - Previous: {previousLength}, Target: {targetText.Length}");
+        #endif
         
         if (significantDifference)
         {
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogWarning($"[BeepSpeak DEBUG - COMPARISON] Significant difference detected between displayed and target text!");
+            #endif
             
             // For smoother transition with large text differences, add a brief transition effect
             StartCoroutine(SmoothTextTransition(previousText, targetText));
@@ -249,7 +260,9 @@ public class BeepSpeak : MonoBehaviour
         {
             StopCoroutine(typingCoroutine);
             typingCoroutine = null;
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[BeepSpeak DEBUG - COMPARISON] Typing coroutine stopped");
+            #endif
         }
     }
     
@@ -327,73 +340,72 @@ public class BeepSpeak : MonoBehaviour
         Debug.Log($"[BeepSpeak] Stored final text (len={finalText.Length}) for when current animation completes");
     }
 
-    // Simple implementation that maintains the original character-by-character behavior
+    // Optimized implementation that uses StringBuilder for improved performance with longer texts
     private IEnumerator ProcessTyping()
     {
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[BeepSpeak DEBUG] Starting ProcessTyping for text of length: " + targetText.Length);
         Debug.Log("[BeepSpeak DEBUG] Full target text: '" + targetText + "'");
+        #endif
+        
+        // Use StringBuilder for efficient string manipulation
+        System.Text.StringBuilder textBuilder = new System.Text.StringBuilder(targetText.Length);
         
         // Initialize state for tracking
         int charactersProcessed = 0;
-        string lastDisplayed = "";
+        
+        TMP_Text activeTextComponent = newUIResponseText != null ? newUIResponseText : dialogueText;
         
         // Process the text character by character
         while (charactersProcessed < targetText.Length)
         {
-            // Check if target text has changed during typing
-            if (lastDisplayed != currentDisplayedText)
-            {
-                Debug.Log("[BeepSpeak DEBUG] Current displayed text changed unexpectedly!");
-                Debug.Log("[BeepSpeak DEBUG] Expected: '" + lastDisplayed + "'");
-                Debug.Log("[BeepSpeak DEBUG] Actual: '" + currentDisplayedText + "'");
-            }
-            
             // Make sure we don't try to access beyond the string length
             // (in case targetText was shortened somehow)
             if (charactersProcessed >= targetText.Length)
             {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log("[BeepSpeak DEBUG] Breaking early, charactersProcessed >= targetText.Length");
+                #endif
                 break;
             }
                 
             // Get the next character to display
             char nextChar = targetText[charactersProcessed];
             
-            // Add it to our displayed text
-            currentDisplayedText += nextChar;
-            lastDisplayed = currentDisplayedText;
+            // Add it to our StringBuilder
+            textBuilder.Append(nextChar);
             
-            // Log every 5 characters to avoid flooding the console
-            if (charactersProcessed % 5 == 0 || nextChar == '.' || nextChar == '!' || nextChar == '?')
+            // Per-character debug logs removed
+            
+            // Update UI on every character
+            if (activeTextComponent != null)
             {
-                Debug.Log($"[BeepSpeak DEBUG] Typed {charactersProcessed+1}/{targetText.Length}: Current text = '{currentDisplayedText}'");
-            }
-            
-            // Update the UI - check BOTH text components
-            if (newUIResponseText != null)
-                newUIResponseText.text = currentDisplayedText;
-            else if (dialogueText != null)
-                dialogueText.text = currentDisplayedText;
+                // Get the current text
+                currentDisplayedText = textBuilder.ToString();
                 
-            // Play appropriate sound for this character
-            string currentWord = ExtractCurrentWord(currentDisplayedText);
-            if (!string.IsNullOrEmpty(currentWord))
-            {
-                int letterIndexInWord = currentWord.Length - 1;
-                if (IsSyllable(currentWord, letterIndexInWord))
+                // Update the active text component
+                activeTextComponent.text = currentDisplayedText;
+                
+                // Play appropriate sound for this character - ONLY when UI updates
+                if (textBuilder.Length > 0)
                 {
-                    PlayVoiceForSyllable(currentWord, letterIndexInWord);
+                    string currentWord = ExtractCurrentWord(currentDisplayedText);
+                    int letterIndexInWord = currentWord.Length - 1;
+                    if (IsSyllable(currentWord, letterIndexInWord))
+                    {
+                        PlayVoiceForSyllable(currentWord, letterIndexInWord);
+                    }
                 }
             }
             
             // Calculate delay based on character type
             float delay = npcVoice.baseSpeed + UnityEngine.Random.Range(-npcVoice.speedVariance, npcVoice.speedVariance);
             
-            // Add extra pause for punctuation
+            // Add extra pause for punctuation (reduced for snappier feeling)
             if (nextChar == '.' || nextChar == '!' || nextChar == '?')
-                delay += 0.3f;
+                delay += 0.15f;          // was 0.3f
             else if (nextChar == ',' || nextChar == ';' || nextChar == ':')
-                delay += 0.2f;
+                delay += 0.08f;          // was 0.2f
                 
             // Wait before processing the next character
             yield return new WaitForSeconds(delay);
@@ -402,21 +414,20 @@ public class BeepSpeak : MonoBehaviour
             charactersProcessed++;
         }
         
-        // Ensure the complete text is displayed
-        if (newUIResponseText != null)
-        {
-            newUIResponseText.text = targetText;
-            Debug.Log("[BeepSpeak DEBUG] Final text set in new UI: '" + targetText + "'");
-        }
-        else if (dialogueText != null)
-        {
-            dialogueText.text = targetText;
-            Debug.Log("[BeepSpeak DEBUG] Final text set in legacy UI: '" + targetText + "'");
-        }
-        
+        // Ensure the complete text is displayed as the final step
         currentDisplayedText = targetText;
         
+        if (activeTextComponent != null)
+        {
+            activeTextComponent.text = targetText;
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log("[BeepSpeak DEBUG] Final text set in UI: '" + targetText + "'");
+            #endif
+        }
+        
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[BeepSpeak DEBUG] ProcessTyping completed, typed " + targetText.Length + " characters");
+        #endif
         typingCoroutine = null;
     }
 
