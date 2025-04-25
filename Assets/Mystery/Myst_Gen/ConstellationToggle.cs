@@ -58,6 +58,9 @@ public class ConstellationToggle : MonoBehaviour
                     Time.timeScale = 0f;
 
                     audioControl.PlaySFX_Enter();
+
+                    //update simulation count on the nodeControl
+                    GetComponent<NodeControl>().MapEnabled();
                 }
                 else if (GameControl.GameController.currentState == GameState.MYSTERY)
                 {

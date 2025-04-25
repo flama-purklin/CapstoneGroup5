@@ -40,8 +40,9 @@ public class NodeControl : MonoBehaviour
     [SerializeField] Button simButton;
     [SerializeField] TMP_Text theoryNotif;
     [SerializeField] TMP_Text confidenceScore;
+    [SerializeField] TMP_Text simulationDisplayAmt;
 
-
+    [Header("Navigation Vars")]
     [SerializeField] float scrollSpeed = 2000f;
     [SerializeField] float minY = -2000f;//adjust to something sensible later
     [SerializeField] float maxY = 2000f;
@@ -53,6 +54,7 @@ public class NodeControl : MonoBehaviour
     public GameObject currentTheory;
     public List<GameObject> untestedTheories;
     Coroutine currentNotif;
+    private float simulationCost;
 
     string baseInstructions;
 
@@ -89,6 +91,16 @@ public class NodeControl : MonoBehaviour
         {
             confidenceScore.text = (GameControl.GameController.coreConstellation.ConfidenceScore()).ToString("P");
         }
+
+        if (simulationDisplayAmt.isActiveAndEnabled)
+        {
+            simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
+        }
+    }
+
+    public void MapEnabled()
+    {
+        StartCoroutine(SimulationCalc());
     }
 
     void HandleScroll()
@@ -329,6 +341,8 @@ public class NodeControl : MonoBehaviour
             if (currentTheory != null)
                 currentTheory.GetComponent<Theory>().KillYourself();
             currentTheory = null;
+
+            StartCoroutine(SimulationCalc());
         }
         //turn on the Addition mode
         else
@@ -403,6 +417,7 @@ public class NodeControl : MonoBehaviour
         {
             theoryMode = TheoryMode.None;
             instructions.text = baseInstructions;
+            StartCoroutine(SimulationCalc());
         }
         //turn on the Addition mode
         else
@@ -429,10 +444,41 @@ public class NodeControl : MonoBehaviour
         instructions.text = "Running simulation...";
 
         //power decrement
-        GameControl.GameController.powerControl.PowerDrain(0.1f);
+        GameControl.GameController.powerControl.PowerDrain(simulationCost);
 
         StartCoroutine(Simulation());
     }
+
+    IEnumerator SimulationCalc()
+    {
+        //retrieve all active visual nodes
+        VisualNode[] visualNodes = GameObject.FindObjectsByType<VisualNode>(FindObjectsSortMode.None);
+
+        float connectedNodes = 0;
+        foreach (VisualNode visualNode in visualNodes)
+        {
+            foreach (GameObject connection in visualNode.connections) 
+            {
+                if (connection.GetComponent<Connection>().confirmed)
+                {
+                    connectedNodes++;
+                    break;
+                }
+            }
+        }
+
+        float unconnectedNodes = visualNodes.Length - connectedNodes;
+        Debug.Log(connectedNodes + " connected Nodes and " + unconnectedNodes + " unconnected Nodes");
+
+
+        float theoryCount = untestedTheories.Count;
+        float costPerTheory = Mathf.Pow(0.75f, -unconnectedNodes) / 100f;
+        simulationCost = costPerTheory * theoryCount;
+        Debug.Log("Total Sim Cost: " + simulationCost + " | Cost per Theory: " + costPerTheory);
+
+        yield return null;
+    }
+
 
     IEnumerator Simulation()
     {
@@ -450,6 +496,7 @@ public class NodeControl : MonoBehaviour
 
         theoryMode = TheoryMode.None;
         instructions.text = baseInstructions;
+        StartCoroutine(SimulationCalc());
     }
 
     private void NotifCall(string message, Color fill)
