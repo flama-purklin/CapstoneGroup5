@@ -10,8 +10,8 @@ public class BillboardEffect : MonoBehaviour
         camTransform = Camera.main.transform;
     }
 
-    // LateUpdate is called once per frame, after all Update calls
-    void LateUpdate() // Changed from Update to LateUpdate
+    // Update is called once per frame
+    void Update()
     {
         //transform.LookAt(camTransform);
         //360f addition is necessary so they don't face the opposite direction
