@@ -15,4 +15,4 @@ MonoBehaviour:
   evidenceArt: {fileID: 21300000, guid: 68d147f4791a77f4da947545fa892fb9, type: 3}
   evidenceTitle: Traces of Sedative
   evidenceDescription: Faint chemical residue in the sink drain
-  nodeKey: evidence-sedative
+  nodeKey: evidence-sink-sedative

@@ -26,7 +26,4 @@ public class MysteryCore
 
     [JsonProperty("motive")]
     public string Motive { get; set; }
-
-    [JsonProperty("circumstance")]
-    public MysteryCircumstance Circumstance { get; set; }
 }

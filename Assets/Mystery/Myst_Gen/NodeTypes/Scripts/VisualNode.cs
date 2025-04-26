@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
@@ -17,12 +18,24 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     //associated connections
     public List<GameObject> connections;
 
+    //associated leads
+    public List<MysteryLead> leads;
+
     //all components of the visual object
+    [Header("UI Components")]
     [SerializeField] protected TMP_Text idDisplay;
     [SerializeField] protected TMP_Text header;
-    [SerializeField] protected TMP_Text character;
-    [SerializeField] protected TMP_Text otherInfo;
+    [SerializeField] protected TMP_Text subheader;
+    [SerializeField] protected TMP_Text title;
+    [SerializeField] protected GameObject iconPanel;
     [SerializeField] protected Image background;
+
+    [Header("Variables and Prefabs")]
+    [SerializeField] protected Color evidenceColor;
+    [SerializeField] protected Color infoColor;
+    [SerializeField] protected GameObject visualLead;
+    [SerializeField] protected GameObject characterIndicator;
+
 
     //other object refs
     [SerializeField] Camera mysteryCam;
@@ -80,9 +93,17 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         // Debug.Log("Visual Node " + nodeKey + " Updated");
 
-        //fill in the information stored in the currentNode
+        //TODO - fix this and fill in the information stored in the currentNode
         header.text = currentNode.Type;
-        otherInfo.text = currentNode.Content;
+        subheader.text = currentNode.Subtype;
+        title.text = currentNode.Title;
+        idDisplay.text = GameControl.GameController.coreConstellation.Nodes.Keys.ToList().IndexOf(nodeKey).ToString();
+
+        //update the color to match the type
+        if (currentNode.Type == "EVIDENCE")
+            background.color = evidenceColor;
+        else
+            background.color = infoColor;
 
         if (!currentNode.Discovered)
             gameObject.SetActive(false);

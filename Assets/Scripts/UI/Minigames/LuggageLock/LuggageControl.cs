@@ -13,6 +13,7 @@ public class LuggageControl : MinigameCanvasControl
     [SerializeField] NumberManager firstNum;
     [SerializeField] NumberManager secondNum;
     [SerializeField] NumberManager thirdNum;
+    [SerializeField] NumberManager fourthNum;
 
 
     // Update is called once per frame
@@ -64,7 +65,7 @@ public class LuggageControl : MinigameCanvasControl
 
     public void CheckCombo()
     {
-        string input = firstNum.currentIndex.ToString() + secondNum.currentIndex.ToString() + thirdNum.currentIndex.ToString();
+        string input = firstNum.currentIndex.ToString() + secondNum.currentIndex.ToString() + thirdNum.currentIndex.ToString() + fourthNum.currentIndex.ToString();
         // Debug.Log("Testing combination: " + input);
         if (!solved && input.Equals(currentCombo))
         {

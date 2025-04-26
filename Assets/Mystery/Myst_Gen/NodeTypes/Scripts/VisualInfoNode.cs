@@ -21,7 +21,7 @@ public class VisualInfoNode : VisualNode
 
         //fill in the information stored in the currentNode
         header.text = currentNode.Type;
-        otherInfo.text = currentNode.Content;
+        title.text = currentNode.Title;
         //otherInfo.text = tempNode.info;
         //idDisplay.text = tempNode.id.ToString();
 

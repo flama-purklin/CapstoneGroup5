@@ -92,10 +92,10 @@ public class NodeControl : MonoBehaviour
             confidenceScore.text = (GameControl.GameController.coreConstellation.ConfidenceScore()).ToString("P");
         }
 
-        //if (simulationDisplayAmt.isActiveAndEnabled)
-        //{
-        //    simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
-        //}
+        if (simulationDisplayAmt.isActiveAndEnabled)
+        {
+            simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
+        }
     }
 
     public void MapEnabled()
@@ -188,6 +188,9 @@ public class NodeControl : MonoBehaviour
 
         GameControl.GameController.coreConstellation.CompleteMysteryCalc();
 
+        //replace this if the first node has to be discovered, necessary to make it visible to player on constellation begin
+        bool firstNode = true;
+
         //create a node object for every parsed node in the constellation
         foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
         {
@@ -199,12 +202,19 @@ public class NodeControl : MonoBehaviour
 
             //store the node in the dictionary for easy access
             visualNodes.Add(nodePair.Key, newNode);
+
+            //if first node, make discovered
+            if (firstNode)
+            {
+                firstNode = false;
+                GameControl.GameController.coreConstellation.DiscoverNode(nodePair.Key);
+            }
         }
 
         Debug.Log(visualNodes.Count + " visual nodes created");
 
         //create a connection for each parsed connection in the constellation
-        List<MysteryConnection> connections = GameControl.GameController.coreConstellation.Connections;
+       /*List<MysteryConnection> connections = GameControl.GameController.coreConstellation.Connections;
         for (int i = 0; i < connections.Count; i++)
         {
             //create a connection object
@@ -214,9 +224,12 @@ public class NodeControl : MonoBehaviour
             //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
             visualNodes[connections[i].Source].GetComponent<VisualNode>().connections.Add(newConn);
             visualNodes[connections[i].Target].GetComponent<VisualNode>().connections.Add(newConn);
-        }
+        }*/
 
-        Debug.Log(GameControl.GameController.coreConstellation.Connections.Count + " connections have been parsed");
+        //TOOD - create a connection for each parsed lead in the constellation
+        List<MysteryLead> leads = GameControl.GameController.coreConstellation.Leads;
+
+        Debug.Log(GameControl.GameController.coreConstellation.Leads.Count + " connections have been parsed");
     }
 
     public void UnlockVisualNode(string nodeKey)

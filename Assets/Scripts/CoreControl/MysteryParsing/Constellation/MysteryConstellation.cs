@@ -9,11 +9,17 @@ public class MysteryConstellation
     [JsonProperty("nodes")]
     public Dictionary<string, MysteryNode> Nodes { get; set; }
 
-    [JsonProperty("connections")]
-    public List<MysteryConnection> Connections { get; set; }
+    //connections no longer exist
+    /*    [JsonProperty("connections")]
+        public List<MysteryConnection> Connections { get; set; }*/
 
-    [JsonProperty("mini_mysteries")]
+    [JsonProperty("leads")]
+    public List<MysteryLead> Leads { get; set; }
+
+    //mini mysteries no longer exist
+    /*[JsonProperty("mini_mysteries")]
     public Dictionary<string, MiniMystery> MiniMysteries { get; set; }
+    */
 
     //scripted events should be a flexible system - triggered by the unlocking of nodes, which has function calls to do specific things
     //reveal hidden details on existing nodes, kill off certain characters, reveal new piece of evidence, move a character, etc.
@@ -43,6 +49,9 @@ public class MysteryConstellation
         bool prevVal = Nodes[nodeKey].Discover();
         if (prevVal)
         {
+            //TODO - add a clause here for if node is revealed by a different character
+
+
             Debug.Log("Node already discovered");
             return null;
         }
@@ -58,6 +67,9 @@ public class MysteryConstellation
 
             if (Nodes[nodeKey].Type == "EVIDENCE")
                 foundEvidence.Add(nodeKey);
+            //Debug.Log("Found Evidence Count: " + foundEvidence.Count);
+
+            //TODO - Check for scripted events here
 
             return Nodes[nodeKey];
         }
@@ -68,7 +80,7 @@ public class MysteryConstellation
 
     public void CompleteMysteryCalc()
     {
-        completeMysteryCount = Connections.Count + Nodes.Count;
+        completeMysteryCount = Nodes.Count + Leads.Count;
 
         //current count starts at one because of the initial node
         currentMysteryCount = 1;

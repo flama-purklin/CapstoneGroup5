@@ -505,28 +505,29 @@ public class DialogueControl : MonoBehaviour
     public void UpdateEvidence()
     {
         //update evidence panel if there are new unlocks
-        //if (evidenceSelect.options.Count != GameControl.GameController.coreConstellation.foundEvidence.Count + 1)
-        //{
-        //    //reset vars
-        //    evidenceSelect.ClearOptions();
-        //    evidenceNames.Clear();
+        if (evidenceSelect.options.Count != GameControl.GameController.coreConstellation.foundEvidence.Count + 1)
+        {
+            //reset vars
+            evidenceSelect.ClearOptions();
+            evidenceNames.Clear();
 
-        //    // find all evidence nodes that are discovered
-        //    for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
-        //    {
-        //        //TODO - replace with evidence name once defined
-        //        evidenceNames.Add(GameControl.GameController.coreConstellation.foundEvidence[i]);
-        //    }
+            // find all evidence nodes that are discovered
+            for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
+            {
+                //TODO - replace with evidence name once defined
+                string evidenceId = GameControl.GameController.coreConstellation.foundEvidence[i];
+                evidenceNames.Add(GameControl.GameController.coreConstellation.Nodes[evidenceId].Title);
+            }
 
-        //    //add no evidence to the list
-        //    evidenceNames.Add("No Evidence");
+            //add no evidence to the list
+            evidenceNames.Add("No Evidence");
 
-        //    //add all evidence names
-        //    evidenceSelect.AddOptions(evidenceNames);
+            //add all evidence names
+            evidenceSelect.AddOptions(evidenceNames);
 
-        //    //default selection to no evidence
-        //    evidenceSelect.value = evidenceSelect.options.Count - 1;
-        //}
+            //default selection to no evidence
+            evidenceSelect.value = evidenceSelect.options.Count - 1;
+        }
     }
 
     public string RetrieveEvidence()

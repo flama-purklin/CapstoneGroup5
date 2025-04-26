@@ -7,32 +7,35 @@ public class MysteryNode
     [JsonProperty("type")]
     public string Type { get; set; }
 
-    [JsonProperty("category")]
-    public string Category { get; set; }
+    [JsonProperty("subtype")]
+    public string Subtype { get; set; }
 
-    [JsonProperty("content")]
-    public string Content { get; set; }
-
-    [JsonProperty("discovered")]
-    public bool Discovered { get; set; }
-
-    [JsonProperty("location")]
-    public string Location { get; set; }
-
-    [JsonProperty("time")]
-    public int? Time { get; set; }  // Nullable because some nodes might not have time
-
-    [JsonProperty("characters")]
-    public List<string> Characters { get; set; }
+    [JsonProperty("title")]
+    public string Title { get; set; }
 
     [JsonProperty("description")]
     public string Description { get; set; }
 
-    [JsonProperty("hidden_details")]
-    public List<string> HiddenDetails { get; set; }
+    //Nullable strings to only use if evidence is physical
+    #nullable enable
+    [JsonProperty("car_id")]
+    public string? CarId { get; set; }
 
-    [JsonProperty("can_pickup")]
-    public bool? CanPickup { get; set; }
+    [JsonProperty("coords")]
+    public int[]? Coords { get; set; }
+
+    //Nullable strings to use only if a barrier or blocked by a barrier
+    [JsonProperty("solution")]
+    public string? Solution {  get; set; }
+
+    [JsonProperty("contains")]
+    public string[]? Contains { get; set; }
+
+    [JsonProperty("locked_by")]
+    public string? LockedBy { get; set; }
+    #nullable disable
+
+    public bool Discovered { get; set; }
 
     public bool Discover()
     {

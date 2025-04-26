@@ -52,8 +52,8 @@ public class EvidenceInspect : MonoBehaviour
     public void FillInspect()
     {
         type.text = currentNode.Type;
-        category.text = currentNode.Category;
-        content.text = currentNode.Content;
+        category.text = currentNode.Subtype;
+        content.text = currentNode.Title;
         
         //check description
         if (string.IsNullOrEmpty(currentNode.Description))
@@ -67,6 +67,7 @@ public class EvidenceInspect : MonoBehaviour
         }
 
         //check location
+        /*
         if (string.IsNullOrEmpty(currentNode.Location))
         {
             locationSection.SetActive(false);
@@ -117,5 +118,6 @@ public class EvidenceInspect : MonoBehaviour
                 hiddenDetails.text += detail.ToString() + "\n";
             }
         }
+        */
     }
 }
