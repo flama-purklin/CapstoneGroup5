@@ -741,7 +741,7 @@
           "description": "Controls and machinery that power the train"
         }
       },
-      "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class", "dining_car", "first_class", "engine_room"] 
+      "layout_order": ["storage_car", "second_class", "second_class", "kitchen_car", "business_class", "lounge_car", "business_class", "dining_car", "first_class", "engine_room"] 
     },
     
     "constellation": {
