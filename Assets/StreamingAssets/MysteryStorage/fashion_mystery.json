@@ -1,7 +1,7 @@
 {
     "metadata": {
       "id": "art_forgery_murder",
-      "version": "2.5",
+      "version": "2,8",
       "last_updated": "2025-04-25T18:05:00Z",
       "title": "Murder on the Fashion Express",
       "context": "Victoria Blackwood found dead; apparent hanging aboard the luxury #MRT after Montreu Fashion Week."
@@ -12,7 +12,8 @@
       "subtype": "Fashion Week Return",
       "theme": "Art Fraud and Paranoia",
       "victim": "victoria_blackwood",
-      "culprit": ["maxwell_porter","gregory_crowe"],
+      "culprit": "maxwell_porter",
+      "manipulator": "gregory_crowe",
       "method": "Staged Suicide",
       "motive": "Shield a lucrative art-forgery ring"
     },
@@ -746,15 +747,17 @@
     "constellation": {
       "nodes": {
         "fact-victoria-body": {
-          "type": "EVIDENCE", "subtype": "fact",
+          "type": "EVIDENCE", "subtype": "death",
           "title": "Victoria's Body (FACT)",
           "description": "Our optics register a lifeless editor-in-chief dangling from pipes. Initial verdict: 'suicide' - but why does my curiosity actuator keep buzzing?",
+          "target": "victoria_blackwood",
           "car_id": "dining_car", "coords": [0,0]
         },
         "fact-maxwell-body": {
-          "type": "EVIDENCE", "subtype": "fact",
+          "type": "EVIDENCE", "subtype": "death",
           "title": "Maxwell's Body (FACT)",
           "description": "Later discovery: the nervous artist apparently exits Stage Left - forever. Is this closure or camouflage?",
+          "target": "maxwell_porter",
           "car_id": "second_class_car_1", "coords": [0,0]
         },
         "evidence-suicide-note": {
@@ -857,10 +860,12 @@
   
     "scripted_events": [
       {
-        "id": "event-maxwell-suicide",
-        "trigger": "lead-who-men & lead-drugs-used & lead-drug-source",
-        "action": "spawn_node:fact-maxwell-body",
-        "description": "Upon simulation confirmation that Maxwell forged note + used sedative, he is discovered dead in second class."
+        "id": "fact-maxwell-body",
+        "triggers": ["lead-who-men","lead-drugs-used","lead-drug-source"]
+      },
+      {
+        "id": "evidence-mira-photos",
+        "triggers": ["evidence-mira-safe"]
       }
     ]
   }
