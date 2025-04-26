@@ -1,7 +1,7 @@
 {
     "metadata": {
       "id": "art_forgery_murder",
-      "version": "2.1",
+      "version": "2.5",
       "last_updated": "2025-04-25T18:05:00Z",
       "title": "Murder on the Fashion Express",
       "context": "Victoria Blackwood found dead; apparent hanging aboard the luxury #MRT after Montreu Fashion Week."
@@ -12,9 +12,8 @@
       "subtype": "Fashion Week Return",
       "theme": "Art Fraud and Paranoia",
       "victim": "victoria_blackwood",
-      "culprit": "maxwell_porter",
-      "manipulator": "gregory_crowe",
-      "method": "Staged Suicide after Sedation",
+      "culprit": ["maxwell_porter","gregory_crowe"],
+      "method": "Staged Suicide",
       "motive": "Shield a lucrative art-forgery ring"
     },
     
@@ -31,30 +30,22 @@
               "content": "That man? Marsh? Just... observing. Makes one uneasy... when people watch so intently.",
               "reveals": "test-maxwell-paranoia",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about Gideon Marsh or being watched",
-              "accessibility": "medium"
-            },
+              "trigger_value": "Asking about Gideon Marsh or being watched"            },
             "maxwell_hints_sedative_knowledge": {
               "content": "Steady hands require... chemistry. A theory, of course.",
               "reveals": "test-maxwell-sedative-use",
               "trigger_type": "conversation_topic_or_show_evidence",
-              "trigger_value": "mention precision / show sedative residue",
-              "accessibility": "hard"
-            },
+              "trigger_value": "mention precision / show sedative residue"            },
             "maxwell_downplays_gregory_meeting": {
               "content": "Crowe? Merely discussed Pylsian pigments. Nothing sinister.",
               "reveals": "test-gregory-manipulation-hint",
               "trigger_type": "conversation_topic",
-              "trigger_value": "ask about bar-car chat with Gregory",
-              "accessibility": "medium"
-            },
+              "trigger_value": "ask about bar-car chat with Gregory"            },
             "maxwell_redirects_disposal_query": {
               "content": "Waste? The train staff handles all that. Kitchen car, I suppose. They have procedures.",
               "reveals": "test-maxwell-disposal-hint",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about medical waste or syringe disposal",
-              "accessibility": "medium"
-            }
+              "trigger_value": "Asking about medical waste or syringe disposal"            }
           },
           "whereabouts": {
             "1": { "circumstance": "second_class_car_1", "action": "nervously organizing art supplies", "events": ["Spoke briefly with Gregory who mentioned 'Victoria's investigator'"] },
@@ -144,30 +135,22 @@
               "content": "Tragic. Fortuitously, I was preoccupied discussing Pylsian authentication - binding agents! - in the dining car during the critical time. Colleagues can attest.",
               "reveals": "test-gregory-alibi", 
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about his whereabouts during the murder",
-              "accessibility": "easy"
-            },
+              "trigger_value": "Asking about his whereabouts during the murder"            },
             "gregory_critiques_note_as_expert": {
               "content": "A handwriting facsimile - exquisite, yet too poised for despair.",
               "reveals": "test-gregory-note-analysis", 
               "trigger_type": "show_evidence",
-              "trigger_value": "suicide note",
-              "accessibility": "medium"
-            },
+              "trigger_value": "suicide note"            },
             "gregory_dismisses_maxwell_reliability": {
               "content": "Maxwell's perceptions blur art and paranoia; take his claims lightly.",
               "reveals": "test-gregory-claims-maxwell-unstable", 
               "trigger_type": "conversation_topic",
-              "trigger_value": "mention Maxwell's accusations",
-              "accessibility": "medium"
-            },
+              "trigger_value": "mention Maxwell's accusations"            },
             "gregory_denies_specific_manipulation": {
               "content": "Me, mention photos? Good heavens, no. A misunderstanding on his part. I merely noted Victoria speaking with Mr. Marsh. Maxwell does get easily flustered.",
               "reveals": "test-gregory-denies-manipulation", 
               "trigger_type": "conversation_topic", 
-              "trigger_value": "Accusing Gregory of manipulating Maxwell about photos",
-              "accessibility": "hard"
-            }
+              "trigger_value": "Accusing Gregory of manipulating Maxwell about photos"            }
           },
           "whereabouts": {
             "1": { "circumstance": "first_class_car", "action": "networking with art collectors", "events": ["Noticed Gideon observing Victoria", "Planted seeds of paranoia with Maxwell"] },
@@ -299,30 +282,22 @@
               "content": "Maxwell Porter's skill is... undeniable. His mimicry of Pylsian brushwork is remarkable. Unsettlingly precise.",
               "reveals": "test-eleanor-handwriting-tech",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about Maxwell Porter's art or skills",
-              "accessibility": "medium"
-            },
+              "trigger_value": "Asking about Maxwell Porter's art or skills"            },
             "eleanor_reveals_gregory_forgery_interest": {
               "content": "Mr. Crowe has taken a keen interest in forgery detection since I joined. We discuss authentication weaknesses often. He has... deep understanding.",
               "reveals": "test-eleanor-forgery-pattern",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about Gregory Crowe or art forgery",
-              "accessibility": "medium"
-            },
+              "trigger_value": "Asking about Gregory Crowe or art forgery"            },
             "eleanor_analyzes_note_quality": {
               "content": "This is very close to Victoria's hand. But the consistency... under duress, one expects variation. This feels... studied. Almost too perfect.",
               "reveals": "test-eleanor-confirms-forgery",
               "trigger_type": "show_evidence",
-              "trigger_value": "suicide note",
-              "accessibility": "hard"
-            },
+              "trigger_value": "suicide note"            },
             "eleanor_expresses_mixed_feelings": {
               "content": "Victoria... didn't deserve this. She distanced herself after the scandal... understandable. Working for Gregory now feels... complicated.",
               "reveals": "test-eleanor-career-shift", 
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about her relationship with Victoria or Gregory",
-              "accessibility": "easy"
-            }
+              "trigger_value": "Asking about her relationship with Victoria or Gregory"            }
           },
           "whereabouts": {
             "1": { "circumstance": "platform", "action": "reviewing art catalog from Montreu exhibition", "events": ["Briefly acknowledged Victoria with professional courtesy"] },
@@ -389,23 +364,17 @@
               "content": "Crowe and some twitchy bloke slipped into the lounge just before the scream. Clock it, mate.",
               "reveals": "test-nova-two-men",
               "trigger_type": "conversation_topic",
-              "trigger_value": "ask about lounge traffic",
-              "accessibility": "medium"
-            },
+              "trigger_value": "ask about lounge traffic"            },
             "nova_confirms_victoria_threat_dismissively": {
               "content": "That old hag? Yeah, threatened rubbish about me and Pen-- Ms. Valor. Headlines. Anything for attention. Bloody desperate.",
               "reveals": "test-nova-confirms-threats",
               "trigger_type": "show_evidence",
-              "trigger_value": "financial ledger",
-              "accessibility": "medium"
-            },
+              "trigger_value": "financial ledger"            },
             "nova_reacts_to_relationship_leverage_aggressively": {
               "content": "Fuck off, mate. Ours is none of your bloody business. Trying blackmail? Piss off.",
               "reveals": "test-nova-relationship-confirmed", 
               "trigger_type": "conversation_topic",
-              "trigger_value": "Accusing or directly mentioning her relationship with Penelope",
-              "accessibility": "hard"
-            }
+              "trigger_value": "Accusing or directly mentioning her relationship with Penelope"            }
           },
           "whereabouts": {
             "1": { "circumstance": "first_class_car", "action": "working on fashion article", "events": ["Reviewing Montreu Fashion Week notes"] },
@@ -471,23 +440,17 @@
               "content": "Victoria and I had words. Industry tension about designers. Nothing more, darling.",
               "reveals": "test-penelope-confirms-argument",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about her argument with Victoria",
-              "accessibility": "easy"
-            },
+              "trigger_value": "Asking about her argument with Victoria"            },
             "penelope_reveals_victoria_threat_defensively": {
               "content": "Victoria was spiraling. Threatened personal attacks... about my team, about Nova. Lashing out because Couture was sinking.",
               "reveals": "test-penelope-confirms-threats",
               "trigger_type": "show_evidence",
-              "trigger_value": "financial ledger",
-              "accessibility": "hard"
-            },
+              "trigger_value": "financial ledger"            },
             "penelope_asserts_note_is_forgery": {
               "content": "Victoria's calligraphy faltered under stress; this script is ice-cold perfection - forged, clearly.",
               "reveals": "test-penelope-note-fake",
               "trigger_type": "show_evidence",
-              "trigger_value": "suicide note",
-              "accessibility": "medium"
-            }
+              "trigger_value": "suicide note"            }
           },
           "whereabouts": {
             "1": { "circumstance": "platform", "action": "finalizing calls about designer contracts", "events": ["Noticed Victoria watching her interactions"] },
@@ -552,23 +515,17 @@
               "content": "My purpose is professional. Investigating potential art fraud connections related to Ms. Blackwood's circle.",
               "reveals": "test-gideon-investigates-fraud",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about his purpose on the train",
-              "accessibility": "easy"
-            },
+              "trigger_value": "Asking about his purpose on the train"            },
             "gideon_reveals_client_when_pressed": {
               "content": "My client requires discretion. However... It was Mr. Timmy Seol, acting independently.",
               "reveals": "test-gideon-client-confession", 
               "trigger_type": "show_evidence",
-              "trigger_value": "gallery ledgers", 
-              "accessibility": "hard"
-            },
+              "trigger_value": "gallery ledgers"            },
             "gideon_shares_observation_maxwell_fear": {
               "content": "Mr. Porter reacted... strongly when our paths crossed. Visible apprehension. Unusual.",
               "reveals": "test-gideon-maxwell-fear",
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about Maxwell Porter's behavior",
-              "accessibility": "medium"
-            }
+              "trigger_value": "Asking about Maxwell Porter's behavior"            }
           },
           "whereabouts": {
             "1": { "circumstance": "platform", "action": "observing passengers boarding", "events": ["Noted Victoria and Gregory's brief interaction", "Received final instructions from Timmy"] },
@@ -626,23 +583,17 @@
               "content": "Safe's code isn't charity. Feed me Millennium gossip and we'll talk digits.",
               "reveals": "test-mira-bargain",
               "trigger_type": "conversation_topic",
-              "trigger_value": "ask about her photos",
-              "accessibility": "easy"
-            },
+              "trigger_value": "ask about her photos"            },
             "mira_testifies_photo_content": {
               "content": "Okay, look - timestamped. Vicky/Penny arguing. Then, Crowe and the twitchy artist heading into the lounge pre-scream. And this... blurry figure leaving.",
               "reveals": "test-mira-confirms-photos", 
               "trigger_type": "show_evidence", 
-              "trigger_value": "camera safe", 
-              "accessibility": "medium"
-            },
+              "trigger_value": "camera safe"            },
             "mira_gives_safe_hint": {
               "content": "Like that delicious scandal? Code's a classic reference - known only to proper investigative journalists. Ray Bradbury knew the danger of burning knowledge at precisely this temperature...",
               "reveals": "test-mira-safe-hint",
               "trigger_type": "conversation_topic",
-              "trigger_value": "ask for safe code hint after sharing gossip",
-              "accessibility": "medium"
-            }
+              "trigger_value": "ask for safe code hint after sharing gossip"            }
           },
           "whereabouts": {
             "1": { "circumstance": "platform", "action": "taking pictures of passengers and train", "events": ["Captured Victoria and Gregory having a tense conversation"] },
@@ -700,23 +651,17 @@
               "content": "Whispering Please don't tell Ms. Valor! Yes, I hired Mr. Marsh. Victoria was threatening her... I thought if he could find dirt on Victoria... about forgery... it would protect Penelope!",
               "reveals": "test-timmy-confirms-hiring",
               "trigger_type": "show_evidence",
-              "trigger_value": "gideon's card or notes", 
-              "accessibility": "medium"
-            },
+              "trigger_value": "gideon's card or notes"            },
             "timmy_spills_affair": {
               "content": "Nova and Ms Valor are... closer than the press realise. Keep that hush - or Mira will splash it everywhere!",
               "reveals": "test-timmy-lovers-secret",
               "trigger_type": "conversation_topic",
-              "trigger_value": "probe industry rumors",
-              "accessibility": "medium"
-            },
+              "trigger_value": "probe industry rumors"            },
             "timmy_reports_seeing_syringe": {
               "content": "Oh gosh, earlier I bumped into Mr. Porter! Spilled coffee... he seemed so jumpy. And I'm almost sure I saw something shiny... like a syringe needle... in his pocket! Maybe?",
               "reveals": "test-timmy-saw-syringe", 
               "trigger_type": "conversation_topic",
-              "trigger_value": "Asking about Maxwell Porter or seeing anything unusual",
-              "accessibility": "hard"
-            }
+              "trigger_value": "Asking about Maxwell Porter or seeing anything unusual"            }
           },
           "whereabouts": {
             "1": { "circumstance": "platform", "action": "fumbling with Penelope's paperwork", "events": ["Briefly spoke with Gideon to confirm investigation plans"] },
@@ -768,121 +713,31 @@
       "cars": {
         "storage_car": {
           "name": "Storage Car",
-          "description": "Filled with luggage and supplies for the journey",
-          "points_of_interest": {
-            "luggage_section": {
-              "name": "Luggage Section",
-              "description": "Organized storage for passenger luggage",
-              "evidence_items": [],
-              "initial_state": "normal"
-            },
-            "maintenance_closet": {
-              "name": "Maintenance Closet",
-              "description": "Contains cleaning supplies and train equipment",
-              "evidence_items": [],
-              "initial_state": "locked"
-            }
-          }
+          "description": "Filled with luggage and supplies for the journey"
         },
         "second_class_car_1": {
           "name": "Second Class Car (Front)",
-          "description": "Passenger seating with moderate accommodations",
-          "points_of_interest": {
-            "maxwell_seat": {
-              "name": "Maxwell's Seat",
-              "description": "Where Maxwell Porter was organizing art supplies",
-              "evidence_items": [],
-              "initial_state": "normal"
-            }
-          }
+          "description": "Passenger seating with moderate accommodations"
         },
         "second_class_car_2": {
           "name": "Second Class Car (Rear)",
-          "description": "Additional passenger seating with moderate accommodations",
-          "points_of_interest": {}
-        },
-        "kitchen_car": {
-          "name": "Kitchen Car",
-          "description": "Where meals are prepared for passengers",
-          "points_of_interest": {
-            "incinerator": {
-              "name": "Waste Incinerator",
-              "description": "Used to dispose of kitchen waste",
-              "evidence_items": ["evidence-incinerator-ash"],
-              "initial_state": "normal"
-            }
-          }
+          "description": "Additional passenger seating with moderate accommodations"
         },
         "business_class": { 
           "name": "Business Class Car", 
-          "description": "Upgraded seating for business travelers",
-          "points_of_interest": {
-            "eleanor_seat": {
-              "name": "Eleanor's Seat",
-              "description": "Where Eleanor Verne was reviewing art catalogs",
-              "evidence_items": [],
-              "initial_state": "normal"
-            },
-            "mira_seat": {
-              "name": "Mira's Seat",
-              "description": "Where Mira was organizing her photos",
-              "evidence_items": ["evidence-mira-safe"],
-              "initial_state": "normal"
-            }
-          }
+          "description": "Upgraded seating for business travelers"
         },
         "dining_car": { 
           "name": "Dining/Lounge/Bar Car", 
-          "description": "Comfortable area for relaxation, socializing, drinks and light refreshments",
-          "points_of_interest": {
-            "corner_table": {
-              "name": "Corner Table",
-              "description": "Where Gregory and Maxwell had their final conversation",
-              "evidence_items": [],
-              "initial_state": "normal"
-            },
-            "central_area": {
-              "name": "Central Seating Area",
-              "description": "Where Victoria and Penelope had their heated argument",
-              "evidence_items": [],
-              "initial_state": "normal"
-            },
-            "lounge_bathroom": {
-              "name": "Bathroom",
-              "description": "Small private bathroom where Victoria was found dead",
-              "evidence_items": ["evidence-suicide-note", "evidence-sink-sedative"],
-              "initial_state": "normal"
-            }
-          }
+          "description": "Comfortable area for relaxation, socializing, drinks and light refreshments"
         },
         "first_class": { 
           "name": "First Class Car",
-          "description": "Luxurious accommodations for premium passengers",
-          "points_of_interest": {
-            "victoria_compartment": {
-              "name": "Victoria's Compartment",
-              "description": "Private compartment with Victoria's belongings",
-              "evidence_items": ["evidence-financial-ledger"],
-              "initial_state": "normal"
-            },
-            "penelope_compartment": {
-              "name": "Penelope's Compartment",
-              "description": "Private compartment for Penelope and her assistant",
-              "evidence_items": [],
-              "initial_state": "normal"
-            },
-            "gregory_compartment": {
-              "name": "Gregory's Compartment",
-              "description": "Private compartment with Gregory's belongings",
-              "evidence_items": ["evidence-gallery-ledgers"],
-              "initial_state": "normal"
-            }
-          }
+          "description": "Luxurious accommodations for premium passengers"
         },
         "engine_room": {
           "name": "Engine Room",
-          "description": "Controls and machinery that power the train",
-          "points_of_interest": {}
+          "description": "Controls and machinery that power the train"
         }
       },
       "layout_order": ["storage_car", "second_class_car_1", "second_class_car_2", "kitchen_car", "business_class", "dining_car", "first_class", "engine_room"] 
