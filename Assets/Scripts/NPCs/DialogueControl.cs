@@ -273,6 +273,9 @@ public class DialogueControl : MonoBehaviour
         //set the character profile (legacy UI)
         characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;
 
+        //update beepspeak
+        beepSpeak.UpdateVoice(GameControl.GameController.coreMystery.Characters[llmCharacter.name].Core.Voice);
+
         //update the evidence options
         UpdateEvidence();
 

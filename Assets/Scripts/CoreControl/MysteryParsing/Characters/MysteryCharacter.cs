@@ -136,17 +136,20 @@ public class Appearance
     public string Mouth { get; set; }
 }
 
-// New Voice class definition
+// Newer Voice class definition
 public class Voice
 {
     [JsonProperty("voice_ID")]
     public int VoiceID { get; set; }
 
     [JsonProperty("timbre")]
-    public string Timbre { get; set; }
+    public int Timbre { get; set; }
 
     [JsonProperty("pitch")]
     public float Pitch { get; set; }
+
+    [JsonProperty("speed")]
+    public float Speed { get; set; }
 
     [JsonProperty("volume")]
     public float Volume { get; set; }

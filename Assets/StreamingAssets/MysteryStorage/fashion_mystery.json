@@ -95,7 +95,7 @@
           },
           "agenda": { "primary_goal": "Protect himself from exposure as a forger" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 0, "timbre": 2, "pitch": 0.5, "speed": 0.9, "volume": 0.3 }
         },
         "mind_engine": {
           "identity": { "name": "Maxwell Porter", "occupation": "Reclusive artist and master forger", "personality": { "O": 0.9, "C": 0.8, "E": 0.2, "A": 0.4, "N": 0.9 } },
@@ -183,7 +183,7 @@
           },
           "agenda": { "primary_goal": "Protect his art forgery operation and reputation" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 1, "timbre": 0, "pitch": 0.3, "speed": 0.3, "volume": 0.6 }
         },
         "mind_engine": {
           "identity": { "name": "Gregory Crowe", "occupation": "Art dealer with a renowned gallery and secret forgery operation", "personality": { "O": 0.7, "C": 0.8, "E": 0.8, "A": 0.7, "N": 0.3 } },
@@ -242,7 +242,7 @@
           },
           "agenda": { "primary_goal": "Save her failing magazine by any means necessary" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 0, "timbre": 0, "pitch": 0, "speed": 0, "volume": 0 }
         },
         "mind_engine": {
           "identity": { "name": "Victoria Blackwood", "occupation": "Owner and editor-in-chief of Couture En Masse magazine", "personality": { "O": 0.6, "C": 0.9, "E": 0.7, "A": 0.3, "N": 0.5 } },
@@ -325,7 +325,7 @@
           },
           "agenda": { "primary_goal": "Rebuild her reputation as an art authenticator" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 2, "timbre": 5, "pitch": 0.5, "speed": 0.5, "volume": 0.5 }
         },
         "mind_engine": {
           "identity": { "name": "Eleanor Verne", "occupation": "Art authenticator from Montreu, currently working for Gregory's gallery despite scandal", "personality": { "O": 0.8, "C": 0.9, "E": 0.7, "A": 0.4, "N": 0.7 } },
@@ -401,7 +401,7 @@
           },
           "agenda": { "primary_goal": "Complete her fashion article before deadline" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 3, "timbre": 1, "pitch": 0.8, "speed": 0.7, "volume": 0.5 }
         },
         "mind_engine": {
           "identity": { "name": "Nova Winchester", "occupation": "Fashion writer at Millennium magazine known for cutting critiques", "personality": { "O": 0.8, "C": 0.6, "E": 0.4, "A": 0.3, "N": 0.7 } },
@@ -476,7 +476,7 @@
           },
           "agenda": { "primary_goal": "Secure exclusive designer contracts for her magazine" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 4, "timbre": 4, "pitch": 0.9, "speed": 0.4, "volume": 0.4 }
         },
         "mind_engine": {
           "identity": { "name": "Penelope Valor", "occupation": "Creative Director at Millennium magazine", "personality": { "O": 0.7, "C": 0.8, "E": 0.6, "A": 0.5, "N": 0.4 } },
@@ -544,7 +544,7 @@
           },
           "agenda": { "primary_goal": "Complete his investigation into Victoria's art fraud connections" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 5, "timbre": 2, "pitch": 0.7, "speed": 0.7, "volume": 0.7 }
         },
         "mind_engine": {
           "identity": { "name": "Gideon Marsh", "occupation": "Private investigator specializing in art and antiquities cases, former military intelligence", "personality": { "O": 0.7, "C": 0.9, "E": 0.4, "A": 0.5, "N": 0.3 } },
@@ -612,7 +612,7 @@
           },
           "agenda": { "primary_goal": "Create a sensational exclusive story about Victoria's death" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 6, "timbre": 6, "pitch": 0.5, "speed": 0.5, "volume": 0.5 }
         },
         "mind_engine": {
           "identity": { "name": "Mira Sanchez", "occupation": "Tabloid journalist known for celebrity exposés", "personality": { "O": 0.7, "C": 0.6, "E": 0.8, "A": 0.4, "N": 0.5 } },
@@ -681,7 +681,7 @@
           },
           "agenda": { "primary_goal": "Impress Penelope by protecting her interests" },
           "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-          "voice": { "voice_ID": 0, "timbre": "", "pitch": 0, "volume": 0 }
+          "voice": { "voice_ID": 7, "timbre": 0, "pitch": 0.6, "speed": 0.6, "volume": 0.3 }
         },
         "mind_engine": {
           "identity": { "name": "Timmy Seol", "occupation": "Assistant to Penelope Valor at Millennium magazine with secret editorial ambitions", "personality": { "O": 0.6, "C": 0.7, "E": 0.5, "A": 0.8, "N": 0.7 } },

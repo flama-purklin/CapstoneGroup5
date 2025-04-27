@@ -15,6 +15,7 @@ public class BeepSpeak : MonoBehaviour
     {
         public int voiceID = 100000;
         public AudioClip[] timbre;
+        public int timbreID = 0;
         public float basePitch = 1.0f;
         public float pitchVariance = 0.1f;
         public float baseVolume = 1.0f;
@@ -99,9 +100,7 @@ public class BeepSpeak : MonoBehaviour
     private float lastTargetUpdateTime = 0f;
     private float stabilityDelay = 0.05f;
 
-    // Empty Update() method removed - performance optimization
-
-    public void UpdateVoice(int vid = 100000, int vtimbre = 1, float pitch = 1.0f, float volume = 1.0f)
+    /*public void UpdateVoice(int vid = 100000, int vtimbre = 1, float pitch = 0.5f, float speed = 0.5f, float volume = 0.5f)
     {
         npcVoice.voiceID = vid;
         npcVoice.basePitch = pitch;
@@ -133,8 +132,17 @@ public class BeepSpeak : MonoBehaviour
         }
 
         npcVoice.timbre = loadedClips;
-    }
+    }*/
 
+    public void UpdateVoice(Voice v)
+    {
+        npcVoice.voiceID = v.VoiceID;
+        npcVoice.timbreID = v.Timbre;
+        npcVoice.basePitch = v.Pitch;
+        npcVoice.baseSpeed = v.Speed;
+        npcVoice.baseVolume = v.Volume;
+    }
+    
     public void StartDialogue(List<DialogueEntry> dialogueEntries)
     {
         dialogueQueue.Clear();
