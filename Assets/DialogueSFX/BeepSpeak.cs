@@ -21,7 +21,7 @@ public class BeepSpeak : MonoBehaviour
         public float baseVolume = 1.0f;
         public float volumeVariance = 0.1f;
         public float baseSpeed = 0.05f;
-        public float speedVariance = 0.01f;
+        public float speedVariance = 0.005f;
         public string emotion = "neutral";
     }
     class PrecomputedDialogue
@@ -136,11 +136,11 @@ public class BeepSpeak : MonoBehaviour
 
     public void UpdateVoice(Voice v)
     {
-        npcVoice.voiceID = v.VoiceID;
+        npcVoice.voiceID = v.VoiceID + 100000;
         npcVoice.timbreID = v.Timbre;
-        npcVoice.basePitch = v.Pitch;
-        npcVoice.baseSpeed = v.Speed;
-        npcVoice.baseVolume = v.Volume;
+        npcVoice.basePitch = v.Pitch + 0.5f;
+        npcVoice.baseSpeed = (v.Speed * 0.03f) + 0.035f;
+        npcVoice.baseVolume = (v.Volume * 0.6f) + 0.4f;
     }
     
     public void StartDialogue(List<DialogueEntry> dialogueEntries)
@@ -558,7 +558,8 @@ public class BeepSpeak : MonoBehaviour
             punctuationVolumeModifier = 0.1f;
         }
 
-        AudioClip clip = npcVoice.timbre[randomSeed % npcVoice.timbre.Length];
+        //AudioClip clip = npcVoice.timbre[randomSeed % npcVoice.timbre.Length];
+        AudioClip clip = npcVoice.timbre[npcVoice.timbreID];
 
         // Apply modifiers
         float randomPitch = (randomSeed % (int)(npcVoice.pitchVariance * 200f) - (npcVoice.pitchVariance * 100f)) / 100f;
