@@ -9963,16 +9963,8 @@ PrefabInstance:
       value: mistral chat
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
-      propertyPath: _numGPULayers
-      value: 78
-      objectReference: {fileID: 0}
-    - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
       value: 4096
-      objectReference: {fileID: 0}
-    - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
-      propertyPath: gpuAcceleration
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: parallelPrompts
