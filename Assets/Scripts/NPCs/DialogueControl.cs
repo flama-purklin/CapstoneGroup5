@@ -55,6 +55,16 @@ public class DialogueControl : MonoBehaviour
 
     // Public property to check if we're using new UI
     public bool UseNewUI => dialogueUIController != null;
+    
+    // Helper method to extract first name from a full name
+    private string GetFirstName(string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName))
+            return "Unknown";
+            
+        // Split by space and take the first part
+        return fullName.Split(' ')[0];
+    }
 
     private void Start()
     {
@@ -257,7 +267,7 @@ public class DialogueControl : MonoBehaviour
             Debug.Log($"[DialogueControl] About to call dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
             Debug.Log($"[DialogueControl] dialogueUIController.gameObject active: {dialogueUIController.gameObject.activeInHierarchy}");
             
-            dialogueUIController.ShowDialogue(llmCharacter.AIName, portrait);
+            dialogueUIController.ShowDialogue(GetFirstName(llmCharacter.AIName), portrait);
             Debug.Log($"[DialogueControl] Called dialogueUIController.ShowDialogue for {llmCharacter.AIName}");
             
             // Log state of DialogueUIController after activation
@@ -268,7 +278,7 @@ public class DialogueControl : MonoBehaviour
         }
 
         //set the character name (legacy UI)
-        characterName.text = llmCharacter.AIName;
+        characterName.text = GetFirstName(llmCharacter.AIName);
 
         //set the character profile (legacy UI)
         characterProf.sprite = npcObject.GetComponentInChildren<NPCAnimManager>().anims.profile;

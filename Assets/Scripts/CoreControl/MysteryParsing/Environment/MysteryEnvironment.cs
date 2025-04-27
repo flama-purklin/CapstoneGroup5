@@ -20,8 +20,9 @@ public class TrainCar
     [JsonProperty("description")]
     public string Description { get; set; }
 
-    [JsonProperty("points_of_interest")]
-    public Dictionary<string, PointOfInterest> PointsOfInterest { get; set; }
+    // Handle optional points_of_interest in new JSON, default to empty if missing
+    [JsonProperty("points_of_interest", NullValueHandling = NullValueHandling.Ignore)]
+    public Dictionary<string, PointOfInterest> PointsOfInterest { get; set; } = new Dictionary<string, PointOfInterest>();
 }
 
 public class PointOfInterest

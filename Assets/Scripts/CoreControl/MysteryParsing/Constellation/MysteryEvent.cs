@@ -1,18 +1,13 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MysteryEvent
 {
     [JsonProperty("id")]
-    public string Id {  get; set; }
+    public string Id { get; set; }
 
-    [JsonProperty("trigger")]
-    public string Trigger { get; set; }
-
-    [JsonProperty("action")]
-    public string Action { get; set; }
-
-    [JsonProperty("description")]
-    public string Description { get; set; }
-
+    // Updated to parse array of triggers instead of single trigger string
+    [JsonProperty("triggers")]
+    public List<string> Triggers { get; set; }
 }

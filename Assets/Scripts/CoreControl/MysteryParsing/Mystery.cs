@@ -24,6 +24,9 @@ public class Mystery
     [JsonProperty("constellation")]
     public MysteryConstellation Constellation { get; set; }
 
+    // Added to parse new "scripted_events" array at root
+    [JsonProperty("scripted_events")]
+    public List<MysteryEvent> ScriptedEvents { get; set; }
 
     void Start()
     {

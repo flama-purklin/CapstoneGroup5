@@ -1024,6 +1024,7 @@ MonoBehaviour:
   - {fileID: 4345135962734853628}
   - {fileID: -7934358468751729819}
   - {fileID: -8178914988588306474}
+  - {fileID: 8412384724818945397}
 --- !u!114 &269713067060962760
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -2465,6 +2466,38 @@ MonoBehaviour:
   m_RayMaxIterationsRT:
     m_OverrideState: 1
     m_Value: 48
+--- !u!114 &8412384724818945397
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 629e4e4379270a040812acf0b1dd7ca7, type: 3}
+  m_Name: VintageFilm
+  m_EditorClassIdentifier: 
+  active: 1
+  threshold:
+    m_OverrideState: 1
+    m_Value: 8
+  radius:
+    m_OverrideState: 1
+    m_Value: 6
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.75
+  weave:
+    m_OverrideState: 1
+    m_Value: 0.5
+  dustTex:
+    m_OverrideState: 1
+    m_Value: {fileID: 0}
+    dimension: 1
+  dust:
+    m_OverrideState: 1
+    m_Value: 0.4
 --- !u!114 &8765381319442092571
 MonoBehaviour:
   m_ObjectHideFlags: 3

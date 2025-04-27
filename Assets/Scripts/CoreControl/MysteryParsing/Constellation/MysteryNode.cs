@@ -2,38 +2,35 @@ using UnityEngine;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
+#nullable enable
 public class MysteryNode
 {
     [JsonProperty("type")]
-    public string Type { get; set; }
+    public string Type { get; set; } = default!;
 
     [JsonProperty("subtype")]
-    public string Subtype { get; set; }
+    public string Subtype { get; set; } = default!;
 
     [JsonProperty("title")]
-    public string Title { get; set; }
+    public string Title { get; set; } = default!;
 
     [JsonProperty("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = default!;
 
-    //Nullable strings to only use if evidence is physical
-    #nullable enable
     [JsonProperty("car_id")]
     public string? CarId { get; set; }
 
     [JsonProperty("coords")]
     public int[]? Coords { get; set; }
 
-    //Nullable strings to use only if a barrier or blocked by a barrier
     [JsonProperty("solution")]
-    public string? Solution {  get; set; }
+    public string? Solution { get; set; }
 
     [JsonProperty("contains")]
     public string[]? Contains { get; set; }
 
     [JsonProperty("locked_by")]
     public string? LockedBy { get; set; }
-    #nullable disable
 
     public bool Discovered { get; set; }
 
@@ -44,3 +41,4 @@ public class MysteryNode
         return previousVal;
     }
 }
+#nullable disable

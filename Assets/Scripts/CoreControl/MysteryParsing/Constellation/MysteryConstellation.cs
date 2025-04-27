@@ -16,16 +16,12 @@ public class MysteryConstellation
     [JsonProperty("leads")]
     public List<MysteryLead> Leads { get; set; }
 
-    //mini mysteries no longer exist
-    /*[JsonProperty("mini_mysteries")]
-    public Dictionary<string, MiniMystery> MiniMysteries { get; set; }
-    */
+    [JsonProperty("mini_mysteries")]
+    public Dictionary<string, MiniMystery> MiniMysteries { get; set; } = new Dictionary<string, MiniMystery>();
 
     //scripted events should be a flexible system - triggered by the unlocking of nodes, which has function calls to do specific things
     //reveal hidden details on existing nodes, kill off certain characters, reveal new piece of evidence, move a character, etc.
-    [JsonProperty("scripted-events")]
-    public Dictionary<string, MysteryEvent> ScriptedEvents { get; set; }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Removed scripted_events property from Constellation; now parsed at root Mystery level
 
     [Header("MysteryCompletion")]
     public int completeMysteryCount = 0;

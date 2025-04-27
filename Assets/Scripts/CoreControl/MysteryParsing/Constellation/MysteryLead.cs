@@ -16,7 +16,7 @@ public class MysteryLead
     public string Inside { get; set; }
 
     //the node that provides and answer to the question posed here
-    [JsonProperty("Answer")]
+    [JsonProperty("answer")] // Fixed capitalization to match JSON convention
     public string Answer { get; set; }
 
     //the base node that this lead corresponds with
