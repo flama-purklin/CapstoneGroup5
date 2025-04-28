@@ -287,7 +287,7 @@ MonoBehaviour:
   animContainer: {fileID: 11400000, guid: 3dd3297db184df24c98dba661c07411d, type: 2}
   sprite: {fileID: 7643346265812006836}
   audioControl: {fileID: 0}
-  speedMod: 3
+  speedMod: 0.5
   closestInteractable: {fileID: 0}
 --- !u!54 &884967809646904070
 Rigidbody:

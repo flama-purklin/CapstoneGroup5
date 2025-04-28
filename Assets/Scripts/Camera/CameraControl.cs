@@ -72,7 +72,10 @@ public class CameraControl : MonoBehaviour
             // Get the Filmic60sSetup component for DoF control
             filmicSetup = GetComponent<Filmic60sSetup>();
             if (filmicSetup == null) {
-                Debug.LogWarning("Filmic60sSetup not found on Camera. Dynamic DoF will not work.");
+                Debug.LogError("[DIAGNOSIS] Filmic60sSetup not found on Camera. Dynamic DoF will not work.");
+            }
+            else {
+                Debug.Log("[DIAGNOSIS] Successfully found Filmic60sSetup component");
             }
 
             // NEW: find initial car if player is in it
@@ -105,6 +108,13 @@ public class CameraControl : MonoBehaviour
         if (filmicSetup != null && player != null)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+            
+            // Log the calculated distance (but only occasionally to avoid spam)
+            if (Time.frameCount % 60 == 0) {
+                Debug.Log($"[DIAGNOSIS] Camera position: {transform.position}, Player position: {player.transform.position}");
+                Debug.Log($"[DIAGNOSIS] Distance to player: {distanceToPlayer}");
+            }
+            
             filmicSetup.UpdateFocusDistance(distanceToPlayer);
         }
     }
@@ -183,6 +193,10 @@ public class CameraControl : MonoBehaviour
             if (filmicSetup != null && player != null)
             {
                 float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+                
+                // Log during transitions (important moment, so log every frame)
+                Debug.Log($"[DIAGNOSIS-TRANSITION] Distance to player during transition: {distanceToPlayer}");
+                
                 filmicSetup.UpdateFocusDistance(distanceToPlayer);
             }
             
