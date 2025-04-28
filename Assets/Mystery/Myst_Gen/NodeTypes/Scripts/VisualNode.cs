@@ -19,7 +19,11 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public List<GameObject> connections;
 
     //associated leads
-    public List<MysteryLead> leads;
+    public List<MysteryLead> terminalLeads;
+    public List<MysteryLead> storedLeads;
+
+    //associated chars
+    public List<string> charsRevealed;
 
     //all components of the visual object
     [Header("UI Components")]
@@ -61,7 +65,12 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void AssignNode(string newKey, MysteryNode associatedNode)
     {
+        //instantiate all lists
         connections = new List<GameObject>();
+        terminalLeads = new List<MysteryLead>();
+        storedLeads = new List<MysteryLead>();
+        charsRevealed = new List<string>();
+
         control = GameObject.FindFirstObjectByType<NodeControl>();
         currentNode = associatedNode;
         nodeKey = newKey;
@@ -80,13 +89,37 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
         transform.localPosition = Random.insideUnitCircle * 300f;
 
+        //might not be necessary anymore
+        /*
         if (connections.Count > 0)
         {
             foreach (var connection in connections)
             {
                 connection.GetComponent<Connection>().DiscoveryCheck();
             }
+        }*/
+        Debug.Log(terminalLeads.Count + " impostors among us");
+        if (terminalLeads.Count > 0)
+        {
+            foreach (var lead in terminalLeads)
+            {
+                //unlock the lead if the revealing node is the same as the terminal node
+                if (lead.Inside == lead.Terminal)
+                {
+                    lead.Discovered = true;
+                }
+
+                if (lead.Discovered)
+                {
+                    AddLeadVisual();
+                }
+            }
         }
+    }
+
+    public void AddLeadVisual()
+    {
+        GameObject newLead = Instantiate(visualLead, iconPanel.transform);
     }
 
     protected virtual void UpdateInformation()
@@ -119,7 +152,7 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         if (Input.GetKey(KeyCode.Mouse1) && control.theoryMode == TheoryMode.None)
         {
             Debug.Log("Pointer Down at " + gameObject.name);
-            GameObject.FindFirstObjectByType<EvidenceInspect>().ActivateInspect(currentNode);
+            GameObject.FindFirstObjectByType<EvidenceInspect>().ActivateInspect(this);
         }
     }
 

@@ -46,10 +46,10 @@ public class Theory : Connection, IPointerDownHandler
     public void NodeAssign(VisualNode node)
     {
         //if this is the first click received, set the startObj
-        if (startObj == null)
+        if (leadObj == null)
         {
             placing = true;
-            startObj = node.gameObject;
+            leadObj = node.gameObject;
 
             //start the temp connection
             StartCoroutine(TempConnection());
@@ -58,7 +58,7 @@ public class Theory : Connection, IPointerDownHandler
         //if this is the second click received, set the endObj and fully place
         else
         {
-            endObj = node.gameObject;
+            answerObj = node.gameObject;
             placing = false;
 
             //place the 
@@ -73,15 +73,15 @@ public class Theory : Connection, IPointerDownHandler
 
     IEnumerator TheoryEvaluate()
     {
-        List<GameObject> allConnects = startObj.GetComponent<VisualNode>().connections;
+        List<GameObject> allConnects = leadObj.GetComponent<VisualNode>().connections;
         Debug.Log("Checking " + allConnects.Count + " connections");
 
         for (int i = 0; i < allConnects.Count; i++)
         {
-            GameObject tempStart = allConnects[i].GetComponent<Connection>().startObj;
-            GameObject tempEnd = allConnects[i].GetComponent<Connection>().endObj;
+            GameObject tempStart = allConnects[i].GetComponent<Connection>().leadObj;
+            GameObject tempEnd = allConnects[i].GetComponent<Connection>().answerObj;
 
-            if ((tempStart == startObj || tempStart == endObj) && (tempEnd == startObj || tempEnd == endObj))
+            if ((tempStart == leadObj || tempStart == answerObj) && (tempEnd == leadObj || tempEnd == answerObj))
                 realConn = allConnects[i].GetComponent<Connection>();
         }
 
@@ -100,9 +100,6 @@ public class Theory : Connection, IPointerDownHandler
 
             //do the things that a correct reveal should do here
 
-            //increment the currentmysterycount
-            GameControl.GameController.coreConstellation.currentMysteryCount++;
-
         }
         else
         {
@@ -118,12 +115,14 @@ public class Theory : Connection, IPointerDownHandler
     {
         realConn.confirmed = true;
         realConn.DiscoveryCheck();
+        Debug.Log("Success - Simulation Anim Complete");
 
         KillYourself();
     }
 
     public void BustFinish()
     {
+        Debug.Log("Bust - Simulation Anim Complete");
         //TODO - might want to add to a list of disproven theories, so the player doesn't make the same mistake twice
         KillYourself();
     }
@@ -131,15 +130,15 @@ public class Theory : Connection, IPointerDownHandler
     //call this to make the connection stretch between starting point and mouse location
     IEnumerator TempConnection()
     {
-        while (endObj == null)
+        while (answerObj == null)
         {
             //keep an eye on input.mousepos, may not function as intended
-            Vector2 hypotenuse = Input.mousePosition - startObj.transform.position;
+            Vector2 hypotenuse = Input.mousePosition - leadObj.transform.position;
             float dist = hypotenuse.magnitude;
             rect.sizeDelta = new Vector2(dist, 20f);
 
             //assign the position
-            transform.position = Vector2.Lerp(startObj.transform.position, Input.mousePosition, 0.5f);
+            transform.position = Vector2.Lerp(leadObj.transform.position, Input.mousePosition, 0.5f);
 
             //calculate and apply the rotation
             float x = hypotenuse.x;

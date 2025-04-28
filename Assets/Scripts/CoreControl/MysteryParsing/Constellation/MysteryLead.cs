@@ -22,4 +22,7 @@ public class MysteryLead
     //the base node that this lead corresponds with
     [JsonProperty("terminal")]
     public string Terminal { get; set; }
+
+    public bool Discovered = false;
+    public bool Solved = false;
 }

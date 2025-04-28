@@ -24,6 +24,7 @@ public class NodeControl : MonoBehaviour
 
     //new Visual Node storage with parsed MysteryNode hookup
     public Dictionary<string, GameObject> visualNodes;
+    public Dictionary<string, GameObject> leadConnections;
 
     [Header("Prefabs")]
     //[SerializeField] GameObject infoPrefab;
@@ -95,6 +96,11 @@ public class NodeControl : MonoBehaviour
         if (simulationDisplayAmt.isActiveAndEnabled)
         {
             simulationDisplayAmt.text = "-" + simulationCost.ToString("P");
+        }
+
+        if (Input.GetKeyDown(KeyCode.F10))
+        {
+            StartCoroutine(UnlockAllNodes());
         }
     }
 
@@ -185,11 +191,13 @@ public class NodeControl : MonoBehaviour
     public void NewConstellation()
     {
         visualNodes = new Dictionary<string, GameObject>();
+        leadConnections = new Dictionary<string, GameObject>();
 
         GameControl.GameController.coreConstellation.CompleteMysteryCalc();
 
         //replace this if the first node has to be discovered, necessary to make it visible to player on constellation begin
         bool firstNode = true;
+        string firstNodeKey = null;
 
         //create a node object for every parsed node in the constellation
         foreach (var nodePair in GameControl.GameController.coreConstellation.Nodes)
@@ -207,39 +215,85 @@ public class NodeControl : MonoBehaviour
             if (firstNode)
             {
                 firstNode = false;
-                GameControl.GameController.coreConstellation.DiscoverNode(nodePair.Key);
+                firstNodeKey = nodePair.Key;
             }
         }
 
         Debug.Log(visualNodes.Count + " visual nodes created");
 
-        //create a connection for each parsed connection in the constellation
-       /*List<MysteryConnection> connections = GameControl.GameController.coreConstellation.Connections;
-        for (int i = 0; i < connections.Count; i++)
-        {
-            //create a connection object
-            GameObject newConn = Instantiate(connectionPrefab, contentPanel);
-            newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[connections[i].Source], visualNodes[connections[i].Target], connections[i]);
-
-            //store a link to it in both sides, so when they are discovered, they will turn it on if necessary
-            visualNodes[connections[i].Source].GetComponent<VisualNode>().connections.Add(newConn);
-            visualNodes[connections[i].Target].GetComponent<VisualNode>().connections.Add(newConn);
-        }*/
-
         //TOOD - create a connection for each parsed lead in the constellation
         List<MysteryLead> leads = GameControl.GameController.coreConstellation.Leads;
+        foreach (var lead in leads)
+        {
+            //store the lead to the associated terminal node
+            visualNodes[lead.Terminal].GetComponent<VisualNode>().terminalLeads.Add(lead);
+
+            //store the lead to the associated storage node
+            visualNodes[lead.Inside].GetComponent<VisualNode>().storedLeads.Add(lead);
+
+            //create a connection for each
+            GameObject newConn = Instantiate(connectionPrefab, contentPanel);
+            newConn.GetComponent<Connection>().ConnectionSpawn(visualNodes[lead.Terminal], visualNodes[lead.Answer], lead);
+            visualNodes[lead.Terminal].GetComponent<VisualNode>().connections.Add(newConn);
+            visualNodes[lead.Answer].GetComponent<VisualNode>().connections.Add(newConn);
+
+            //add to the leadConn dict
+            leadConnections.Add(lead.Id, newConn);
+        }
+
+        //discover the first node - necessary after leads have been assigned for the sake of revealing the lead
+        GameControl.GameController.coreConstellation.DiscoverNode(firstNodeKey);
 
         Debug.Log(GameControl.GameController.coreConstellation.Leads.Count + " connections have been parsed");
     }
 
     public void UnlockVisualNode(string nodeKey)
     {
-        GameObject unlockedNode = visualNodes[nodeKey];
-        unlockedNode.SetActive(true);
-        unlockedNode.GetComponent<VisualNode>().DiscoverNode();
+        if (!visualNodes[nodeKey].activeInHierarchy)
+        {
+            GameObject unlockedNode = visualNodes[nodeKey];
+            unlockedNode.SetActive(true);
+            unlockedNode.GetComponent<VisualNode>().DiscoverNode();
 
-        //increment the currentmysterycount
-        GameControl.GameController.coreConstellation.currentMysteryCount++;
+            //increment the currentmysterycount
+            GameControl.GameController.coreConstellation.currentMysteryCount++;
+
+            StartCoroutine(AutoConnect(nodeKey));
+        }
+        else
+            Debug.Log("Visual Node already discovered");
+        
+    }
+
+    IEnumerator AutoConnect(string nodeKey)
+    {
+        //store all connections where the unlocked node is needed as an answer
+        List<string> requiredConns = new List<string>();
+        foreach (var lead in leadConnections)
+        {
+            if (lead.Value.GetComponent<Connection>().leadInfo.Answer == nodeKey)
+            {
+                requiredConns.Add(lead.Value.GetComponent<Connection>().leadInfo.Inside);
+            }
+            yield return new WaitForEndOfFrame();
+        }
+
+        //unlock all leads/connections higher one higher in the hierarchy than that node
+        foreach (var lead in leadConnections)
+        {
+            foreach (var prevNode in requiredConns)
+            {
+                if (lead.Value.GetComponent<Connection>().leadInfo.Answer == prevNode)
+                {
+                    lead.Value.GetComponent<Connection>().confirmed = true;
+                    lead.Value.GetComponent<Connection>().DiscoveryCheck();
+                    Debug.Log("Upstream Lead Unlocked!");
+                }
+                yield return new WaitForEndOfFrame();
+            }
+            yield return new WaitForEndOfFrame();
+        }
+            
     }
 
     /*public void CreateVisualNode(Node node)
@@ -389,7 +443,7 @@ public class NodeControl : MonoBehaviour
     {
         Theory theoryTest = currentTheory.GetComponent<Theory>();
         //make sure that the starting and endingPos are not equal
-        if (theoryTest.startObj == theoryTest.endObj)
+        if (theoryTest.leadObj == theoryTest.answerObj)
         {
             NotifCall("Theory cannot connect to itself", Color.red);
             return false;
@@ -397,7 +451,7 @@ public class NodeControl : MonoBehaviour
 
         //make new list of all connections to check, include connections for the startObj of currenttheory
         List<GameObject> allConnects = new List<GameObject>(untestedTheories);
-        allConnects.AddRange(theoryTest.startObj.GetComponent<VisualNode>().connections);
+        allConnects.AddRange(theoryTest.leadObj.GetComponent<VisualNode>().connections);
         //make sure that no theory or connection currently exists with the same node pair
         foreach (GameObject connect in allConnects)
         {
@@ -410,8 +464,8 @@ public class NodeControl : MonoBehaviour
                 continue;
             }
 
-            if ((theoryTest.startObj == connectTest.startObj || theoryTest.startObj == connectTest.endObj) && 
-                (theoryTest.endObj == connectTest.startObj || theoryTest.endObj == connectTest.endObj))
+            if ((theoryTest.leadObj == connectTest.leadObj || theoryTest.leadObj == connectTest.answerObj) && 
+                (theoryTest.answerObj == connectTest.leadObj || theoryTest.answerObj == connectTest.answerObj))
             {
                 NotifCall("Connection or theory already exists", Color.red);
                 return false;
@@ -530,5 +584,20 @@ public class NodeControl : MonoBehaviour
 
         theoryNotif.text = string.Empty;
         currentNotif = null;
+    }
+
+    public void LeadReveal(string terminalId)
+    {
+        visualNodes[terminalId].GetComponent<VisualNode>().AddLeadVisual();
+    }
+
+    IEnumerator UnlockAllNodes()
+    {
+        foreach (var node in visualNodes)
+        {
+            UnlockVisualNode(node.Key);
+
+            yield return new WaitForSecondsRealtime(0.25f);
+        }
     }
 }

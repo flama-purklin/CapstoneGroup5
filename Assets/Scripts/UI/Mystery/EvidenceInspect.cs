@@ -1,27 +1,35 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EvidenceInspect : MonoBehaviour
 {
-    MysteryNode currentNode;
+    VisualNode nodeObj;
+    MysteryNode nodeInfo;
 
     [Header("Base Objects")]
     [SerializeField] Animator anim;
     [SerializeField] GameObject descriptionSection;
     [SerializeField] GameObject locationSection;
-    [SerializeField] GameObject timeSection;
-    [SerializeField] GameObject characterSection;
-    [SerializeField] GameObject hiddenDetailsSection;
+    [SerializeField] GameObject leadSection;
+    [SerializeField] GameObject leadHolder;
+    [SerializeField] GameObject charSection;
+    [SerializeField] GameObject charHolder;
 
     [Header("Text Objects")]
-    [SerializeField] TMP_Text type;
-    [SerializeField] TMP_Text category;
-    [SerializeField] TMP_Text content;
+    [SerializeField] TMP_Text header;
+    [SerializeField] TMP_Text subheader;
     [SerializeField] TMP_Text description;
     [SerializeField] TMP_Text location;
-    [SerializeField] TMP_Text time;
-    [SerializeField] TMP_Text characters;
-    [SerializeField] TMP_Text hiddenDetails;
+    [SerializeField] TMP_Text leadTitle;
+
+    [Header("Prefabs")]
+    [SerializeField] GameObject leadPrefab;
+    [SerializeField] GameObject characterPrefab;
+
+    List<GameObject> currentLeads = new List<GameObject>();
+    List<GameObject> currentChars = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,10 +43,10 @@ public class EvidenceInspect : MonoBehaviour
         
     }
 
-    public void ActivateInspect(MysteryNode node)
+    public void ActivateInspect(VisualNode node)
     {
-        
-        currentNode = node;
+        nodeObj = node;
+        nodeInfo = node.currentNode;
         anim.SetTrigger("activate");
         anim.SetBool("active", true);
     }
@@ -51,73 +59,120 @@ public class EvidenceInspect : MonoBehaviour
 
     public void FillInspect()
     {
-        type.text = currentNode.Type;
-        category.text = currentNode.Subtype;
-        content.text = currentNode.Title;
-        
-        //check description
-        if (string.IsNullOrEmpty(currentNode.Description))
+        header.text = nodeInfo.Title;
+        subheader.text = nodeInfo.Type;
+        description.text = nodeInfo.Description;
+
+        //deal with additional data if it is evidence
+        if (nodeInfo.Type == "EVIDENCE")
         {
-            descriptionSection.SetActive(false);
+            //subtype
+            subheader.text += " - " + nodeInfo.Subtype;
+
+            //location
+            locationSection.SetActive(true);
+            //TODO - replace this with the name of the car rather than the id
+            string carID = nodeInfo.CarId;
+            string carName = GameControl.GameController.coreMystery.Environment.Cars[carID].Name;
+            location.text = carName;
         }
         else
         {
-            descriptionSection.SetActive(true);
-            description.text = currentNode.Description;
-        }
+            //subtype
 
-        //check location
-        /*
-        if (string.IsNullOrEmpty(currentNode.Location))
-        {
+            //location
             locationSection.SetActive(false);
         }
-        else
-        {
-            locationSection.SetActive(true);
-            location.text = currentNode.Location;
-        }
 
-        //check time
-        if (currentNode.Time == null)
-        {
-            timeSection.SetActive(false);
-        }
-        else
-        {
-            timeSection.SetActive(true);
-            time.text = currentNode.Time.ToString();
-        }
+        //leads
+        StartCoroutine(LeadAttach());
 
-        //check associated characters
-        if (currentNode.Characters == null)
+        //characters
+        StartCoroutine(CharacterAttach());
+    }
+
+    IEnumerator CharacterAttach()
+    {
+        //disable if there is nothing to attach
+        if (nodeObj.charsRevealed.Count > 0)
         {
-            characterSection.SetActive(false);
-        }
-        else
-        {
-            characterSection.SetActive(true);
-            characters.text = "";
-            foreach (var character in currentNode.Characters)
+            charSection.SetActive(true);
+            //lead title
+            //leadCharTitle.text = "Relevant Characters";
+
+            ClearCharPanel();
+
+            //add all revealed characters to the detailed view here
+            foreach (string charName in nodeObj.charsRevealed)
             {
-                characters.text += character.ToString() + "\n"; 
+                GameObject newChar = Instantiate(characterPrefab, charHolder.transform);
+                currentChars.Add(newChar);
+
+                //fill the text in the lead
+                newChar.GetComponentInChildren<TMP_Text>().text = charName;
             }
         }
-
-        //check hidden details
-        if (currentNode.HiddenDetails == null)
+        else
         {
-            hiddenDetailsSection.SetActive(false);
+            charSection.SetActive(false);
+        }
+
+        //add all revealed characters to the detailed view here
+        yield return null;
+    }
+
+    IEnumerator LeadAttach()
+    {
+        //disable if there is nothing to attach
+        if (nodeObj.terminalLeads.Count > 0)
+        {
+            leadSection.SetActive(true);
+            //lead title
+            //leadCharTitle.text = "Relevant Leads";
+
+            ClearLeadPanel();
+
+            //add all revealed leads to the detailed view here
+            foreach (MysteryLead lead in nodeObj.terminalLeads)
+            {
+                if (lead.Discovered)
+                {
+                    GameObject newLead = Instantiate(leadPrefab, leadHolder.transform);
+                    currentLeads.Add(newLead);
+
+                    //fill the text in the lead
+                    string questionText = null;
+                    if (lead.Solved)
+                        questionText = "<s>";
+                    questionText += lead.Question;
+                    newLead.GetComponentInChildren<TMP_Text>().text = questionText;
+                }
+            }
         }
         else
         {
-            hiddenDetailsSection.SetActive(true);
-            hiddenDetails.text = "";
-            foreach (var detail in currentNode.HiddenDetails)
-            {
-                hiddenDetails.text += detail.ToString() + "\n";
-            }
+            leadSection.SetActive(false);
         }
-        */
+
+
+        yield return null;
+    }
+
+    public void ClearLeadPanel()
+    {
+        for (int i = currentLeads.Count - 1; i >= 0; i--)
+        {
+            Destroy(currentLeads[i]);
+            currentLeads.RemoveAt(i);
+        }
+    }
+
+    public void ClearCharPanel()
+    {
+        for (int i = currentChars.Count - 1; i >= 0; i--)
+        {
+            Destroy(currentChars[i]);
+            currentChars.RemoveAt(i);
+        }
     }
 }

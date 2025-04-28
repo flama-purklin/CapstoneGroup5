@@ -7,27 +7,26 @@ public class Connection : MonoBehaviour
 {
     [Header("UI Attributes")]
     [SerializeField] protected Image visualConn;
-    [SerializeField] protected TMP_Text connectionDesc;
     [SerializeField] protected RectTransform rect;
     [SerializeField] protected Animator animControl;
 
     [Header("Object Refs")]
-    public GameObject startObj;
-    public GameObject endObj;
+    public GameObject leadObj;
+    public GameObject answerObj;
 
-    //MysteryConnection ref
-    MysteryConnection mystConn;
+    //MysteryLead ref
+    public MysteryLead leadInfo;
 
     [Header("Data")]
-    public string type;
+    //public string type;
     public bool discovered = false;
     public bool confirmed = false;
 
-    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -41,20 +40,19 @@ public class Connection : MonoBehaviour
     void FixedUpdate()
     {
         //Debug.Log("FixedUpdating");
-        
+
     }
 
     //associated node objects are passed from NodeControl
-    public void ConnectionSpawn(GameObject origin, GameObject result, MysteryConnection connection)
+    public void ConnectionSpawn(GameObject origin, GameObject result, MysteryLead newLead)
     {
-        startObj = origin;
-        endObj = result;
-        mystConn = connection;
-        type = mystConn.Type;
+        leadObj = origin;
+        answerObj = result;
+        leadInfo = newLead;
 
         //assign the length to the connection obj
         //rect = GetComponent<RectTransform>();
-        Vector2 hypotenuse = endObj.transform.localPosition - startObj.transform.localPosition;
+        Vector2 hypotenuse = answerObj.transform.localPosition - leadObj.transform.localPosition;
         float dist = hypotenuse.magnitude;
         rect.sizeDelta = new Vector2(dist, 20f);
 
@@ -74,7 +72,7 @@ public class Connection : MonoBehaviour
         //send to back
         transform.SetSiblingIndex(0);
 
-        connectionDesc.text = type;
+        //connectionDesc.text = type;
 
         //Debug.Log("new connection successfully created");
         DiscoveryCheck();
@@ -84,12 +82,12 @@ public class Connection : MonoBehaviour
     {
         //assign the length to the connection obj
         //rect = GetComponent<RectTransform>();
-        Vector2 hypotenuse = startObj.transform.localPosition - endObj.transform.localPosition;
+        Vector2 hypotenuse = leadObj.transform.localPosition - answerObj.transform.localPosition;
         float dist = hypotenuse.magnitude;
         rect.sizeDelta = new Vector2(dist, 20f);
 
         //assign the position
-        transform.localPosition = Vector2.Lerp(startObj.transform.localPosition, endObj.transform.localPosition, 0.5f);
+        transform.localPosition = Vector2.Lerp(leadObj.transform.localPosition, answerObj.transform.localPosition, 0.5f);
 
         //calculate and apply the rotation
         float x = hypotenuse.x;
@@ -107,19 +105,50 @@ public class Connection : MonoBehaviour
 
     public void DiscoveryCheck()
     {
-        if (GameControl.GameController.coreConstellation.Nodes[mystConn.Source].Discovered
-            && GameControl.GameController.coreConstellation.Nodes[mystConn.Target].Discovered
-            && confirmed)
+        Debug.Log("Checking Connection Discovery");
+        //additional checks may be needed: GameControl.GameController.coreConstellation.Nodes[leadInfo.Terminal].Discovered
+        //&& GameControl.GameController.coreConstellation.Nodes[leadInfo.Answer].Discovered
+        //&&
+        if (confirmed)
         {
+
             visualConn.enabled = true;
-            connectionDesc.enabled = true;
+            transform.SetAsFirstSibling();
             discovered = true;
+            leadInfo.Solved = true;
+
+            //check for any new leads to reveal
+            NewLeadCheck();
+            Debug.Log("DiscoveryCheck successful");
+
+            //increment the currentmysterycount
+            GameControl.GameController.coreConstellation.currentMysteryCount++;
         }
         else
         {
             visualConn.enabled = false;
-            connectionDesc.enabled = false;
             discovered = false;
+            Debug.Log("DiscoveryCheck unsuccessful");
+        }
+
+        //add a clause here for a connection reveal without player simulation
+    }
+
+    public void NewLeadCheck()
+    {
+
+        for (int i = 0; i < answerObj.GetComponent<VisualNode>().storedLeads.Count; i++)
+        {
+            if (!answerObj.GetComponent<VisualNode>().storedLeads[i].Discovered)
+            {
+                answerObj.GetComponent<VisualNode>().storedLeads[i].Discovered = true;
+
+                //add a visual indicator to the terminal node here - needs to go through NodeControl since that's where the terminals are stored
+                GameObject.FindFirstObjectByType<NodeControl>().LeadReveal(answerObj.GetComponent<VisualNode>().storedLeads[i].Terminal);
+            }
+            else
+                Debug.Log("Node was already discovered");
+
         }
     }
 }
