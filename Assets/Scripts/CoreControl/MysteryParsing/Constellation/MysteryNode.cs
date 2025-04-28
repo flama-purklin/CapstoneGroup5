@@ -10,12 +10,7 @@ public class MysteryNode
 
 #nullable enable
     [JsonProperty("subtype")]
-<<<<<<< Updated upstream
-    public string Subtype { get; set; } = default!;
-=======
     public string? Subtype { get; set; }
-#nullable disable
->>>>>>> Stashed changes
 
     [JsonProperty("title")]
     public string Title { get; set; } = default!;
