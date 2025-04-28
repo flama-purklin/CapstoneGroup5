@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)]
 public class CameraControl : MonoBehaviour
 {
     float startingY;
@@ -8,6 +9,7 @@ public class CameraControl : MonoBehaviour
 
     GameObject player;
     //CarDetection carDetection;
+    private Filmic60sSetup filmicSetup; // Reference to the film effect script for DoF control
 
     float carCenter;
     float carBoundMin;
@@ -67,13 +69,18 @@ public class CameraControl : MonoBehaviour
             startingY = transform.position.y;
             startingZ = transform.position.z;
 
+            // Get the Filmic60sSetup component for DoF control
+            filmicSetup = GetComponent<Filmic60sSetup>();
+            if (filmicSetup == null) {
+                Debug.LogWarning("Filmic60sSetup not found on Camera. Dynamic DoF will not work.");
+            }
+
             // NEW: find initial car if player is in it
             var carDetection = player.GetComponent<CarDetection>();
             if (carDetection && carDetection.GetCurrentCar())
             {
                 CarUpdate(carDetection.GetCurrentCar().gameObject, true);
             }
-
         }
         else
         {
@@ -81,9 +88,7 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    // NEW: Update() --> LateUpdate()
-    void Update()
-    {
+    void LateUpdate() {
 
         if (!player || transition || !boundsInitialized) return;
 
@@ -96,6 +101,12 @@ public class CameraControl : MonoBehaviour
         //apply to the cam
         transform.position = new Vector3(camX, startingY, startingZ);
 
+        // Update focus distance for DoF
+        if (filmicSetup != null && player != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+            filmicSetup.UpdateFocusDistance(distanceToPlayer);
+        }
     }
 
     //called whenever a new car is entered
@@ -155,20 +166,30 @@ public class CameraControl : MonoBehaviour
     private IEnumerator CarTransition(float startX, float endX)
     {
         transition = true;
-        float elapsed = 0;
 
+        float elapsed = 0;
         Vector3 startPos = new Vector3(startX, startingY, startingZ);
         Vector3 endPos = new Vector3(endX, startingY, startingZ);
 
         while (elapsed < transitionTime)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / transitionTime;
+            // Using SmoothStep for nicer easing
+            float t = Mathf.SmoothStep(0.0f, 1.0f, elapsed / transitionTime);
             Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
             transform.position = newPos;
+            
+            // Update focus distance for DoF even during transitions
+            if (filmicSetup != null && player != null)
+            {
+                float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+                filmicSetup.UpdateFocusDistance(distanceToPlayer);
+            }
+            
             yield return null;
         }
 
+        // Ensure final position is set precisely
         transform.position = endPos;
         transition = false;
     }

@@ -11,13 +11,18 @@ public class BillboardEffect : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        //transform.LookAt(camTransform);
-        //360f addition is necessary so they don't face the opposite direction
-        //transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y % 360f, 0);
-        Quaternion temp = Quaternion.LookRotation(transform.position - camTransform.position);
+        // Refresh reference if missing or disabled:
+        if (camTransform == null || !camTransform.gameObject.activeInHierarchy)
+        {
+            var main = Camera.main;
+            if (main != null) camTransform = main.transform;
+            else return; // still no camera—do nothing
+        }
 
-        transform.rotation = Quaternion.Euler(0, temp.eulerAngles.y, 0);
+        Vector3 dir = transform.position - camTransform.position;
+        dir.y = 0f;
+        transform.rotation = Quaternion.LookRotation(dir);
     }
 }
