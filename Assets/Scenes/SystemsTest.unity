@@ -1640,7 +1640,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 68.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7261,8 +7261,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1675691349}
   m_HandleRect: {fileID: 1675691348}
   m_Direction: 2
-  m_Value: 1.000002
-  m_Size: 0.8542419
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9329,7 +9329,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.85
+  m_fontSize: 34.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9608,7 +9608,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.75
+  m_fontSize: 19.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10115,7 +10115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: model
-      value: Ministral-8B-Instruct-2410-Q4_K_M.gguf
+      value: Mistral-Nemo-12B-Instruct-2407-Q4_K_M.gguf
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: batchSize
@@ -10135,7 +10135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: embeddingLength
-      value: 4096
+      value: 5120
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: gpuAcceleration
@@ -10147,7 +10147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: maxContextLength
-      value: 32768
+      value: 1024000
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: dontDestroyOnLoad
@@ -10293,7 +10293,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.75
+  m_fontSize: 19.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10726,7 +10726,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 23.2
+  m_fontSize: 20.5
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11080,7 +11080,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.10224449
+    m_Value: 0.08622908
   contrast:
     m_OverrideState: 1
     m_Value: 15
@@ -14972,7 +14972,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.65
+  m_fontSize: 22.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15802,6 +15802,12 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 5b706f8c18f3e6841ad255f2234e2fcd, type: 3}
     - {fileID: 8300000, guid: 3a6abb289fab68f4a81c5f33a8e24e8d, type: 3}
     - {fileID: 8300000, guid: 133b889b30eaac14bba2f30188b3e395, type: 3}
+    - {fileID: 8300000, guid: f9dd4aa82e48d534d93968ce46f10979, type: 3}
+    - {fileID: 8300000, guid: 89ccc99299800c746ab223d8a5996233, type: 3}
+    - {fileID: 8300000, guid: 97cd70a2998a8904385f18de6c971674, type: 3}
+    - {fileID: 8300000, guid: 7ed595470ee55754cb1baf3b8d0d7712, type: 3}
+    - {fileID: 8300000, guid: fedc18a43d474a54dbea2ebe80e40440, type: 3}
+    - {fileID: 8300000, guid: abdf431296bda5645883783f7c2d9c43, type: 3}
     timbreID: 0
     basePitch: 1
     pitchVariance: 0.1
@@ -16610,7 +16616,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.75
+  m_fontSize: 19.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -16881,8 +16887,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 681.5, y: -15.645}
-  m_SizeDelta: {x: 1363, y: 0}
+  m_AnchoredPosition: {x: 735.8097, y: -15.645}
+  m_SizeDelta: {x: 1471.6194, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2037745310
 MonoBehaviour:

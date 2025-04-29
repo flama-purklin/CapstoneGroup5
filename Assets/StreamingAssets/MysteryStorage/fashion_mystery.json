@@ -230,7 +230,7 @@
         },
         "agenda": { "primary_goal": "Protect his art forgery operation and reputation" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-        "voice": { "voice_ID": 1, "timbre": 0, "pitch": 0.3, "speed": 0.3, "volume": 0.6 }
+        "voice": { "voice_ID": 1, "timbre": 12, "pitch": 0.4, "speed": 0.3, "volume": 0.6 }
       },
       "mind_engine": {
         "identity": { "name": "Gregory Crowe", "occupation": "Art dealer with a renowned gallery and secret forgery operation", "personality": { "O": 0.7, "C": 0.8, "E": 0.8, "A": 0.7, "N": 0.3 } },
@@ -459,7 +459,7 @@
         },
         "agenda": { "primary_goal": "Complete her fashion article before deadline" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-        "voice": { "voice_ID": 3, "timbre": 1, "pitch": 0.8, "speed": 0.7, "volume": 0.5 }
+        "voice": { "voice_ID": 3, "timbre": 7, "pitch": 0.8, "speed": 0.7, "volume": 0.5 }
       },
       "mind_engine": {
         "identity": { "name": "Nova Winchester", "occupation": "Fashion writer at Millennium magazine known for cutting critiques", "personality": { "O": 0.8, "C": 0.6, "E": 0.4, "A": 0.3, "N": 0.7 } },
@@ -534,7 +534,7 @@
         },
         "agenda": { "primary_goal": "Secure exclusive designer contracts for her magazine" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-        "voice": { "voice_ID": 4, "timbre": 4, "pitch": 0.9, "speed": 0.4, "volume": 0.4 }
+        "voice": { "voice_ID": 4, "timbre": 9, "pitch": 0.9, "speed": 0.4, "volume": 0.4 }
       },
       "mind_engine": {
         "identity": { "name": "Penelope Valor", "occupation": "Creative Director at Millennium magazine", "personality": { "O": 0.7, "C": 0.8, "E": 0.6, "A": 0.5, "N": 0.4 } },
@@ -602,7 +602,7 @@
         },
         "agenda": { "primary_goal": "Complete his investigation into Victoria's art fraud connections" },
         "appearance": { "base": "", "skin_color": "", "hair": "", "outfit": "", "shoes": "", "eyes": "", "nose": "", "mouth": "" },
-        "voice": { "voice_ID": 5, "timbre": 2, "pitch": 0.7, "speed": 0.7, "volume": 0.7 }
+        "voice": { "voice_ID": 5, "timbre": 8, "pitch": 0.7, "speed": 0.7, "volume": 0.7 }
       },
       "mind_engine": {
         "identity": { "name": "Gideon Marsh", "occupation": "Private investigator specializing in art and antiquities cases, former military intelligence", "personality": { "O": 0.7, "C": 0.9, "E": 0.4, "A": 0.5, "N": 0.3 } },
