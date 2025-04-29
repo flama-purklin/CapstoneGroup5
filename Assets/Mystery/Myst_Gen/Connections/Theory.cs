@@ -60,6 +60,7 @@ public class Theory : Connection, IPointerDownHandler
         {
             answerObj = node.gameObject;
             placing = false;
+            transform.SetAsFirstSibling();
 
             //place the 
             control.TheoryPlaced();

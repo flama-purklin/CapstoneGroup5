@@ -37,6 +37,11 @@ public class PowerControl : MonoBehaviour
             powerPercent.text = Mathf.CeilToInt((float)currentPower / powerTotal * 100f) + "%";
         else
             powerPercent.text = string.Empty;
+
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            powerTotal = 0;
+        }
     }
 
     // Update is called once per frame
