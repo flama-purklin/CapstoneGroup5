@@ -18,6 +18,9 @@ public class MysteryNode
     [JsonProperty("description")]
     public string Description { get; set; } = default!;
 
+    [JsonProperty("target")]
+    public string? Target { get; set; }
+
     [JsonProperty("car_id")]
     public string? CarId { get; set; }
 

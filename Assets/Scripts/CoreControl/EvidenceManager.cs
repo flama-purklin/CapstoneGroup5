@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using static UnityEngine.InputSystem.InputControlScheme.MatchResult;
 
 public class EvidenceManager : MonoBehaviour
 {
@@ -35,11 +36,12 @@ public class EvidenceManager : MonoBehaviour
     [SerializeField] bool initialized = false;
 
     [SerializeField] List<TrainManager.TrainCar> trainCars;
+    [SerializeField] List<ParsedEvidenceNode> allNodes;
     [SerializeField] List<ParsedEvidenceNode> parsedNodes;
     [SerializeField] List<EvidenceData> evidenceData;
     [SerializeField] List<GameObject> spawnedEvidence;
     [SerializeField] List<string> nodesToDeactivate;
-    [SerializeField] List<MysteryEvent> scriptedEvents;
+    [SerializeField] List<MysteryEvent> scriptedEvents = new List<MysteryEvent>();
 
     // TODO: Add object to hold scripted events here
 
@@ -52,11 +54,108 @@ public class EvidenceManager : MonoBehaviour
         StartCoroutine(WaitThenLoadEvidence());
     }
 
+    void Update()
+    {
+        if (initialized) 
+        {
+            // Handle scripted events
+            // Iterate in reverse so we can safely remove items
+            for (int i = scriptedEvents.Count - 1; i >= 0; i--)
+            {
+                MysteryEvent se = scriptedEvents[i];
+                bool allTriggersDiscovered = true;
+
+                string nodeToActivate = se.Id;
+                foreach (string triggerKey in se.Triggers)
+                {
+                    //find node with key = to trigger
+                    var match = allNodes.FirstOrDefault(obj => obj != null && obj.Key == triggerKey);
+                    if (match != null)
+                    {
+                        if (match.Node.Discovered == false)
+                        {
+                            allTriggersDiscovered = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        allTriggersDiscovered = false;
+                        Debug.LogWarning($"[EvidenceManager] Scripted event trigger '{triggerKey}' not found in mystery json!");
+                        break;
+                    }
+
+                    // Activate if all triggers discovered, remvoe from events list
+                    if (allTriggersDiscovered)
+                    {
+                        var evidenceMatch = spawnedEvidence.FirstOrDefault(obj => obj != null && obj.name == (se.Id + " Evidence"));
+                        if (evidenceMatch != null)
+                        {
+                            evidenceMatch.SetActive(true);
+                            scriptedEvents.RemoveAt(i); // Safe since itterating backword.
+
+                            // Ensure npc not exist same time as body
+                            if (match.Node.Type == "EVIDENCE" && match.Node.Subtype == "death")
+                            {
+                                string npcName = match.Node.Target;
+
+                                GameObject npcManager = GameObject.Find("NPCManager");
+                                if (npcManager != null)
+                                {
+                                    Transform npcInstances = npcManager.transform.Find("NPCInstances");
+                                    if (npcInstances != null)
+                                    {
+                                        Transform npc = npcInstances.Find("NPC_" + npcName);
+                                        if (npc != null)
+                                        {
+                                            npc.gameObject.SetActive(false);
+                                            if (enableDebug)
+                                            {
+                                                Debug.Log($"[EvidenceManager] Deactivated NPC: NPC_{npcName} due to death evidence.");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.LogWarning($"[EvidenceManager] NPC_{npcName} not found under NPCInstances.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.LogWarning("[EvidenceManager] NPCInstances object not found under NPCManager.");
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("[EvidenceManager] NPCManager object not found in the scene.");
+                                }
+
+                            }
+
+                            if (enableDebug)
+                            {
+                                Debug.Log($"[EvidenceManager] All triggers discovered for '{se.Id}'. Activating and removing from scriptedEvents list.");
+                            }
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Once NPCs spawn (mystery parsed and npcs availible) Get Evidence Nodes.
     private IEnumerator WaitThenLoadEvidence()
     {
         // Wait until NPCs are done spawning
         yield return new WaitUntil(() => npcManager.SpawningComplete);
+
+        allNodes = GameControl.GameController.coreConstellation.Nodes
+            .Select(kv => new ParsedEvidenceNode
+            {
+                Key = kv.Key,
+                Node = kv.Value
+            }).ToList();
 
         // Load and filter evidence nodes (uses dictionary like scruct), set runtime references and flags
         parsedNodes = GameControl.GameController.coreConstellation.Nodes
@@ -70,7 +169,7 @@ public class EvidenceManager : MonoBehaviour
         // TODid?: Populate list with scripted events here.
         scriptedEvents = GameControl.GameController.coreMystery.ScriptedEvents;
 
-        initialized = true;
+        //initialized = true;
 
         // Print what has been collected for debugging purposes
         if (enableDebug) 
@@ -267,6 +366,43 @@ public class EvidenceManager : MonoBehaviour
                     }
                 }
 
+                // Ensure npc not exist same time as body
+                if (node.Node.Type == "EVIDENCE" && node.Node.Subtype == "death")
+                {
+                    string npcName = node.Node.Target;
+
+                    GameObject npcManager = GameObject.Find("NPCManager");
+                    if (npcManager != null)
+                    {
+                        Transform npcInstances = npcManager.transform.Find("NPCInstances");
+                        if (npcInstances != null)
+                        {
+                            Transform npc = npcInstances.Find("NPC_" + npcName);
+                            if (npc != null)
+                            {
+                                npc.gameObject.SetActive(false);
+                                if (enableDebug)
+                                {
+                                    Debug.Log($"[EvidenceManager] Deactivated NPC: NPC_{npcName} due to death evidence.");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[EvidenceManager] NPC_{npcName} not found under NPCInstances.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("[EvidenceManager] NPCInstances object not found under NPCManager.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[EvidenceManager] NPCManager object not found in the scene.");
+                    }
+
+                }
+
                 if (enableDebug)
                 {
                     Debug.Log($"[EvidenceManager] Evidence populated for '{node.Node.Subtype}' evidence '{node.Node.Title}' at car #{node.Node.CarNumber}, anchor '{anchor.name}'.");
@@ -276,7 +412,7 @@ public class EvidenceManager : MonoBehaviour
 
         // *** Hard Code! Disable Maxwell body node untill scripted events work
         nodesToDeactivate.Add("fact-maxwell-body Evidence");
-        nodesToDeactivate.Add("evidence-maxwell-final-note");
+        nodesToDeactivate.Add("evidence-maxwell-final-note Evidence");
 
         // TODO: Cleanup logic. Deactivate objects that are in nodesToDeactivate. Set up the scripted event checkers.
         foreach (string evidenceName in nodesToDeactivate)
