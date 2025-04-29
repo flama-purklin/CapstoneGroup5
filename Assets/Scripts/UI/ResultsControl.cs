@@ -1,11 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ResultsControl : MonoBehaviour
 {
     [SerializeField] GameObject winHolder;
     [SerializeField] GameObject lossHolder;
     [SerializeField] TMP_Text confidenceScore;
+    [SerializeField] Button returnButton;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -30,5 +33,10 @@ public class ResultsControl : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }

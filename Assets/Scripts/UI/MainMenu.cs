@@ -26,7 +26,12 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
+        //set application framerate here
+        Application.targetFrameRate = 30;
+
         resolutions = Screen.resolutions;
+
+        
         //resolutionDropdown.ClearOptions();
         List<string> options = new List<string>();
 
