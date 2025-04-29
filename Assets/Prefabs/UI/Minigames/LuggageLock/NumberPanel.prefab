@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1979418828, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
+  m_Sprite: {fileID: -1271568882, guid: 616f73b3a6a1902418c0870520786015, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -413,8 +413,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 632161434, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: b324a4685d480b346b084e8a5dbacbde, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -422,7 +422,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 6
 --- !u!114 &169331555699656399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,7 +501,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -885841412, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
+  m_Sprite: {fileID: 1954011213, guid: 616f73b3a6a1902418c0870520786015, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -603,7 +603,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45.65
+  m_fontSize: 43.4
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -781,7 +781,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5150302185286967843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -818,16 +818,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentIndex: 2
   numbers:
-  - {fileID: 632161434, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: -885841412, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: -662777083, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: 1979418828, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: -490421830, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: -111471686, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: 1288175227, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: 1408555317, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: -1456272428, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
-  - {fileID: 1184599910, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
+  - {fileID: 1371483081, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: 1954011213, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: -340765253, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: -1271568882, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: 568873227, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: 1736667810, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: 1097438616, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: -206320501, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: -964632482, guid: 616f73b3a6a1902418c0870520786015, type: 3}
+  - {fileID: 280441110, guid: 616f73b3a6a1902418c0870520786015, type: 3}
   numSlots: []
   upperSlot: {fileID: 3187722123405328447}
   currentSlot: {fileID: 5494772735451701828}
@@ -897,7 +897,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -662777083, guid: 7ccbcaa8941d4c645aed08e2aa8a335b, type: 3}
+  m_Sprite: {fileID: -340765253, guid: 616f73b3a6a1902418c0870520786015, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
