@@ -346,10 +346,18 @@ public class DialogueControl : MonoBehaviour
         {
             isTransitioning = true;
 
-            // Hide the new UI if it's being used
+            // Hide the new UI if it's being used (this also calls ClearDialogue internally)
             if (dialogueUIController != null) {
                 dialogueUIController.HideDialogue();
                 Debug.Log("[DialogueControl] Called HideDialogue on new DialogueUIController");
+            }
+            
+            // Reset the evidence dropdown to default ("No Evidence")
+            if (evidenceSelect != null && evidenceSelect.options.Count > 0) {
+                // "No Evidence" is always the last option added by UpdateEvidence
+                evidenceSelect.value = evidenceSelect.options.Count - 1; 
+                evidenceSelect.RefreshShownValue(); // Ensure UI updates visually
+                Debug.Log("[DialogueControl] Reset evidence dropdown to default.");
             }
 
             // --- RESET/CANCEL FIRST ---

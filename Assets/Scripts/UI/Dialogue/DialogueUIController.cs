@@ -261,14 +261,14 @@ public class DialogueUIController : MonoBehaviour
         
         // We no longer set responseText.text here - BeepSpeak will handle that
         // responseText.text = fullResponse; // REMOVED
-
-        Debug.Log("[DialogueUIController] About to call inputGhostManager.ForceShowGhostText");
-        if (inputGhostManager != null)
-        {
-            inputGhostManager.ForceShowGhostText();
-            inputGhostManager.LogCurrentState();
-        }
-        else
+        
+        // ForceShowGhostText call removed as InputGhost is now always visible
+        // if (inputGhostManager != null)
+        // {
+        //     inputGhostManager.ForceShowGhostText(); // REMOVED
+        //     inputGhostManager.LogCurrentState();
+        // }
+        // else
         {
             Debug.LogError("[DialogueUIController] inputGhostManager is NULL in SetNPCResponse!");
         }
@@ -297,19 +297,19 @@ public class DialogueUIController : MonoBehaviour
         // We no longer set responseText.text here - BeepSpeak will handle that
         // responseText.text = currentResponse; // REMOVED
 
-        // Ensure ghost text remains visible during streaming
-        if (!string.IsNullOrEmpty(chunk))
-        {
-            if (inputGhostManager != null)
-            {
-                Debug.Log("[DialogueUIController] Calling inputGhostManager.ForceShowGhostText from AppendToNPCResponse");
-                inputGhostManager.ForceShowGhostText();
-            }
-            else
-            {
-                Debug.LogError("[DialogueUIController] inputGhostManager is NULL in AppendToNPCResponse!");
-            }
-        }
+        // Ensure ghost text remains visible during streaming - No longer needed, ghost is always visible
+        // if (!string.IsNullOrEmpty(chunk))
+        // {
+        //     if (inputGhostManager != null)
+        //     {
+        //         Debug.Log("[DialogueUIController] Calling inputGhostManager.ForceShowGhostText from AppendToNPCResponse");
+        //         inputGhostManager.ForceShowGhostText(); // REMOVED
+        //     }
+        //     else
+        //     {
+        //         Debug.LogError("[DialogueUIController] inputGhostManager is NULL in AppendToNPCResponse!");
+        //     }
+        // }
 
         // BeepSpeak will trigger scroll as needed when it updates text
         // if (responseScrollRect.verticalNormalizedPosition <= autoScrollThreshold)

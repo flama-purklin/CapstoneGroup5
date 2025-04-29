@@ -16,25 +16,39 @@ public class InputGhostManager : MonoBehaviour
     {
         if (ghostText == null)
         {
-            // Since the TextMeshProUGUI is on the same GameObject, try to get component directly
+            // Attempt to find the TextMeshProUGUI component, preferably on this GameObject
             ghostText = GetComponent<TextMeshProUGUI>();
-            Debug.Log($"[InputGhostManager] Awake - Found ghostText on self: {(ghostText != null)}");
-            
-            // If still not found, look in children
             if (ghostText == null)
             {
                 ghostText = GetComponentInChildren<TextMeshProUGUI>();
                 Debug.Log($"[InputGhostManager] Awake - Found ghostText in children: {(ghostText != null)}");
+            } else {
+                 Debug.Log($"[InputGhostManager] Awake - Found ghostText on self: {(ghostText != null)}");
+            }
+
+            if (ghostText == null) {
+                Debug.LogError("[InputGhostManager] Awake - Failed to find ghostText component!");
             }
         }
         
-        // Make sure we start clean
-        ClearGhost();
+        // Ensure the text component is enabled, but start with empty text
+        if (ghostText != null) {
+            ghostText.enabled = true; // Keep it enabled always
+            ghostText.text = string.Empty; // Start empty
+            Color textColor = ghostText.color;
+            textColor.a = 1f; // Keep it fully opaque always
+            ghostText.color = textColor;
+            Debug.Log("[InputGhostManager] Awake - Ensured ghostText is enabled and cleared.");
+        }
+        
+        // Clear the internal message state too
+        lastPlayerMessage = string.Empty;
     }
 
+    // Start() is likely unnecessary now, but keep for potential future debug
     private void Start()
     {
-        Debug.Log($"[InputGhostManager] Start - GameObject active: {gameObject.activeInHierarchy}, ghostText active: {ghostText?.gameObject.activeInHierarchy}");
+        Debug.Log($"[InputGhostManager] Start - GameObject active: {gameObject.activeInHierarchy}, ghostText active and enabled: {ghostText?.enabled}");
     }
 
     /// <summary>
@@ -50,39 +64,13 @@ public class InputGhostManager : MonoBehaviour
         }
 
         lastPlayerMessage = playerInput;
-        Debug.Log($"[InputGhostManager] Setting ghost text to: '{playerInput}'");
+        // Debug.Log($"[InputGhostManager] Setting ghost text to: '{playerInput}'"); // Reduced verbosity
         
         if (ghostText != null)
         {
-            // Make sure text is empty before setting new text - fixes stuck text issues
-            ghostText.text = string.Empty;
-            
-            // Ensure this GameObject is active
-            if (!gameObject.activeSelf)
-            {
-                gameObject.SetActive(true);
-                Debug.Log("[InputGhostManager] Activated ghost GameObject");
-            }
-            
-            // Set the text with prefix and suffix
+            // Directly set the text. Assume component and GameObject are always active & visible.
             ghostText.text = prefix + playerInput + suffix;
-            
-            // Ensure text is visible
-            ghostText.enabled = true;
-            Color textColor = ghostText.color;
-            textColor.a = 1f;
-            ghostText.color = textColor;
-            
-            // Force layout rebuild to ensure proper sizing
-            Canvas.ForceUpdateCanvases(); // Force immediate update of all canvases
-            if (transform.parent is RectTransform parentRect)
-            {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
-            }
-            
-            Debug.Log($"[InputGhostManager] Ghost text set to: '{prefix + playerInput + suffix}'");
-            Debug.Log($"[InputGhostManager] Text color alpha: {ghostText.color.a}, enabled: {ghostText.enabled}");
+            Debug.Log($"[InputGhostManager] Ghost text set to: '{ghostText.text}'");
         }
         else
         {
@@ -99,15 +87,9 @@ public class InputGhostManager : MonoBehaviour
         
         if (ghostText != null)
         {
+            // Only clear the text content. Keep component enabled and visible.
             ghostText.text = string.Empty;
-            
-            // Hide by disabling the component and setting alpha to 0
-            ghostText.enabled = false;
-            Color textColor = ghostText.color;
-            textColor.a = 0f;
-            ghostText.color = textColor;
-            
-            Debug.Log("[InputGhostManager] Ghost text cleared and hidden");
+            Debug.Log("[InputGhostManager] Ghost text cleared");
         }
         else
         {
@@ -115,46 +97,7 @@ public class InputGhostManager : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// Forces the ghost text to be visible if there's a stored message.
-    /// </summary>
-    public void ForceShowGhostText()
-    {
-        Debug.Log($"[InputGhostManager] ForceShowGhostText called. lastPlayerMessage: '{lastPlayerMessage}'");
-        
-        if (!string.IsNullOrEmpty(lastPlayerMessage) && ghostText != null)
-        {
-            // Clear text first to ensure refresh
-            ghostText.text = string.Empty;
-            
-            // Make sure GameObject is active
-            if (!gameObject.activeSelf)
-            {
-                gameObject.SetActive(true);
-                Debug.Log("[InputGhostManager] Activated InputGhost GameObject");
-            }
-            
-            // Set text
-            ghostText.text = prefix + lastPlayerMessage + suffix;
-            
-            // Ensure text is visible
-            ghostText.enabled = true;
-            Color textColor = ghostText.color;
-            textColor.a = 1f;
-            ghostText.color = textColor;
-            
-            // Force layout rebuild for all canvases to ensure visibility
-            Canvas.ForceUpdateCanvases(); // Force immediate update of all canvases
-            if (transform.parent is RectTransform parentRect)
-            {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
-            }
-            
-            Debug.Log($"[InputGhostManager] Force-showed ghost text: '{prefix + lastPlayerMessage + suffix}'");
-            Debug.Log($"[InputGhostManager] Text color alpha: {ghostText.color.a}, enabled: {ghostText.enabled}");
-        }
-    }
+    // REMOVED ForceShowGhostText as it's no longer needed with the simplified always-visible approach.
     
     // Debug method to check state from outside
     public void LogCurrentState()
