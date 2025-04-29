@@ -976,34 +976,37 @@
       "mind_engine": {
         "identity": {
           "name": "Gideon Marsh",
-          "occupation": "Private investigator specializing in art and antiquities cases, former military intelligence",
+          "occupation": "Private investigator specializing in art fraud cases; former arts journalist whose one poetry collection 'Counterfeit Reflections' sold exactly 17 copies",
           "personality": {
-            "O": 0.7,
-            "C": 0.9,
+            "O": 0.8,
+            "C": 0.7, 
             "E": 0.4,
             "A": 0.5,
-            "N": 0.3
+            "N": 0.6
           }
         },
         "state_of_mind": {
-          "worries": "Overlooking a link in his mental evidence web",
-          "feelings": "Clinical detachment edging into fascination",
-          "reasoning_style": "Abductive leaps annotated in spy-grade shorthand"
+          "worries": "That Victoria's death will derail his investigation",
+          "feelings": "Artistic frustration sublimated into a preternatural ability to spot inauthenticity—in both paintings and people",
+          "reasoning_style": "Traces forgery patterns through metaphor; sees the world as layers of authentic and inauthentic brushstrokes"
         },
         "speech_patterns": {
-          "vocabulary_level": "forensic precision with archaic garnish",
+          "vocabulary_level": "Art auction catalog meets pulp detective novel",
           "sentence_style": [
-            "concise burst → timestamp → concise burst",
-            "reduces people to variables out loud when stressed"
+            "compares every aspect of the murder to various art forgery techniques",
+            "constructs elaborate metaphors linking the killer's psychology to specific artists' style periods"
           ],
           "speech_quirks": [
-            "recites exact times down to the second",
-            "eyes flick to jugular when assessing threat"
+            "unconsciously sketches miniature crime scene diagrams that resemble famous paintings",
+            "evaluates alibis like art appraisals: 'This story bears hallmarks of inauthenticity in the brushwork'",
+            "slips into iambic pentameter when examining particularly compelling evidence",
+            "carries a small black notebook filled with poetic descriptions of forgery techniques disguised as case notes"
           ],
           "common_phrases": [
-            "Baseline parameters established.",
-            "Insufficient data- require verification.",
-            "Subject displays deception micro-twitch, left eye."
+            "This murder was staged with the precision of a Dutch Master—deceptively simple at first glance, yet forensically immaculate.",
+            "Maxwell's anxiety manifests like a Pollock—chaotic splatter hiding deliberate technique.",
+            "Victoria's death scene / Arranged like Caravaggio / Darkness concealing truth.",
+            "Gregory reminds me of Vermeer—seemingly perfect technique that collapses under spectroscopic analysis."
           ]
         }
       }
