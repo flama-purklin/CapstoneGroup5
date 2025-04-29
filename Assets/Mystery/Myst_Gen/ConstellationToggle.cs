@@ -124,6 +124,16 @@ public class ConstellationToggle : MonoBehaviour
         // Activate mystery camera 
         mysteryCam.gameObject.SetActive(true);
 
+        // Toggle audio listeners - disable main camera's audio listener and enable mystery camera's
+        if (mainCam.GetComponent<AudioListener>() != null)
+            mainCam.GetComponent<AudioListener>().enabled = false;
+        if (mysteryCam.GetComponent<AudioListener>() != null)
+            mysteryCam.GetComponent<AudioListener>().enabled = true;
+        // If CoreSystemsManager exists, use its more comprehensive method
+        var coreSystems = CoreSystemsManager.Instance;
+        if (coreSystems != null)
+            coreSystems.ToggleMysteryMapMode(true);
+
         // Smooth camera transition
         if (transitionCoroutine != null)
             StopCoroutine(transitionCoroutine);
@@ -151,6 +161,16 @@ public class ConstellationToggle : MonoBehaviour
         if (transitionCoroutine != null)
             StopCoroutine(transitionCoroutine);
         transitionCoroutine = StartCoroutine(AnimateCameraTransition(false));
+        
+        // Toggle audio listeners - enable main camera's audio listener and disable mystery camera's
+        if (mainCam.GetComponent<AudioListener>() != null)
+            mainCam.GetComponent<AudioListener>().enabled = true;
+        if (mysteryCam.GetComponent<AudioListener>() != null)
+            mysteryCam.GetComponent<AudioListener>().enabled = false;
+        // If CoreSystemsManager exists, use its more comprehensive method
+        var coreSystems = CoreSystemsManager.Instance;
+        if (coreSystems != null)
+            coreSystems.ToggleMysteryMapMode(false);
         
         // Delay UI deactivation for smoother transition
         StartCoroutine(DelayedUIDeactivation(0.3f));
