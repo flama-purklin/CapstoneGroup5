@@ -109,7 +109,9 @@ public class Connection : MonoBehaviour
         //additional checks may be needed: GameControl.GameController.coreConstellation.Nodes[leadInfo.Terminal].Discovered
         //&& GameControl.GameController.coreConstellation.Nodes[leadInfo.Answer].Discovered
         //&&
-        if (confirmed)
+        if (GameControl.GameController.coreConstellation.Nodes[leadInfo.Terminal].Discovered
+        && GameControl.GameController.coreConstellation.Nodes[leadInfo.Answer].Discovered
+        && confirmed)
         {
 
             visualConn.enabled = true;
