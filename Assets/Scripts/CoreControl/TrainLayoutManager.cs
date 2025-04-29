@@ -239,6 +239,13 @@ public class TrainLayoutManager : MonoBehaviour
 
         NameCars(); // NameCars now needs to find the instances from TrainManager
 
+        // Fix car indexing and update carNumber to match mystery json
+        trainManager.trainCarList.Reverse();
+        for (int i = 0; i < trainManager.trainCarList.Count; i++)
+        {
+            trainManager.trainCarList[i].carNumber = i;
+        }
+
         hasBuiltTrain = true; // Mark the train as built
         Debug.Log("TrainLayoutManager: Train build process complete.", this);
     }
@@ -371,6 +378,34 @@ public class TrainLayoutManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Finds the Transform of a spawned train car based on its key index from the layout.
+    /// </summary>
+    /// <param name="carNameKey">The key name of the car (e.g., "first_class", "dining_car").</param>
+    /// <returns>The Transform of the car GameObject, or null if not found.</returns>
+    public Transform GetCarTransform(int carIndex)
+    {
+        if (trainManager == null || trainManager.trainCarList == null)
+        {
+            Debug.LogError("GetCarTransform: TrainManager or its trainCarList is not available.");
+            return null;
+        }
+        if (carIndex < 0 || carIndex >= trainManager.trainCarList.Count)
+        {
+            Debug.LogError("GetCarTransform: Provided carNameIndex is not within bounds of TrainCarList indexes.");
+            return null;
+        }
+
+        GameObject carInstance = trainManager.trainCarList[carIndex].trainCar;
+
+        if (carInstance == null)
+        {
+            Debug.LogError($"GetCarTransform: The GameObject reference is null for index '{carIndex}'!");
+            return null;
+        }
+        return carInstance.transform;
+     }
+
+    /// <summary>
     /// Gets a suitable spawn point position within the specified car.
     /// Currently tries to find a child named "SpawnPoint", otherwise returns the car's center.
     /// </summary>
@@ -390,20 +425,31 @@ public class TrainLayoutManager : MonoBehaviour
 
         if (floorTransform != null)
         {
+            // Added logic to grab from empty anchors list
+            List<GameObject> anchorObjects = trainManager.trainCarList
+                .Find(car => car.trainCar.name == carTransform.name)?.emptyAnchors;
+
             List<Transform> anchors = new List<Transform>();
-            foreach (Transform child in floorTransform)
+            foreach (GameObject anchorObj in anchorObjects)
+            {
+                anchors.Add(anchorObj.transform);
+            }
+
+            // Unneeded with above usage of emptyAchors lists
+/*            foreach (Transform child in floorTransform)
             {
                 if (child.name.StartsWith("Anchor"))
                 {
                     anchors.Add(child);
                 }
-            }
+            }*/
 
             if (anchors.Count > 0)
             {
                 // Attempt 1: Find a specific central anchor (e.g., "Anchor (3, 7)")
                 string targetAnchorName = "Anchor (3, 7)"; // Or adjust based on typical grid size
                 chosenAnchor = anchors.FirstOrDefault(a => a.name == targetAnchorName);
+
 
                 // Fallback 1: If specific anchor not found, try finding *any* anchor not at (0,0) or similar edge
                 if (chosenAnchor == null)
@@ -413,10 +459,10 @@ public class TrainLayoutManager : MonoBehaviour
                 }
 
 
-                // Fallback 2: If still no suitable anchor, just use the first one found
+                // Fallback 2: If still no suitable anchor, just use a random empty one;
                 if (chosenAnchor == null)
                 {
-                    chosenAnchor = anchors[0];
+                    chosenAnchor = anchors[Random.Range(0, anchors.Count)];
                     Debug.LogWarning($"GetSpawnPointInCar: Target anchor '{targetAnchorName}' and non-edge anchors not found in '{carNameKey}'. Using first available anchor '{chosenAnchor.name}'.");
                 }
             }
@@ -486,6 +532,138 @@ public class TrainLayoutManager : MonoBehaviour
         {
             // Attempt 5 (Last Resort): Return car center anyway, but warn more severely
              Debug.LogError($"GetSpawnPointInCar: Failed to find valid anchor AND failed to sample NavMesh near center for car '{carNameKey}'. Returning raw car center ({carTransform.position}) - NPC NavMeshAgent WILL likely fail!");
+            return carTransform.position;
+        }
+    }
+
+    /// <summary>
+    /// Gets a suitable spawn point position within the specified car.
+    /// Currently tries to find a child named "SpawnPoint", otherwise returns the car's center.
+    /// </summary>
+    /// <param name="carNameKey">The key name of the car (e.g., "first_class").</param>
+    /// <returns>A Vector3 position for spawning, or Vector3.zero if the car is not found.</returns>
+    public Vector3 GetSpawnPointInCar(Transform carTransform)
+    {
+        //Transform carTransform = GetCarTransform(carNameKey);
+        string carNameKey = carTransform.gameObject.name;
+        if (carTransform == null)
+        {
+            Debug.LogError($"GetSpawnPointInCar: Could not find car transform for transform '{carNameKey}'. Returning Vector3.zero.");
+            return Vector3.zero; // Indicate failure
+        }
+
+        Transform chosenAnchor = null;
+        Transform floorTransform = carTransform.Find("RailCarFloor");
+
+        if (floorTransform != null)
+        {
+            // Added logic to grab from empty anchors list
+            List<GameObject> anchorObjects = trainManager.trainCarList
+                .Find(car => car.trainCar.name == carTransform.name)?.emptyAnchors;
+
+            List<Transform> anchors = new List<Transform>();
+            foreach (GameObject anchorObj in anchorObjects)
+            {
+                anchors.Add(anchorObj.transform);
+            }
+
+            // Unneeded with above usage of emptyAchors lists
+            /*            foreach (Transform child in floorTransform)
+                        {
+                            if (child.name.StartsWith("Anchor"))
+                            {
+                                anchors.Add(child);
+                            }
+                        }*/
+
+            if (anchors.Count > 0)
+            {
+                // Attempt 1: Find a specific central anchor (e.g., "Anchor (3, 7)")
+                string targetAnchorName = "Anchor (3, 7)"; // Or adjust based on typical grid size
+                chosenAnchor = anchors.FirstOrDefault(a => a.name == targetAnchorName);
+
+
+                // Fallback 1: If specific anchor not found, try finding *any* anchor not at (0,0) or similar edge
+                if (chosenAnchor == null)
+                {
+                    chosenAnchor = anchors.FirstOrDefault(a => !a.name.Contains("(0,") && !a.name.Contains(", 0)"));
+                    if (chosenAnchor != null) Debug.LogWarning($"GetSpawnPointInCar: Target anchor '{targetAnchorName}' not found in '{carNameKey}'. Using fallback anchor '{chosenAnchor.name}'.");
+                }
+
+
+                // Fallback 2: If still no suitable anchor, just use a random empty one;
+                if (chosenAnchor == null)
+                {
+                    chosenAnchor = anchors[Random.Range(0, anchors.Count)];
+                    Debug.LogWarning($"GetSpawnPointInCar: Target anchor '{targetAnchorName}' and non-edge anchors not found in '{carNameKey}'. Using first available anchor '{chosenAnchor.name}'.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"GetSpawnPointInCar: No 'Anchor' children found under 'RailCarFloor' in car '{carNameKey}'. Trying car center fallback.");
+            }
+        }
+        else
+        {
+            Debug.LogError($"GetSpawnPointInCar: Could not find 'RailCarFloor' child in car '{carNameKey}'. Returning car center as fallback.");
+        }
+
+        // Proceed if we found an anchor
+        if (chosenAnchor != null)
+        {
+            // Debug.Log($"[GetSpawnPoint Debug] Chosen Anchor for '{carNameKey}': {chosenAnchor.name}");
+
+            // Find the "walkway" child of the chosen anchor
+            Transform walkwayChild = chosenAnchor.Find("walkway"); // Assuming name is exactly "walkway"
+            if (walkwayChild == null)
+            {
+                // Try finding by partial name in case it's like "walkway (x, y)"
+                foreach (Transform child in chosenAnchor)
+                {
+                    if (child.name.StartsWith("walkway"))
+                    {
+                        walkwayChild = child;
+                        break;
+                    }
+                }
+            }
+
+            if (walkwayChild != null)
+            {
+                Vector3 targetPos = walkwayChild.position;
+                // Debug.Log($"[GetSpawnPoint Debug] Found walkway '{walkwayChild.name}' under '{chosenAnchor.name}'. Target Position: {targetPos}");
+                // Debug.Log($"GetSpawnPointInCar: Targeting anchor '{chosenAnchor.name}', walkway '{walkwayChild.name}' at world position {targetPos} in '{carNameKey}'."); // Redundant log removed
+
+                // Find the closest point on the NavMesh to the walkway position
+                if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 5.0f, NavMesh.AllAreas))
+                {
+                    // Debug.Log($"[GetSpawnPoint Debug] NavMesh.SamplePosition SUCCESS near walkway. Returning validated point: {hit.position}");
+                    // Debug.Log($"GetSpawnPointInCar: Found valid NavMesh point {hit.position} near walkway '{walkwayChild.name}'."); // Redundant log removed
+                    // Removed anchor tracking: usedInThisCar.Add(chosenAnchor);
+                    return hit.position; // Return the valid NavMesh point
+                }
+                else
+                {
+                    Debug.LogWarning($"GetSpawnPointInCar: Could not find valid NavMesh point within 5.0 units of walkway '{walkwayChild.name}' ({targetPos}) in '{carNameKey}'. Trying car center fallback.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"GetSpawnPointInCar: Could not find 'walkway' child under chosen anchor '{chosenAnchor.name}' in '{carNameKey}'. Trying car center fallback.");
+            }
+        }
+
+
+        // Fallback: Sample NavMesh near the car's center position
+        if (NavMesh.SamplePosition(carTransform.position, out NavMeshHit centerHit, 5.0f, NavMesh.AllAreas))
+        {
+            Debug.LogWarning($"GetSpawnPointInCar: Using NavMesh point near center as fallback: {centerHit.position}");
+            return centerHit.position;
+        }
+        else
+        {
+            // Attempt 5 (Last Resort): Return car center anyway, but warn more severely
+            Debug.LogError($"GetSpawnPointInCar: Failed to find valid anchor AND failed to sample NavMesh near center for car '{carNameKey}'. Returning raw car center ({carTransform.position}) - NPC NavMeshAgent WILL likely fail!");
             return carTransform.position;
         }
     }

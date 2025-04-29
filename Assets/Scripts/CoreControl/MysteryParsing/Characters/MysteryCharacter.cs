@@ -15,6 +15,9 @@ public class MysteryCharacter
     [JsonProperty("initial_location")] // Moved back to top level
     public string InitialLocation { get; set; }
 
+    [JsonProperty("initial_location_index")] // Added to assist spawning
+    public int InitialLocationIndex { get; set; }
+
     // KeyTestimonies removed from here
 }
 

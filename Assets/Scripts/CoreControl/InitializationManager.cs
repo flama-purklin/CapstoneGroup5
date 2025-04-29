@@ -205,11 +205,18 @@ public class InitializationManager : MonoBehaviour
                     continue;
                 }
 
-                string startCarName = charData.InitialLocation; 
+                string startCarName = charData.InitialLocation;
                 if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location found for '{characterName}'. Skipping NPC spawn."); continue; }
                 Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
+
+                /*int startCarIndex = charData.InitialLocationIndex;
+                Transform carTransform = trainLayoutManager.GetCarTransform(startCarIndex);
+                startCarName = carTransform.gameObject.name;
+                Debug.Log($"[InitializationManager] Start car name found as '{startCarName}' for npc '{characterName}'");*/
+
                 if (carTransform == null) { Debug.LogWarning($"Could not find car transform '{startCarName}' for '{characterName}'. Skipping."); continue; }
                 Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
+                //Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(carTransform);
                 GameObject spawnedNPC = npcManager.SpawnNPCInCar(characterName, spawnPos, carTransform, i);
                 if (spawnedNPC != null) {
                     // Adds npc reference to TrainManager
