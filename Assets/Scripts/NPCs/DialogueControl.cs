@@ -18,6 +18,7 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] private RectTransform dialoguePanel;
     [SerializeField] private DialogueUIController dialogueUIController; // New DialogueUIController reference
     private CharacterManager characterManager; // Reference to CharacterManager for EnsureReady
+    [SerializeField] GameObject loadingUI;
 
     [Header("HUD Elements to Keep Active")]
     [SerializeField] private GameObject nodeUnlockNotifHud; // Keep this active during dialogue for function calls
@@ -26,6 +27,7 @@ public class DialogueControl : MonoBehaviour
     [Header("Canvas Components")]
     [SerializeField] Image characterProf;
     [SerializeField] TMP_Text characterName;
+    [SerializeField] Image spinner;
 
     [Header("Evidence Selection")]
     [SerializeField] public TMP_Dropdown evidenceSelect;
@@ -79,6 +81,8 @@ public class DialogueControl : MonoBehaviour
         if (!dialogueCanvas) { Debug.LogError("DialogueCanvas reference not set!"); enabled = false; return; }
         if (!anim) { Debug.LogError("Animator reference not set!"); enabled = false; return; }
 
+        loadingUI.SetActive(false);
+
         // Find the CharacterManager in the scene
         characterManager = FindFirstObjectByType<CharacterManager>();
         if (!characterManager) { Debug.LogError("CharacterManager not found in the scene!"); enabled = false; return; }
@@ -118,6 +122,14 @@ public class DialogueControl : MonoBehaviour
 
             // dialogueUIController.OnPlayerMessageSubmitted += HandlePlayerInput; // REMOVED - Input now handled solely by DialogueUIController
             Debug.Log("DialogueUIController found. Input will be handled directly by it.");
+        }
+    }
+
+    private void Update()
+    {
+        if (spinner.isActiveAndEnabled)
+        {
+            spinner.transform.Rotate(0, 0, -180f * Time.deltaTime); // Use Time.deltaTime as we are not pausing the game
         }
     }
 
@@ -190,7 +202,9 @@ public class DialogueControl : MonoBehaviour
         float startTime = Time.realtimeSinceStartup;
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log($"[TIMEDBG] Activate started at {startTime:F3}s");
-        #endif
+#endif
+
+        loadingUI.SetActive(true);
 
         if (isTransitioning) return;
         Debug.Log($"Attempting to activate dialogue with {npcObject.name}");
@@ -307,6 +321,8 @@ public class DialogueControl : MonoBehaviour
             Debug.Log("[DialogueControl] Checking DialogueUIController state after animation completes:");
             dialogueUIController.LogRuntimeState();
         }
+
+        loadingUI.SetActive(false);
     }
 
     private IEnumerator DeactivateDialogue()
