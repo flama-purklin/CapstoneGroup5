@@ -27,8 +27,6 @@ public class DialogueUIController : MonoBehaviour
     [Tooltip("Threshold for auto‑scroll (<= this value)")]
     [SerializeField, Range(0f, 1f)] private float autoScrollThreshold = 0.1f;
 
-    // public event Action<string> OnPlayerMessageSubmitted; // REMOVED - No longer needed
-
     private bool isWaitingForResponse = false;
     private string currentResponse = string.Empty;
     private DialogueControl dialogueControl; // Reference to the main controller
@@ -87,10 +85,10 @@ public class DialogueUIController : MonoBehaviour
         playerInputField.onSubmit.AddListener(OnPlayerSubmitInput);
         Debug.Log("[DialogueUIController] Registered OnPlayerSubmitInput to inputField.onSubmit");
 
-        // Ensure the input field is single-line so Enter triggers submit and also listen to end-edit
+        // Ensure the input field is single-line so Enter triggers submit
+        // FIXED: Removed onEndEdit listener which caused premature submission when clicking dropdown
         playerInputField.lineType = TMP_InputField.LineType.SingleLine;
-        playerInputField.onEndEdit.AddListener(OnPlayerSubmitInput);
-        Debug.Log("[DialogueUIController] Registered OnPlayerSubmitInput to inputField.onEndEdit and set lineType to SingleLine");
+        Debug.Log("[DialogueUIController] Set lineType to SingleLine for Enter key submission");
 
         // initialize hidden
         dialogueCanvasGroup.alpha = 0f;
@@ -101,8 +99,7 @@ public class DialogueUIController : MonoBehaviour
     private void OnDestroy()
     {
         playerInputField.onSubmit.RemoveListener(OnPlayerSubmitInput);
-        // Also remove the onEndEdit listener we added
-        playerInputField.onEndEdit.RemoveListener(OnPlayerSubmitInput);
+        // FIXED: No need to remove onEndEdit listener since we're not adding it anymore
     }
 
     /// <summary>
@@ -185,12 +182,13 @@ public class DialogueUIController : MonoBehaviour
     /// </summary>
     private void OnPlayerSubmitInput(string input)
     {
-        Debug.Log($"[DialogueUIController] OnPlayerSubmitInput called with input: '{input}'");
-        Debug.Log($"[DialogueUIController] isWaitingForResponse: {isWaitingForResponse}, input empty: {string.IsNullOrWhiteSpace(input)}");
+        Debug.Log($"[DIAGDBG] OnPlayerSubmitInput called with input: '{input}'");
+        Debug.Log($"[DIAGDBG] isWaitingForResponse: {isWaitingForResponse}, input empty: {string.IsNullOrWhiteSpace(input)}");
+        Debug.Log($"[DIAGDBG] Event Source: {UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject?.name ?? "Unknown"}");
         
         if (isWaitingForResponse || string.IsNullOrWhiteSpace(input))
         {
-            Debug.Log("[DialogueUIController] Early return from OnPlayerSubmitInput");
+            Debug.Log("[DIAGDBG] Early return from OnPlayerSubmitInput due to isWaitingForResponse or empty input");
             return;
         }
 
@@ -232,6 +230,7 @@ public class DialogueUIController : MonoBehaviour
         scrollFadeManager?.ContentChanged();
 
         isWaitingForResponse = true;
+        Debug.Log("[DIAGDBG] Setting isWaitingForResponse = true");
         
         // Get LLM Manager from DialogueControl and submit input
         if (dialogueControl != null) {
@@ -243,10 +242,10 @@ public class DialogueUIController : MonoBehaviour
                 
                 if (!string.IsNullOrEmpty(selectedEvidenceId)) {
                     finalInput = trimmed + "\n[PLAYER_SHOWS: " + selectedEvidenceId + "]";
-                    Debug.Log($"[DialogueUIController] Added evidence to message. Evidence ID: {selectedEvidenceId}");
+                    Debug.Log($"[DIAGDBG] Added evidence to message. Evidence ID: {selectedEvidenceId}");
                 }
                 
-                Debug.Log($"[DialogueUIController] Calling llmManager.SubmitPlayerInputToLLM with: '{finalInput}'");
+                Debug.Log($"[DIAGDBG] Calling llmManager.SubmitPlayerInputToLLM with: '{finalInput}'");
                 llmManager.SubmitPlayerInputToLLM(finalInput);
                 
                 // NEW: Reset the evidence dropdown to "No Evidence" after submission
@@ -254,15 +253,17 @@ public class DialogueUIController : MonoBehaviour
                     // "No Evidence" is always the last option added by UpdateEvidence
                     dialogueControl.evidenceSelect.value = dialogueControl.evidenceSelect.options.Count - 1;
                     dialogueControl.evidenceSelect.RefreshShownValue(); // Update UI
-                    Debug.Log("[DialogueUIController] Reset evidence dropdown to default after message submission.");
+                    Debug.Log("[DIAGDBG] Reset evidence dropdown to default after message submission.");
                 }
             } else {
-                Debug.LogError("[DialogueUIController] Failed to get LLMDialogueManager from DialogueControl!");
+                Debug.LogError("[DIAGDBG] Failed to get LLMDialogueManager from DialogueControl!");
                 isWaitingForResponse = false; // Reset flag if submission fails
+                Debug.Log("[DIAGDBG] Reset isWaitingForResponse = false due to null llmManager");
             }
         } else {
-             Debug.LogError("[DialogueUIController] DialogueControl reference is null! Cannot submit input.");
+             Debug.LogError("[DIAGDBG] DialogueControl reference is null! Cannot submit input.");
              isWaitingForResponse = false; // Reset flag if submission fails
+             Debug.Log("[DIAGDBG] Reset isWaitingForResponse = false due to null dialogueControl");
         }
 
 
@@ -293,10 +294,12 @@ public class DialogueUIController : MonoBehaviour
     /// </summary>
     public void SetNPCResponse(string fullResponse)
     {
-        Debug.Log($"[DialogueUIController] SetNPCResponse called, response length: {fullResponse?.Length ?? 0}");
-        Debug.Log("[DialogueUIController] NOTE: This method no longer directly sets UI text. BeepSpeak handles display.");
+        Debug.Log($"[DIAGDBG] SetNPCResponse called, response length: {fullResponse?.Length ?? 0}");
+        Debug.Log($"[DIAGDBG] isWaitingForResponse BEFORE: {isWaitingForResponse}");
         
         isWaitingForResponse = false;
+        Debug.Log("[DIAGDBG] isWaitingForResponse set to FALSE");
+        
         currentResponse = fullResponse;
         
         // We no longer set responseText.text here - BeepSpeak will handle that
@@ -317,9 +320,21 @@ public class DialogueUIController : MonoBehaviour
         // ScrollToBottom();
         // scrollFadeManager?.ContentChanged();
         
-        Debug.Log("[DialogueUIController] SetNPCResponse completed");
+        Debug.Log("[DIAGDBG] SetNPCResponse completed");
     }
 
+    /// <summary>
+    /// Explicitly resets the isWaitingForResponse flag.
+    /// Called by BaseDialogueManager after BeepSpeak finishes typing the response.
+    /// This ensures the UI accepts new inputs after the LLM response is fully displayed.
+    /// </summary>
+    public void ResetWaitingForResponse()
+    {
+        Debug.Log("[DIAGDBG] ResetWaitingForResponse called explicitly");
+        Debug.Log($"[DIAGDBG] isWaitingForResponse was: {isWaitingForResponse}, setting to FALSE");
+        isWaitingForResponse = false;
+    }
+    
     /// <summary>
     /// For streaming scenarios: append partial text.
     /// THIS METHOD IS NOW ONLY USED FOR INTERNAL TRACKING, NOT DISPLAY.
