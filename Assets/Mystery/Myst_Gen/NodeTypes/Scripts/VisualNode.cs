@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
@@ -142,38 +143,116 @@ public class VisualNode : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             gameObject.SetActive(false);
     }
 
+    // Store the mouse position on click to determine if this is a click or drag
+    private Vector2 pointerDownPos;
+    private bool isDragging = false;
+    private const float dragThreshold = 5f; // Pixels of movement before considered a drag
+    
     public void OnPointerDown(PointerEventData pointEventData)
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && control.theoryMode == TheoryMode.Addition)
+        // Store the initial position to distinguish between click and drag
+        pointerDownPos = pointEventData.position;
+        isDragging = false;
+        
+        // Handle left clicks based on mode
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            //send a call to node control to tell it this object has been clicked
-            control.NodeClick(this);
-        }
-        if (Input.GetKey(KeyCode.Mouse1) && control.theoryMode == TheoryMode.None)
-        {
-            Debug.Log("Pointer Down at " + gameObject.name);
-            GameObject.FindFirstObjectByType<EvidenceInspect>().ActivateInspect(this);
+            if (control.theoryMode == TheoryMode.Addition)
+            {
+                // In addition mode, send the node to be connected
+                control.NodeClick(this);
+                
+                // Provide visual feedback
+                transform.localScale = new Vector3(1.1f, 1.1f, 1.1f); // Temporarily scale up
+                StartCoroutine(ResetScale(0.2f)); // Reset after slight delay
+            }
+            else if (control.theoryMode == TheoryMode.Removal)
+            {
+                // Nothing happens when clicking on nodes in removal mode
+                // But we could add a small animation to indicate the click was recognized
+                transform.localScale = new Vector3(0.95f, 0.95f, 0.95f); // Slightly scale down
+                StartCoroutine(ResetScale(0.1f)); // Reset after slight delay
+            }
+            else if (control.theoryMode == TheoryMode.Simulation)
+            {
+                // In simulation mode, left click to add this node to a theory
+                // Similar to Addition mode behavior
+                control.NodeClick(this);
+                
+                // Visual feedback indicates the node is part of simulation
+                transform.localScale = new Vector3(1.1f, 1.1f, 1.1f); // Temporarily scale up
+                StartCoroutine(ResetScale(0.2f)); // Reset after slight delay
+            }
+            // Normal mode left click deferred to OnPointerUp to distinguish from drag
         }
     }
-
+    
     public void OnPointerUp(PointerEventData pointerEventData)
     {
-        //Debug.Log("Pointer Released at " + gameObject.name);
+        // Only handle as a click if we're not dragging
+        if (!isDragging && Input.GetMouseButtonUp(0) && 
+            control.theoryMode == TheoryMode.None &&
+            Vector2.Distance(pointerDownPos, pointerEventData.position) < dragThreshold)
+        {
+            Debug.Log("Inspecting node via LEFT click: " + currentNode.Title);
+            
+            // Visual feedback for inspection
+            background.color = new Color(
+                background.color.r * 1.2f, 
+                background.color.g * 1.2f, 
+                background.color.b * 1.2f
+            );
+            
+            // Show the inspection panel
+            EvidenceInspect inspector = GameObject.FindFirstObjectByType<EvidenceInspect>();
+            if (inspector != null)
+            {
+                inspector.ActivateInspect(this);
+                
+                // Reset color after a delay
+                StartCoroutine(ResetColor(0.5f));
+            }
+        }
+    }
+    
+    // Helper coroutines for visual feedback
+    IEnumerator ResetScale(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        transform.localScale = Vector3.one;
+    }
+    
+    IEnumerator ResetColor(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // Only reset if we're still using the evidence type color
+        if (currentNode.Type == "EVIDENCE")
+            background.color = evidenceColor;
+        else
+            background.color = infoColor;
     }
 
     public void OnDrag(PointerEventData pointEventData)
     {
+        // Once we exceed the drag threshold, mark as dragging to prevent OnPointerUp from treating as a click
+        if (!isDragging && Vector2.Distance(pointerDownPos, pointEventData.position) > dragThreshold)
+        {
+            isDragging = true;
+        }
+        
         if (mysteryCam == null)
             mysteryCam = GameObject.FindWithTag("MysteryCam").GetComponent<Camera>();
 
-        if (Input.GetKey(KeyCode.Mouse0) && control.theoryMode == TheoryMode.None)
+        if (Input.GetKey(KeyCode.Mouse0) && 
+            (control.theoryMode == TheoryMode.None || control.theoryMode == TheoryMode.Simulation))
         {
             Vector2 mousePos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 transform.parent as RectTransform, Input.mousePosition,
                         mysteryCam,
                                 out mousePos);
-            Debug.Log("Camera ortho size: " + mysteryCam.orthographicSize);
+            
             transform.localPosition = new Vector3(mousePos.x, mousePos.y, 0);
         }
     }

@@ -42,6 +42,12 @@ public class NodeControl : MonoBehaviour
     [SerializeField] TMP_Text theoryNotif;
     [SerializeField] TMP_Text confidenceScore;
     [SerializeField] TMP_Text simulationDisplayAmt;
+    
+    [Header("Simulation UI Elements")]
+    [SerializeField] GameObject simulationIcon; // Icon shown during simulation mode
+    [SerializeField] Image darkOverlay; // Overlay for darkening the board during simulation
+    [SerializeField] float darkOverlayAlpha = 0.5f; // How dark the overlay gets
+    [SerializeField] float darkTransitionDuration = 0.3f; // How fast the darkening happens
 
     [Header("Navigation Vars")]
     [SerializeField] float scrollSpeed = 2000f;
@@ -76,6 +82,9 @@ public class NodeControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Handle middle mouse panning (new navigation option)
+        HandleMiddleMousePan();
+
         if (theoryMode != TheoryMode.None && Input.GetMouseButtonDown(1))
         {
             if (theoryMode == TheoryMode.Addition)
@@ -109,13 +118,15 @@ public class NodeControl : MonoBehaviour
         StartCoroutine(SimulationCalc());
     }
 
-    void HandleScroll()
+    // Removed vertical scroll handling as it conflicts with zoom functionality
+    // Added Middle Mouse Button panning for more intuitive navigation
+    void HandleMiddleMousePan()
     {
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel") * -1f;
-        if (scrollInput != 0f && contentPanel != null)
+        if (Input.GetMouseButton(2) && contentPanel != null) // Middle mouse button
         {
-            Vector2 newPos = contentPanel.anchoredPosition;
-            newPos.y += scrollInput * scrollSpeed * Time.deltaTime;
+            Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * scrollSpeed * Time.deltaTime;
+            Vector2 newPos = contentPanel.anchoredPosition + mouseDelta;
+            newPos.x = Mathf.Clamp(newPos.x, -2000f, 2000f); // Add horizontal clamping
             newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
             contentPanel.anchoredPosition = newPos;
         }
@@ -403,6 +414,19 @@ public class NodeControl : MonoBehaviour
         {
             theoryMode = TheoryMode.None;
             instructions.text = baseInstructions;
+            
+            // Visual cue - deactivate button highlight
+            addTheoryButton.GetComponent<Image>().color = Color.white;
+            
+            // Reset cursor
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            
+            // Hide simulation icon and dark overlay
+            if (simulationIcon != null)
+                simulationIcon.SetActive(false);
+                
+            // Fade out the dark overlay
+            StartCoroutine(AnimateDarkOverlay(false));
 
             //reset the currentTheory
             if (currentTheory != null)
@@ -416,10 +440,27 @@ public class NodeControl : MonoBehaviour
         {
             theoryMode = TheoryMode.Addition;
             instructions.text = "Left click on first node to begin a theory | Right click anywhere to cancel";
+            
+            // Visual cue - highlight button
+            addTheoryButton.GetComponent<Image>().color = new Color(0.8f, 1f, 0.8f); // Light green tint
+            
+            // Change cursor to indicate connection mode
+            // Note: You would need a custom cursor texture for production use
+            // For now, we're just changing the system cursor style
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
+            
+            // Show simulation icon and dark overlay
+            if (simulationIcon != null)
+                simulationIcon.SetActive(true);
+                
+            // Fade in the dark overlay to highlight nodes
+            StartCoroutine(AnimateDarkOverlay(true));
 
             //spawn a new theory
+            // Instantiate theory as last child by default to ensure it renders on top
+            // of both the nodes and the dark overlay
             currentTheory = Instantiate(theoryPrefab, contentPanel);
-            currentTheory.transform.SetAsFirstSibling();
+            // Removed SetAsFirstSibling() to fix rendering order
         }
     }
 
@@ -476,7 +517,7 @@ public class NodeControl : MonoBehaviour
         return true;
     }
 
-    //called by the removal butotn
+    //called by the removal button
     public void TheoryRemove()
     {
         //turn off the Removal mode
@@ -484,13 +525,26 @@ public class NodeControl : MonoBehaviour
         {
             theoryMode = TheoryMode.None;
             instructions.text = baseInstructions;
+            
+            // Visual cue - deactivate button highlight
+            removeTheoryButton.GetComponent<Image>().color = Color.white;
+            
+            // Reset cursor
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            
             StartCoroutine(SimulationCalc());
         }
-        //turn on the Addition mode
+        //turn on the Removal mode
         else
         {
             theoryMode = TheoryMode.Removal;
             instructions.text = "Left click on any theory to remove it | Right click anywhere to cancel";
+            
+            // Visual cue - highlight button
+            removeTheoryButton.GetComponent<Image>().color = new Color(1f, 0.8f, 0.8f); // Light red tint
+            
+            // Change cursor to indicate removal mode
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
         }
     }
 
@@ -512,10 +566,57 @@ public class NodeControl : MonoBehaviour
         theoryMode = TheoryMode.Simulation;
         instructions.text = "Running simulation...";
 
+        // Show the simulation icon
+        if (simulationIcon != null)
+            simulationIcon.SetActive(true);
+            
+        // Darken the board - animate transition
+        StartCoroutine(AnimateDarkOverlay(true));
+
         //power decrement
         GameControl.GameController.powerControl.PowerDrain(simulationCost);
 
         StartCoroutine(Simulation());
+    }
+    
+    // Animate darkening overlay for simulation mode
+    private IEnumerator AnimateDarkOverlay(bool entering)
+    {
+        if (darkOverlay == null)
+            yield break;
+            
+        float startAlpha = entering ? 0 : darkOverlayAlpha;
+        float endAlpha = entering ? darkOverlayAlpha : 0;
+        float elapsed = 0;
+        
+        // Enable the overlay if it's not already active
+        darkOverlay.gameObject.SetActive(true);
+        
+        // Start with correct color
+        Color overlayColor = darkOverlay.color;
+        overlayColor.a = startAlpha;
+        darkOverlay.color = overlayColor;
+        
+        while (elapsed < darkTransitionDuration)
+        {
+            float t = elapsed / darkTransitionDuration;
+            // Use a smooth easing function
+            t = t * t * (3f - 2f * t); // Smoothstep
+            
+            overlayColor.a = Mathf.Lerp(startAlpha, endAlpha, t);
+            darkOverlay.color = overlayColor;
+            
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        
+        // Ensure we reach final state
+        overlayColor.a = endAlpha;
+        darkOverlay.color = overlayColor;
+        
+        // If exiting sim mode, disable the overlay completely
+        if (!entering && darkOverlay.color.a <= 0.01f)
+            darkOverlay.gameObject.SetActive(false);
     }
 
     IEnumerator SimulationCalc()
@@ -553,17 +654,42 @@ public class NodeControl : MonoBehaviour
     {
         //start at the head node and progressively reveal whether connections are real or not, layer by layer
         Debug.Log("Running simulation on " + untestedTheories.Count + " untested theories");
+        
+        int totalTheories = untestedTheories.Count;
+        int completedTheories = 0;
+        
+        // Show simulation progress in instructions
+        instructions.text = "Running simulation... (0/" + totalTheories + ")";
 
         while (untestedTheories.Count > 0)
         {
             untestedTheories[0].GetComponent<Theory>().Reveal();
             untestedTheories.RemoveAt(0);
-            yield return new WaitForSecondsRealtime(2f);
+            
+            // Update completion count
+            completedTheories++;
+            instructions.text = "Running simulation... (" + completedTheories + "/" + totalTheories + ")";
+            
+            // Reduced wait time for better responsiveness while still showing animation
+            yield return new WaitForSecondsRealtime(0.75f);
         }
 
         untestedTheories.Clear();
 
+        // End simulation mode
         theoryMode = TheoryMode.None;
+        instructions.text = "Simulation complete!";
+        
+        // Hide simulation icon
+        if (simulationIcon != null)
+            simulationIcon.SetActive(false);
+            
+        // Return overlay to normal (fade out darkness)
+        StartCoroutine(AnimateDarkOverlay(false));
+        
+        // Wait a moment to show the completion message before reverting
+        yield return new WaitForSecondsRealtime(1f);
+        
         instructions.text = baseInstructions;
         StartCoroutine(SimulationCalc());
     }

@@ -33,6 +33,7 @@ public class PauseMenu : MonoBehaviour
                 audioControl.PlaySFX_Select();
                 Resume();
             }
+            // Only pause when in DEFAULT state - allow ConstellationToggle to handle Escape key in MYSTERY state
             else if(GameControl.GameController.currentState == GameState.DEFAULT && CanPause())
             {
                 audioControl.PlaySFX_Select();

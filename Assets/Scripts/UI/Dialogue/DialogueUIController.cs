@@ -52,7 +52,13 @@ public class DialogueUIController : MonoBehaviour
         }
         
         Debug.Log($"[DialogueUIController] responseText exists: {responseText != null}");
-        Debug.Log($"[DialogueUIController] inputGhostManager exists: {inputGhostManager != null}");
+        Debug.Log($"[DialogueUIController] inputGhostManager exists before fallback: {inputGhostManager != null}");
+        // Fallback: locate InputGhostManager in children if not assigned
+        if (inputGhostManager == null)
+        {
+            inputGhostManager = GetComponentInChildren<InputGhostManager>(true); // true to include inactive objects
+            Debug.Log($"[DialogueUIController] Fallback assigned inputGhostManager via GetComponentInChildren: {inputGhostManager != null}");
+        }
     }
 
     private void Start()
@@ -72,6 +78,11 @@ public class DialogueUIController : MonoBehaviour
         playerInputField.onSubmit.AddListener(OnPlayerSubmitInput);
         Debug.Log("[DialogueUIController] Registered OnPlayerSubmitInput to inputField.onSubmit");
 
+        // Ensure the input field is single-line so Enter triggers submit and also listen to end-edit
+        playerInputField.lineType = TMP_InputField.LineType.SingleLine;
+        playerInputField.onEndEdit.AddListener(OnPlayerSubmitInput);
+        Debug.Log("[DialogueUIController] Registered OnPlayerSubmitInput to inputField.onEndEdit and set lineType to SingleLine");
+
         // initialize hidden
         dialogueCanvasGroup.alpha = 0f;
         dialogueCanvasGroup.blocksRaycasts = false;
@@ -81,6 +92,8 @@ public class DialogueUIController : MonoBehaviour
     private void OnDestroy()
     {
         playerInputField.onSubmit.RemoveListener(OnPlayerSubmitInput);
+        // Also remove the onEndEdit listener we added
+        playerInputField.onEndEdit.RemoveListener(OnPlayerSubmitInput);
     }
 
     /// <summary>
@@ -119,6 +132,8 @@ public class DialogueUIController : MonoBehaviour
     public void HideDialogue()
     {
         Debug.Log("[DialogueUIController] HideDialogue called");
+        // Clear all UI elements when hiding dialogue
+        ClearDialogue();
         canvasFade.FadeOut();
     }
 
@@ -140,7 +155,10 @@ public class DialogueUIController : MonoBehaviour
             Debug.LogError("[DialogueUIController] inputGhostManager is null in ClearDialogue!");
         }
         
-        // Clear the text field (BeepSpeak will handle actual text rendering)
+        // Clear player input field
+        playerInputField.text = string.Empty;
+        
+        // Clear the response text area
         if (responseText != null)
             responseText.text = string.Empty;
         
@@ -168,14 +186,29 @@ public class DialogueUIController : MonoBehaviour
         }
 
         string trimmed = input.Trim();
-        playerInputField.text = string.Empty;
+        
+        // Clear the input field with slight delay to avoid conflicts
+        // This helps with onEndEdit called events
+        StartCoroutine(ClearInputFieldNextFrame());
+        
         dynamicInputHeight.ResetHeightToMin();
 
         Debug.Log($"[DialogueUIController] Calling inputGhostManager.SetGhostText with: '{trimmed}'");
         if (inputGhostManager != null)
         {
+            // CRITICAL FIX: Force activate the InputGhost GameObject if necessary
+            if (inputGhostManager.gameObject != null && !inputGhostManager.gameObject.activeSelf)
+            {
+                inputGhostManager.gameObject.SetActive(true);
+                Debug.Log("[DialogueUIController] CRITICAL FIX: Force-activated InputGhost GameObject");
+            }
+            
+            // Now set the ghost text
             inputGhostManager.SetGhostText(trimmed);
             inputGhostManager.LogCurrentState();
+            
+            // Double-check ghost state after setting text
+            Debug.Log($"[DialogueUIController] After SetGhostText - InputGhost active: {inputGhostManager.gameObject.activeSelf}, text set: {!string.IsNullOrEmpty(inputGhostManager.GetCurrentText())}");
         }
         else
         {
@@ -194,6 +227,23 @@ public class DialogueUIController : MonoBehaviour
         OnPlayerMessageSubmitted?.Invoke(trimmed);
 
         StartCoroutine(FocusInputNextFrame());
+    }
+
+    // New method to clear the input field properly after a slight delay
+    private IEnumerator ClearInputFieldNextFrame()
+    {
+        // Wait for the current frame to complete 
+        yield return null;
+        
+        // Clear the text field using the public property only
+        // Avoid accessing private members m_Text and m_TextComponent
+        playerInputField.text = string.Empty;
+        
+        // Force refresh the input field by deactivating and reactivating it
+        playerInputField.DeactivateInputField();
+        playerInputField.ActivateInputField();
+        
+        Debug.Log("[DialogueUIController] Input field cleared on next frame");
     }
 
     /// <summary>

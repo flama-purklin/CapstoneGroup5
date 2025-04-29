@@ -148,46 +148,6 @@ public class Filmic60sSetup : MonoBehaviour
         // Initial focus value (will be updated by camera script)
         depthOfField.focusDistance.overrideState = true;
         depthOfField.focusDistance.value = 5f; // Default starting value
-        
-        // EXTREME BLUR SETTINGS TO MAKE FOCUS OBVIOUS
-        // Different HDRP versions use different property names, so we try both
-        
-        // Try setting "maxBlur" properties if they exist
-        try {
-            var propertyInfo = typeof(DepthOfField).GetProperty("nearMaxBlur");
-            if (propertyInfo != null) {
-                Debug.Log("[DEEP-DIAGNOSIS] Setting nearMaxBlur/farMaxBlur (older HDRP)");
-                depthOfField.GetType().GetProperty("nearMaxBlur").GetValue(depthOfField, null).GetType().GetProperty("overrideState").SetValue(depthOfField.GetType().GetProperty("nearMaxBlur").GetValue(depthOfField, null), true);
-                depthOfField.GetType().GetProperty("nearMaxBlur").GetValue(depthOfField, null).GetType().GetProperty("value").SetValue(depthOfField.GetType().GetProperty("nearMaxBlur").GetValue(depthOfField, null), 20f);
-                
-                depthOfField.GetType().GetProperty("farMaxBlur").GetValue(depthOfField, null).GetType().GetProperty("overrideState").SetValue(depthOfField.GetType().GetProperty("farMaxBlur").GetValue(depthOfField, null), true);
-                depthOfField.GetType().GetProperty("farMaxBlur").GetValue(depthOfField, null).GetType().GetProperty("value").SetValue(depthOfField.GetType().GetProperty("farMaxBlur").GetValue(depthOfField, null), 20f);
-            }
-        }
-        catch (System.Exception e) {
-            Debug.Log($"[DEEP-DIAGNOSIS] Could not set nearMaxBlur/farMaxBlur: {e.Message}");
-        }
-        
-        // Try setting "maxBlurSize" properties if they exist
-        try {
-            var propertyInfo = typeof(DepthOfField).GetProperty("nearMaxBlurSize");
-            if (propertyInfo != null) {
-                Debug.Log("[DEEP-DIAGNOSIS] Setting nearMaxBlurSize/farMaxBlurSize (newer HDRP)");
-                depthOfField.GetType().GetProperty("nearMaxBlurSize").GetValue(depthOfField, null).GetType().GetProperty("overrideState").SetValue(depthOfField.GetType().GetProperty("nearMaxBlurSize").GetValue(depthOfField, null), true);
-                depthOfField.GetType().GetProperty("nearMaxBlurSize").GetValue(depthOfField, null).GetType().GetProperty("value").SetValue(depthOfField.GetType().GetProperty("nearMaxBlurSize").GetValue(depthOfField, null), 20f);
-                
-                depthOfField.GetType().GetProperty("farMaxBlurSize").GetValue(depthOfField, null).GetType().GetProperty("overrideState").SetValue(depthOfField.GetType().GetProperty("farMaxBlurSize").GetValue(depthOfField, null), true);
-                depthOfField.GetType().GetProperty("farMaxBlurSize").GetValue(depthOfField, null).GetType().GetProperty("value").SetValue(depthOfField.GetType().GetProperty("farMaxBlurSize").GetValue(depthOfField, null), 20f);
-            }
-        }
-        catch (System.Exception e) {
-            Debug.Log($"[DEEP-DIAGNOSIS] Could not set nearMaxBlurSize/farMaxBlurSize: {e.Message}");
-        }
-        
-        Debug.Log("[DIAGNOSIS] DoF component details:");
-        Debug.Log($"[DIAGNOSIS] - Active: {depthOfField.active}");
-        Debug.Log($"[DIAGNOSIS] - Focus Mode: {depthOfField.focusMode.value}, Override: {depthOfField.focusMode.overrideState}");
-        Debug.Log($"[DIAGNOSIS] - Focus Distance: {depthOfField.focusDistance.value}, Override: {depthOfField.focusDistance.overrideState}");
     }
 
     void SetupHalationPass()

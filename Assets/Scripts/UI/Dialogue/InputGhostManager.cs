@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputGhostManager : MonoBehaviour
 {
@@ -26,19 +27,14 @@ public class InputGhostManager : MonoBehaviour
                 Debug.Log($"[InputGhostManager] Awake - Found ghostText in children: {(ghostText != null)}");
             }
         }
+        
+        // Make sure we start clean
         ClearGhost();
     }
 
     private void Start()
     {
         Debug.Log($"[InputGhostManager] Start - GameObject active: {gameObject.activeInHierarchy}, ghostText active: {ghostText?.gameObject.activeInHierarchy}");
-        
-        // Force GameObject active - this is for testing only
-        if (!gameObject.activeInHierarchy)
-        {
-            gameObject.SetActive(true);
-            Debug.Log($"[InputGhostManager] Start - Forced GameObject active: {gameObject.activeInHierarchy}");
-        }
     }
 
     /// <summary>
@@ -53,30 +49,37 @@ public class InputGhostManager : MonoBehaviour
             return;
         }
 
-        // Store the message for later use
         lastPlayerMessage = playerInput;
-        
         Debug.Log($"[InputGhostManager] Setting ghost text to: '{playerInput}'");
         
         if (ghostText != null)
         {
-            // Make sure this GameObject is active
+            // Make sure text is empty before setting new text - fixes stuck text issues
+            ghostText.text = string.Empty;
+            
+            // Ensure this GameObject is active
             if (!gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
-                Debug.Log("[InputGhostManager] Activated self GameObject");
+                Debug.Log("[InputGhostManager] Activated ghost GameObject");
             }
             
-            // Set the text (the TextMeshProUGUI component is directly on this GameObject)
+            // Set the text with prefix and suffix
             ghostText.text = prefix + playerInput + suffix;
             
-            // Make text visible by setting alpha to 1
+            // Ensure text is visible
+            ghostText.enabled = true;
             Color textColor = ghostText.color;
             textColor.a = 1f;
             ghostText.color = textColor;
             
-            // Ensure the TextMeshProUGUI component is enabled
-            ghostText.enabled = true;
+            // Force layout rebuild to ensure proper sizing
+            Canvas.ForceUpdateCanvases(); // Force immediate update of all canvases
+            if (transform.parent is RectTransform parentRect)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
+            }
             
             Debug.Log($"[InputGhostManager] Ghost text set to: '{prefix + playerInput + suffix}'");
             Debug.Log($"[InputGhostManager] Text color alpha: {ghostText.color.a}, enabled: {ghostText.enabled}");
@@ -98,12 +101,13 @@ public class InputGhostManager : MonoBehaviour
         {
             ghostText.text = string.Empty;
             
-            // Hide by setting alpha to 0 instead of deactivating GameObject
+            // Hide by disabling the component and setting alpha to 0
+            ghostText.enabled = false;
             Color textColor = ghostText.color;
             textColor.a = 0f;
             ghostText.color = textColor;
             
-            Debug.Log("[InputGhostManager] Ghost text cleared and alpha set to 0");
+            Debug.Log("[InputGhostManager] Ghost text cleared and hidden");
         }
         else
         {
@@ -120,6 +124,9 @@ public class InputGhostManager : MonoBehaviour
         
         if (!string.IsNullOrEmpty(lastPlayerMessage) && ghostText != null)
         {
+            // Clear text first to ensure refresh
+            ghostText.text = string.Empty;
+            
             // Make sure GameObject is active
             if (!gameObject.activeSelf)
             {
@@ -130,20 +137,22 @@ public class InputGhostManager : MonoBehaviour
             // Set text
             ghostText.text = prefix + lastPlayerMessage + suffix;
             
-            // Ensure text is visible with alpha = 1
+            // Ensure text is visible
+            ghostText.enabled = true;
             Color textColor = ghostText.color;
             textColor.a = 1f;
             ghostText.color = textColor;
             
-            // Make sure TextMeshProUGUI component is enabled
-            ghostText.enabled = true;
+            // Force layout rebuild for all canvases to ensure visibility
+            Canvas.ForceUpdateCanvases(); // Force immediate update of all canvases
+            if (transform.parent is RectTransform parentRect)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
+            }
             
             Debug.Log($"[InputGhostManager] Force-showed ghost text: '{prefix + lastPlayerMessage + suffix}'");
             Debug.Log($"[InputGhostManager] Text color alpha: {ghostText.color.a}, enabled: {ghostText.enabled}");
-        }
-        else
-        {
-            //Debug.LogWarning($"[InputGhostManager] Cannot force show ghost text. lastPlayerMessage empty: {string.IsNullOrEmpty(lastPlayerMessage)}, ghostText null: {ghostText == null}");
         }
     }
     
@@ -161,5 +170,13 @@ public class InputGhostManager : MonoBehaviour
         
         Debug.Log($"[InputGhostManager] STATE CHECK - lastPlayerMessage: '{lastPlayerMessage}'");
         Debug.Log($"[InputGhostManager] STATE CHECK - current text: '{ghostText?.text}'");
+    }
+
+    /// <summary>
+    /// Returns the current text being displayed in the ghost. Useful for debugging.
+    /// </summary>
+    public string GetCurrentText()
+    {
+        return ghostText != null ? ghostText.text : string.Empty;
     }
 }

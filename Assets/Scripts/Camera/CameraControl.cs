@@ -71,12 +71,6 @@ public class CameraControl : MonoBehaviour
 
             // Get the Filmic60sSetup component for DoF control
             filmicSetup = GetComponent<Filmic60sSetup>();
-            if (filmicSetup == null) {
-                Debug.LogError("[DIAGNOSIS] Filmic60sSetup not found on Camera. Dynamic DoF will not work.");
-            }
-            else {
-                Debug.Log("[DIAGNOSIS] Successfully found Filmic60sSetup component");
-            }
 
             // NEW: find initial car if player is in it
             var carDetection = player.GetComponent<CarDetection>();
@@ -104,19 +98,6 @@ public class CameraControl : MonoBehaviour
         //apply to the cam
         transform.position = new Vector3(camX, startingY, startingZ);
 
-        // Update focus distance for DoF
-        if (filmicSetup != null && player != null)
-        {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-            
-            // Log the calculated distance (but only occasionally to avoid spam)
-            if (Time.frameCount % 60 == 0) {
-                Debug.Log($"[DIAGNOSIS] Camera position: {transform.position}, Player position: {player.transform.position}");
-                Debug.Log($"[DIAGNOSIS] Distance to player: {distanceToPlayer}");
-            }
-            
-            filmicSetup.UpdateFocusDistance(distanceToPlayer);
-        }
     }
 
     //called whenever a new car is entered
@@ -188,17 +169,6 @@ public class CameraControl : MonoBehaviour
             float t = Mathf.SmoothStep(0.0f, 1.0f, elapsed / transitionTime);
             Vector3 newPos = Vector3.Lerp(startPos, endPos, t);
             transform.position = newPos;
-            
-            // Update focus distance for DoF even during transitions
-            if (filmicSetup != null && player != null)
-            {
-                float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-                
-                // Log during transitions (important moment, so log every frame)
-                Debug.Log($"[DIAGNOSIS-TRANSITION] Distance to player during transition: {distanceToPlayer}");
-                
-                filmicSetup.UpdateFocusDistance(distanceToPlayer);
-            }
             
             yield return null;
         }

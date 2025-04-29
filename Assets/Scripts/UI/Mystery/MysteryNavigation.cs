@@ -95,7 +95,11 @@ public class MysteryNavigation : MonoBehaviour, IDragHandler
 
     public void OnDrag(PointerEventData data)
     {
-        if (Input.GetMouseButton(1))
+        // Change to left mouse button for unified input scheme
+        // Only respond if we're not in a theory mode (which would need the left click for other interactions)
+        if (Input.GetMouseButton(0) && 
+            GameControl.GameController.currentState == GameState.MYSTERY && 
+            GameObject.FindFirstObjectByType<NodeControl>().theoryMode == TheoryMode.None)
         {
             //pre-orthographic attempts
 
