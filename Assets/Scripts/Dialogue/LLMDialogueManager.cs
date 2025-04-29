@@ -109,18 +109,28 @@ public class LLMDialogueManager : BaseDialogueManager
     protected override void EnableInput()
     {
         // Only enable/disable the container, not the specific input field/button
-        if (inputBox) inputBox.SetActive(true);
-        // if (inputField) // REMOVED
-        // {
-        //     inputField.interactable = true;
-        //     inputField.ActivateInputField();
-        // }
-        // if (submitButton) submitButton.interactable = true; // REMOVED
+        if (inputBox) 
+        {
+            Debug.Log("[DIAGDBG] LLMDialogueManager.EnableInput - activating inputBox");
+            inputBox.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("[DIAGDBG] LLMDialogueManager.EnableInput - inputBox is null");
+        }
+
+        // For diagnostic purposes, verify the activation in DialogueUIController
+        if (dialogueControlRef && dialogueControlRef.UseNewUI)
+        {
+            Debug.Log("[DIAGDBG] LLMDialogueManager.EnableInput - checking DialogueUIController isWaitingForResponse status");
+        }
+
         Debug.Log("[LLMDialogueManager] Input Enabled (InputBox Active)");
     }
 
     protected override void DisableInput()
     {
+        Debug.Log("[DIAGDBG] LLMDialogueManager.DisableInput called");
         // Only enable/disable the container
         // if (inputField) inputField.interactable = false; // REMOVED
         // if (submitButton) submitButton.interactable = false; // REMOVED
@@ -128,9 +138,16 @@ public class LLMDialogueManager : BaseDialogueManager
         // However, DialogueUIController now manages the actual input field's interactability.
         // This method might become redundant or only control the inputBox visibility if needed.
         // For now, let's keep the inputBox visibility control.
-         if (inputBox) inputBox.SetActive(false);
-         Debug.Log("[LLMDialogueManager] Input Disabled (InputBox Inactive)");
-
+        if (inputBox) 
+        {
+            Debug.Log("[DIAGDBG] LLMDialogueManager.DisableInput - deactivating inputBox");
+            inputBox.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("[DIAGDBG] LLMDialogueManager.DisableInput - inputBox is null");
+        }
+        Debug.Log("[LLMDialogueManager] Input Disabled (InputBox Inactive)");
     }
 
     public override async Task ResetDialogue()

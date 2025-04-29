@@ -59,6 +59,9 @@ public class DialogueControl : MonoBehaviour
 
     // Public getter for LLMDialogueManager needed by DialogueUIController
     public LLMDialogueManager GetLLMDialogueManager() => llmDialogueManager;
+    
+    // Public getter for DialogueUIController needed by BaseDialogueManager
+    public DialogueUIController GetDialogueUIController() => dialogueUIController;
 
     // Helper method to extract first name from a full name
     private string GetFirstName(string fullName)

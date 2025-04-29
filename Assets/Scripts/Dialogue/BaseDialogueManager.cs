@@ -452,11 +452,15 @@ public abstract class BaseDialogueManager : MonoBehaviour
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[INPUTDBG] OnReplyComplete called, isProcessingResponse=" + isProcessingResponse);
         #endif
+        
+        Debug.Log("[DIAGDBG] BaseDialogueManager.OnReplyComplete called, isProcessingResponse=" + isProcessingResponse);
+        
         if (!isProcessingResponse) 
         {
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - early return due to !isProcessingResponse");
             #endif
+            Debug.Log("[DIAGDBG] OnReplyComplete - early return due to !isProcessingResponse");
             return;
         }
 
@@ -467,6 +471,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[INPUTDBG] OnReplyComplete - Finalized accumulated action: '{finalActionText}'");
             #endif
+            Debug.Log($"[DIAGDBG] OnReplyComplete - Finalized accumulated action: '{finalActionText}'");
             
             // Start coroutine to process the accumulated action after BeepSpeak finishes
             StartCoroutine(ProcessActionAfterBeepSpeak(finalActionText));
@@ -482,6 +487,8 @@ public abstract class BaseDialogueManager : MonoBehaviour
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - Single-chunk action detected: " + bufferedFunctionCall);
             #endif
+            Debug.Log("[DIAGDBG] OnReplyComplete - Single-chunk action detected: " + bufferedFunctionCall);
+            
             // Action was detected during HandleReply.
             // Start coroutine to process it after BeepSpeak finishes and a short delay.
             StartCoroutine(ProcessActionAfterBeepSpeak(bufferedFunctionCall));
@@ -493,6 +500,7 @@ public abstract class BaseDialogueManager : MonoBehaviour
             #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log("[INPUTDBG] OnReplyComplete - No action detected, starting EnableInputAfterBeepSpeak");
             #endif
+            Debug.Log("[DIAGDBG] OnReplyComplete - No action detected, starting EnableInputAfterBeepSpeak");
             
             // Only send the complete text to the display if we're not using the new UI
             // This prevents duplicate display when BeepSpeak is already updating the UI
@@ -503,12 +511,14 @@ public abstract class BaseDialogueManager : MonoBehaviour
                 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log("[INPUTDBG] OnReplyComplete - Sent final text to legacy display");
                 #endif
+                Debug.Log("[DIAGDBG] OnReplyComplete - Sent final text to legacy display");
             }
             else
             {
                 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 Debug.Log("[INPUTDBG] OnReplyComplete - Not sending final text to UI (using new UI with BeepSpeak)");
                 #endif
+                Debug.Log("[DIAGDBG] OnReplyComplete - Not sending final text to UI (using new UI with BeepSpeak)");
             }
             
             // Start coroutine to re-enable input only after BeepSpeak finishes.
@@ -522,6 +532,8 @@ public abstract class BaseDialogueManager : MonoBehaviour
         bufferedFunctionCall = null;
         
         isProcessingResponse = false; // Mark processing as complete
+        Debug.Log("[DIAGDBG] OnReplyComplete - finished, set isProcessingResponse=false");
+        
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
         Debug.Log("[INPUTDBG] OnReplyComplete - finished, set isProcessingResponse=false");
         #endif
@@ -742,6 +754,14 @@ public abstract class BaseDialogueManager : MonoBehaviour
         {
             Debug.Log("[INPUTDBG] Dialogue still active, calling EnableInput()");
             EnableInput();
+            
+            // CRITICAL FIX: Reset DialogueUIController.isWaitingForResponse explicitly
+            // This ensures the UI correctly accepts new inputs after the LLM response completes
+            if (dialogueControl.UseNewUI && dialogueControl.GetDialogueUIController() != null)
+            {
+                dialogueControl.GetDialogueUIController().ResetWaitingForResponse();
+                Debug.Log("[INPUTDBG] Reset DialogueUIController.isWaitingForResponse via ResetWaitingForResponse()");
+            }
         }
         else
         {
