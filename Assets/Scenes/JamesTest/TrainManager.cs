@@ -40,6 +40,7 @@ public class TrainManager : MonoBehaviour
         public bool isSelected = false; // Means player is in it.
         public List<GameObject> npcsInCar = new List<GameObject>();
         public List<GameObject> emptyAnchors = new List<GameObject>();
+        public List<GameObject> evidenceInCar = new List<GameObject>();
     }
 
     public List<GameObject> carPrefabs; // List of spawnable cars

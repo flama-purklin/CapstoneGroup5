@@ -4542,6 +4542,34 @@ MonoBehaviour:
   mysteryHUD: {fileID: 0}
   mainHUD: {fileID: 0}
   audioControl: {fileID: 0}
+  controlsTooltip: {fileID: 0}
+  tooltipText: {fileID: 0}
+  transitionSpeed: 5
+  tooltipDuration: 3
+  transitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!224 &926624312 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 934167514897754339, guid: e3574a9c592ff284f9fdfcb0716e8ad8, type: 3}
@@ -11441,8 +11469,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: prefabSavePath
-      value: Assets/Resources/Train
+      value: Assets/Resources/TrainCars/
       objectReference: {fileID: 0}
+    - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+      propertyPath: railCarRandomizer
+      value: 
+      objectReference: {fileID: 2553609680142392504}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.size
       value: 22
@@ -11546,7 +11578,7 @@ PrefabInstance:
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[1].prefab
       value: 
-      objectReference: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+      objectReference: {fileID: 2580257358838264707, guid: d0f5891e407e88e43827168f43389b04, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[2].prefab
       value: 
@@ -11566,7 +11598,7 @@ PrefabInstance:
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[6].prefab
       value: 
-      objectReference: {fileID: 3210559826268682587, guid: 4722f8fbc1bb9b24eb1df990df499441, type: 3}
+      objectReference: {fileID: 7736940872118718564, guid: 7b09b25b599b8c74aaac8d4237e37d3a, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[7].prefab
       value: 
@@ -11578,7 +11610,7 @@ PrefabInstance:
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[9].prefab
       value: 
-      objectReference: {fileID: 779279683873220327, guid: 800fb5855ba241c41bbbc2d10227c7ae, type: 3}
+      objectReference: {fileID: 2580257358838264707, guid: d0f5891e407e88e43827168f43389b04, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[0].carType
       value: 0
@@ -11602,15 +11634,15 @@ PrefabInstance:
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[14].prefab
       value: 
-      objectReference: {fileID: 7810333911363064787, guid: 95356d5fb12bf2f4888447f8374f77ef, type: 3}
+      objectReference: {fileID: 4561170079657869026, guid: 8fc8d58c2d869ce4d92a575c769cb2a3, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[15].prefab
       value: 
-      objectReference: {fileID: 3210559826268682587, guid: 4722f8fbc1bb9b24eb1df990df499441, type: 3}
+      objectReference: {fileID: 7736940872118718564, guid: 7b09b25b599b8c74aaac8d4237e37d3a, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[16].prefab
       value: 
-      objectReference: {fileID: 3267728225209469177, guid: a895dce9eba281745a6f803351502abd, type: 3}
+      objectReference: {fileID: 7268352816159595381, guid: 637d369552dc434499cb295eeae406c0, type: 3}
     - target: {fileID: 3766706588889807581, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
       propertyPath: objectPrefabsList.Array.data[17].prefab
       value: 
@@ -11939,6 +11971,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ab462ec379c3648b06c150ba989cb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2553609680142392504 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6556456651286033906, guid: 4896592afff4daa48a8144d5bb493ad0, type: 3}
+  m_PrefabInstance: {fileID: 2553609680142392502}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c9e4e32fd4b9446850b7061a5f9339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2867316165738466741 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7433764033257785231, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
@@ -12250,7 +12293,7 @@ PrefabInstance:
       objectReference: {fileID: 4900000, guid: 7bdb4d70764592249bc30ef13bc9f43d, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: prefabSavePath
@@ -12383,7 +12426,7 @@ PrefabInstance:
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[6].prefab
       value: 
-      objectReference: {fileID: 3210559826268682587, guid: 4722f8fbc1bb9b24eb1df990df499441, type: 3}
+      objectReference: {fileID: 7736940872118718564, guid: 7b09b25b599b8c74aaac8d4237e37d3a, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[7].prefab
       value: 
@@ -12419,15 +12462,15 @@ PrefabInstance:
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[14].prefab
       value: 
-      objectReference: {fileID: 7810333911363064787, guid: 95356d5fb12bf2f4888447f8374f77ef, type: 3}
+      objectReference: {fileID: 4561170079657869026, guid: 8fc8d58c2d869ce4d92a575c769cb2a3, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[15].prefab
       value: 
-      objectReference: {fileID: 3210559826268682587, guid: 4722f8fbc1bb9b24eb1df990df499441, type: 3}
+      objectReference: {fileID: 7736940872118718564, guid: 7b09b25b599b8c74aaac8d4237e37d3a, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[16].prefab
       value: 
-      objectReference: {fileID: 3267728225209469177, guid: a895dce9eba281745a6f803351502abd, type: 3}
+      objectReference: {fileID: 7268352816159595381, guid: 637d369552dc434499cb295eeae406c0, type: 3}
     - target: {fileID: 4997889519013257188, guid: 435d9c14e330c1142a4939e5f50b6d61, type: 3}
       propertyPath: objectPrefabsList.Array.data[17].prefab
       value: 

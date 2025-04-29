@@ -809,50 +809,50 @@
         "title": "Victoria's Body (FACT)",
         "description": "Victoria Blackwood hangs from pipes in a perfect tableau. Fashion editorial precision in death—too perfect? The train's vibrations should create chaos, yet everything is placed with surgical care.",
         "target": "victoria_blackwood",
-        "car_id": "dining_car", "coords": [0,0]
+        "car_id": "dining_car", "car_number": 7, "coords": [0,0]
       },
       "fact-maxwell-body": {
         "type": "EVIDENCE", "subtype": "death",
         "title": "Maxwell's Body (FACT)",
         "description": "Later discovery: the nervous artist apparently exits Stage Left - forever. Is this closure or camouflage?",
         "target": "maxwell_porter",
-        "car_id": "second_class_car_1", "coords": [0,0]
+        "car_id": "second_class_car_1", "car_number": 2, "coords": [0,0]
       },
       "evidence-suicide-note": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Suicide Note",
         "description": "Letter perfect - literally. The pen-strokes hum with precision too serene for despair. Not a single ink tremor betrays emotional turmoil.",
-        "car_id": "dining_car", "coords": [0,0]
+        "car_id": "dining_car", "car_number": 7, "coords": [0,0]
       },
       "evidence-sink-sedative": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Sedative Residue",
         "description": "Nanogram traces of an artist's 'steady-hand serum'. Barely perceptible chemical signature clinging to porcelain—murder's microscopic footprint.",
-        "car_id": "dining_car", "coords": [0,0]
+        "car_id": "dining_car", "car_number": 7, "coords": [0,0]
       },
       "evidence-incinerator-ash": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Burned Ampule",
         "description": "Incinerator vomits a half-melted vial sleeve. The label once bragged: 'For micro-precision'. Now it only whispers 'cover-up'.",
-        "car_id": "kitchen_car", "coords": [0,0]
+        "car_id": "kitchen_car", "car_number": 3, "coords": [0,0]
       },
       "evidence-financial-ledger": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Bleeding-Red Ledger",
         "description": "Couture En Masse accounts gurgling cash. Could financial panic tie a scarf-noose?",
-        "car_id": "first_class", "coords": [0,0]
+        "car_id": "first_class", "car_number": 8, "coords": [0,0]
       },
       "evidence-gallery-ledgers": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Gallery Shell Ledgers",
         "description": "Money rivers converge on Gregory's quiet island - yet he claims drought. Curious.",
-        "car_id": "first_class", "coords": [0,0]
+        "car_id": "first_class", "car_number": 8, "coords": [0,0]
       },
       "evidence-mira-safe": {
         "type": "EVIDENCE", "subtype": "barrier",
         "title": "Mira's Camera Safe",
         "description": "Chromium cassette - modest size, immodest secrets. Four glowing digits stand between me and truth.",
-        "car_id": "business_class", "coords": [0,0],
+        "car_id": "business_class", "car_number": 4, "coords": [0,0],
         "solution": "0451",
         "contains": ["evidence-mira-photos"]
       },
@@ -860,14 +860,14 @@
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Timestamped Photo Reel",
         "description": "Snapshots: Gregory shepherds Maxwell; Maxwell shadows Victoria; shutter-clicks frame a tragedy.",
-        "car_id": "business_class", "coords": [0,0],
+        "car_id": "business_class", "car_number": 4, "coords": [0,0],
         "locked_by": "evidence-mira-safe"
       },
       "evidence-maxwell-final-note": {
         "type": "EVIDENCE", "subtype": "physical",
         "title": "Maxwell's Final Note",
         "description": "Ink jitter dances across confession - but a shadow of Gregory's cadence lurks beneath the tremor.",
-        "car_id": "second_class_car_1", "coords": [0,0]
+        "car_id": "second_class_car_1", "car_number": 2, "coords": [0,0]
       },
       "test-mira-bargain": {"type": "TESTIMONY", "title": "Mira's Bargain", "description": "\"You want the shutter-truth? Feed me Millennial gossip first.\""},
       "test-timmy-lovers-secret": {"type": "TESTIMONY", "title": "Timmy: Lovers' Secret", "description": "Panicked whisper exposes Penelope & Nova affair."},

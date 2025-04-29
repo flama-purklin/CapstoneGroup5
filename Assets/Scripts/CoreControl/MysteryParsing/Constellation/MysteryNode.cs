@@ -21,6 +21,9 @@ public class MysteryNode
     [JsonProperty("car_id")]
     public string? CarId { get; set; }
 
+    [JsonProperty("car_number")]
+    public int? CarNumber { get; set; }
+
     [JsonProperty("coords")]
     public int[]? Coords { get; set; }
 

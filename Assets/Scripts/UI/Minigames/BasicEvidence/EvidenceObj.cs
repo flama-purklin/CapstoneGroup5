@@ -6,7 +6,7 @@ public class EvidenceObj : MinigameObj
     //MysteryNode associatedNode;
 
     //serializable object with a predetermined set of information to reveal to the player on reveal
-    [SerializeField] EvidenceData data;
+    [SerializeField] public EvidenceData data;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()

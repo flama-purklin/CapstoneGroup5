@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class LuggageObj : MinigameObj
 {
-    string combination;
+    [SerializeField] public string combination;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()
     {
         base.Awake();
-        NewCombination();
+        if (combination == null) { NewCombination(); }
     }
 
     public override void Interact()
@@ -17,7 +17,7 @@ public class LuggageObj : MinigameObj
         base.Interact();
     }
 
-    //TODO - should be taken from the barrier evidence node, assigned at runtime when the prefab is instantitated and placed in the train
+    //TO Did - should be taken from the barrier evidence node, assigned at runtime when the prefab is instantitated and placed in the train
     public void NewCombination()
     {
         //random

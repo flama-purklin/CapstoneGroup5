@@ -30,7 +30,7 @@ public class TrainLayoutManager : MonoBehaviour
     public bool spawnFromPrefab = true; // If false will spawn from json files
 
     private GameObject shellCarPrefab; // Cached reference to the loaded fallback prefab
-    private bool hasBuiltTrain = false;
+    public bool hasBuiltTrain = false;
     private bool setupComplete = false;
     private Dictionary<string, GameObject> carInstanceMap = new Dictionary<string, GameObject>(); // Map car keys to spawned instances
     private Dictionary<Transform, List<Transform>> usedAnchorsThisSpawn = new Dictionary<Transform, List<Transform>>(); // Track used anchors per car during a spawn sequence
