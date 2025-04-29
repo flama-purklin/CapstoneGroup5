@@ -28,8 +28,9 @@ public class DialogueControl : MonoBehaviour
     [SerializeField] TMP_Text characterName;
 
     [Header("Evidence Selection")]
-    [SerializeField] TMP_Dropdown evidenceSelect;
+    [SerializeField] public TMP_Dropdown evidenceSelect;
     private List<string> evidenceNames = new List<string>();
+    private List<string> physicalEvidenceIds = new List<string>(); // Store IDs of physical evidence nodes
 
 
     [Header("BeepSpeak Integration")]
@@ -500,13 +501,21 @@ public class DialogueControl : MonoBehaviour
             //reset vars
             evidenceSelect.ClearOptions();
             evidenceNames.Clear();
+            physicalEvidenceIds.Clear();
 
             // find all evidence nodes that are discovered
             for (int i = 0; i < GameControl.GameController.coreConstellation.foundEvidence.Count; i++)
             {
-                //TODO - replace with evidence name once defined
                 string evidenceId = GameControl.GameController.coreConstellation.foundEvidence[i];
-                evidenceNames.Add(GameControl.GameController.coreConstellation.Nodes[evidenceId].Title);
+                MysteryNode node = GameControl.GameController.coreConstellation.Nodes[evidenceId];
+                
+                // Only add physical evidence to the dropdown
+                if (node.Type == "EVIDENCE" && node.Subtype == "physical")
+                {
+                    evidenceNames.Add(node.Title);
+                    physicalEvidenceIds.Add(evidenceId);
+                    Debug.Log($"[DialogueControl] Added physical evidence to dropdown: {node.Title} (ID: {evidenceId})");
+                }
             }
 
             //add no evidence to the list
@@ -522,16 +531,22 @@ public class DialogueControl : MonoBehaviour
 
     public string RetrieveEvidence()
     {
-        //return the key to the node as long as the value of dropdown is within the bounds
-        if (evidenceSelect.value < evidenceNames.Count)
+        // If there's no physical evidence or "No Evidence" is selected
+        if (physicalEvidenceIds.Count == 0 || evidenceSelect.value >= evidenceNames.Count - 1)
         {
-            return GameControl.GameController.coreConstellation.foundEvidence[evidenceSelect.value];
-        }
-        else if (evidenceSelect.value == evidenceNames.Count)
             return null;
+        }
+        
+        // Return the ID from our filtered list
+        if (evidenceSelect.value < physicalEvidenceIds.Count)
+        {
+            string selectedId = physicalEvidenceIds[evidenceSelect.value];
+            Debug.Log($"[DialogueControl] Retrieved evidence ID: {selectedId}");
+            return selectedId;
+        }
         else
         {
-            Debug.LogWarning("Evidence index was unexpectedly out of range");
+            Debug.LogWarning($"[DialogueControl] Evidence index was unexpectedly out of range: {evidenceSelect.value}, max: {physicalEvidenceIds.Count-1}");
             return null;
         }
     }

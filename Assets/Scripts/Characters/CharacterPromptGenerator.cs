@@ -321,6 +321,20 @@ namespace LLMUnity
                 
                 // 7. Function Usage
                 prompt.AppendLine("## FUNCTION USAGE");
+                
+                // NEW: Add Player Actions section to explain the show evidence tag
+                prompt.AppendLine("### Understanding Player Actions");
+                prompt.AppendLine("Sometimes, the player will show you evidence. When this happens, you'll see a special tag at the end of their message:");
+                prompt.AppendLine("```");
+                prompt.AppendLine("[PLAYER_SHOWS: node_id]");
+                prompt.AppendLine("```");
+                prompt.AppendLine("This means the player is showing you a physical evidence item with that specific node_id. Pay close attention to this!");
+                prompt.AppendLine("- If you have a revelation with trigger_type=\"show_evidence\" and the trigger_value matches either the shown evidence's node_id or title, you MUST provide your scripted revelation response followed by the reveal_node function.");
+                prompt.AppendLine("- Even if it doesn't trigger a revelation, react naturally to being shown this evidence based on your character's knowledge and personality.");
+                prompt.AppendLine("- NEVER mention this tag format in your response. Respond as if the player physically handed you the item.");
+                prompt.AppendLine();
+                
+                prompt.AppendLine("### Your Available Functions");
                 prompt.AppendLine("Use these functions ONLY when specifically triggered:");
                 prompt.AppendLine();
                 prompt.AppendLine("1. To reveal critical information:");
@@ -347,6 +361,7 @@ namespace LLMUnity
                 prompt.AppendLine("4. ONE action maximum per response");
                 prompt.AppendLine("5. NO text after an action");
                 prompt.AppendLine("6. ALWAYS use exact node_id values");
+                prompt.AppendLine("7. REACT naturally when shown evidence items");
                 prompt.AppendLine();
                 prompt.AppendLine($"Remember: You are {characterName}. Your secrets, fears, desires, and knowledge should drive every response.");
 

@@ -232,15 +232,30 @@ public class DialogueUIController : MonoBehaviour
         scrollFadeManager?.ContentChanged();
 
         isWaitingForResponse = true;
-        // Debug.Log("[DialogueUIController] About to invoke OnPlayerMessageSubmitted event"); // REMOVED
-        // OnPlayerMessageSubmitted?.Invoke(trimmed); // REMOVED
-
+        
         // Get LLM Manager from DialogueControl and submit input
         if (dialogueControl != null) {
             LLMDialogueManager llmManager = dialogueControl.GetLLMDialogueManager();
             if (llmManager != null) {
-                Debug.Log($"[DialogueUIController] Calling llmManager.SubmitPlayerInputToLLM with: '{trimmed}'");
-                llmManager.SubmitPlayerInputToLLM(trimmed);
+                // NEW: Check if evidence is selected and append the tag to the message
+                string selectedEvidenceId = dialogueControl.RetrieveEvidence();
+                string finalInput = trimmed;
+                
+                if (!string.IsNullOrEmpty(selectedEvidenceId)) {
+                    finalInput = trimmed + "\n[PLAYER_SHOWS: " + selectedEvidenceId + "]";
+                    Debug.Log($"[DialogueUIController] Added evidence to message. Evidence ID: {selectedEvidenceId}");
+                }
+                
+                Debug.Log($"[DialogueUIController] Calling llmManager.SubmitPlayerInputToLLM with: '{finalInput}'");
+                llmManager.SubmitPlayerInputToLLM(finalInput);
+                
+                // NEW: Reset the evidence dropdown to "No Evidence" after submission
+                if (dialogueControl.evidenceSelect != null && dialogueControl.evidenceSelect.options.Count > 0) {
+                    // "No Evidence" is always the last option added by UpdateEvidence
+                    dialogueControl.evidenceSelect.value = dialogueControl.evidenceSelect.options.Count - 1;
+                    dialogueControl.evidenceSelect.RefreshShownValue(); // Update UI
+                    Debug.Log("[DialogueUIController] Reset evidence dropdown to default after message submission.");
+                }
             } else {
                 Debug.LogError("[DialogueUIController] Failed to get LLMDialogueManager from DialogueControl!");
                 isWaitingForResponse = false; // Reset flag if submission fails
