@@ -207,22 +207,23 @@ public class InitializationManager : MonoBehaviour
 
                 string startCarName = charData.InitialLocation;
                 if (string.IsNullOrEmpty(startCarName)) { Debug.LogWarning($"No initial_location found for '{characterName}'. Skipping NPC spawn."); continue; }
-                Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
+                //Transform carTransform = trainLayoutManager.GetCarTransform(startCarName);
 
-                /*int startCarIndex = charData.InitialLocationIndex;
+                int startCarIndex = charData.InitialLocationIndex;
                 Transform carTransform = trainLayoutManager.GetCarTransform(startCarIndex);
                 startCarName = carTransform.gameObject.name;
-                Debug.Log($"[InitializationManager] Start car name found as '{startCarName}' for npc '{characterName}'");*/
+                Debug.Log($"[InitializationManager] Start car name found as '{startCarName}' for npc '{characterName}'");
 
                 if (carTransform == null) { Debug.LogWarning($"Could not find car transform '{startCarName}' for '{characterName}'. Skipping."); continue; }
-                Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
-                //Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(carTransform);
+                //Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(startCarName);
+                Vector3 spawnPos = trainLayoutManager.GetSpawnPointInCar(carTransform);
+                Debug.Log($"[InitializationManager] Call to GetSpawnPointInCar returned '{spawnPos.x}, {spawnPos.y}, {spawnPos.z}' for '{characterName}' at index {startCarIndex}.");
                 GameObject spawnedNPC = npcManager.SpawnNPCInCar(characterName, spawnPos, carTransform, i);
                 if (spawnedNPC != null) {
                     // Adds npc reference to TrainManager
                     if (trainLayoutManager != null)
                     {
-                        foreach (TrainManager.TrainCar car in trainLayoutManager.trainManager.trainCarList)
+/*                        foreach (TrainManager.TrainCar car in trainLayoutManager.trainManager.trainCarList)
                         {
                             if (car.trainCar.name == trainLayoutManager.GetCarReference(startCarName).name)
                             {
@@ -230,7 +231,8 @@ public class InitializationManager : MonoBehaviour
                                 car.npcsInCar.Add(spawnedNPC);
                                 break;
                             }
-                        }
+                        }*/
+                        trainLayoutManager.trainManager.trainCarList[startCarIndex].npcsInCar.Add(spawnedNPC);
                     }
 
                     Character characterComponent = spawnedNPC.GetComponent<Character>();

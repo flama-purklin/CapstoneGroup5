@@ -1447,8 +1447,8 @@
       "triggers": ["test-gregory-manipulation-hint", "test-maxwell-sedative-use", "test-gideon-maxwell-fear"]
     },
     {
-      "id": "evidence-mira-photos",
-      "triggers": ["evidence-mira-safe"]
+      "id": "evidence-maxwell-final-note",
+      "triggers": [ "fact-maxwell-body" ]
     }
   ]
 }

@@ -578,7 +578,7 @@ public class TrainLayoutManager : MonoBehaviour
 
             if (anchors.Count > 0)
             {
-                // Attempt 1: Find a specific central anchor (e.g., "Anchor (3, 7)")
+                /*// Attempt 1: Find a specific central anchor (e.g., "Anchor (3, 7)")
                 string targetAnchorName = "Anchor (3, 7)"; // Or adjust based on typical grid size
                 chosenAnchor = anchors.FirstOrDefault(a => a.name == targetAnchorName);
 
@@ -588,14 +588,14 @@ public class TrainLayoutManager : MonoBehaviour
                 {
                     chosenAnchor = anchors.FirstOrDefault(a => !a.name.Contains("(0,") && !a.name.Contains(", 0)"));
                     if (chosenAnchor != null) Debug.LogWarning($"GetSpawnPointInCar: Target anchor '{targetAnchorName}' not found in '{carNameKey}'. Using fallback anchor '{chosenAnchor.name}'.");
-                }
+                }*/
 
 
                 // Fallback 2: If still no suitable anchor, just use a random empty one;
                 if (chosenAnchor == null)
                 {
                     chosenAnchor = anchors[Random.Range(0, anchors.Count)];
-                    Debug.LogWarning($"GetSpawnPointInCar: Target anchor '{targetAnchorName}' and non-edge anchors not found in '{carNameKey}'. Using first available anchor '{chosenAnchor.name}'.");
+                    Debug.LogWarning($"GetSpawnPointInCar: Using random available anchor '{chosenAnchor.name}'.");
                 }
             }
             else

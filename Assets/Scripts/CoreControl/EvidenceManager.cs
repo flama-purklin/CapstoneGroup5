@@ -39,6 +39,7 @@ public class EvidenceManager : MonoBehaviour
     [SerializeField] List<EvidenceData> evidenceData;
     [SerializeField] List<GameObject> spawnedEvidence;
     [SerializeField] List<string> nodesToDeactivate;
+    [SerializeField] List<MysteryEvent> scriptedEvents;
 
     // TODO: Add object to hold scripted events here
 
@@ -66,7 +67,8 @@ public class EvidenceManager : MonoBehaviour
                 Node = kv.Value
             }).ToList();
 
-        // TODO: Populate list with scripted events here.
+        // TODid?: Populate list with scripted events here.
+        scriptedEvents = GameControl.GameController.coreMystery.ScriptedEvents;
 
         initialized = true;
 
@@ -274,6 +276,7 @@ public class EvidenceManager : MonoBehaviour
 
         // *** Hard Code! Disable Maxwell body node untill scripted events work
         nodesToDeactivate.Add("fact-maxwell-body Evidence");
+        nodesToDeactivate.Add("evidence-maxwell-final-note");
 
         // TODO: Cleanup logic. Deactivate objects that are in nodesToDeactivate. Set up the scripted event checkers.
         foreach (string evidenceName in nodesToDeactivate)
@@ -283,6 +286,7 @@ public class EvidenceManager : MonoBehaviour
             {
                 match.SetActive(false);
             }
+
         }
 
         initialized = true;
