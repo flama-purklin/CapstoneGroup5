@@ -5092,6 +5092,80 @@ MonoBehaviour:
   trainParent: {fileID: 2072095370}
   trainManager: {fileID: 2072095371}
   spawnFromPrefab: 1
+  hasBuiltTrain: 0
+--- !u!1001 &647190246
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1221212286489462534, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_Name
+      value: EvidenceManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981590807247330889, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: npcManager
+      value: 
+      objectReference: {fileID: 393672616}
+    - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: audioControl
+      value: 
+      objectReference: {fileID: 464073572}
+    - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: trainManager
+      value: 
+      objectReference: {fileID: 2072095371}
+    - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: trainLayoutManager
+      value: 
+      objectReference: {fileID: 641991973}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
 --- !u!1 &664204049
 GameObject:
   m_ObjectHideFlags: 0
@@ -11006,7 +11080,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.080004044
+    m_Value: 0.10224449
   contrast:
     m_OverrideState: 1
     m_Value: 15
@@ -17918,9 +17992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDialogueText: {fileID: 0}
   npcDialogueText: {fileID: 6552968255495239368}
-  inputField: {fileID: 1590013224315499692}
   inputBox: {fileID: 1167077927224421573}
-  submitButton: {fileID: 0}
   dialogueControlRef: {fileID: 5268162263547235753}
 --- !u!1 &1167077927224421573
 GameObject:
@@ -19299,3 +19371,4 @@ SceneRoots:
   - {fileID: 1221452152}
   - {fileID: 1339278003}
   - {fileID: 464073574}
+  - {fileID: 647190246}
