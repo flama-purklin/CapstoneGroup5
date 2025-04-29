@@ -3185,11 +3185,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IsGlobal: 1
   fadeRadius: 0
-  priority: 0
+  priority: 8.18
   customPasses:
   - rid: 42417622441787473
-  injectionPoint: 3
-  m_TargetCamera: {fileID: 0}
+  injectionPoint: 2
+  m_TargetCamera: {fileID: 708103178}
   useTargetCamera: 0
   references:
     version: 2
@@ -5820,7 +5820,7 @@ Camera:
   m_FocusDistance: 10
   m_FocalLength: 44.78461
   m_BladeCount: 6
-  m_Curvature: {x: 2, y: 11}
+  m_Curvature: {x: 11.209805, y: 20.209805}
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
@@ -11006,7 +11006,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.08271529
+    m_Value: 0.080004044
   contrast:
     m_OverrideState: 1
     m_Value: 15
@@ -19271,6 +19271,7 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 374132903}
   - {fileID: 20733263}
   - {fileID: 46893853370859957}
   - {fileID: 708103179}
@@ -19298,4 +19299,3 @@ SceneRoots:
   - {fileID: 1221452152}
   - {fileID: 1339278003}
   - {fileID: 464073574}
-  - {fileID: 374132903}

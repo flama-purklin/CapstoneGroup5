@@ -27,10 +27,11 @@ public class DialogueUIController : MonoBehaviour
     [Tooltip("Threshold for auto‑scroll (<= this value)")]
     [SerializeField, Range(0f, 1f)] private float autoScrollThreshold = 0.1f;
 
-    public event Action<string> OnPlayerMessageSubmitted;
+    // public event Action<string> OnPlayerMessageSubmitted; // REMOVED - No longer needed
 
     private bool isWaitingForResponse = false;
     private string currentResponse = string.Empty;
+    private DialogueControl dialogueControl; // Reference to the main controller
 
     // Add a property to expose the responseText for BeepSpeak
     public TextMeshProUGUI ResponseTextComponent => responseText;
@@ -58,6 +59,14 @@ public class DialogueUIController : MonoBehaviour
         {
             inputGhostManager = GetComponentInChildren<InputGhostManager>(true); // true to include inactive objects
             Debug.Log($"[DialogueUIController] Fallback assigned inputGhostManager via GetComponentInChildren: {inputGhostManager != null}");
+        }
+
+        // Get reference to the parent DialogueControl
+        dialogueControl = GetComponentInParent<DialogueControl>();
+        if (dialogueControl == null) {
+            Debug.LogError("[DialogueUIController] Could not find DialogueControl in parent hierarchy!");
+        } else {
+            Debug.Log("[DialogueUIController] Successfully found DialogueControl reference.");
         }
     }
 
@@ -223,8 +232,24 @@ public class DialogueUIController : MonoBehaviour
         scrollFadeManager?.ContentChanged();
 
         isWaitingForResponse = true;
-        Debug.Log("[DialogueUIController] About to invoke OnPlayerMessageSubmitted event");
-        OnPlayerMessageSubmitted?.Invoke(trimmed);
+        // Debug.Log("[DialogueUIController] About to invoke OnPlayerMessageSubmitted event"); // REMOVED
+        // OnPlayerMessageSubmitted?.Invoke(trimmed); // REMOVED
+
+        // Get LLM Manager from DialogueControl and submit input
+        if (dialogueControl != null) {
+            LLMDialogueManager llmManager = dialogueControl.GetLLMDialogueManager();
+            if (llmManager != null) {
+                Debug.Log($"[DialogueUIController] Calling llmManager.SubmitPlayerInputToLLM with: '{trimmed}'");
+                llmManager.SubmitPlayerInputToLLM(trimmed);
+            } else {
+                Debug.LogError("[DialogueUIController] Failed to get LLMDialogueManager from DialogueControl!");
+                isWaitingForResponse = false; // Reset flag if submission fails
+            }
+        } else {
+             Debug.LogError("[DialogueUIController] DialogueControl reference is null! Cannot submit input.");
+             isWaitingForResponse = false; // Reset flag if submission fails
+        }
+
 
         StartCoroutine(FocusInputNextFrame());
     }

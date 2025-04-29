@@ -38,7 +38,27 @@ public class InputGhostManager : MonoBehaviour
             Color textColor = ghostText.color;
             textColor.a = 1f; // Keep it fully opaque always
             ghostText.color = textColor;
-            Debug.Log("[InputGhostManager] Awake - Ensured ghostText is enabled and cleared.");
+            Debug.Log("[InputGhostManager] Awake - Ensured ghostText is enabled, opaque, and cleared.");
+            
+            // Attempt to prevent layout collapse
+            LayoutElement layoutElement = GetComponent<LayoutElement>();
+            if (layoutElement != null) {
+                layoutElement.minWidth = 100f; // Ensure it has some minimum width
+                layoutElement.minHeight = 20f; // Ensure it has some minimum height
+                Debug.Log($"[InputGhostManager] Awake - Set LayoutElement minWidth={layoutElement.minWidth}, minHeight={layoutElement.minHeight}");
+            } else {
+                Debug.LogWarning("[InputGhostManager] Awake - LayoutElement component not found. Cannot enforce min size.");
+            }
+            
+            // Optional: Consider disabling ContentSizeFitter if it causes issues with min size
+            // ContentSizeFitter sizeFitter = GetComponent<ContentSizeFitter>();
+            // if (sizeFitter != null) {
+            //     sizeFitter.enabled = false; 
+            //     Debug.Log("[InputGhostManager] Awake - Disabled ContentSizeFitter.");
+            // }
+
+        } else {
+             Debug.LogError("[InputGhostManager] Awake - Failed to find ghostText component! Cannot apply layout fixes.");
         }
         
         // Clear the internal message state too
