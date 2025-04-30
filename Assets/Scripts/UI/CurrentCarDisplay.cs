@@ -2,12 +2,18 @@ using UnityEngine;
 using TMPro;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 public class CurrentCarDisplay : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI carNameText;
     private CarDetection playerCarDetection;
     private TextInfo textInfo = new CultureInfo("en-US", false).TextInfo; // For title casing
+    
+    // Regex pattern that matches either:
+    // 1. Any variation of "Traincar"/"Train Car" followed by optional digits and spaces
+    // 2. Numbers at the start of the name followed by spaces
+    private static readonly Regex prefixPattern = new Regex(@"^((?:traincar|train\s*car)\s*\d*\s*|\d+\s+)", RegexOptions.IgnoreCase);
 
     void Start()
     {
@@ -62,15 +68,13 @@ public class CurrentCarDisplay : MonoBehaviour
             return "";
         }
 
-        // Remove "Traincar #" prefix if present
-        string cleanId = id;
-        if (cleanId.StartsWith("Traincar"))
+        // Remove prefix pattern (Traincar #, Train Car #, or just # at the start)
+        string cleanId = prefixPattern.Replace(id, "");
+        
+        // If the removal left nothing, return the original ID
+        if (string.IsNullOrWhiteSpace(cleanId))
         {
-            int indexOfSeparator = cleanId.IndexOf(' ', 9); // Look for space after potential number
-            if (indexOfSeparator > 0)
-            {
-                cleanId = cleanId.Substring(indexOfSeparator + 1);
-            }
+            cleanId = id;
         }
 
         // Replace underscores with spaces
@@ -79,6 +83,6 @@ public class CurrentCarDisplay : MonoBehaviour
         // Apply title case
         string titleCasedId = textInfo.ToTitleCase(spacedId);
 
-        return titleCasedId;
+        return titleCasedId.Trim();
     }
 }

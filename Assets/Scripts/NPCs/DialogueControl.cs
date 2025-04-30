@@ -325,21 +325,25 @@ public class DialogueControl : MonoBehaviour
         loadingUI.SetActive(false);
     }
 
-    private IEnumerator DeactivateDialogue()
+private IEnumerator DeactivateDialogue()
+{
+    float startTime = Time.realtimeSinceStartup;
+    #if UNITY_EDITOR || DEVELOPMENT_BUILD
+    Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Started at {startTime:F3}s");
+    #endif
+    try
     {
-        float startTime = Time.realtimeSinceStartup;
-        #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Started at {startTime:F3}s");
-        #endif
-        try
-        {
-            isTransitioning = true;
+        // Show loading UI during the deactivation process
+        loadingUI.SetActive(true);
+        Debug.Log("[DialogueControl] Showing loading UI for deactivation process");
+        
+        isTransitioning = true;
 
-            // Hide the new UI if it's being used (this also calls ClearDialogue internally)
-            if (dialogueUIController != null) {
-                dialogueUIController.HideDialogue();
-                Debug.Log("[DialogueControl] Called HideDialogue on new DialogueUIController");
-            }
+        // Hide the new UI if it's being used (this also calls ClearDialogue internally)
+        if (dialogueUIController != null) {
+            dialogueUIController.HideDialogue();
+            Debug.Log("[DialogueControl] Called HideDialogue on new DialogueUIController");
+        }
 
             // Reset the evidence dropdown to default ("No Evidence")
             if (evidenceSelect != null && evidenceSelect.options.Count > 0) {
@@ -393,6 +397,12 @@ public class DialogueControl : MonoBehaviour
 
                 if (!saveTask.IsFaulted) {
                      Debug.Log($"[DialogueControl.Deactivate] Successfully completed save for conversation state: '{characterToSave?.save ?? "Unknown"}'");
+                     
+                     // Cool down the character after saving is complete to ensure it needs rewarming on next activation
+                     if (characterToSave != null && characterManager != null) {
+                         Debug.Log($"[DialogueControl] Cooling down character '{characterToSave.name}' after conversation");
+                         characterManager.CooldownCharacter(characterToSave.name);
+                     }
                 } else {
                      Debug.LogError($"[DialogueControl.Deactivate] Save task FAILED for '{characterToSave?.save ?? "Unknown"}': {saveTask.Exception}");
                 }
@@ -436,6 +446,11 @@ public class DialogueControl : MonoBehaviour
             // Ensure flags are reset even if the coroutine is stopped or errors
             isTransitioning = false;
             deactivationCoroutine = null;
+            
+            // Hide loading UI in finally block to ensure it's hidden even if errors occur
+            loadingUI.SetActive(false);
+            Debug.Log("[DialogueControl] Hiding loading UI after deactivation process");
+            
             float totalTime = Time.realtimeSinceStartup - startTime;
             Debug.Log($"[TIMEDBG] DeactivateDialogue Coroutine Finished after {totalTime:F3}s");
         }
