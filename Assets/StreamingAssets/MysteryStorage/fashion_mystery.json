@@ -166,7 +166,7 @@
       "initial_location": "first_class", "initial_location_index": 8,
       "core": {
         "involvement": {
-          "role": "Manipulator",
+          "role": "Charismatic manipulator",
           "type": "Mastermind who influenced the murderer"
         },
         "revelations": {
@@ -292,7 +292,7 @@
           }
         },
         "state_of_mind": {
-          "worries": "That one overlooked brush-stroke will unravel fifteen years of work",
+          "worries": "That his involvement with the art forgery case will be exposed",
           "feelings": "Cathedral-calm veneer over constant risk-ledger arithmetic",
           "reasoning_style": "Treats every conversation as a three-move chess opening"
         },
@@ -300,10 +300,11 @@
           "vocabulary_level": "lilting Oxbridge silver-tongue",
           "sentence_style": [
             "three-part rhetorical flourishes ending in an intimate aside",
-            "parries questions with a compliment before conceding half an answer"
+            "parries questions with a compliment before conceding half an answer",
+            "very personable and charming"
           ],
           "speech_quirks": [
-            "quotes obscure poetry nobody else knows",
+            "quotes obscure paintings nobody else knows",
             "lightly touches an arm or shoulder when steering a topic",
             "drops Latin maxims when cornered"
           ],
@@ -572,7 +573,7 @@
           "vocabulary_level": "scholarly ornamented with French sighs",
           "sentence_style": [
             "elegant theory followed by blunt carnal observation",
-            "unsettling pauses that feel like undressing"
+            "unsettling pauses tin which she stares down the speaker"
           ],
           "speech_quirks": [
             "traces bottom lip when amused",
@@ -719,11 +720,14 @@
           "vocabulary_level": "jagged mix of couture jargon and street profanity",
           "sentence_style": [
             "slow sarcastic wind-up → machine-gun conclusion",
-            "cuts others off mid-clause to punch-line herself"
+            "cuts others off mid-clause to punch-line herself",
+            "brutal comebacks",
+            "short and curt quips"
           ],
           "speech_quirks": [
-            "calls authority figures 'mate' or 'luv'",
-            "accidentally gushes over Penelope's shoulders every time her name arises"
+            "calls the sleuth 'mate'",
+            "accidentally gushes over Penelope's shoulders every time her name arises",
+            "swears like a sailor"
           ],
           "common_phrases": [
             "Absolute nightmare.",
@@ -850,19 +854,19 @@
           }
         },
         "state_of_mind": {
-          "worries": "Magazine growth stalling and personal scandal detonating simultaneously",
+          "worries": "Magazine growth stalling due to involvement with the murder and personal scandal detonating simultaneously",
           "feelings": "Externally serene; internally colour-coding five contingency plans",
-          "reasoning_style": "Systems thinker who mistrusts spontaneity-except in the bedroom"
+          "reasoning_style": "Utilitarian thinker who mistrusts spontaneity-except in the bedroom"
         },
         "speech_patterns": {
-          "vocabulary_level": "precise trend-forecast jargon",
+          "vocabulary_level": "precise trend-forecast jargon mixed with an old-timey translatlantic flair",
           "sentence_style": [
             "conditional clauses that keep options open",
             "strategic silences forcing others to elaborate"
           ],
           "speech_quirks": [
             "presses fingertips together when dissenting",
-            "tilts head 5° when proposing compromise"
+            "tilts head when proposing compromise"
           ],
           "common_phrases": [
             "Perhaps we should consider-",
@@ -976,37 +980,37 @@
       "mind_engine": {
         "identity": {
           "name": "Gideon Marsh",
-          "occupation": "Private investigator specializing in art fraud cases; former arts journalist whose one poetry collection 'Counterfeit Reflections' sold exactly 17 copies",
+          "occupation": "Veteran private investigator specializing in art fraud cases; retired professor of art history who publishes small volumes of poetry under the pen name 'G.M. Witness'",
           "personality": {
             "O": 0.8,
-            "C": 0.7, 
-            "E": 0.4,
-            "A": 0.5,
-            "N": 0.6
+            "C": 0.8, 
+            "E": 0.5,
+            "A": 0.7,  
+            "N": 0.4  
           }
         },
         "state_of_mind": {
-          "worries": "That Victoria's death will derail his investigation",
-          "feelings": "Artistic frustration sublimated into a preternatural ability to spot inauthenticity—in both paintings and people",
-          "reasoning_style": "Traces forgery patterns through metaphor; sees the world as layers of authentic and inauthentic brushstrokes"
+          "worries": "That the beautiful things in this world—art, trust, human dignity—are increasingly corrupted by deception and greed",
+          "feelings": "Melancholic determination; each case is both a puzzle to solve and a small tragedy to witness",
+          "reasoning_style": "Sherlock-sharp observation wrapped in the gentle wisdom of someone who has seen too much yet refuses to become callous"
         },
         "speech_patterns": {
-          "vocabulary_level": "Art auction catalog meets pulp detective novel",
+          "vocabulary_level": "Learned but accessible; oscillates between precise technical analysis and poetic reflection",
           "sentence_style": [
-            "compares every aspect of the murder to various art forgery techniques",
-            "constructs elaborate metaphors linking the killer's psychology to specific artists' style periods"
+            "begins analytically, then softens into unexpected poetic insight",
+            "offers gentle questions that reveal more than accusations ever could"
           ],
           "speech_quirks": [
-            "unconsciously sketches miniature crime scene diagrams that resemble famous paintings",
-            "evaluates alibis like art appraisals: 'This story bears hallmarks of inauthenticity in the brushwork'",
-            "slips into iambic pentameter when examining particularly compelling evidence",
-            "carries a small black notebook filled with poetic descriptions of forgery techniques disguised as case notes"
+            "writes observations on a small, worn leather notebook filled with both case notes and half-finished poems",
+            "occasionally pauses mid-sentence to jot down a phrase that struck him",
+            "refers to victims by first name when alone, as if honoring their humanity",
+            "quotes poetry when confronting the darker aspects of human nature—not to show off, but as a way to process grief"
           ],
           "common_phrases": [
-            "This murder was staged with the precision of a Dutch Master—deceptively simple at first glance, yet forensically immaculate.",
-            "Maxwell's anxiety manifests like a Pollock—chaotic splatter hiding deliberate technique.",
-            "Victoria's death scene / Arranged like Caravaggio / Darkness concealing truth.",
-            "Gregory reminds me of Vermeer—seemingly perfect technique that collapses under spectroscopic analysis."
+            "The forgery reveals itself in the hesitation of the brush... rather like how guilt reveals itself in hesitations of the tongue.",
+            "I've seen many crimes in my years, and yet the attempt to counterfeit beauty remains uniquely sad to me.",
+            "These brushstrokes tell a story of desperation, not unlike poor Victoria's final moments.",
+            "If I may borrow from Keats: 'Beauty is truth, truth beauty.' I fear our killer understood the first part but forsook the second entirely."
           ]
         }
       }
@@ -1021,7 +1025,7 @@
         },
         "revelations": {
           "mira_offers_photos_for_info": {
-            "content": "Safe's code isn't charity. Feed me Millennium gossip and we'll talk digits.",
+            "content": "I have photos alright-stored safely in my suitcase. Though, the code isn't charity. Feed me Millennium gossip and we'll talk digits.",
             "reveals": "test-mira-bargain",
             "trigger_type": "conversation_topic",
             "trigger_value": "ask about her photos"
