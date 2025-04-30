@@ -366,9 +366,19 @@ public class EvidenceManager : MonoBehaviour
                     }
                 }
 
-                // Ensure npc not exist same time as body
-                if (node.Node.Type == "EVIDENCE" && node.Node.Subtype == "death")
+                // Bool used to ensure evidence not locked behind scripted event.
+                bool isInScriptedEvents = scriptedEvents.Any(se => se.Id == node.Key);
+
+                if (isInScriptedEvents)
                 {
+                    nodesToDeactivate.Add(node.Key + " Evidence");
+                }
+
+
+                // Ensure npc not exist same time as body (only done if death not locked behind scripted event.)
+                if (!isInScriptedEvents && node.Node.Type == "EVIDENCE" && node.Node.Subtype == "death")
+                {
+
                     string npcName = node.Node.Target;
 
                     GameObject npcManager = GameObject.Find("NPCManager");
@@ -410,11 +420,12 @@ public class EvidenceManager : MonoBehaviour
             }
         }
 
-        // *** Hard Code! Disable Maxwell body node untill scripted events work
+        // No need, handled in initialization
+/*        // *** Hard Code! Disable Maxwell body node untill scripted events work
         nodesToDeactivate.Add("fact-maxwell-body Evidence");
-        nodesToDeactivate.Add("evidence-maxwell-final-note Evidence");
+        nodesToDeactivate.Add("evidence-maxwell-final-note Evidence");*/
 
-        // TODO: Cleanup logic. Deactivate objects that are in nodesToDeactivate. Set up the scripted event checkers.
+        // TODid: Cleanup logic. Deactivate objects that are in nodesToDeactivate. Set up the scripted event checkers (In update now, even though inefficient...)
         foreach (string evidenceName in nodesToDeactivate)
         {
             var match = spawnedEvidence.FirstOrDefault(obj => obj != null && obj.name == evidenceName);
