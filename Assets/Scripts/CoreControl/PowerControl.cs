@@ -40,21 +40,23 @@ public class PowerControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F11))
         {
-            powerTotal = 0;
+            currentPower = 0;
+        }
+
+        if (powerActive)
+        {
+            if (currentPower <= 0)
+            {
+                StopAllCoroutines();
+                GameOver();
+            }
         }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (powerActive)
-        {
-            if (powerTotal <= 0)
-            {
-                StopAllCoroutines();
-                GameOver();
-            }
-        }
+        
     }
 
     public void PowerInit()

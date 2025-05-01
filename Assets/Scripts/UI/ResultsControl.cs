@@ -12,17 +12,20 @@ public class ResultsControl : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        if (GameControl.GameController.currentState == GameState.WIN)
+        if (PlayerPrefs.GetInt("gameWin") == 1)
         {
+            
             winHolder.SetActive(true);
             lossHolder.SetActive(false);
+            Debug.Log("Player Won!");
         }
-        else if (GameControl.GameController.currentState == GameState.LOSE)
+        else
         {
             winHolder.SetActive(false);
             lossHolder.SetActive(true);
+            Debug.Log("Player Lost!");
         }
 
         //set the confidence score

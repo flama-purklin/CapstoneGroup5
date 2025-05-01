@@ -721,7 +721,7 @@ public class NodeControl : MonoBehaviour
     {
         foreach (var node in visualNodes)
         {
-            UnlockVisualNode(node.Key);
+            GameControl.GameController.coreConstellation.DiscoverNode(node.Key);
 
             yield return new WaitForSecondsRealtime(0.25f);
         }

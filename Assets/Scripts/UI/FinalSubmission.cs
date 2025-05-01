@@ -74,10 +74,16 @@ public class FinalSubmission : MonoBehaviour
         //TODO - replace the rng with actual mechanics for checking the game win state (requires the elements of mystery gen as objects that can be called upon)
 
         if (charTag != GameControl.GameController.coreMystery.Core.Culprit)
+        {
             GameControl.GameController.currentState = GameState.LOSE;
+            PlayerPrefs.SetInt("gameWin", 0);
+        }
         else
+        {
             GameControl.GameController.currentState = GameState.WIN;
-
+            PlayerPrefs.SetInt("gameWin", 1);
+        }
+            
         LoadResultScreen();
     }
 
