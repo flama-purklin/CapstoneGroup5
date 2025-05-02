@@ -27,7 +27,7 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         //set application framerate here
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 24;
 
         resolutions = Screen.resolutions;
 

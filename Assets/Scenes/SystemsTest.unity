@@ -8601,7 +8601,7 @@ MonoBehaviour:
   characterManager: {fileID: 377154506}
   loadingOverlay: {fileID: 18984962}
   trainLayoutManager: {fileID: 641991973}
-  minLoadingTime: 35
+  minLoadingTime: 5
 --- !u!4 &1011721226
 Transform:
   m_ObjectHideFlags: 0
@@ -11171,7 +11171,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.09622248
+    m_Value: 0.099810615
   contrast:
     m_OverrideState: 1
     m_Value: 15

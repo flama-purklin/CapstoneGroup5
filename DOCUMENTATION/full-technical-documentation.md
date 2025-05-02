@@ -12,6 +12,7 @@
    - [NPC System](#npc-system)
    - [Dialogue System](#dialogue-system)
    - [Player System](#player-system)
+   - [Post-Processing System](#post-processing-system)
 5. [Data Flow](#data-flow)
 6. [Initialization Sequence](#initialization-sequence)
 7. [Event System](#event-system)
@@ -50,18 +51,19 @@ The project is built around the following architectural components:
 - **ParsingControl**: Handles mystery JSON parsing. (Component should exist in the scene from start).
 - **NPCManager**: Manages NPC creation and behavior. (Component should exist in the scene from start).
 - **CharacterManager**: Manages LLM character creation, state, and interaction. (Component should exist in the scene from start).
-- **SimpleProximityWarmup**: Manages LLM character warmup/cooldown based on proximity. (Component should exist in the scene from start).
+- **Other Manager Components**: Various UI, game state, and system managers.
 
 ### Data Model
 - **Mystery**: Core data model containing all mystery information
 - **MysteryCharacter**: Character data model linking to LLM system
-- **MysteryConstellation**: Node-based structure of mystery elements
+- **MysteryConstellation**: Node-based structure of mystery elements with nodes and leads
 
 ### Runtime Systems
 - **LLM System**: Handles language model interactions
 - **Dialogue System**: Manages character conversations
 - **NPC System**: Controls NPC behavior and interactions
 - **Player System**: Handles player movement and interactions
+- **Post-Processing System**: Provides visual styling through custom effects
 
 ## Scene Structure
 
@@ -78,7 +80,7 @@ The project utilizes a **unified single-scene architecture**:
         - InitializationManager (manages startup sequence)
         - LoadingOverlay (displays progress, blocks view initially)
         - LLM (Must exist in scene)
-        - `GameController`, `ParsingControl`, `CharacterManager`, `NPCManager`, `TrainLayoutManager`, `SimpleProximityWarmup` GameObjects (with respective scripts attached)
+        - `GameController`, `ParsingControl`, `CharacterManager`, `NPCManager`, `TrainLayoutManager` GameObjects (with respective scripts attached)
         - Train environment, NPCs, UI elements (PauseMenu, DialogueControl, etc.)
 
 ## Game Systems
@@ -111,15 +113,14 @@ The LLM integration is handled through the LLMUnity package and custom managemen
 
 - **LLM**: Core language model interface (LLMUnity component).
 - **LLMCharacter**: Character-specific LLM instance (LLMUnity component), handles saving/loading history and cache state.
-- **CharacterManager**: Custom script managing `LLMCharacter` instances, states, context allocation, and cache settings.
-- **SimpleProximityWarmup**: Custom script managing which characters are "warm" (Ready state) based on player proximity.
+- **CharacterManager**: Custom script managing `LLMCharacter` instances, states, context allocation, and cache settings. It includes the `WarmupCharacter()` and `CooldownCharacter()` methods to handle character state transitions.
 - **LLMDialogueManager**: Custom script managing dialogue flow with characters.
 
 The system uses character data parsed from the main mystery JSON to generate system prompts defining personality and knowledge.
 Character activity and resource allocation are managed dynamically:
 - **Parallel Prompts:** The number of concurrent LLM processes is set by `LLM.parallelPrompts` (must be configured in Inspector).
 - **Context Allocation:** `CharacterManager` allocates context (`nKeep`) based on `LLM.parallelPrompts`.
-- **Warmup/Cooldown:** `SimpleProximityWarmup` monitors player distance to NPCs and tells `CharacterManager` to `WarmupCharacter` (transition to Ready state) or `CooldownCharacter` (transition back to LoadingTemplate state) to manage active LLM instances up to the `parallelPrompts` limit.
+- **Warmup/Cooldown:** The CharacterManager exposes `WarmupCharacter()` and `CooldownCharacter()` methods to transition characters between states based on external triggers (such as proximity). These methods handle the transitions between `LoadingTemplate` and `Ready` states.
 - **Caching:** `CharacterManager` has a public `enableLLMCache` flag (Inspector toggle, default false) that controls whether `LLMCharacter` uses `.cache` files for faster re-warming. *Note: Enabling cache may currently cause `JobTempAlloc` warnings.*
 
 ### Mystery System
@@ -129,34 +130,45 @@ Character activity and resource allocation are managed dynamically:
 The mystery system is built around a JSON-based data model:
 
 1. **Mystery Parsing**:
-   - `ParsingControl` script component (present in scene from start) loads and parses the main mystery JSON (`transformed-mystery.json`) in its `Awake` method.
+   - `ParsingControl` script component (present in scene from start) loads and parses the main mystery JSON (`fashion_mystery.json` or similar) in its `Awake` method.
    - Mystery data is deserialized and stored directly in `GameControl.GameController.coreMystery`.
-   - No longer calls `MysteryCharacterExtractor` or generates individual files.
 
 2. **Mystery Structure**:
    - **Metadata**: Basic mystery information (title, version, etc.) and overall `context` string for the mystery scenario.
    - **Core**: Central mystery details (perpetrator, victim, etc.)
-   - **Character Profiles (`character_profiles`)**: Character data (personality, relationships, etc.). Contains `initial_location` at the top level per character, and `core` object with `involvement` (role, type), `whereabouts` (Dictionary), `relationships` (Dictionary), `agenda`, `appearance`, `voice`, and `revelations` (Dictionary of gated information with triggers). *Note: `key_testimonies` and `mystery_attributes` fields removed.*
+   - **Character Profiles (`character_profiles`)**: Character data (personality, relationships, etc.). Contains `initial_location` at the top level per character, and `core` object with `involvement` (role, type), `whereabouts` (Dictionary), `relationships` (Dictionary), `agenda`, `appearance`, `voice` (used for BeepSpeak character voice settings), and `revelations` (Dictionary of gated information with triggers).
    - **Environment**: Setting and environmental details
-   - **Constellation**: Node-based mystery structure
+   - **Constellation**: Contains the underlying structure of the mystery investigation
+     - **Nodes**: Dictionary of mystery nodes (evidence, testimonies, facts) keyed by unique ID
+     - **Leads**: Array of lead objects linking nodes, each containing:
+       - `id`: Unique identifier
+       - `question`: The lead's text/question
+       - `inside`: ID of the node where this lead is contained/housed
+       - `answer`: ID of the node this lead reveals when followed
+       - `terminal`: ID of the node where this lead will appear to the player
+   - **Mini-Mysteries**: Dictionary of sub-mysteries with entry points, key nodes, and revelations
+   - **Scripted Events**: Triggered by discovering specific nodes, can reveal other nodes
 
-3. **Mystery Nodes**:
-   - Represent key elements of the mystery
-   - Connected through relationships
-   - Form a graph-like structure for investigation
+3. **Mystery Structure Components**:
+   - **Nodes**: Represent key elements of the mystery (evidence, testimonies, facts)
+   - **Leads**: Connect nodes, providing investigation paths from one node to another
+   - **Mini-Mysteries**: Group related leads and nodes into cohesive sub-plots
+   - **Scripted Events**: Define narrative consequences for discovering certain nodes
 
 ### Character System
 
 *Design Goal: Character data is structured to separate core, plot-relevant information (relationships, knowledge, agenda - the CORE section in design) from personality, voice, and decision-making traits used primarily by the LLM for role-playing (the MIND ENGINE section in design).*
 
-*(Refactoring Complete: Initialization order issues and redundant file usage have been addressed. See Initialization Sequence section for the current flow.)*
-
 Characters are managed through multiple components:
 
 1.  **Character Data**:
-    *   Data is parsed directly from the main mystery JSON (`transformed-mystery.json`) into the `GameControl.GameController.coreMystery.Characters` dictionary (accessed via the `character_profiles` key in JSON) by `ParsingControl` during its `Awake` phase.
-    *   The `MysteryCharacter.cs` model reflects the current structure: `initial_location` is top-level; `core` contains dictionaries for `whereabouts`, `relationships`, and `revelations`. `Appearance` and `Voice` classes/properties exist but are currently unused. `KeyTestimonies` and `mystery_attributes` properties are removed.
-    *   Individual character JSON files are no longer created or used.
+    *   Data is parsed directly from the main mystery JSON into the `GameControl.GameController.coreMystery.Characters` dictionary (accessed via the `character_profiles` key in JSON) by `ParsingControl` during its `Awake` phase.
+    *   The `MysteryCharacter.cs` model contains:
+        - `initial_location` at top-level for placement in the game world
+        - `core` object with dictionaries for `whereabouts`, `relationships`, and `revelations`
+        - `voice` settings for character-specific audio during dialogue (used by BeepSpeak)
+        - `mind_engine` containing personality traits and speech patterns
+    *   Voice data from the JSON is actively used by the BeepSpeak system to modulate character speech sounds.
 
 2.  **Character Manager (`CharacterManager.cs`)**:
     *   Script component exists in the scene from the start.
@@ -165,23 +177,15 @@ Characters are managed through multiple components:
     *   Reads mystery context and title from `GameControl.coreMystery.Metadata`.
     *   Creates `LLMCharacter` GameObjects/components, passing character data, context, and title to `CharacterPromptGenerator` to generate the system prompt.
     *   Sets `saveCache` based on the public `enableLLMCache` field. Initializes characters only to `LoadingTemplate` state.
-    *   Provides `WarmupCharacter()` and `CooldownCharacter()` methods called by `SimpleProximityWarmup` to manage transitions between `LoadingTemplate` and `Ready` states.
+    *   Provides `WarmupCharacter()` and `CooldownCharacter()` methods to manage transitions between `LoadingTemplate` and `Ready` states.
     *   Allocates context (`nKeep`) based on `LLM.parallelPrompts`.
     *   Handles `OnDestroy` cleanup, deleting `.json` history files and optionally `.cache` files based on `enableLLMCache`.
 
 3.  **Character Prompt Generation (`CharacterPromptGenerator.cs`)**:
     *   Static class used by `CharacterManager` to generate system prompts for the LLM based on character data.
     *   Takes the `MysteryCharacter` object, mystery context, and mystery title as input.
-    *   Generates a detailed, markdown-formatted prompt based on the `NEW_PROMPT.md` template.
-    *   Includes sections for meta instructions, core identity, personality (with OCEAN descriptions), state of mind, knowledge/secrets/relationships, whereabouts/memories, available actions (function calls), revelation rules, speech patterns, and immutable directives.
-    *   Handles formatting of lists (relationships, whereabouts, revelations) and includes helper methods for generating personality descriptions and formatting names.
-    *   Logic for `KeyTestimonies` and `mystery_attributes` has been removed.
-
-4.  **Simple Proximity Warmup (`SimpleProximityWarmup.cs`)**:
-    *   Monitors player distance to active NPCs.
-    *   Determines the closest `maxWarmCharacters` NPCs.
-    *   Calls `CharacterManager.WarmupCharacter()` for nearby characters in `LoadingTemplate` state.
-    *   Calls `CharacterManager.CooldownCharacter()` for distant characters in `Ready` state.
+    *   Generates a detailed, markdown-formatted prompt with sections for meta instructions, core identity, personality, state of mind, knowledge/secrets/relationships, whereabouts/memories, available actions (function calls), revelation rules, speech patterns, and immutable directives.
+    *   Includes detailed instructions about available functions (`reveal_node` and `stop_conversation`) and how to respond to evidence presentation via the `[PLAYER_SHOWS: node_id]` tag.
 
 ### NPC System
 
@@ -229,71 +233,52 @@ The dialogue system connects player interactions with the LLM system:
    - On activation, calls `LLMCharacter.Load()` to load history/cache.
    - On deactivation, calls `LLMCharacter.Save()` to save history/cache and notifies `CharacterManager`.
    - Includes timing diagnostics to track UI animation times and I/O operations.
-   - **May 2025 Improvement:** Implemented selective child GameObject activation to keep critical HUD elements (`NodeUnlockNotif` and `PowerControl`) visible during dialogue, while hiding other HUD elements.
+   - **Evidence System:** Manages the evidence dropdown UI element, allowing players to select physical evidence to show the character during dialogue.
+   - Provides the `RetrieveEvidence()` method that returns the currently selected evidence ID.
+   - Implements selective child GameObject activation to keep critical HUD elements visible during dialogue.
 
-2. **BaseDialogueManager**:
+2. **DialogueUIController**:
+   - Handles UI elements for the dialogue interface.
+   - During input submission, retrieves selected evidence via `dialogueControl.RetrieveEvidence()`.
+   - Appends the special tag `[PLAYER_SHOWS: node_id]` to the player's message when evidence is selected.
+   - Resets the evidence dropdown after message submission.
+
+3. **BaseDialogueManager**:
    - Abstract class handling core dialogue logic.
-   - **Fixed Text Duplication (May 2025):** Changed `currentResponse.Append(reply)` to `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply`, as LLM response chunks contain the complete response so far, not just new content.
-   - **Improved Function Call Handling (May 2025):** Now uses `actionBuffer.Clear(); actionBuffer.Append(cleaned);` to prevent redundant text accumulation, fixing the "revealreveal_node..." issue.
+   - Uses `currentResponse.Clear(); currentResponse.Append(reply)` in `HandleReply` to handle streaming response chunks.
+   - Improved Function Call Handling with `actionBuffer.Clear(); actionBuffer.Append(cleaned);` to prevent redundant text accumulation.
    - Supports both `\nACTION:` and `[/ACTION]:` delimiters for function parsing.
    - Provides coroutines `ProcessActionAfterBeepSpeak` and `EnableInputAfterBeepSpeak` that wait for typing animation to complete before acting.
-   - **Improved Wait Timing (May 2025):** Enhanced coroutines to dynamically calculate appropriate wait times based on text length and BeepSpeak typing speed settings:
-   ```csharp
-   float estimatedCharTime = characterSpeed + speedVariance;
-   float punctuationPauseEstimate = Mathf.Min(textLength * 0.2f, 4.0f);
-   float calculatedWaitTime = Mathf.Max(3.0f, (textLength * estimatedCharTime) + punctuationPauseEstimate);
-   float maxWaitTime = Mathf.Min(calculatedWaitTime, 20.0f);
-   ```
-   - Increased maximum wait time from 5 to 20 seconds to handle longer messages properly.
+   - Uses dynamically calculated wait times based on text length and BeepSpeak typing speed settings.
 
-3. **LLMDialogueManager**:
+4. **LLMDialogueManager**:
    - Inherits from BaseDialogueManager.
    - Handles player input and LLM responses.
    - Manages dialogue flow and UI updates.
    - Implements `EnableInput`/`DisableInput` for UI interactability.
 
-4. **BeepSpeak**:
+5. **BeepSpeak**:
    - Handles text display with typing effect and audio.
+   - **Voice Integration:** Uses the `Voice` object from character data via the `UpdateVoice(Voice v)` method.
+   - Applies voice settings (ID, timbre, pitch, speed, volume) to customize the audio output for each character.
    - Manages a typing coroutine (`typingCoroutine`) for text animation.
    - The `IsPlaying` property (returns `typingCoroutine != null`) is used to determine when text animation is complete.
-   - **May 2025 Improvement:** Removed redundant 8-second timeout (`EnsureTypingCompletesWithLongDelay`) that caused premature animation termination.
-   - **May 2025 Feature:** Added function call text filtering to prevent action text from appearing in the dialogue box.
+   - Filters function call text to prevent action text from appearing in the dialogue box.
    - Provides `ForceCompleteTyping()` method with smooth transition effect for emergency animation completion.
 
-5. **Dialogue Flow**:
+6. **Dialogue Flow**:
    - Player enters dialogue range and presses E.
    - `DialogueControl.Activate()` is called.
    - `LLMCharacter.Load()` is called (if save file exists).
-   - Dialogue UI is activated.
-   - **New in May 2025:** Selective HUD deactivation preserves critical elements like `NodeUnlockNotif` and `PowerControl`.
-   - Player inputs text.
-   - `LLMDialogueManager` sends input to `LLMCharacter.Chat()`.
+   - Dialogue UI is activated with selective HUD deactivation.
+   - Player inputs text and optionally selects evidence from the dropdown.
+   - `LLMDialogueManager` sends input to `LLMCharacter.Chat()`, including the `[PLAYER_SHOWS: node_id]` tag if evidence was selected.
    - `LLMCharacter` processes input and generates responses.
-   - `BaseDialogueManager.HandleReply` receives each response chunk:
-     - **FIXED:** Clears and replaces `currentResponse` instead of appending.
-     - Checks for `\nACTION:` or `[/ACTION]:` delimiters.
-     - If found, sets `actionFoundInCurrentStream` flag, splits dialogue from action, and buffers the function call.
-     - **IMPROVED:** When accumulating action text, uses `actionBuffer.Clear()` instead of append to prevent redundant text buildup.
-     - Updates the display with ONLY the dialogue part.
-   - `LLMDialogueManager.UpdateDialogueDisplay` forwards text to `DialogueControl.DisplayNPCDialogueStreaming`.
-   - When streaming completes, `OnReplyComplete` is called:
-     - If a function was buffered, starts `ProcessActionAfterBeepSpeak` coroutine.
-     - If no function, starts `EnableInputAfterBeepSpeak` coroutine.
-   - Both coroutines use dynamically calculated timeouts based on text length and BeepSpeak typing speed.
+   - `BaseDialogueManager.HandleReply` receives and processes response chunks.
+   - Response text is displayed via BeepSpeak with character-specific voice settings.
+   - Function calls (like `reveal_node` or `stop_conversation`) are processed after typing animation completes.
    - Player exits dialogue (Escape or `stop_conversation` function).
    - `DialogueControl.Deactivate()` calls `ResetDialogue()` and `Save()`, then animates the UI closed.
-
-6. **Fully Resolved Issues (May 2025):**
-   - ✅ Text Duplication
-   - ✅ Premature Animation Termination
-   - ✅ Function Call Redundancy
-   - ✅ Missing HUD Elements
-   - ✅ Animation Speed Issues
-
-7. **Debugging Tools:**
-   - `[INPUTDBG]` logs track the input re-enabling pipeline.
-   - `[TIMEDBG]` logs measure durations of animations, I/O operations, and state transitions.
-   - `[BeepSpeak DEBUG - COMPARISON]` logs provide detailed information about text state during force completion.
 
 ### Player System
 
@@ -311,6 +296,39 @@ The player system handles player movement and interactions:
 3. **JorgePlayer/Player**:
    - Additional player functionality (not fully implemented)
 
+### Post-Processing System
+
+*Design Goal: To create a distinctive visual aesthetic inspired by Technicolor films and 1960s cinematography, enhancing the game's period atmosphere.*
+
+The post-processing system is implemented through custom components that configure Unity's HDRP post-processing stack:
+
+1. **Filmic60sSetup.cs**:
+   - Attached to the main camera
+   - Configures a comprehensive suite of post-processing effects:
+     - Tonemapping with custom LUT
+     - Color Adjustments (contrast, saturation, exposure)
+     - Bloom with optional lens dirt
+     - Film Grain
+     - Vignette
+     - Chromatic Aberration
+     - Lens Distortion
+     - Depth of Field with dynamic focus control
+   - Sets up a CustomPassVolume for the Halation effect
+   - Configures the camera for physical properties (aperture, blade count)
+   - Implements a subtle exposure flicker via the "Film-breath" coroutine to simulate film projection
+   - Provides methods to dynamically update focus distance
+
+2. **FilmicHalation.hlsl**:
+   - Custom shader for the halation effect
+   - Creates a characteristic glow/bleeding around bright areas
+   - Implements the distinctive "Technicolor" look
+
+3. **HalationCustomPass**:
+   - Custom pass using the halation shader
+   - Applied in the AfterPostProcess injection point
+
+This system contributes significantly to the game's visual identity, reinforcing the period setting and stylistic direction.
+
 ## Core Gameplay Concepts
 
 *Design concepts underpinning the player's interaction with the game world and mystery.*
@@ -326,43 +344,54 @@ The player system handles player movement and interactions:
 
 ## Data Flow
 
-The game utilizes a centralized "black-box" approach for mystery data. At initialization, `ParsingControl.cs` reads the single `transformed-mystery.json` file. This JSON is deserialized using `Newtonsoft.Json` into a structured C# object instance of the `Mystery` class, which acts as the central blueprint. This `Mystery` object, containing nested specialized classes (e.g., `MysteryCharacter`, `MysteryEnvironment`, `MysteryConstellation`) representing the data "layers", is stored in the `GameControl.GameController.coreMystery` singleton variable. Subsequent systems access this single object instance: `InitializationManager` orchestrates setup, `CharacterManager` reads character data to configure `LLMCharacter` components (using `CharacterPromptGenerator` which now reads object properties directly), `TrainLayoutManager` reads environment data to build the scene, and gameplay systems like Minigames interact with the `MysteryConstellation` (via `GameControl.coreConstellation`) to update the investigation state. This ensures data consistency after the initial parse.
+The game utilizes a centralized "black-box" approach for mystery data. At initialization, `ParsingControl.cs` reads the mystery JSON file (e.g., `fashion_mystery.json`). This JSON is deserialized using `Newtonsoft.Json` into a structured C# object instance of the `Mystery` class, which acts as the central blueprint. 
 
-**Current Gaps & Areas for Improvement:**
-*   **Unused JSON Data:** Sections like `Mystery.Core` (victim, perpetrator details) and `Mystery.Metadata` appear to be parsed but are not currently used by downstream systems. Fields within `MysteryCharacter` like potential `Appearance` or `Voice` data are also likely unused.
-*   **Hardcoded Elements:** Some gameplay elements, such as the placement and specific node linkage of `EvidenceObj` and `LuggageObj` prefabs in the scene, seem to be configured manually in the editor rather than being fully defined and instantiated based on data within the `Mystery.Environment` or `Mystery.Constellation` sections of the JSON. Integrating these definitions into the JSON would enhance the black-box flexibility.
+This `Mystery` object contains nested specialized classes representing the data "layers":
+- `MysteryCharacter`: Character data including voice settings and revelations
+- `MysteryConstellation`: The constellation structure with nodes, leads, and mini-mysteries
+- `MysteryEnvironment`: Environmental settings
+
+The parsed data is stored in `GameControl.GameController.coreMystery` and accessed by various subsystems:
+- `InitializationManager` orchestrates setup
+- `CharacterManager` reads character data to configure `LLMCharacter` components
+- `TrainLayoutManager` reads environment data to build the scene
+- Gameplay systems like the BeepSpeak audio system access character voice data
+- The dialogue system reads and processes revelations and evidence interactions
 
 The project's specific data flow follows this pattern:
 
 1. **Mystery Parsing**:
    ```
-   Mystery JSON (`character_profiles` key) → ParsingControl (scene component) → GameControl.coreMystery
+   Mystery JSON → ParsingControl → GameControl.coreMystery
    ```
-   *(Individual character file extraction step removed)*
 
 2. **Character Initialization**:
    ```
-   GameControl.coreMystery.Characters & GameControl.coreMystery.Metadata → CharacterManager (Initialize() called by InitializationManager) → CharacterPromptGenerator → LLMCharacter GameObject & Component (with generated prompt, in LoadingTemplate state)
+   GameControl.coreMystery.Characters & Metadata → CharacterManager → CharacterPromptGenerator → LLMCharacter GameObject/Component
    ```
-   *(Reads character data and metadata from GameControl, generates prompt via CharacterPromptGenerator)*
 
-3. **NPC Creation**:
+3. **Voice Data Flow**:
+   ```
+   Character.Core.Voice → BeepSpeak.UpdateVoice → Audio output customization
+   ```
+
+4. **NPC Creation**:
    ```
    GameControl.coreMystery.Characters[name].InitialLocation → InitializationManager.SpawnAndLinkNPCs → NPCManager → NPC GameObject
    LLMCharacter (from CharacterManager) → NPCManager → NPC GameObject
    ```
-   *(Relies on CharacterManager having initialized correctly; reads top-level InitialLocation data directly from the MysteryCharacter object in GameControl)*
 
-4. **Dialogue Flow**:
+5. **Dialogue Flow**:
    ```
-   Player Input → DialogueControl → LLMDialogueManager → LLMCharacter → Response → BaseDialogueManager (HandleReply → ProcessFunctionCall) → GameControl.coreConstellation (DiscoverNode) / DialogueControl (Deactivate)
+   Player Input + Selected Evidence → DialogueControl → LLMDialogueManager → LLMCharacter → Response → BaseDialogueManager → DialogueUIController → BeepSpeak
    ```
-   *(Response is parsed for ACTION: delimiter; function calls trigger constellation updates or dialogue deactivation. Wait times dynamically calculated.)*
-5. **Warmup/Cooldown Flow**:
+
+6. **Warmup/Cooldown Flow**:
    ```
-   Player Position → SimpleProximityWarmup → CharacterManager.Warmup/CooldownCharacter → LLMCharacter State Change
+   External Trigger → CharacterManager.Warmup/CooldownCharacter → LLMCharacter State Change
    ```
-6. **Save/Load Flow**:
+
+7. **Save/Load Flow**:
    ```
    DialogueControl.Activate → LLMCharacter.Load()
    DialogueControl.Deactivate → LLMCharacter.Save()
@@ -391,7 +420,7 @@ The game initialization occurs entirely within the `SystemsTest` scene, managed 
     - **(Step 3) Wait for Character Init:** `InitializeGame` awaits `WaitForCharacterManagerInitialization()`. This waits for `CharacterManager`'s `TwoPhaseInitialization` to complete (checking `IsInitialized` flag and `OnInitializationComplete` event).
     - **(Step 3.5) Init NPC Manager:** `InitializeGame` awaits `InitializeNPCManager()`.
     - **(Step 3.75) Spawn NPCs:** `InitializeGame` calls `SpawnAndLinkNPCs()`. This reads the top-level `initial_location` directly from the `MysteryCharacter` object within `GameControl.coreMystery` for each character and tells `NPCManager` where to spawn them.
-    - **(Step 4) Complete Init:** `InitializeGame` calls `CompleteInitialization()`, hiding the loading overlay and enabling gameplay. (Proximity warmup starts managing character states).
+    - **(Step 4) Complete Init:** `InitializeGame` calls `CompleteInitialization()`, hiding the loading overlay and enabling gameplay.
 
 ## Event System
 
@@ -400,14 +429,13 @@ The project uses C# events for communication between systems:
 1. **Parsing Events**:
    - `ParsingControl.OnParsingProgress`: Reports parsing progress (0.0 to 1.0).
    - `ParsingControl.OnMysteryParsed`: Indicates the main mystery object has been deserialized into `GameControl.coreMystery`.
-   - *(Removed `OnCharactersExtracted` and `OnParsingComplete` events)*
 
 2. **Character Manager Events**:
    - `CharacterManager.OnInitializationComplete`: Signals `CharacterManager` has finished its internal setup (creating LLMCharacters and loading templates). Triggered at the end of its `TwoPhaseInitialization` coroutine.
 
 3. **UI Events**:
    - Standard Unity UI events (Button.onClick, InputField.onSubmit)
-   - Used for dialogue interaction
+   - Used for dialogue interaction and evidence selection
 
 ## State Machines
 
@@ -441,24 +469,33 @@ The project's assets are organized as follows:
 1. **Scripts**:
    - `Assets/Scripts/`: Main script directory
      - `CoreControl/`: Core game management (`InitializationManager`, `ParsingControl`, etc.)
-     - `Characters/`: Character-related logic (`CharacterManager`, `CharacterPromptGenerator`, `SimpleProximityWarmup`)
+     - `Characters/`: Character-related logic (`CharacterManager`, `CharacterPromptGenerator`)
      - `NPCs/`: NPC behavior (`NPCManager`, `NPCMovement`, `NPCAnimManager`, `DialogueControl`)
      - `Player/`: Player movement and interaction
      - `Train/`: Train environment (`TrainLayoutManager`, `TrainManager`)
-     - `UI/`: User interfaces
+     - `UI/`: User interfaces including `DialogueUIController`
+     - `Dialogue/`: Dialogue system (`BaseDialogueManager`, `LLMDialogueManager`)
 
 2. **Mystery**:
-   - `Assets/Mystery/`: Mystery system (potentially deprecated/refactored parts)
+   - `Assets/Mystery/`: Mystery system
      - `Myst_Gen/`: Mystery generation
      - `Myst_Play/`: Mystery gameplay
-       - `Dialogue/LLM/`: LLM integration (`BaseDialogueManager`, `LLMDialogueManager`)
 
 3. **StreamingAssets**:
-   - `StreamingAssets/MysteryStorage/`: Contains the main mystery JSON file (e.g., `transformed-mystery.json`).
-   - *(Removed `Characters` and `CharacterBackups` directories)*
+   - `StreamingAssets/MysteryStorage/`: Contains the mystery JSON files (e.g., `fashion_mystery.json`).
 
 4. **LLM**:
    - `Assets/LLMUnity-release-v2.4.2/`: LLM integration package
+
+5. **Post-Processing**:
+   - `Assets/PostProcessing/`: Post-processing effects
+     - `Filmic60sSetup.cs`: Main setup script
+     - `FilmicHalation.hlsl`: Custom shader for the halation effect
+
+6. **DialogueSFX**:
+   - `Assets/DialogueSFX/`: Contains BeepSpeak system and audio files
+     - `BeepSpeak.cs`: Core implementation for dialogue audio and text animation
+     - Various audio files for different character voice timbres
 
 ## Art Direction
 
@@ -473,6 +510,7 @@ The project's assets are organized as follows:
 
 ### Aesthetics
 - Inspired by Mid-Century Futurism (e.g., Jetsons, Space Era illustrations) and Swinging Sixties styles (e.g., Deathloop, pop art).
+- Enhanced by the custom Technicolor-inspired post-processing effects.
 
 ## Dependencies
 
@@ -486,10 +524,11 @@ The project has the following key dependencies:
    - InitializationManager → ParsingControl, CharacterManager, NPCManager, TrainLayoutManager, LLM, GameControl
    - ParsingControl → GameControl
    - CharacterManager → LLM, GameControl, CharacterPromptGenerator
-   - NPCManager → CharacterManager, TrainLayoutManager, GameControl (indirectly via InitializationManager for spawning)
-   - DialogueControl → LLMDialogueManager, CharacterManager, BeepSpeak
-   - SimpleProximityWarmup → CharacterManager, NPCManager, Player Transform
-   - BaseDialogueManager → DialogueControl, BeepSpeak (indirectly)
+   - NPCManager → CharacterManager, TrainLayoutManager, GameControl
+   - DialogueControl → LLMDialogueManager, CharacterManager, BeepSpeak, Evidence UI Elements
+   - DialogueUIController → DialogueControl (for evidence retrieval)
+   - BaseDialogueManager → DialogueControl, BeepSpeak
+   - BeepSpeak → Character Voice Data
 
 ## Code Reference
 
@@ -500,20 +539,27 @@ The project has the following key dependencies:
    - Stores mystery data (`coreMystery`)
    - Singleton access via `GameControl.GameController`
 
-*(Note: PersistentSystemsManager.cs and GameInitializer.cs removed as they are deprecated or superseded by InitializationManager in the unified scene)*
-
 ### Mystery System
 
 1. **Mystery.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
    - Core data model for mysteries, mapping to the top-level JSON structure.
-   - Contains properties for `metadata` (including context), `core`, `character_profiles` (Dictionary, including revelations), `environment`, `constellation`.
+   - Contains properties for `metadata` (including context), `core`, `character_profiles` (Dictionary, including revelations), `environment`, `constellation` (with nodes and leads), `scripted_events`, and more.
    - Used by `ParsingControl` for deserialization.
 
-2. **ParsingControl.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
+2. **MysteryConstellation.cs** (`Assets/Scripts/CoreControl/MysteryParsing/Constellation/`):
+   - Defines the structure for nodes, leads, and mini-mysteries.
+   - Contains dictionaries and collections for these elements.
+   - Implements methods for node discovery and mystery navigation.
+
+3. **ParsingControl.cs** (`Assets/Scripts/CoreControl/MysteryParsing/`):
    - Component exists in the scene from start.
    - Parses the main mystery JSON file loaded from `StreamingAssets` in its `Awake` method.
    - Populates `GameControl.coreMystery` with the parsed data.
    - Sets the `IsParsingComplete` flag when done.
    - Fires `OnParsingProgress` and `OnMysteryParsed` events.
 
-*(Removed MysteryCharacterExtractor.cs)*
+### Character System
+
+1. **MysteryCharacter.cs** (`Assets/Scripts/CoreControl/MysteryParsing/Characters/`):
+   - Defines the structure for character data.
+   - Contains properties for `core`, `mind_engine`, `initial_location`, and more.
