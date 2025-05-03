@@ -389,7 +389,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &18984963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1451,6 +1451,7 @@ MonoBehaviour:
   - {fileID: 1844992836}
   - {fileID: 1573731007}
   - {fileID: 1979465829}
+  - {fileID: 1711615706}
 --- !u!1 &114889852 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7441357142540035523, guid: 17830af327ad09348b2d63d4f63f38ae, type: 3}
@@ -6083,6 +6084,7 @@ GameObject:
   - component: {fileID: 708103181}
   - component: {fileID: 708103182}
   - component: {fileID: 708103183}
+  - component: {fileID: 708103184}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -6144,7 +6146,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
-  m_AllowDynamicResolution: 0
+  m_AllowDynamicResolution: 1
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -6210,7 +6212,7 @@ MonoBehaviour:
   flipYMode: 0
   xrRendering: 1
   fullscreenPassthrough: 0
-  allowDynamicResolution: 0
+  allowDynamicResolution: 1
   customRenderingSettings: 0
   invertFaceCulling: 0
   probeLayerMask:
@@ -6348,8 +6350,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lutTexture: {fileID: 0}
-  halationShader: {fileID: 0}
+  halationShader: {fileID: 4800000, guid: ee8516a41f79f8c4d9025a1aba8a2876, type: 3}
   dirtTexture: {fileID: 2800000, guid: db50366cdf0244c42acc950d5344a6ac, type: 3}
+--- !u!114 &708103184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708103176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a02b07c33d134914f8d2d89d24bfc12d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {x: 960, y: 540}
 --- !u!1 &709919620
 GameObject:
   m_ObjectHideFlags: 0
@@ -10214,7 +10229,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: contextSize
-      value: 6000
+      value: 3500
       objectReference: {fileID: 0}
     - target: {fileID: 5183390182600682572, guid: 83cb8b84f2a7f0846b3e8003ded76141, type: 3}
       propertyPath: chatTemplate
@@ -11171,7 +11186,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.099810615
+    m_Value: 0.08155491
   contrast:
     m_OverrideState: 1
     m_Value: 15
@@ -11927,7 +11942,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.3}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.33
   smoothness:
     m_OverrideState: 1
     m_Value: 0.5
@@ -13520,6 +13535,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1686099865}
   m_CullTransparentMesh: 1
+--- !u!114 &1711615706
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcf384b154398e341b6b29969c078198, type: 3}
+  m_Name: MotionBlur
+  m_EditorClassIdentifier: 
+  active: 0
+  quality:
+    m_OverrideState: 1
+    m_Value: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0
+  maximumVelocity:
+    m_OverrideState: 1
+    m_Value: 200
+  minimumVelocity:
+    m_OverrideState: 1
+    m_Value: 2
+  cameraMotionBlur:
+    m_OverrideState: 1
+    m_Value: 1
+  specialCameraClampMode:
+    m_OverrideState: 1
+    m_Value: 0
+  cameraVelocityClamp:
+    m_OverrideState: 1
+    m_Value: 0.05
+  cameraTranslationVelocityClamp:
+    m_OverrideState: 1
+    m_Value: 0.05
+  cameraRotationVelocityClamp:
+    m_OverrideState: 1
+    m_Value: 0.03
+  depthComparisonExtent:
+    m_OverrideState: 1
+    m_Value: 1
+  m_SampleCount:
+    m_OverrideState: 1
+    m_Value: 8
 --- !u!1 &1742498520
 GameObject:
   m_ObjectHideFlags: 0
@@ -16104,7 +16165,7 @@ MonoBehaviour:
     m_Value: 11.98
   farFocusStart:
     m_OverrideState: 1
-    m_Value: 786
+    m_Value: 850
   farFocusEnd:
     m_OverrideState: 1
     m_Value: 8000
@@ -17467,7 +17528,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2087307653}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 270a32aec28aba04cad051046db4eca5, type: 3}
   m_Name: 

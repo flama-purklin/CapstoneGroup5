@@ -130,9 +130,9 @@ public class ConstellationToggle : MonoBehaviour
         if (mysteryCam.GetComponent<AudioListener>() != null)
             mysteryCam.GetComponent<AudioListener>().enabled = true;
         // If CoreSystemsManager exists, use its more comprehensive method
-        var coreSystems = CoreSystemsManager.Instance;
-        if (coreSystems != null)
-            coreSystems.ToggleMysteryMapMode(true);
+        //var coreSystems = CoreSystemsManager.Instance;
+        //if (coreSystems != null)
+        //    coreSystems.ToggleMysteryMapMode(true);
 
         // Smooth camera transition
         if (transitionCoroutine != null)
@@ -168,9 +168,9 @@ public class ConstellationToggle : MonoBehaviour
         if (mysteryCam.GetComponent<AudioListener>() != null)
             mysteryCam.GetComponent<AudioListener>().enabled = false;
         // If CoreSystemsManager exists, use its more comprehensive method
-        var coreSystems = CoreSystemsManager.Instance;
-        if (coreSystems != null)
-            coreSystems.ToggleMysteryMapMode(false);
+        //var coreSystems = CoreSystemsManager.Instance;
+        //if (coreSystems != null)
+        //    coreSystems.ToggleMysteryMapMode(false);
         
         // Delay UI deactivation for smoother transition
         StartCoroutine(DelayedUIDeactivation(0.3f));

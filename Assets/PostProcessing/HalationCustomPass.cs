@@ -18,7 +18,10 @@ public class HalationCustomPass : CustomPass
     public HalationCustomPass(Shader shader)
     {
         if (!shader)
-            shader = Shader.Find("Hidden/Filmic/Halation"); // fallback search
+        {
+            Debug.LogError("Halation shader is missing! Please assign it in the Filmic60sSetup component.");
+            return; // Exit early without setting up the material
+        }
         mat = CoreUtils.CreateEngineMaterial(shader);
         name = PROFILER;
         targetColorBuffer = TargetBuffer.Camera;

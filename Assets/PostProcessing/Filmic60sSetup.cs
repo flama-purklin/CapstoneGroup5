@@ -24,6 +24,9 @@ public class Filmic60sSetup : MonoBehaviour
 
     void OnEnable()
     {
+        // Set target frame rate to 24 fps for cinematic look and consistent performance
+        Application.targetFrameRate = 24;
+        
         SetupVolume();
         ConfigureOverrides();
         SetupHalationPass();
@@ -111,7 +114,7 @@ public class Filmic60sSetup : MonoBehaviour
 
         // 5) Vignette
         var vig = GetOrAdd<Vignette>();
-        vig.intensity.value  = 0.25f;
+        vig.intensity.value  = 0.33f;
         vig.smoothness.value = 0.5f;
 
         // 6) Chromatic Aberration
@@ -129,13 +132,13 @@ public class Filmic60sSetup : MonoBehaviour
         ssfl.intensity.value = 0.5f;
         #endif
 
-        // 9) Depth of Field with direct Manual mode
-        depthOfField = GetOrAdd<DepthOfField>();
+        // 9) Explicitly disable Motion Blur (added to fix motion blur artifact at low framerates)
+        var motionBlur = GetOrAdd<MotionBlur>();
+        motionBlur.active = false;
+        motionBlur.intensity.value = 0f;
         
-        if (depthOfField == null) {
-            Debug.LogError("[DIAGNOSIS] CRITICAL ERROR: Could not get or add DepthOfField to volume profile!");
-            return;
-        }
+        // 10) Depth of Field with direct Manual mode
+        depthOfField = GetOrAdd<DepthOfField>();
         
         // Always start with active=true
         depthOfField.active = true;
@@ -181,119 +184,6 @@ public class Filmic60sSetup : MonoBehaviour
             float t = Time.time * Mathf.PI;
             ca.postExposure.value = 0.1f + Mathf.Sin(t) * 0.02f;
             yield return null;
-        }
-    }
-
-    // Public method to update DoF focus distance
-    public void UpdateFocusDistance(float distance)
-    {
-        // Log method call for immediate issues
-        Debug.Log($"[DIAGNOSIS] UpdateFocusDistance called with distance = {distance}");
-        
-        // Verify profile is valid
-        if (profile == null)
-        {
-            Debug.LogError("[DEEP-DIAGNOSIS] FATAL: Volume profile is null! Trying to recreate...");
-            SetupVolume();
-            
-            if (profile == null) {
-                Debug.LogError("[DEEP-DIAGNOSIS] FATAL: Failed to recreate profile!");
-                return;
-            }
-        }
-        
-        // Check if profile still has the DoF component
-        bool profileHasDof = profile.Has<DepthOfField>();
-        Debug.Log($"[DEEP-DIAGNOSIS] Profile has DoF component: {profileHasDof}");
-        
-        if (depthOfField == null || !profileHasDof)
-        {
-            Debug.LogError("[DEEP-DIAGNOSIS] DoF component missing - attempting reconstruction");
-            
-            // Re-get or re-add the component
-            depthOfField = GetOrAdd<DepthOfField>();
-            
-            if (depthOfField == null) {
-                Debug.LogError("[DEEP-DIAGNOSIS] FATAL: Reconstruction failed, still null!");
-                return;
-            }
-            else {
-                Debug.Log("[DEEP-DIAGNOSIS] Successfully reconstructed DoF component");
-                
-                // Re-initialize key settings
-                depthOfField.active = true;
-                depthOfField.focusMode.value = DepthOfFieldMode.Manual;
-                depthOfField.focusMode.overrideState = true;
-            }
-        }
-        
-        try
-        {
-            // Store old value to verify change
-            float oldDistance = depthOfField.focusDistance.value;
-            
-            // Force critical override states - only parameters have overrideState
-            depthOfField.focusMode.overrideState = true;
-            depthOfField.focusDistance.overrideState = true;
-            
-            // Force mode to Manual again
-            if (depthOfField.focusMode.value != DepthOfFieldMode.Manual)
-            {
-                depthOfField.focusMode.value = DepthOfFieldMode.Manual;
-                Debug.LogError("[DEEP-DIAGNOSIS] Focus mode changed back to Manual - this shouldn't happen!");
-            }
-            
-            // Ensure component is active
-            if (!depthOfField.active)
-            {
-                depthOfField.active = true;
-                Debug.LogError("[DEEP-DIAGNOSIS] DoF was inactive! Re-activated.");
-            }
-            
-            // CORE FUNCTIONALITY: Set the focus distance based on player distance
-            depthOfField.focusDistance.value = distance;
-            
-            // Log every update but with throttled details
-            if (Time.frameCount % 30 == 0)
-            {
-                Debug.Log($"[DEEP-DIAGNOSIS] DoF update values:");
-                Debug.Log($"[DEEP-DIAGNOSIS] - Old: {oldDistance:F2} → New: {distance:F2} (After set: {depthOfField.focusDistance.value:F2})");
-                Debug.Log($"[DEEP-DIAGNOSIS] - Focus distance override state: {depthOfField.focusDistance.overrideState}");
-                Debug.Log($"[DEEP-DIAGNOSIS] - Focus mode: {depthOfField.focusMode.value}, Override: {depthOfField.focusMode.overrideState}");
-                Debug.Log($"[DEEP-DIAGNOSIS] - Component active: {depthOfField.active}");
-                
-                // Test volume component validity
-                var vol = Object.FindFirstObjectByType<Volume>();
-                if (vol)
-                {
-                    Debug.Log($"[DEEP-DIAGNOSIS] Volume: Found, Name: {vol.gameObject.name}, Weight: {vol.weight}, Priority: {vol.priority}");
-                    Debug.Log($"[DEEP-DIAGNOSIS] Volume using Profile: {vol.sharedProfile.name}, ID: {vol.sharedProfile.GetInstanceID()}");
-                    Debug.Log($"[DEEP-DIAGNOSIS] Our stored Profile ID: {profile.GetInstanceID()}");
-                    
-                    if (vol.sharedProfile.GetInstanceID() != profile.GetInstanceID())
-                    {
-                        Debug.LogError("[DEEP-DIAGNOSIS] CRITICAL ISSUE: We're modifying a different profile than what the Volume is using!!!");
-                        // Try to fix by using the Volume's actual profile
-                        profile = vol.sharedProfile;
-                        depthOfField = GetOrAdd<DepthOfField>();
-                        if (depthOfField != null)
-                        {
-                            Debug.Log("[DEEP-DIAGNOSIS] Recovered by switching to Volume's actual profile");
-                            // Set this again after the switch
-                            depthOfField.focusDistance.overrideState = true;
-                            depthOfField.focusDistance.value = distance;
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[DEEP-DIAGNOSIS] No Volume found in scene!");
-                }
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[DEEP-DIAGNOSIS] EXCEPTION in UpdateFocusDistance: {e.Message}\n{e.StackTrace}");
         }
     }
 }

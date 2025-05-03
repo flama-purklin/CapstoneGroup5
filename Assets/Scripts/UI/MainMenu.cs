@@ -26,9 +26,8 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        //set application framerate here
-        Application.targetFrameRate = 24;
-
+        // We removed the frame rate setting here to use the global setting from CoreSystemsManager
+        
         resolutions = Screen.resolutions;
 
         
