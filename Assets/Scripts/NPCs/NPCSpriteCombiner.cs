@@ -45,13 +45,69 @@ public class NPCSpriteCombiner : MonoBehaviour
         { "Brown", "Eyes1Br" },
         { "Brown2", "Eyes1Br2" }
     };
-    private readonly Dictionary<string, string> bodiesHairBackMap = new Dictionary<string, string>
+    private readonly Dictionary<string, string> hairBackPortraitMap = new Dictionary<string, string>
     {
-        { "Blonde", "" },
-        { "Brown", "" },
-        { "Black", "" },
-        { "Red", "" },
+        { "Black", "Hair1Back" },
+        { "Blonde", "Hair1Back 1" },
+        { "Brown", "Hair1Back 2" },
+        { "Red", "Hair1Back 3" }
     };
+    // Using _ as a special symbol for replacement. Should be color {B, G, R, Y}
+    private readonly Dictionary<string, string> hairFrontPortraitBackMap = new Dictionary<string, string>
+    {
+        { "Black", "Hair1Front_" },
+        { "Blonde", "Hair1Front_ 1" },
+        { "Brown", "Hair1Front_ 2" },
+        { "Red", "Hair1Front_ 3" }
+    };
+
+    // Abstraction: colors {black: "", blonde " 1", brown: " 2", red: " 3"} //Append thhis to base file based on hair color
+    private readonly Dictionary<string, string> hairColorAppendMap = new Dictionary<string, string>
+    {
+        { "Black", "" },
+        { "Blonde", " 1" },
+        { "Brown", " 2" },
+        { "Red", " 3" }
+    };
+
+    // Abstraction: colors // Append this to base file based on outfit color
+    private readonly Dictionary<string, string> outfitColorAppendMap = new Dictionary<string, string>
+    {
+        { "Blue", "1" },
+        { "Yellow", "2" },
+        { "Green", "3" },
+        { "Red", "4" }
+    };
+
+    // Abstraction: skin, added incase llm needs more description than skin1, skin2 // use this to decide what sub-folder to enter
+    private readonly Dictionary<string, string> skinColorAppendMap = new Dictionary<string, string>
+    {
+        { "Skin1", "Skin1" },
+        { "Skin2", "Skin2" },
+        { "Skin3", "Skin3" }
+    };
+
+    // Abstraction: skin, added incase llm needs more description than skin1, skin2 // use this to decide what sub-folder to enter
+    private readonly Dictionary<string, string> outfitColorFolderMap = new Dictionary<string, string>
+    {
+        { "Blue", "Blue" },
+        { "Yellow", "Yellow" },
+        { "Green", "Green" },
+        { "Red", "Red" }
+    };
+
+    // THE DICTIONARY THAT STORES BASES. Using _ as a special symbol for replacement. ex: color {B, G, R, Y}. Then append based on directories.
+    private readonly Dictionary<string, string> fileNameBasePortraitMap = new Dictionary<string, string>
+    {
+        { "HairBack", "Hair1Back" },
+        { "HairFront", "Hair1Front_" }, //Needs a replace and append or 2 appends.
+        { "Sholders", "Base" },
+        { "Mouth", "Mouth" },
+        { "Nose", "Nose" }
+    };
+
+
+    // Ignore below, the file naming is prety consistnat if not very descriptive
     //... This is gonna be dificult. Would be easier to just rename the files, expecialy since they are in their own folders
     // Actually, just taking advantage of directories would be better. have each color parted out into outfit/haircolor folders and put the textures in that.
     // Then grabbing the textures would be as simple as putting the keys in as the path.
@@ -104,7 +160,7 @@ public class NPCSpriteCombiner : MonoBehaviour
         // TODO: Create NPCAnimContainer object. Populate
         NPCAnimContainer animContainer = ScriptableObject.CreateInstance<NPCAnimContainer>();
         animContainer.name = $"Anim_{characterName}";
-        //animContainer.profile =
+        animContainer.profile = BuildProfile(npcAppearance);
         //animContainer.idleFront =
         //...
 
@@ -139,9 +195,17 @@ public class NPCSpriteCombiner : MonoBehaviour
 
     // Temp helper. Cant use this as is, but it may be useful.
     // Args may have to be modified
-    public Sprite BuildProfile(Texture2D[] layers)
+    public Sprite BuildProfile(Appearance appearance)
     {
+        string portraitFolder = "Portraits";
+        string skinFolder = skinColorAppendMap[appearance.SkinColor];
+        string colorFolder = outfitColorFolderMap[appearance.Outfit];
+
+
+
         // Composite each layer into a new Texture2D 
+
+
 
         // Then use Sprite.Create
         //Sprite temp;
