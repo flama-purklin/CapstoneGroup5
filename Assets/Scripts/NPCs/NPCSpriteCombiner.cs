@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class NPCSpriteCombiner : MonoBehaviour
@@ -61,6 +62,15 @@ public class NPCSpriteCombiner : MonoBehaviour
         { "Red", "Hair1Front_ 3" }
     };
 
+    // Abstraction: colors // Append this to base file based on outfit color
+    private readonly Dictionary<string, string> hairOutfitAppendMap = new Dictionary<string, string>
+    {
+        { "Blue", "B" },
+        { "Yellow", "Y" },
+        { "Green", "G" },
+        { "Red", "R" }
+    };
+
     // Abstraction: colors {black: "", blonde " 1", brown: " 2", red: " 3"} //Append thhis to base file based on hair color
     private readonly Dictionary<string, string> hairColorAppendMap = new Dictionary<string, string>
     {
@@ -100,10 +110,11 @@ public class NPCSpriteCombiner : MonoBehaviour
     private readonly Dictionary<string, string> fileNameBasePortraitMap = new Dictionary<string, string>
     {
         { "HairBack", "Hair1Back" },
-        { "HairFront", "Hair1Front_" }, //Needs a replace and append or 2 appends.
-        { "Sholders", "Base" },
+        { "HairFront", "Hair1Front" }, //Needs 2 appends.
+        { "Shoulders", "Base" },
         { "Mouth", "Mouth" },
-        { "Nose", "Nose" }
+        { "Nose", "Nose" },
+        { "Head", "HeadShape1"}
     };
 
 
@@ -115,6 +126,7 @@ public class NPCSpriteCombiner : MonoBehaviour
 
 
     // Global Vars
+    [SerializeField] private bool debug = false;
     [SerializeField] private string assetRoot = "Sprites/PiecewiseNPCs/"; // For file paths from "Assets/Resources" *note: needs to be there for Resources.Load() to work.
     [SerializeField] private List<NPCAppearanceDict> npcAppearances = new List<NPCAppearanceDict>(); //show what npc's appearences have been parsed.
 
@@ -160,9 +172,15 @@ public class NPCSpriteCombiner : MonoBehaviour
         // TODO: Create NPCAnimContainer object. Populate
         NPCAnimContainer animContainer = ScriptableObject.CreateInstance<NPCAnimContainer>();
         animContainer.name = $"Anim_{characterName}";
-        animContainer.profile = BuildProfile(npcAppearance);
+
+        Dictionary<string, Texture2D> profileLayers = GatherLayersProfile(npcAppearance);
+        animContainer.profile = BuildProfileSprite(profileLayers);
         //animContainer.idleFront =
         //...
+
+
+
+
 
         // Assign container to animation manager. Could also sanity check that the animContainer's fields not empty, but prob not needed.
         NPCAnimManager animManager = npcInstance.GetComponentInChildren<NPCAnimManager>();
@@ -171,14 +189,6 @@ public class NPCSpriteCombiner : MonoBehaviour
             animManager.SetAnimContainer(animContainer);
         }
     }
-
-
-    // Incomplete helper method to get texture using path and key
-    public Texture2D LoadPart(string category, string key)
-    {
-        return Resources.Load<Texture2D>($"Sprites/NPCParts/{category}/{key}");
-    }
-
 
     // This was a gpt method, we probably cant use this method as our layers are variable dependent.
     public Sprite[] BuildAnimationFrames(Texture2D[] layers, int numFrames)
@@ -193,25 +203,128 @@ public class NPCSpriteCombiner : MonoBehaviour
     }
 
 
-    // Temp helper. Cant use this as is, but it may be useful.
-    // Args may have to be modified
-    public Sprite BuildProfile(Appearance appearance)
+    // Build a single profile sprite from the appearance data
+    public Dictionary<string, Texture2D> GatherLayersProfile(Appearance appearance)
     {
-        string portraitFolder = "Portraits";
+        // Folder path and append references
+        string portraitFolder = "Portraits/";
         string skinFolder = skinColorAppendMap[appearance.SkinColor];
+        string hairColorAppend = hairColorAppendMap[appearance.Hair];
         string colorFolder = outfitColorFolderMap[appearance.Outfit];
 
+        // Setting File Paths
+        string eyesPath = $"{assetRoot}{portraitFolder}Eyes/{eyesPortraitMap[appearance.Eyes]}";
+        string mouthPath = $"{assetRoot}{portraitFolder}{skinFolder}/{fileNameBasePortraitMap["Mouth"]}{appearance.Mouth}";
+        string nosePath = $"{assetRoot}{portraitFolder}{skinFolder}/{fileNameBasePortraitMap["Nose"]}{appearance.Nose}";
+        string headPath = $"{assetRoot}{portraitFolder}{skinFolder}/{fileNameBasePortraitMap["Head"]}";
+        string hairBackPath = $"{assetRoot}{portraitFolder}{skinFolder}/{fileNameBasePortraitMap["HairBack"]}{hairColorAppend}";
+        string shouldersPath = $"{assetRoot}{portraitFolder}{skinFolder}/{outfitColorFolderMap[appearance.Outfit]}/{fileNameBasePortraitMap["Shoulders"]}{outfitColorAppendMap[appearance.Outfit]}";
+        string hairFrontPath = $"{assetRoot}{portraitFolder}{skinFolder}/{outfitColorFolderMap[appearance.Outfit]}/{fileNameBasePortraitMap["HairFront"]}{hairOutfitAppendMap[appearance.Outfit]}{hairColorAppendMap[appearance.Hair]}";
 
+        if (debug)
+        {
+            Debug.Log($"[NPCSpriteCombiner] Portrait: EyesPath set as {eyesPath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: MouthPath set as {mouthPath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: NosePath set as {nosePath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: HeadPath set as {headPath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: HairBackPath set as {hairBackPath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: SholdersPath set as {shouldersPath}");
+            Debug.Log($"[NPCSpriteCombiner] Portrait: HairFrontPath set as {hairFrontPath}");
+        }
 
         // Composite each layer into a new Texture2D 
+        Texture2D hairBack = Resources.Load<Texture2D>(hairBackPath);
+        Texture2D head = Resources.Load<Texture2D>(headPath);
+        Texture2D shoulders = Resources.Load<Texture2D>(shouldersPath);
+        Texture2D hairFront = Resources.Load<Texture2D>(hairFrontPath);
+        Texture2D eyes = Resources.Load<Texture2D>(eyesPath);
+        Texture2D nose = Resources.Load<Texture2D>(nosePath);
+        Texture2D mouth = Resources.Load<Texture2D>(mouthPath);
 
+        // Sanity check
+        if (hairBack == null || head == null || shoulders == null || hairFront == null || eyes == null || nose == null || mouth == null)
+        {
+            Debug.LogWarning("[NPCSpriteCombiner] Missing one or more sprite layers.");
+            return null;
+        }
+        else { if (debug) { Debug.LogWarning("[NPCSpriteCombiner] Portrait texture retrieval successful!"); } }
 
+        // Make dict for easy lookup for extrenal programs
+        Dictionary<string, Texture2D> layers = new Dictionary<string, Texture2D>
+        {
+            ["HairBack"] = hairBack,
+            ["Head"] = head,
+            ["Shoulders"] = shoulders,
+            ["HairFront"] = hairFront,
+            ["Eyes"] = eyes,
+            ["Nose"] = nose,
+            ["Mouth"] = mouth
+        };
 
-        // Then use Sprite.Create
-        //Sprite temp;
-        //temp.Create(...);
+        return layers;
+    }
 
-        return null;
+    // Test method to smash the textures into a single sprite
+    public Sprite BuildProfileSprite(Dictionary<string, Texture2D> layers)
+    {
+        if (layers == null || layers.Count == 0)
+        {
+            Debug.LogWarning("No layers provided to build composite sprite.");
+            return null;
+        }
+
+        int width = 64;
+        int height = 64;
+
+        Texture2D finalTex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        Color32[] finalPixels = new Color32[width * height];
+
+        // Start with transparent background
+        for (int i = 0; i < finalPixels.Length; i++)
+            finalPixels[i] = new Color32(0, 0, 0, 0);
+
+        // Draw layers in the correct order
+        string[] drawOrder = new string[] {
+        "HairBack",
+        "Head",
+        "Shoulders",
+        "HairFront",
+        "Eyes",
+        "Nose",
+        "Mouth"
+    };
+
+        foreach (string key in drawOrder)
+        {
+            if (!layers.ContainsKey(key)) continue;
+
+            Texture2D layer = layers[key];
+            Color32[] layerPixels = layer.GetPixels32();
+
+            for (int i = 0; i < finalPixels.Length; i++)
+            {
+                finalPixels[i] = AlphaBlend(finalPixels[i], layerPixels[i]);
+            }
+        }
+
+        finalTex.SetPixels32(finalPixels);
+        finalTex.Apply();
+
+        // Create and return a sprite
+        return Sprite.Create(finalTex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 64f);
+    }
+    // Helper for above test method
+    private Color32 AlphaBlend(Color32 bg, Color32 fg)
+    {
+        float alpha = fg.a / 255f;
+        float invAlpha = 1f - alpha;
+
+        byte r = (byte)(fg.r * alpha + bg.r * invAlpha);
+        byte g = (byte)(fg.g * alpha + bg.g * invAlpha);
+        byte b = (byte)(fg.b * alpha + bg.b * invAlpha);
+        byte a = (byte)(Mathf.Clamp01(alpha + bg.a / 255f) * 255);
+
+        return new Color32(r, g, b, a);
     }
 
 }
