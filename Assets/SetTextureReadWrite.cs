@@ -4,10 +4,10 @@ using System.IO;
 
 public class SetTextureReadWrite : EditorWindow
 {
-    [MenuItem("Tools/Set All PNGs Read/Write")]
-    public static void SetAllPNGsReadable()
+    [MenuItem("Tools/Set Read/Write on Sprites Only")]
+    public static void SetSpritesReadable()
     {
-        string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets" });
+        string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/Resources/Sprites" });
 
         int changedCount = 0;
 
@@ -27,6 +27,6 @@ public class SetTextureReadWrite : EditorWindow
             }
         }
 
-        Debug.Log($"Set Read/Write Enabled on {changedCount} PNG textures.");
+        Debug.Log($"Set Read/Write Enabled on {changedCount} PNG textures in Resources/Sprites.");
     }
 }
