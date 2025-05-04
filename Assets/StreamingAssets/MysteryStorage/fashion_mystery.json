@@ -824,14 +824,14 @@
         },
         "agenda": { "primary_goal": "Secure exclusive designer contracts for her magazine" },
         "appearance": {
-          "base": "",
-          "skin_color": "",
-          "hair": "",
-          "outfit": "",
-          "shoes": "",
-          "eyes": "",
-          "nose": "",
-          "mouth": ""
+          "base": "Woman",
+          "skin_color": "Skin1",
+          "hair": "Brown",
+          "outfit": "Blue",
+          "shoes": "Black",
+          "eyes": "Blue2",
+          "nose": "Nose1",
+          "mouth": "Mouth1"
         },
         "voice": {
           "voice_ID": 4,

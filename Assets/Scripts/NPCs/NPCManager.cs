@@ -14,6 +14,7 @@ public class NPCManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject npcPrefab;
     [SerializeField] private CharacterManager characterManager; // Reference needed by InitializationManager to link Character component
+    [SerializeField] private NPCSpriteCombiner spriteCombiner; // Reference needed to create whole sprites from piecemeal assets.
     [SerializeField] private NPCAnimContainer[] availableAnimContainers = new NPCAnimContainer[4]; 
 
     private Dictionary<string, GameObject> activeNPCs = new Dictionary<string, GameObject>();
@@ -34,6 +35,15 @@ public class NPCManager : MonoBehaviour
             npcContainerTransform = new GameObject("NPCInstances").transform;
             npcContainerTransform.SetParent(transform);
         }
+
+        // Sanity check for character sprite creator
+        if (spriteCombiner == null)
+        {
+            Debug.LogWarning("[NPCManager] SpriteCombier not assigned in inspector, attempting to link...");
+            spriteCombiner = FindAnyObjectByType<NPCSpriteCombiner>();
+            if (spriteCombiner == null) { Debug.LogError("[NPCManager] SpriteCombier not found in scene...\n Skipping dynamic character creation. Loading from fallbacks."); }
+        }
+
         isInitialized = true; 
     }
 
@@ -69,6 +79,16 @@ public class NPCManager : MonoBehaviour
                 } else { Debug.LogWarning($"NPCManager: availableAnimContainers array is null or empty for {characterName}."); }
             }
             // --- End Assign Animation Container ---
+
+            // --- Sprite Assignment Block: This section should replace the above Assign Animation Contrainer when done ---
+            // This method is all thats needed to parse, create, and update the NPC instance with the modular sprites
+            // Probably add sanity checks and fallbacks for missing spriteCombiner or animation controler
+            // For now putting it below ensures we can test it granuraly without breaking game.
+            if (spriteCombiner != null)
+            {
+                spriteCombiner.ApplyAppearance(npcInstance, characterName);
+            }
+            // --- End Sprite Assignment Block
 
             // --- Character Component Initialization REMOVED ---
             // InitializationManager will call character.Initialize(name, llmRef) later.
@@ -117,6 +137,7 @@ public class NPCManager : MonoBehaviour
 
     public float GetInitializationProgress() { return isInitialized ? 1.0f : 0.0f; }
     
+    // Very hardcoded, should be replaced when NPCSpriteCombier done.
     public NPCAnimContainer RetrieveCharacter(string charId)
     {
         Debug.Log("Attempting to retrieve anims for " + charId);

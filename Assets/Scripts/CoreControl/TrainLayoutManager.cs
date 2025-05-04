@@ -595,7 +595,7 @@ public class TrainLayoutManager : MonoBehaviour
                 if (chosenAnchor == null)
                 {
                     chosenAnchor = anchors[Random.Range(0, anchors.Count)];
-                    Debug.LogWarning($"GetSpawnPointInCar: Using random available anchor '{chosenAnchor.name}'.");
+                    Debug.Log($"GetSpawnPointInCar: Using random available anchor '{chosenAnchor.name}'.");
                 }
             }
             else

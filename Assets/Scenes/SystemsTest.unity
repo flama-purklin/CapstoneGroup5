@@ -3453,6 +3453,7 @@ GameObject:
   m_Component:
   - component: {fileID: 393672615}
   - component: {fileID: 393672616}
+  - component: {fileID: 393672617}
   m_Layer: 0
   m_Name: NPCManager
   m_TagString: Untagged
@@ -3489,6 +3490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcPrefab: {fileID: 7441357142540035523, guid: 247f87585d4ef344b97284d8b035006b, type: 3}
   characterManager: {fileID: 377154506}
+  spriteCombiner: {fileID: 393672617}
   availableAnimContainers:
   - {fileID: 11400000, guid: cfa3f2698565c0d4a8b60c72b852830b, type: 2}
   - {fileID: 11400000, guid: 6a14f850ff6d00647a2a8cbbab1a1026, type: 2}
@@ -3499,6 +3501,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 063f6ab5bb5d84b4c93183246e62868f, type: 2}
   - {fileID: 11400000, guid: 6ebebe1e1cf75a64bb40fef4f37a183b, type: 2}
   - {fileID: 11400000, guid: 3e5d5c86346c2a647828698cc2b33779, type: 2}
+--- !u!114 &393672617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393672614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7848130c833535b4bb9e31a31b7dc518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcAppearances: []
+  assetRoot: 
 --- !u!1 &419624133
 GameObject:
   m_ObjectHideFlags: 0
@@ -11186,7 +11202,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.08155491
+    m_Value: 0.080683276
   contrast:
     m_OverrideState: 1
     m_Value: 15
