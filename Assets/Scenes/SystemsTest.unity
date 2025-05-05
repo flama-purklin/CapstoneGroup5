@@ -5392,6 +5392,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 393672616}
     - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
+      propertyPath: deathPrefab
+      value: 
+      objectReference: {fileID: 2207364776696803517, guid: 1f90739e43810e8488e06c9af17bacd7, type: 3}
+    - target: {fileID: 7995682932990792108, guid: 11be6530926ab624ebeef276e2353ddb, type: 3}
       propertyPath: audioControl
       value: 
       objectReference: {fileID: 464073572}
@@ -11203,7 +11207,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.08001073
+    m_Value: 0.108073294
   contrast:
     m_OverrideState: 1
     m_Value: 15

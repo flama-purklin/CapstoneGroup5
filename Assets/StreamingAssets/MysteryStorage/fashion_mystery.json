@@ -1378,7 +1378,7 @@
         "type": "EVIDENCE", "subtype": "barrier",
         "title": "Mira's Camera Safe",
         "description": "Chromium cassette - modest size, immodest secrets. Four glowing digits stand between me and truth.",
-        "car_id": "business_class", "car_number": 4, "coords": [0,0],
+        "car_id": "business_class", "car_number": 4, "coords": [0,1],
         "solution": "0451",
         "contains": ["evidence-mira-photos"]
       },
