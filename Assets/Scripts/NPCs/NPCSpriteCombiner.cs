@@ -183,11 +183,11 @@ public class NPCSpriteCombiner : MonoBehaviour
 
 
         // Assign container to animation manager. Could also sanity check that the animContainer's fields not empty, but prob not needed.
-        NPCAnimManager animManager = npcInstance.GetComponentInChildren<NPCAnimManager>();
+/*        NPCAnimManager animManager = npcInstance.GetComponentInChildren<NPCAnimManager>();
         if (animManager != null)
         {
             animManager.SetAnimContainer(animContainer);
-        }
+        }*/
     }
 
     // This was a gpt method, we probably cant use this method as our layers are variable dependent.
@@ -253,8 +253,8 @@ public class NPCSpriteCombiner : MonoBehaviour
         Dictionary<string, Texture2D> layers = new Dictionary<string, Texture2D>
         {
             ["HairBack"] = hairBack,
-            ["Head"] = head,
             ["Shoulders"] = shoulders,
+            ["Head"] = head,
             ["HairFront"] = hairFront,
             ["Eyes"] = eyes,
             ["Nose"] = nose,
@@ -264,7 +264,7 @@ public class NPCSpriteCombiner : MonoBehaviour
         return layers;
     }
 
-    // Test method to smash the textures into a single sprite
+    // Working Test method to smash profile the textures into a single sprite
     public Sprite BuildProfileSprite(Dictionary<string, Texture2D> layers)
     {
         if (layers == null || layers.Count == 0)
@@ -286,8 +286,8 @@ public class NPCSpriteCombiner : MonoBehaviour
         // Draw layers in the correct order
         string[] drawOrder = new string[] {
         "HairBack",
-        "Head",
         "Shoulders",
+        "Head",
         "HairFront",
         "Eyes",
         "Nose",

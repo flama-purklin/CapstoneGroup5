@@ -3513,6 +3513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7848130c833535b4bb9e31a31b7dc518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debug: 1
   assetRoot: Sprites/PiecewiseNPCs/
   npcAppearances: []
 --- !u!1 &419624133
@@ -11202,7 +11203,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.08933238
+    m_Value: 0.08001073
   contrast:
     m_OverrideState: 1
     m_Value: 15
