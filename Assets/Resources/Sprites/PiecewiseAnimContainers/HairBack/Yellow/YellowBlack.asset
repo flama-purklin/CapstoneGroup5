@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: YellowBlack
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: 112815016, guid: 51b7cd1f94faa8a478f52cc8db5ff6f3, type: 3}
+  - {fileID: 1787152025, guid: 51b7cd1f94faa8a478f52cc8db5ff6f3, type: 3}
+  - {fileID: -1488203036, guid: 51b7cd1f94faa8a478f52cc8db5ff6f3, type: 3}
+  - {fileID: 745956828, guid: 51b7cd1f94faa8a478f52cc8db5ff6f3, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 1463883051, guid: 6f0c2f31f445c664d8a1a0275e5ea76e, type: 3}
+  - {fileID: -1081164305, guid: 6f0c2f31f445c664d8a1a0275e5ea76e, type: 3}

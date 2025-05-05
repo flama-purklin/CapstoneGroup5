@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: EyesBrown2
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: 1462693076, guid: 6ab2dfc36f366f146a0a99c92601af3b, type: 3}
+  - {fileID: -1662755945, guid: 6ab2dfc36f366f146a0a99c92601af3b, type: 3}
+  - {fileID: -1714307333, guid: 6ab2dfc36f366f146a0a99c92601af3b, type: 3}
+  - {fileID: -426252196, guid: 6ab2dfc36f366f146a0a99c92601af3b, type: 3}
+  walkBack: []
+  idleFront:
+  - {fileID: 1354098133, guid: e3b4f8e56d34e004289d191555eb4a39, type: 3}
+  - {fileID: 442588856, guid: e3b4f8e56d34e004289d191555eb4a39, type: 3}
+  idleBack: []

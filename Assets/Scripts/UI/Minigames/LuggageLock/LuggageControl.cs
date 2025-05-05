@@ -1,5 +1,7 @@
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class LuggageControl : MinigameCanvasControl
 {
@@ -10,10 +12,11 @@ public class LuggageControl : MinigameCanvasControl
     bool shutdown = false;
 
     [Header("Number Controls")]
-    [SerializeField] NumberManager firstNum;
+    [SerializeField] List<NumberManager> nums = new List<NumberManager>();
+    /*[SerializeField] NumberManager firstNum;
     [SerializeField] NumberManager secondNum;
     [SerializeField] NumberManager thirdNum;
-    [SerializeField] NumberManager fourthNum;
+    [SerializeField] NumberManager fourthNum;*/
 
 
     // Update is called once per frame
@@ -31,6 +34,11 @@ public class LuggageControl : MinigameCanvasControl
     {
         //for debugging
         // Debug.Log("New Combination: " + newCombo);
+        foreach (var number in nums)
+        {
+            number.NumberInit();
+        }
+
         solved = false;
         currentCombo = newCombo;
         GameControl.GameController.currentState = GameState.MINIGAME;
@@ -65,7 +73,12 @@ public class LuggageControl : MinigameCanvasControl
 
     public void CheckCombo()
     {
-        string input = firstNum.currentIndex.ToString() + secondNum.currentIndex.ToString() + thirdNum.currentIndex.ToString() + fourthNum.currentIndex.ToString();
+        string input = "";
+        foreach (var num in nums)
+        {
+            input += num.currentIndex.ToString();
+        }
+     
         // Debug.Log("Testing combination: " + input);
         if (!solved && input.Equals(currentCombo))
         {

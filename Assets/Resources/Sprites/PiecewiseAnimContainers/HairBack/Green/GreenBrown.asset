@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: GreenBrown
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: 2026110112, guid: 9e4713e6ca7d7ad4ba177d9942a13349, type: 3}
+  - {fileID: -677143573, guid: 9e4713e6ca7d7ad4ba177d9942a13349, type: 3}
+  - {fileID: 275233662, guid: 9e4713e6ca7d7ad4ba177d9942a13349, type: 3}
+  - {fileID: 298078690, guid: 9e4713e6ca7d7ad4ba177d9942a13349, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 940004657, guid: 4b8c157fe2db0f54e971d3ec0e902daa, type: 3}
+  - {fileID: -1305901738, guid: 4b8c157fe2db0f54e971d3ec0e902daa, type: 3}

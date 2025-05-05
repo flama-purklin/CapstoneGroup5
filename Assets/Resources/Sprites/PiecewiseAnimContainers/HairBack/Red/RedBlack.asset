@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: RedBlack
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: 1782512029, guid: f7ad185d3f8554642bb33a31c89e50d9, type: 3}
+  - {fileID: -643939973, guid: f7ad185d3f8554642bb33a31c89e50d9, type: 3}
+  - {fileID: -185740317, guid: f7ad185d3f8554642bb33a31c89e50d9, type: 3}
+  - {fileID: -1995933302, guid: f7ad185d3f8554642bb33a31c89e50d9, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 587567760, guid: ae6a2e0b2bb4f254b839784c1741c660, type: 3}
+  - {fileID: 1987543892, guid: ae6a2e0b2bb4f254b839784c1741c660, type: 3}

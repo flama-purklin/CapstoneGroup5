@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: RedBrown
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: -1323260615, guid: 853ea5fe2e5553040b49e78186c0ba1b, type: 3}
+  - {fileID: -1666569203, guid: 853ea5fe2e5553040b49e78186c0ba1b, type: 3}
+  - {fileID: 285848172, guid: 853ea5fe2e5553040b49e78186c0ba1b, type: 3}
+  - {fileID: -959738685, guid: 853ea5fe2e5553040b49e78186c0ba1b, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 103506283, guid: 974dff974dc9fe645a4ad82ed39370fe, type: 3}
+  - {fileID: -191303843, guid: 974dff974dc9fe645a4ad82ed39370fe, type: 3}

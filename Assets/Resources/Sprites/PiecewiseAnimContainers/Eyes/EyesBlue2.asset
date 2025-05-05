@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: EyesBlue2
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: -1208768316, guid: bebb843dfc6d0a746a30f97d670b8efd, type: 3}
+  - {fileID: -685977561, guid: bebb843dfc6d0a746a30f97d670b8efd, type: 3}
+  - {fileID: 1249375440, guid: bebb843dfc6d0a746a30f97d670b8efd, type: 3}
+  - {fileID: -136737791, guid: bebb843dfc6d0a746a30f97d670b8efd, type: 3}
+  walkBack: []
+  idleFront:
+  - {fileID: 433558972, guid: b42c021dd2ed6334d9c0477b98ba9e14, type: 3}
+  - {fileID: -329098615, guid: b42c021dd2ed6334d9c0477b98ba9e14, type: 3}
+  idleBack: []

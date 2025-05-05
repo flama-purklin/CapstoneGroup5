@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: YellowBrown
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: 1079741980, guid: 9c453e7b49ce6364c82dbbd1aa7d27a9, type: 3}
+  - {fileID: -213144372, guid: 9c453e7b49ce6364c82dbbd1aa7d27a9, type: 3}
+  - {fileID: 1773828457, guid: 9c453e7b49ce6364c82dbbd1aa7d27a9, type: 3}
+  - {fileID: -1434181279, guid: 9c453e7b49ce6364c82dbbd1aa7d27a9, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 645387696, guid: 99a76736ea1496e47bc34432533d3880, type: 3}
+  - {fileID: -1633366181, guid: 99a76736ea1496e47bc34432533d3880, type: 3}

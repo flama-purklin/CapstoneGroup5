@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: GreenShoe
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: -1640061347, guid: 39b66f64eacab5d4f91889cd1ea4dc01, type: 3}
+  - {fileID: -2120468009, guid: 39b66f64eacab5d4f91889cd1ea4dc01, type: 3}
+  - {fileID: 2036923916, guid: 39b66f64eacab5d4f91889cd1ea4dc01, type: 3}
+  - {fileID: -1086134902, guid: 39b66f64eacab5d4f91889cd1ea4dc01, type: 3}
+  walkBack:
+  - {fileID: -1139326336, guid: 603870a11d28e4549bf1219a16fc4bbe, type: 3}
+  - {fileID: 1731486989, guid: 603870a11d28e4549bf1219a16fc4bbe, type: 3}
+  - {fileID: -1751048574, guid: 603870a11d28e4549bf1219a16fc4bbe, type: 3}
+  - {fileID: 466534636, guid: 603870a11d28e4549bf1219a16fc4bbe, type: 3}
+  idleFront:
+  - {fileID: 39798572, guid: e737edcc0c26b5d438f11c3f32be5d6e, type: 3}
+  - {fileID: 1982085534, guid: e737edcc0c26b5d438f11c3f32be5d6e, type: 3}
+  idleBack:
+  - {fileID: -676215463, guid: 533066f7eb5e2f9438e68ffba4f7a902, type: 3}
+  - {fileID: -103468782, guid: 533066f7eb5e2f9438e68ffba4f7a902, type: 3}

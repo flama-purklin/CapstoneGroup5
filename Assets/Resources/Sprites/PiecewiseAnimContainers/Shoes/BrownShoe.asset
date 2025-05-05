@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: BrownShoe
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: 557930416, guid: 9c9ce88e671e1594e851c71d934a40e7, type: 3}
+  - {fileID: -1791861984, guid: 9c9ce88e671e1594e851c71d934a40e7, type: 3}
+  - {fileID: 1738687509, guid: 9c9ce88e671e1594e851c71d934a40e7, type: 3}
+  - {fileID: 1571638348, guid: 9c9ce88e671e1594e851c71d934a40e7, type: 3}
+  walkBack:
+  - {fileID: -2110257870, guid: 48fb2156fa7b90343822a63bc30c4a3b, type: 3}
+  - {fileID: -1916518205, guid: 48fb2156fa7b90343822a63bc30c4a3b, type: 3}
+  - {fileID: -1033069393, guid: 48fb2156fa7b90343822a63bc30c4a3b, type: 3}
+  - {fileID: 1014287467, guid: 48fb2156fa7b90343822a63bc30c4a3b, type: 3}
+  idleFront:
+  - {fileID: 327616241, guid: 8b3f3953334474f4e8c507983158d646, type: 3}
+  - {fileID: -486749153, guid: 8b3f3953334474f4e8c507983158d646, type: 3}
+  idleBack:
+  - {fileID: 452512147, guid: d903a4b34b015fd44ad821b0ade40d24, type: 3}
+  - {fileID: -857023679, guid: d903a4b34b015fd44ad821b0ade40d24, type: 3}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: RedBlonde
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: -1699365644, guid: 6fe17f8d4453347438cedc13aced0757, type: 3}
+  - {fileID: -406225865, guid: 6fe17f8d4453347438cedc13aced0757, type: 3}
+  - {fileID: 155113852, guid: 6fe17f8d4453347438cedc13aced0757, type: 3}
+  - {fileID: 1001695586, guid: 6fe17f8d4453347438cedc13aced0757, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: 84579068, guid: 6045a25180cae0742a9e81e4afb19c6e, type: 3}
+  - {fileID: 1980619581, guid: 6045a25180cae0742a9e81e4afb19c6e, type: 3}

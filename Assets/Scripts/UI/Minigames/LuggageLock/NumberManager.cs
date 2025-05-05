@@ -11,20 +11,19 @@ public class NumberManager : MonoBehaviour
     [Header("Number Sprites")]
     [SerializeField] List<Sprite> numbers;
 
-    [Header("Number Objects")]
-    [SerializeField] GameObject[] numSlots;
-
     [Header("Rotating Pointers")]
     [SerializeField] GameObject upperSlot;
     [SerializeField] GameObject currentSlot;
     [SerializeField] GameObject lowerSlot;
 
-    float maskHeight;
+    [Header("Mask Height")]
+    [SerializeField] RectTransform maskObject;
+    public float maskHeight;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    public void NumberInit()
     {
-        maskHeight = GetComponent<RectTransform>().rect.height;
+        maskHeight = maskObject.rect.height;
         ResetLocations();
     }
 

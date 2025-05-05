@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: WhiteShoe
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: 1845530978, guid: df14ca33667c7c44787609714550ca0f, type: 3}
+  - {fileID: 240230787, guid: df14ca33667c7c44787609714550ca0f, type: 3}
+  - {fileID: -1985193171, guid: df14ca33667c7c44787609714550ca0f, type: 3}
+  - {fileID: 1849554918, guid: df14ca33667c7c44787609714550ca0f, type: 3}
+  walkBack:
+  - {fileID: 2072601039, guid: 44ad76c8952a1a44dbaf2a46ac8761a3, type: 3}
+  - {fileID: -1457559492, guid: 44ad76c8952a1a44dbaf2a46ac8761a3, type: 3}
+  - {fileID: 1006095926, guid: 44ad76c8952a1a44dbaf2a46ac8761a3, type: 3}
+  - {fileID: -120617420, guid: 44ad76c8952a1a44dbaf2a46ac8761a3, type: 3}
+  idleFront:
+  - {fileID: -1324065361, guid: a6a523ec8d8db19468c7c26bbf4a5ccf, type: 3}
+  - {fileID: -156814872, guid: a6a523ec8d8db19468c7c26bbf4a5ccf, type: 3}
+  idleBack:
+  - {fileID: -511136576, guid: 72034301f94d30e49861e837d1d6b792, type: 3}
+  - {fileID: 167003113, guid: 72034301f94d30e49861e837d1d6b792, type: 3}

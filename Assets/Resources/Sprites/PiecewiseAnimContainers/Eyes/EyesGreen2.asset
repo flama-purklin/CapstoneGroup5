@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: EyesGreen2
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: -1725749169, guid: 2f4e57dd8f16dfb46941e165c80eaa53, type: 3}
+  - {fileID: 52299261, guid: 2f4e57dd8f16dfb46941e165c80eaa53, type: 3}
+  - {fileID: 1412761463, guid: 2f4e57dd8f16dfb46941e165c80eaa53, type: 3}
+  - {fileID: -1780713914, guid: 2f4e57dd8f16dfb46941e165c80eaa53, type: 3}
+  walkBack: []
+  idleFront:
+  - {fileID: -61555706, guid: 61909554bae86f542b91496241038643, type: 3}
+  - {fileID: -544926843, guid: 61909554bae86f542b91496241038643, type: 3}
+  idleBack: []

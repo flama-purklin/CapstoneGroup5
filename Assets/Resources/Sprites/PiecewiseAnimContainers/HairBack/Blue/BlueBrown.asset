@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: BlueBrown
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: -377532845, guid: 720399232855faa4084e4157b50971af, type: 3}
+  - {fileID: 1136471036, guid: 720399232855faa4084e4157b50971af, type: 3}
+  - {fileID: -393268103, guid: 720399232855faa4084e4157b50971af, type: 3}
+  - {fileID: -2040168611, guid: 720399232855faa4084e4157b50971af, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: -2091681224, guid: 9ee2d08d94de61f42b568ffc0546e49b, type: 3}
+  - {fileID: -625693198, guid: 9ee2d08d94de61f42b568ffc0546e49b, type: 3}

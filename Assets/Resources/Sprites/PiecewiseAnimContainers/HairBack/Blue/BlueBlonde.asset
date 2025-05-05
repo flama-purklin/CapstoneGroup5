@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: BlueBlonde
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront: []
+  walkBack:
+  - {fileID: 919174942, guid: 82b9ca283b262f741a2338370e5274ee, type: 3}
+  - {fileID: -1049460907, guid: 82b9ca283b262f741a2338370e5274ee, type: 3}
+  - {fileID: -996910279, guid: 82b9ca283b262f741a2338370e5274ee, type: 3}
+  - {fileID: 1308975122, guid: 82b9ca283b262f741a2338370e5274ee, type: 3}
+  idleFront: []
+  idleBack:
+  - {fileID: -362815033, guid: 17247081c8a351e4f9db8cadcda4676c, type: 3}
+  - {fileID: -960824628, guid: 17247081c8a351e4f9db8cadcda4676c, type: 3}

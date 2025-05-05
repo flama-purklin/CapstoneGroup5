@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5aecef00eaf4d846fdb7d946aa4b, type: 3}
+  m_Name: BlueRed
+  m_EditorClassIdentifier: 
+  profile: {fileID: 0}
+  walkFront:
+  - {fileID: 936844255, guid: e4cd26edcc13dec44a5c7e064c2a94b9, type: 3}
+  - {fileID: 426256459, guid: e4cd26edcc13dec44a5c7e064c2a94b9, type: 3}
+  - {fileID: -175689650, guid: e4cd26edcc13dec44a5c7e064c2a94b9, type: 3}
+  - {fileID: 1702864620, guid: e4cd26edcc13dec44a5c7e064c2a94b9, type: 3}
+  walkBack: []
+  idleFront:
+  - {fileID: 1310780236, guid: 5bb0a497b0cf8354a853b362906fe5de, type: 3}
+  - {fileID: 1113971952, guid: 5bb0a497b0cf8354a853b362906fe5de, type: 3}
+  idleBack: []
