@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f9177d3dc85f1b2488f4f9e7d02b8a15
+guid: a1fa5452c5b02034a8251a61653a6ea1
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -136,7 +136,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hair1BackY 1_0
+      name: Hair1BackY 2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -151,14 +151,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01773d851d175a648bb602434bdec084
-      internalID: -827719803
+      spriteID: 7bd8505165435ea49af0931085d09638
+      internalID: -1528466488
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hair1BackY 1_1
+      name: Hair1BackY 2_1
       rect:
         serializedVersion: 2
         x: 64
@@ -173,14 +173,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e51d60e1202dcfd4391e9edb0a668bb8
-      internalID: 657266459
+      spriteID: 03ddf0ee47c00c2429d1b3e4cb654083
+      internalID: 803804114
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hair1BackY 1_2
+      name: Hair1BackY 2_2
       rect:
         serializedVersion: 2
         x: 128
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b8cb72cb6f2557442861b81cf970aa6f
-      internalID: -1488644636
+      spriteID: bc68b5869f3eb384b894da1e5c4e6a66
+      internalID: 1272120820
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hair1BackY 1_3
+      name: Hair1BackY 2_3
       rect:
         serializedVersion: 2
         x: 192
@@ -217,8 +217,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02c879416110ebb419e2434498069707
-      internalID: -1241159702
+      spriteID: af3061930938ec84d84a1a06e933d2bc
+      internalID: -477499947
       vertices: []
       indices: 
       edges: []
@@ -227,7 +227,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b527cb5123447014980e2b8d9954f0c7
+    spriteID: 3eff5cb4733ea15439392d786f957c81
     internalID: 0
     vertices: []
     indices: 
@@ -237,10 +237,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Hair1BackY 1_0: -827719803
-      Hair1BackY 1_1: 657266459
-      Hair1BackY 1_2: -1488644636
-      Hair1BackY 1_3: -1241159702
+      Hair1BackY 2_0: -1528466488
+      Hair1BackY 2_1: 803804114
+      Hair1BackY 2_2: 1272120820
+      Hair1BackY 2_3: -477499947
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
