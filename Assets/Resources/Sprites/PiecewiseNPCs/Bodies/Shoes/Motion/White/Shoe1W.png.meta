@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ca73c306f77efd54e9c7deab934f244c
+guid: df14ca33667c7c44787609714550ca0f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -21,7 +21,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shoe1Bl_0
+      name: Shoe1W 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -125,14 +125,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 744627515c7f69745ba8e069c80a6f82
-      internalID: -1352204453
+      spriteID: 0fb262df03404f24592dc5ec37d64289
+      internalID: 1845530978
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shoe1Bl_1
+      name: Shoe1W 1_1
       rect:
         serializedVersion: 2
         x: 64
@@ -147,8 +147,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbe81eba6da464647899543884e64b64
-      internalID: -1927174494
+      spriteID: 8e6e35a13eb560e4bb9052dd78db471e
+      internalID: 240230787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shoe1W 1_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 382d9c11a0e40784f8c94e553afb29e1
+      internalID: -1985193171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shoe1W 1_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c7785c023b375f40bbec605a636b3e9
+      internalID: 1849554918
       vertices: []
       indices: 
       edges: []
@@ -157,7 +201,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6f9a973af7389cf48a950f2d8535bac1
+    spriteID: 836428a1c90eb4f47b4e521e69808006
     internalID: 0
     vertices: []
     indices: 
@@ -167,8 +211,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Shoe1Bl_0: -1352204453
-      Shoe1Bl_1: -1927174494
+      Shoe1W 1_0: 1845530978
+      Shoe1W 1_1: 240230787
+      Shoe1W 1_2: -1985193171
+      Shoe1W 1_3: 1849554918
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
