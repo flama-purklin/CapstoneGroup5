@@ -31,5 +31,6 @@ public class MinigameControl : MonoBehaviour
     {
         evidence.gameObject.SetActive(true);
         evidence.Reveal(revealedData);
+        //gameObject.SetActive(false);
     }
 }

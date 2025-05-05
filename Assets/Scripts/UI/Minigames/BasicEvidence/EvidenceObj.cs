@@ -19,5 +19,6 @@ public class EvidenceObj : MinigameObj
     {
         base.Interact();
         GameObject.FindFirstObjectByType<MinigameControl>().EvidenceReveal(data);
+        gameObject.SetActive(false);
     }
 }
