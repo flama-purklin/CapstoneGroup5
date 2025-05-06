@@ -139,7 +139,9 @@ public class BeepSpeak : MonoBehaviour
         npcVoice.voiceID = v.VoiceID + 100000;
         npcVoice.timbreID = v.Timbre;
         npcVoice.basePitch = v.Pitch + 0.5f;
-        npcVoice.baseSpeed = (v.Speed * 0.03f) + 0.035f;
+        float s = (v.Speed * 0.03f) + 0.035f;
+        if(s > 0.5f) { s = 0.5f + ((s - 0.5f) / 2); }
+        npcVoice.baseSpeed = s;
         npcVoice.baseVolume = (v.Volume * 0.6f) + 0.4f;
     }
     
